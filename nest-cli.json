@@ -1,0 +1,30 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/scanner/src",
+  "monorepo": true,
+  "root": "apps/scanner",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/scanner/tsconfig.app.json"
+  },
+  "projects": {
+    "scanner": {
+      "type": "application",
+      "root": "apps/scanner",
+      "entryFile": "main",
+      "sourceRoot": "apps/scanner/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/scanner/tsconfig.app.json"
+      }
+    },
+    "api": {
+      "type": "application",
+      "root": "apps/api",
+      "entryFile": "main",
+      "sourceRoot": "apps/api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/api/tsconfig.app.json"
+      }
+    }
+  }
+}
