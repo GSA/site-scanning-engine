@@ -6,7 +6,10 @@ export class HeadlessController {
   constructor(private headlessService: HeadlessService) {
     this.headlessService = headlessService;
   }
-  start() {
-    return this.headlessService.startScan('https://www.google.com');
+  async start() {
+    const result = await this.headlessService.startScan(
+      'https://www.google.com',
+    );
+    return result;
   }
 }
