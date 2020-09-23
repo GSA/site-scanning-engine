@@ -16,9 +16,8 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('starts', () => {
-    const result = 'starting scans for https://www.google.com';
+  it('to be defined', () => {
     const controller = app.select(HeadlessModule).get(HeadlessController);
-    expect(controller.start()).toBe(result);
+    expect(controller).toBeDefined();
   });
 });

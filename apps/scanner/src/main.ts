@@ -7,6 +7,6 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const headlessController = app.select(HeadlessModule).get(HeadlessController);
   const result = await headlessController.start();
-  console.log(result);
+  console.log(result.toJSON());
 }
 bootstrap();
