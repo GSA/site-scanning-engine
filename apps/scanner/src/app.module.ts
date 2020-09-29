@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
-import { HeadlessModule } from './headless/headless.module';
+import { ScanEngineModule } from './scan-engine/scan-engine.module';
+import { ScannersModule } from './scanners/scanners.module';
 
 @Module({
-  imports: [HeadlessModule],
+  imports: [ScanEngineModule, ScannersModule],
   controllers: [],
   providers: [],
 })
