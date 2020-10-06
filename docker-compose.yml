@@ -15,7 +15,22 @@ services:
         command: npm run start:dev api
         networks: 
             - webnet
-        depends_on:
+
+
+    producer:
+        build: 
+            context: "."
+            dockerfile: "./apps/producer/Dockerfile"
+            target: development
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        command: npm run start:dev producer
+        environment: 
+            - REDIS_HOST=redis
+        networks: 
+            - webnet
+        depends_on: 
             - redis
 
     scanner:
@@ -27,6 +42,8 @@ services:
             - .:/usr/src/app
             - /usr/src/app/node_modules
         command: npm run start:dev scanner
+        environment: 
+            - REDIS_HOST=redis
         security_opt:
             - "seccomp=./apps/scanner/chrome.json"
         networks:

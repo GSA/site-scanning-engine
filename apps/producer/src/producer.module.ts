@@ -1,14 +1,15 @@
-import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
+import { ProducerService } from './producer.service';
+import { BullModule } from '@nestjs/bull';
+import { SCANNER_QUEUE_NAME } from '../../const/const';
+import { TaskService } from './task/task.service';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SCANNER_QUEUE_NAME } from '../../../const/const';
-import { CoreScanner } from '../scanners/core/core.scanner';
-import { ScannersModule } from '../scanners/scanners.module';
-import { ScanEngineConsumer } from './scan-engine.consumer';
 
 @Module({
   imports: [
-    ScannersModule,
+    ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     BullModule.registerQueueAsync({
       name: SCANNER_QUEUE_NAME,
       imports: [ConfigModule],
@@ -21,6 +22,6 @@ import { ScanEngineConsumer } from './scan-engine.consumer';
       inject: [ConfigService],
     }),
   ],
-  providers: [CoreScanner, ScanEngineConsumer],
+  providers: [ProducerService, TaskService],
 })
-export class ScanEngineModule {}
+export class ProducerModule {}

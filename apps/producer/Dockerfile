@@ -1,4 +1,4 @@
-# API Dockerfile
+# Producer Dockerfile
 #
 # Note: This Dockerfile is only used for local development. 
 # In theory, one should be able to adapt it to run in in the cloud. 
@@ -7,7 +7,7 @@
 # This file is using multi-stage builds for build performance. 
 # See: https://docs.docker.com/develop/develop-images/multistage-build/ 
 # 
-# the `development` stage handles building the application
+# the `builder` stage handles building the application
 FROM node:12.18 AS development
 
 WORKDIR /usr/src/app
@@ -18,7 +18,7 @@ RUN npm install
 
 COPY . . 
 
-RUN npm run build api
+RUN npm run build producer
 
 # the production stage handles running the application
 FROM node:12.18 AS production
@@ -36,6 +36,6 @@ RUN npm ci
 
 COPY --from=development /usr/src/app/dist ./dist
 
-RUN ["node", "dist/apps/api/main"]
+RUN ["node", "dist/apps/api/producer"]
 
 

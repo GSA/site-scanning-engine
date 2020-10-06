@@ -21,9 +21,13 @@
     "test:e2e": "jest --config ./apps/scanner/test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/bull": "^0.2.2",
     "@nestjs/common": "^7.0.0",
+    "@nestjs/config": "^0.5.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
+    "@nestjs/schedule": "^0.4.1",
+    "bull": "^3.18.0",
     "class-validator": "^0.12.2",
     "http-status-codes": "^2.1.4",
     "lodash": "^4.17.20",
@@ -35,6 +39,7 @@
     "@nestjs/cli": "^7.0.0",
     "@nestjs/schematics": "^7.0.0",
     "@nestjs/testing": "^7.0.0",
+    "@types/bull": "^3.14.3",
     "@types/express": "^4.17.3",
     "@types/jest": "26.0.10",
     "@types/lodash": "^4.14.161",

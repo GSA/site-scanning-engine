@@ -32,13 +32,11 @@ RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
 
 COPY package*.json ./
 
-# npm ci installs directly from the package-lock.json 
-# which should equate to performance improvements.
-RUN npm ci
+RUN npm install
 
 COPY . . 
 
-RUN npm run build
+RUN npm run build scanner
 
 # Run everything after as non-privileged user.
 USER pptruser
