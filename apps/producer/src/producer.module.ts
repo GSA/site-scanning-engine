@@ -1,26 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ProducerService } from './producer.service';
-import { BullModule } from '@nestjs/bull';
-import { SCANNER_QUEUE_NAME } from '../../const/const';
 import { TaskService } from './task/task.service';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { MessageQueueModule } from '@app/message-queue';
+import { DatabaseModule } from '@app/database';
 
 @Module({
   imports: [
+    DatabaseModule,
+    MessageQueueModule,
     ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
-    BullModule.registerQueueAsync({
-      name: SCANNER_QUEUE_NAME,
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        redis: {
-          host: configService.get('REDIS_HOST'),
-          port: configService.get('REDIS_PORT'),
-        },
-      }),
-      inject: [ConfigService],
-    }),
   ],
   providers: [ProducerService, TaskService],
 })

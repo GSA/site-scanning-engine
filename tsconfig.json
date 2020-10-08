@@ -11,6 +11,19 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "incremental": true,
-    "paths": {}
+    "paths": {
+      "@app/message-queue": [
+        "libs/message-queue/src"
+      ],
+      "@app/message-queue/*": [
+        "libs/message-queue/src/*"
+      ],
+      "@app/database": [
+        "libs/database/src"
+      ],
+      "@app/database/*": [
+        "libs/database/src/*"
+      ]
+    }
   }
 }

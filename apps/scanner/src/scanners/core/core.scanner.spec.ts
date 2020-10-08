@@ -3,7 +3,7 @@ import { Browser, Page, Response } from 'puppeteer';
 import { CoreScanner } from './core.scanner';
 import { BROWSER_TOKEN } from '../browser.provider';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
-import { CoreInputDto } from '../../../../dtos/scanners/core.input.dto';
+import { CoreInputDto } from '../../../../../dtos/scanners/core.input.dto';
 
 describe('CoreScanner', () => {
   let provider: CoreScanner;

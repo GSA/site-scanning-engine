@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreScanner } from '../scanners/core/core.scanner';
-import { CoreInputDto } from '../../../dtos/scanners/core.input.dto';
-import { CoreOutputDto } from '../../../dtos/scanners/core.output.dto';
+import { CoreInputDto } from '../../../../dtos/scanners/core.input.dto';
+import { CoreOutputDto } from '../../../../dtos/scanners/core.output.dto';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
 import { Scanner } from '../scanners/scanner.interface';
 import { ScanEngineConsumer } from './scan-engine.consumer';

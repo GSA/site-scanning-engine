@@ -34,6 +34,24 @@
       "compilerOptions": {
         "tsConfigPath": "apps/producer/tsconfig.app.json"
       }
+    },
+    "message-queue": {
+      "type": "library",
+      "root": "libs/message-queue",
+      "entryFile": "index",
+      "sourceRoot": "libs/message-queue/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/message-queue/tsconfig.lib.json"
+      }
+    },
+    "database": {
+      "type": "library",
+      "root": "libs/database",
+      "entryFile": "index",
+      "sourceRoot": "libs/database/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/database/tsconfig.lib.json"
+      }
     }
   }
 }

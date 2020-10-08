@@ -2,8 +2,8 @@ import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Browser } from 'puppeteer';
 import { BROWSER_TOKEN } from '../browser.provider';
 import { Scanner } from '../scanner.interface';
-import { CoreInputDto } from '../../../../dtos/scanners/core.input.dto';
-import { CoreOutputDto } from '../../../../dtos/scanners/core.output.dto';
+import { CoreInputDto } from '../../../../../dtos/scanners/core.input.dto';
+import { CoreOutputDto } from '../../../../../dtos/scanners/core.output.dto';
 
 /**
  * CoreScanner is the default scanner for the Site Scanning project.

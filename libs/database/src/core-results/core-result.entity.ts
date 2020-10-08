@@ -1,0 +1,1 @@
+import { Entity } from 'typeorm';

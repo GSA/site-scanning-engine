@@ -1,8 +1,8 @@
+import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
-import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '../../../const/const';
-import { CoreInputDto } from '../../../dtos/scanners/core.input.dto';
+import { CoreInputDto } from '../../../../dtos/scanners/core.input.dto';
 import { CoreScanner } from '../scanners/core/core.scanner';
 
 /**
