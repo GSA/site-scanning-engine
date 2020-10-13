@@ -5,6 +5,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
 import { MessageQueueModule } from '@app/message-queue';
 import { DatabaseModule } from '@app/database';
+import { WebsiteService } from '@app/database/websites/websites.service';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { DatabaseModule } from '@app/database';
     ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
   ],
-  providers: [ProducerService, TaskService],
+  providers: [ProducerService, TaskService, WebsiteService],
 })
 export class ProducerModule {}

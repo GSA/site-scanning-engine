@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CoreResult } from './core-results/core-result.entity';
+import { CoreResultModule } from './core-results/core-result.module';
 import { Website } from './websites/website.entity';
 import { WebsiteModule } from './websites/website.module';
 
@@ -13,7 +15,7 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
       port: +configService.get<number>('DATABASE_PORT'),
       username: configService.get('POSTGRES_USER'),
       password: configService.get('POSTGRES_PASSWORD'),
-      entities: [Website],
+      entities: [Website, CoreResult],
       synchronize: true,
     };
   },
@@ -21,8 +23,8 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
 });
 
 @Module({
-  imports: [ScannerDatabase, WebsiteModule],
+  imports: [ScannerDatabase, WebsiteModule, CoreResultModule],
   providers: [],
-  exports: [ScannerDatabase, WebsiteModule],
+  exports: [ScannerDatabase, WebsiteModule, CoreResultModule],
 })
 export class DatabaseModule {}

@@ -15,7 +15,7 @@ export class WebsiteService {
     return websites;
   }
 
-  async findOne(id: string): Promise<Website> {
+  async findOne(id: number): Promise<Website> {
     const website = await this.findOne(id);
     return website;
   }
