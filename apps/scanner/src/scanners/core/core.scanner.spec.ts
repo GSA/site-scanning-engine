@@ -3,7 +3,7 @@ import { Browser, Page, Response } from 'puppeteer';
 import { CoreScanner } from './core.scanner';
 import { BROWSER_TOKEN } from '../browser.provider';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
-import { InputCoreDto } from './input-core.dto';
+import { CoreInputDto } from '../../../../../dtos/scanners/core.input.dto';
 
 describe('CoreScanner', () => {
   let provider: CoreScanner;
@@ -12,7 +12,7 @@ describe('CoreScanner', () => {
   let mockPage: MockProxy<Page>;
   let mockResponse: MockProxy<Response>;
 
-  const inputDto: InputCoreDto = {
+  const inputDto: CoreInputDto = {
     url: 'https://18f.gov',
     agency: 'GSA',
     branch: 'Executive',

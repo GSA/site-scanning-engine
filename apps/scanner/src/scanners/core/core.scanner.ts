@@ -2,8 +2,8 @@ import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Browser } from 'puppeteer';
 import { BROWSER_TOKEN } from '../browser.provider';
 import { Scanner } from '../scanner.interface';
-import { InputCoreDto } from './input-core.dto';
-import { ResultCoreDto } from './result-core.dto.interface';
+import { CoreInputDto } from '../../../../../dtos/scanners/core.input.dto';
+import { CoreOutputDto } from '../../../../../dtos/scanners/core.output.dto';
 
 /**
  * CoreScanner is the default scanner for the Site Scanning project.
@@ -18,7 +18,7 @@ import { ResultCoreDto } from './result-core.dto.interface';
  */
 @Injectable()
 export class CoreScanner
-  implements Scanner<InputCoreDto, ResultCoreDto>, OnModuleDestroy {
+  implements Scanner<CoreInputDto, CoreOutputDto>, OnModuleDestroy {
   private browser: Browser;
   constructor(@Inject(BROWSER_TOKEN) browser: Browser) {
     this.browser = browser;
@@ -33,13 +33,13 @@ export class CoreScanner
    * @returns a ResultCoreDto object that contains the results of the scan.
    */
 
-  async scan(input: InputCoreDto) {
+  async scan(input: CoreInputDto) {
     const page = await this.browser.newPage();
     await page.goto(input.url);
 
     const finalUrl = page.url();
 
-    const result: ResultCoreDto = {
+    const result: CoreOutputDto = {
       targetUrl: input.url,
       agency: input.agency,
       branch: input.branch,

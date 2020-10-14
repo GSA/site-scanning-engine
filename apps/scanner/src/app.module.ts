@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ScanEngineModule } from './scan-engine/scan-engine.module';
 import { ScannersModule } from './scanners/scanners.module';
 
 @Module({
-  imports: [ScanEngineModule, ScannersModule],
+  imports: [ScanEngineModule, ScannersModule, ConfigModule.forRoot()],
   controllers: [],
   providers: [],
 })

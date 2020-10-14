@@ -1,13 +1,13 @@
 import { IsString, IsUrl } from 'class-validator';
 
 /**
- * InputCoreDto is a Data Transfer Object for input to the Core scanner.
+ * CoreInputDto is a Data Transfer Object for input to the Core scanner.
  *
- * @remarks The InputCoreDto provides a consistent interface for passing data to the
+ * @remarks The CoreInputDto provides a consistent interface for passing data to the
  * Core scanners scan method. Additionally, it uses the class-validator library to provide
  * a validation schema.
  */
-export class InputCoreDto {
+export class CoreInputDto {
   /**
    * url is a string representing a url of a website in the Federal Web Presence (.gov, .mil, etc.)
    *

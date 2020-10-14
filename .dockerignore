@@ -29,5 +29,9 @@ lerna-debug.log*
 # IDE - VSCode
 .vscode/*
 
-# environment 
-.env
+# Docker
+Dockerfile
+
+# Docs
+/docs
+README.md
