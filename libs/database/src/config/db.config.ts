@@ -3,7 +3,6 @@
  */
 export default () => {
   if (process.env.VCAP_SERVICES) {
-    console.log('found VCAP_SERVICES');
     const vcap = JSON.parse(process.env.VCAP_SERVICES);
     const rds = vcap['aws-rds'][0];
     return {
@@ -12,7 +11,6 @@ export default () => {
       },
     };
   } else {
-    console.log('using development credentials.');
     const pgUser = process.env.POSTGRES_USER;
     const pgPassword = process.env.POSTGRES_PASSWORD;
     const dbHost = process.env.DATABASE_HOST;
