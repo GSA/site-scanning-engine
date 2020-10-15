@@ -5,16 +5,18 @@ import { CoreResult } from './core-results/core-result.entity';
 import { CoreResultModule } from './core-results/core-result.module';
 import { Website } from './websites/website.entity';
 import { WebsiteModule } from './websites/website.module';
+import dbconfig from './config/db.config';
 
 const ScannerDatabase = TypeOrmModule.forRootAsync({
-  imports: [ConfigModule],
+  imports: [
+    ConfigModule.forRoot({
+      load: [dbconfig],
+    }),
+  ],
   useFactory: (configService: ConfigService) => {
     return {
       type: 'postgres',
-      host: configService.get('DATABASE_HOST'),
-      port: +configService.get<number>('DATABASE_PORT'),
-      username: configService.get('POSTGRES_USER'),
-      password: configService.get('POSTGRES_PASSWORD'),
+      url: configService.get<string>('database.url'),
       entities: [Website, CoreResult],
       synchronize: true,
     };

@@ -1,0 +1,11 @@
+---
+applications:
+- name: site-scanner-api
+  disk_quota: 4096M
+  timeout: 10 # seconds
+  services:
+    - scanner-postgres
+  memory: 500M
+  instances: 1
+  random-route: true
+  command: node dist/apps/api/main
