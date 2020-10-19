@@ -2,7 +2,7 @@ import { WebsiteService } from '@app/database/websites/websites.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { CoreInputDto } from 'dtos/scanners/core.input.dto';
-import { ProducerService } from '../producer.service';
+import { ProducerService } from '../producer/producer.service';
 
 @Injectable()
 export class TaskService {

@@ -57,7 +57,6 @@ describe('CoreResultService', () => {
     const lookup = 1;
 
     mockRepository.findOne.calledWith().mockResolvedValue(coreResult);
-
     const result = await service.findOne(lookup);
 
     expect(result).toStrictEqual(coreResult);

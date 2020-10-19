@@ -56,4 +56,9 @@ describe('CoreScanner', () => {
     const result = await provider.scan(inputDto);
     expect(result.finalUrl).toStrictEqual(finalUrl);
   });
+
+  it('closes the browser onModuleDestroy lifecycle event', async () => {
+    await provider.onModuleDestroy();
+    expect(mockBrowser.close).toHaveBeenCalled();
+  });
 });

@@ -28,7 +28,7 @@ describe('WebsiteController', () => {
   });
 
   describe('websites', () => {
-    it('should return "Hello World!"', async () => {
+    it('should return a list of the websites', async () => {
       const website = new Website();
       website.url = 'https://18f.gsa.gov';
       website.agency = 'GSA';
