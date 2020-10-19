@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { ProducerService } from './producer.service';
-import { TaskService } from './task/task.service';
-import { ScheduleModule } from '@nestjs/schedule';
-import { ConfigModule } from '@nestjs/config';
-import { MessageQueueModule } from '@app/message-queue';
 import { DatabaseModule } from '@app/database';
 import { WebsiteService } from '@app/database/websites/websites.service';
+import { MessageQueueModule } from '@app/message-queue';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ProducerService } from './producer/producer.service';
+import { TaskService } from './task/task.service';
 
 @Module({
   imports: [

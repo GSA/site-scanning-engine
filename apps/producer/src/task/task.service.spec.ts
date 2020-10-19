@@ -2,7 +2,7 @@ import { Website } from '@app/database/websites/website.entity';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
-import { ProducerService } from '../producer.service';
+import { ProducerService } from '../producer/producer.service';
 import { TaskService } from './task.service';
 
 describe('TaskService', () => {
