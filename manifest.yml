@@ -9,3 +9,28 @@ applications:
   instances: 1
   random-route: true
   command: node dist/apps/api/main
+
+- name: site-scanner-producer
+  disk_quota: 4096M
+  services:
+    - scanner-postgres
+    - scanner-message-queue
+  memory: 500M
+  instances: 1
+  no-route: true
+  command: node dist/apps/producer/main
+  health-check-type: process
+
+- name: site-scanner-consumer
+  disk_quota: 4096M
+  services:
+    - scanner-postgres
+    - scanner-message-queue
+  memory: 2048M
+  buildpacks:
+    - https://github.com/cloudfoundry/apt-buildpack/
+    - https://github.com/cloudfoundry/nodejs-buildpack/
+  instances: 2
+  no-route: true
+  command: node dist/apps/scanner/main
+  health-check-type: process

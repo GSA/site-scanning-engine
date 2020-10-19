@@ -41,7 +41,10 @@ const BrowserFactoryProvider = {
    * @returns a headless puppeteer.Browser instance.
    */
   useFactory: async () => {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox'], // :TODO mustfix!
+    });
     return browser;
   },
 };
