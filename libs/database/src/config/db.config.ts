@@ -1,5 +1,5 @@
 /**
- * dbconfig returns the appropriate database credentials for the environment.
+ * returns the appropriate database credentials for the environment.
  */
 export default () => {
   if (process.env.VCAP_SERVICES) {
