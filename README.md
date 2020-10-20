@@ -5,7 +5,7 @@ _Note: The project is a work in progress and APIs are unstable._
 
 This repository is for the Site Scanning project. This is the new base scanner repository (a.k.a. Site Scanning Two) which uses Headless Chrome, powered by Puppeteer for scanning. 
 
-For more detailed documentation about the Site Scanning program, including **who it's for**, **long-term goals**, and **how you can help** please visit the [Site Scanning Documentation Repository] (https://github.com/18F/site-scanning-documentation).
+For more detailed documentation about the Site Scanning program, including **who it's for**, **long-term goals**, and **how you can help** please visit the [Site Scanning Documentation Repository](https://github.com/18F/site-scanning-documentation).
 
 
 ## Table of Contents
