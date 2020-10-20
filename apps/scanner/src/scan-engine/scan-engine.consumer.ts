@@ -1,4 +1,5 @@
 import { CoreResultService } from '@app/database/core-results/core-result.service';
+import { LoggerService } from '@app/logger';
 import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import { Process, Processor } from '@nestjs/bull';
 import { Logger } from '@nestjs/common';
@@ -22,13 +23,12 @@ import { CoreScanner } from '../scanners/core/core.scanner';
  */
 @Processor(SCANNER_QUEUE_NAME)
 export class ScanEngineConsumer {
-  private readonly logger: Logger;
-
   constructor(
     private coreScanner: CoreScanner,
     private coreResultService: CoreResultService,
+    private logger: LoggerService,
   ) {
-    this.logger = new Logger(ScanEngineConsumer.name);
+    this.logger.setContext(ScanEngineConsumer.name);
   }
 
   /**
@@ -51,7 +51,7 @@ export class ScanEngineConsumer {
       this.logger.debug('wrote result!');
       await job.moveToCompleted();
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`error scanning ${job.data.url}`, error);
       await job.moveToFailed({
         message: error,
       });
