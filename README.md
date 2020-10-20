@@ -11,14 +11,23 @@ For more detailed documentation about the Site Scanning program, including **who
 ## Table of Contents
 
 1. [Quickstart](#quickstart)
+
     a. [Installation](#Installation)
+
     b. [Dotenv](#Dotenv)
+
     c. [Docker](#Docker)
+
     d. [Start all Apps](#start-all-apps)
+
     e. [Test](#test)
+
 2. [Development Documentation](./docs)
+
     a. [Project Layout](./docs/layout.md)
+
     b. [Detailed Development](./docs/development.md)
+
     c. [Architecture](./docs/architecture/README.md)
 
 
@@ -26,6 +35,7 @@ For more detailed documentation about the Site Scanning program, including **who
 
 Development Requirements: 
 `nodejs` and `nvm` (see [.nvmrc](./.nvmrc) for current `node` version.
+
 `docker` and `docker-compose`
 
 ### Installation

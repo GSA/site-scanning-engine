@@ -49,8 +49,8 @@ with Diagram("Site Scanner", show=False, filename=filename):
     node_api_app >> Edge(label="queries") >> postgres
 
     # Data and Storage
-    cold_storage_node >> Edge(label="calls") >> postgres
-    cold_storage_node >> Edge(lable="writes to") >> s3_cold_storage
+    postgres << Edge(label="queries") << cold_storage_node
+    s3_cold_storage <<  Edge(label="writes to") << cold_storage_node
 
     # Scanning
     cron >> Edge(label="triggers") >> producer_node >> Edge(label="adds to") >> queue
