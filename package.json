@@ -12,7 +12,6 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/apps/scanner/main",
     "start:api": "nest start api",
     "start:producer": "nest start producer",
     "start:scanner": "nest start scanner",
