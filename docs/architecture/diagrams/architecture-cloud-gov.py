@@ -46,7 +46,7 @@ with Diagram("Site Scanner", show=False, filename=filename):
 
     # API
     api_data_gov >> Edge(label="manages") >> router >> Edge(label="calls") >> node_api_app
-    node_api_app >> Edge(label="writes to") >> postgres
+    node_api_app >> Edge(label="queries") >> postgres
 
     # Data and Storage
     cold_storage_node >> Edge(label="calls") >> postgres
