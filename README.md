@@ -10,25 +10,17 @@ For more detailed documentation about the Site Scanning program, including **who
 
 ## Table of Contents
 
-1. [Quickstart](#quickstart)
+* [Quickstart](#quickstart)
+    * [Installation](#Installation)
+    * [Dotenv](#Dotenv)
+    * [Docker](#Docker)
+    * [Start all Apps](#start-all-apps)
+    * [Test](#test)
 
-    a. [Installation](#Installation)
-
-    b. [Dotenv](#Dotenv)
-
-    c. [Docker](#Docker)
-
-    d. [Start all Apps](#start-all-apps)
-
-    e. [Test](#test)
-
-2. [Development Documentation](./docs)
-
-    a. [Project Layout](./docs/layout.md)
-
-    b. [Detailed Development](./docs/development.md)
-
-    c. [Architecture](./docs/architecture/README.md)
+* [Development Documentation](./docs)
+    * [Project Layout](./docs/layout.md)
+    * [Detailed Development](./docs/development.md)
+    * [Architecture](./docs/architecture/README.md)
 
 
 ## Quickstart
