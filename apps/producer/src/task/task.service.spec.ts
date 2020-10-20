@@ -1,5 +1,6 @@
 import { Website } from '@app/database/websites/website.entity';
 import { WebsiteService } from '@app/database/websites/websites.service';
+import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
 import { ProducerService } from '../producer/producer.service';
@@ -9,10 +10,12 @@ describe('TaskService', () => {
   let service: TaskService;
   let producerMock: MockProxy<ProducerService>;
   let websiteServiceMock: MockProxy<WebsiteService>;
+  let loggerMock: MockProxy<LoggerService>;
 
   beforeEach(async () => {
     producerMock = mock<ProducerService>();
     websiteServiceMock = mock<WebsiteService>();
+    loggerMock = mock<LoggerService>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TaskService,
@@ -23,6 +26,10 @@ describe('TaskService', () => {
         {
           provide: WebsiteService,
           useValue: websiteServiceMock,
+        },
+        {
+          provide: LoggerService,
+          useValue: loggerMock,
         },
       ],
     }).compile();

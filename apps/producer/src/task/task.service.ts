@@ -1,17 +1,18 @@
 import { WebsiteService } from '@app/database/websites/websites.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { LoggerService } from '@app/logger';
+import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { CoreInputDto } from 'dtos/scanners/core.input.dto';
 import { ProducerService } from '../producer/producer.service';
 
 @Injectable()
 export class TaskService {
-  private readonly logger: Logger;
   constructor(
     private producerService: ProducerService,
     private websiteService: WebsiteService,
+    private logger: LoggerService,
   ) {
-    this.logger = new Logger(TaskService.name);
+    this.logger.setContext(TaskService.name);
   }
 
   @Cron('46 * * * * *')
@@ -29,7 +30,7 @@ export class TaskService {
         this.producerService.addCoreJob(coreInput);
       });
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`error in ${this.coreScanProducer.name}`, error);
     }
   }
 }

@@ -4,6 +4,7 @@ import { MessageQueueModule } from '@app/message-queue';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { LoggerModule, LoggerService } from 'libs/logger/src';
 import { ProducerService } from './producer/producer.service';
 import { TaskService } from './task/task.service';
 
@@ -13,7 +14,8 @@ import { TaskService } from './task/task.service';
     MessageQueueModule,
     ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
+    LoggerModule,
   ],
-  providers: [ProducerService, TaskService, WebsiteService],
+  providers: [ProducerService, TaskService, WebsiteService, LoggerService],
 })
 export class ProducerModule {}

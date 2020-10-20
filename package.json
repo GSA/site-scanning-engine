@@ -92,7 +92,9 @@
       "@app/message-queue/(.*)": "<rootDir>/libs/message-queue/src/$1",
       "@app/message-queue": "<rootDir>/libs/message-queue/src",
       "@app/database/(.*)": "<rootDir>/libs/database/src/$1",
-      "@app/database": "<rootDir>/libs/database/src"
+      "@app/database": "<rootDir>/libs/database/src",
+      "@app/logger/(.*)": "<rootDir>/libs/logger/src/$1",
+      "@app/logger": "<rootDir>/libs/logger/src"
     }
   }
 }
