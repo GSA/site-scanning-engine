@@ -22,6 +22,7 @@ To add a new application, use the Nest.js CLI to scaffold the application.
 The current libraries are:
 1) [Database](../libs/database) which is responsible for all data access. 
 2) [Message Queue](../libs/message-queue) which is responsible for handling the message queue.
+3) [Logger](../libs/logger) which is responsible for handling application logging.
 
 #### Adding a new Library
 To add a new library, use the Nest.js CLI to scaffold the library.
