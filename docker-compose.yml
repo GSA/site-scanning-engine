@@ -2,59 +2,6 @@
 # for inspiration
 version: "3.8"
 services:
-    api:
-        build: 
-            context: "."
-            dockerfile: "./apps/api/Dockerfile"
-            target: development
-        volumes:
-            - .:/usr/src/app
-            - /usr/src/app/node_modules
-        ports: 
-            - "3000:3000"
-        command: npm run start:dev api
-        networks: 
-            - webnet
-        depends_on:
-            - postgres
-
-
-    producer:
-        build: 
-            context: "."
-            dockerfile: "./apps/producer/Dockerfile"
-            target: development
-        volumes:
-            - .:/usr/src/app
-            - /usr/src/app/node_modules
-        command: npm run start:dev producer
-        environment: 
-            - QUEUE_HOST=redis
-        networks: 
-            - webnet
-        depends_on: 
-            - redis
-            - postgres
-
-    scanner:
-        build:
-            context: "."
-            dockerfile: "./apps/scanner/Dockerfile"
-            target: development
-        volumes:
-            - .:/usr/src/app
-            - /usr/src/app/node_modules
-        command: npm run start:dev scanner
-        environment: 
-            - QUEUE_HOST=redis
-        security_opt:
-            - "seccomp=./apps/scanner/chrome.json"
-        networks:
-            - webnet
-        depends_on: 
-            - redis
-            - postgres
-
     postgres:
         container_name: postgres
         image: postgres:13
