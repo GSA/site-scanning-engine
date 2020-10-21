@@ -1,6 +1,4 @@
 export class CreateCoreResultDto {
-  targetUrl: string;
+  websiteId: number;
   finalUrl: string;
-  agency: string;
-  branch: string;
 }

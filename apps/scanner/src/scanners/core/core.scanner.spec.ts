@@ -13,9 +13,8 @@ describe('CoreScanner', () => {
   let mockResponse: MockProxy<Response>;
 
   const inputDto: CoreInputDto = {
+    websiteId: 1,
     url: 'https://18f.gov',
-    agency: 'GSA',
-    branch: 'Executive',
   };
 
   beforeEach(async () => {

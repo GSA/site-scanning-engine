@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Website } from '../websites/website.entity';
 
 @Entity()
 export class CoreResult {
@@ -18,14 +20,11 @@ export class CoreResult {
   updated: string;
 
   @Column()
-  targetUrl: string;
-
-  @Column()
   finalUrl: string;
 
-  @Column()
-  agency: string;
-
-  @Column()
-  branch: string;
+  @ManyToOne(
+    () => Website,
+    website => website.id,
+  )
+  websiteId: number;
 }

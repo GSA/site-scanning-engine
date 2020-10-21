@@ -1,6 +1,4 @@
 export class CoreOutputDto {
-  targetUrl: string;
-  agency: string;
-  branch: string;
+  websiteId: number;
   finalUrl: string;
 }

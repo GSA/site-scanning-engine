@@ -2,6 +2,7 @@ import { Website } from '@app/database/websites/website.entity';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CoreInputDto } from 'dtos/scanners/core.input.dto';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
 import { ProducerService } from '../producer/producer.service';
 import { TaskService } from './task.service';
@@ -49,15 +50,12 @@ describe('TaskService', () => {
     const website = new Website();
     website.id = 1;
     website.url = 'https://18f.gov';
-    website.agency = 'GSA';
-    website.branch = 'Executive';
     websiteServiceMock.findAll
       .calledWith()
       .mockResolvedValue(Promise.resolve([website]));
-    const expected = {
-      url: 'https://18f.gov',
-      agency: 'GSA',
-      branch: 'Executive',
+    const expected: CoreInputDto = {
+      websiteId: website.id,
+      url: website.url,
     };
     await service.coreScanProducer();
     expect(producerMock.addCoreJob).toBeCalledWith(expected);

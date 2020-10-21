@@ -35,10 +35,8 @@ describe('CoreResultService', () => {
 
   it('should return all CoreResults', async () => {
     const coreResult = new CoreResult();
-    coreResult.targetUrl = 'https://18f.gov';
+    coreResult.websiteId = 1;
     coreResult.finalUrl = 'https://18f.gsa.gov';
-    coreResult.agency = 'GSA';
-    coreResult.branch = 'Executive';
 
     const expected = [coreResult];
     mockRepository.find.calledWith().mockResolvedValue(expected);
@@ -50,31 +48,23 @@ describe('CoreResultService', () => {
 
   it('should return one CoreResult by id', async () => {
     const coreResult = new CoreResult();
-    coreResult.targetUrl = 'https://18f.gov';
-    coreResult.finalUrl = 'https://18f.gsa.gov';
-    coreResult.agency = 'GSA';
-    coreResult.branch = 'Executive';
-    const lookup = 1;
+    coreResult.id = 1;
 
     mockRepository.findOne.calledWith().mockResolvedValue(coreResult);
-    const result = await service.findOne(lookup);
+    const result = await service.findOne(1);
 
     expect(result).toStrictEqual(coreResult);
   });
 
   it('should create a CoreResult', async () => {
     const coreResultDto: CreateCoreResultDto = {
-      targetUrl: 'https://18f.gov',
+      websiteId: 1,
       finalUrl: 'https://18f.gsa.gov',
-      agency: 'GSA',
-      branch: 'Executive',
     };
 
     const coreResult = new CoreResult();
-    coreResult.targetUrl = 'https://18f.gov';
-    coreResult.finalUrl = 'https://18f.gsa.gov';
-    coreResult.agency = 'GSA';
-    coreResult.branch = 'Executive';
+    coreResult.finalUrl = coreResultDto.finalUrl;
+    coreResult.websiteId = coreResultDto.websiteId;
 
     await service.create(coreResultDto);
     expect(mockRepository.save).toHaveBeenCalledWith(coreResult);

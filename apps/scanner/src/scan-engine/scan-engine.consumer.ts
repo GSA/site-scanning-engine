@@ -2,7 +2,6 @@ import { CoreResultService } from '@app/database/core-results/core-result.servic
 import { LoggerService } from '@app/logger';
 import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import { Process, Processor } from '@nestjs/bull';
-import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { CoreInputDto } from '../../../../dtos/scanners/core.input.dto';
 import { CoreScanner } from '../scanners/core/core.scanner';
@@ -43,12 +42,10 @@ export class ScanEngineConsumer {
     try {
       const result = await this.coreScanner.scan(job.data);
       await this.coreResultService.create({
-        targetUrl: result.targetUrl,
+        websiteId: job.data.websiteId,
         finalUrl: result.finalUrl,
-        agency: result.agency,
-        branch: result.branch,
       });
-      this.logger.debug('wrote result!');
+      this.logger.debug(`wrote result for ${job.data.url}`);
       await job.moveToCompleted();
     } catch (error) {
       this.logger.error(`error scanning ${job.data.url}`, error);

@@ -11,7 +11,9 @@ export class CoreResultService {
   ) {}
 
   async findAll(): Promise<CoreResult[]> {
-    const results = await this.coreResult.find();
+    const results = await this.coreResult.find({
+      relations: ['websiteId'],
+    });
     return results;
   }
 
@@ -22,10 +24,8 @@ export class CoreResultService {
 
   async create(createCoreResultDto: CreateCoreResultDto) {
     const coreResult = new CoreResult();
-    coreResult.targetUrl = createCoreResultDto.targetUrl;
+    coreResult.websiteId = createCoreResultDto.websiteId;
     coreResult.finalUrl = createCoreResultDto.finalUrl;
-    coreResult.agency = createCoreResultDto.agency;
-    coreResult.branch = createCoreResultDto.branch;
     await this.coreResult.save(coreResult);
   }
 }
