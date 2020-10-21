@@ -20,12 +20,18 @@ export class CoreResultService {
     return result;
   }
 
+  async findResultsWithWebsite() {
+    const result = await this.coreResult.find({
+      relations: ['websiteId'],
+    });
+
+    return result;
+  }
+
   async create(createCoreResultDto: CreateCoreResultDto) {
     const coreResult = new CoreResult();
-    coreResult.targetUrl = createCoreResultDto.targetUrl;
+    coreResult.websiteId = createCoreResultDto.websiteId;
     coreResult.finalUrl = createCoreResultDto.finalUrl;
-    coreResult.agency = createCoreResultDto.agency;
-    coreResult.branch = createCoreResultDto.branch;
     await this.coreResult.save(coreResult);
   }
 }

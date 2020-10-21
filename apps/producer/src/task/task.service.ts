@@ -23,9 +23,8 @@ export class TaskService {
       const websites = await this.websiteService.findAll();
       websites.forEach(website => {
         const coreInput: CoreInputDto = {
+          websiteId: website.id,
           url: website.url,
-          agency: website.agency,
-          branch: website.branch,
         };
         this.producerService.addCoreJob(coreInput);
       });

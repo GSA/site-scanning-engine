@@ -56,23 +56,18 @@ describe('ScanEngineController', () => {
 
   it('should call the CoreScanner and the CoreResultService', async () => {
     const input: CoreInputDto = {
+      websiteId: 1,
       url: 'https://18f.gov',
-      agency: 'GSA',
-      branch: 'Executive',
     };
 
     const coreOutputDto: CoreOutputDto = {
-      targetUrl: input.url,
+      websiteId: input.websiteId,
       finalUrl: 'https://18f.gsa.gov',
-      agency: 'GSA',
-      branch: 'Executive',
     };
 
     const createCoreResultDto: CreateCoreResultDto = {
-      targetUrl: coreOutputDto.targetUrl,
+      websiteId: coreOutputDto.websiteId,
       finalUrl: coreOutputDto.finalUrl,
-      agency: coreOutputDto.agency,
-      branch: coreOutputDto.branch,
     };
 
     mockJob.data = input;

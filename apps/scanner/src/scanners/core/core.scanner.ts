@@ -40,9 +40,7 @@ export class CoreScanner
     const finalUrl = page.url();
 
     const result: CoreOutputDto = {
-      targetUrl: input.url,
-      agency: input.agency,
-      branch: input.branch,
+      websiteId: input.websiteId,
       finalUrl: finalUrl,
     };
 
