@@ -12,7 +12,7 @@ export class WebsiteController {
 
   @Get()
   async getResults() {
-    const websites = await this.coreResultService.findAll();
+    const websites = await this.coreResultService.findResultsWithWebsite();
     return websites;
   }
 

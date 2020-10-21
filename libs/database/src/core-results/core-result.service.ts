@@ -11,14 +11,20 @@ export class CoreResultService {
   ) {}
 
   async findAll(): Promise<CoreResult[]> {
-    const results = await this.coreResult.find({
-      relations: ['websiteId'],
-    });
+    const results = await this.coreResult.find();
     return results;
   }
 
   async findOne(id: number): Promise<CoreResult> {
     const result = await this.coreResult.findOne(id);
+    return result;
+  }
+
+  async findResultsWithWebsite() {
+    const result = await this.coreResult.find({
+      relations: ['websiteId'],
+    });
+
     return result;
   }
 
