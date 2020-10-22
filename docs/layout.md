@@ -5,11 +5,11 @@ The project is laid out into serveral related components. These components can b
 "Applications" have a `main.js` and are meant to be executables. These are found in the [apps](./apps) directory.
 
 The current applications are:
-1) [The Site Scanner](../apps/scanner) which is responsible for scanning and scan logic. 
-2) [The  Producer](../apps/producer) which is responsible for creating work for the Site Scanner application.
-3) [The API](../apps/api) which is responsible for managing HTTPS access to the data.
+* [The Scan Engine](../apps/scan-engine) which listens to the message queue and routes work to the appropriate scanner.
+* [The  Producer](../apps/producer) which uses CRON to schedule jobs on the message queue. 
+* [The API](../apps/api) which is responsible for managing HTTPS access to the data.
 
-See each the applications' `README.md`s for more info.
+See each of the applications' `README.md`s for more info.
 
 #### Adding a new application
 To add a new application, use the Nest.js CLI to scaffold the application. 
@@ -19,10 +19,13 @@ To add a new application, use the Nest.js CLI to scaffold the application.
 ### Libraries
 "Libraries" have an `index.js` and are meant to be used by "Applications". Anything that will be used by multiple "Applications" should likely be a library.
 
-The current libraries are:
-1) [Database](../libs/database) which is responsible for all data access. 
-2) [Message Queue](../libs/message-queue) which is responsible for handling the message queue.
-3) [Logger](../libs/logger) which is responsible for handling application logging.
+The libraries are:
+
+* [Browser](../libs/browser) which creates a headless browser for scanning.
+* [Core Scanner](../libs/core-scanner) performs all of the basic scanning logic. See [Website Data](https://github.com/18F/site-scanning-documentation/blob/main/about/website-data.md) for more info. 
+* [Database](../libs/database) which is responsible for all data access. 
+* [Message Queue](../libs/message-queue) which is responsible for handling the message queue.
+* [Logger](../libs/logger) which is responsible for handling application logging.
 
 #### Adding a new Library
 To add a new library, use the Nest.js CLI to scaffold the library.

@@ -1,10 +1,10 @@
+import { CoreScannerService } from '@app/core-scanner';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { LoggerService } from '@app/logger';
 import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
-import { CoreInputDto } from '../../../../dtos/scanners/core.input.dto';
-import { CoreScanner } from '../scanners/core/core.scanner';
+import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
 
 /**
  * ScanEngineConsumer is a consumer of the Scanner message queue.
@@ -23,7 +23,7 @@ import { CoreScanner } from '../scanners/core/core.scanner';
 @Processor(SCANNER_QUEUE_NAME)
 export class ScanEngineConsumer {
   constructor(
-    private coreScanner: CoreScanner,
+    private coreScanner: CoreScannerService,
     private coreResultService: CoreResultService,
     private logger: LoggerService,
   ) {

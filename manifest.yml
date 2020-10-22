@@ -32,5 +32,5 @@ applications:
     - https://github.com/cloudfoundry/nodejs-buildpack/
   instances: 2
   no-route: true
-  command: node dist/apps/scanner/main
+  command: node dist/apps/scan-engine/main
   health-check-type: process

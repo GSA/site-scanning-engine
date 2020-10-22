@@ -2,7 +2,7 @@ import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
 import { Injectable } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import { CoreInputDto } from 'dtos/scanners/core.input.dto';
+import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
 import { ProducerService } from '../producer/producer.service';
 
 @Injectable()

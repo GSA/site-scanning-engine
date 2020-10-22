@@ -1,8 +1,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "declaration": false,
-    "outDir": "../../dist/apps/scanner"
+    "declaration": true,
+    "outDir": "../../dist/libs/browser"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
