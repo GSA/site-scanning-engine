@@ -1,22 +1,13 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/scanner/src",
+  "sourceRoot": "apps/api/src",
   "monorepo": true,
-  "root": "apps/scanner",
+  "root": "apps/api",
   "compilerOptions": {
     "webpack": true,
-    "tsConfigPath": "apps/scanner/tsconfig.app.json"
+    "tsConfigPath": "apps/api/tsconfig.app.json"
   },
   "projects": {
-    "scanner": {
-      "type": "application",
-      "root": "apps/scanner",
-      "entryFile": "main",
-      "sourceRoot": "apps/scanner/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/scanner/tsconfig.app.json"
-      }
-    },
     "api": {
       "type": "application",
       "root": "apps/api",
@@ -60,6 +51,33 @@
       "sourceRoot": "libs/logger/src",
       "compilerOptions": {
         "tsConfigPath": "libs/logger/tsconfig.lib.json"
+      }
+    },
+    "browser": {
+      "type": "library",
+      "root": "libs/browser",
+      "entryFile": "index",
+      "sourceRoot": "libs/browser/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/browser/tsconfig.lib.json"
+      }
+    },
+    "core-scanner": {
+      "type": "library",
+      "root": "libs/core-scanner",
+      "entryFile": "index",
+      "sourceRoot": "libs/core-scanner/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/core-scanner/tsconfig.lib.json"
+      }
+    },
+    "scan-engine": {
+      "type": "application",
+      "root": "apps/scan-engine",
+      "entryFile": "main",
+      "sourceRoot": "apps/scan-engine/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/scan-engine/tsconfig.app.json"
       }
     }
   }

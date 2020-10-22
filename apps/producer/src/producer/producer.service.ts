@@ -2,7 +2,7 @@ import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
-import { CoreInputDto } from 'dtos/scanners/core.input.dto';
+import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
 
 /**
  * ProducerService writes jobs to the message queue.

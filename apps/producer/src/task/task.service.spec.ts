@@ -2,7 +2,7 @@ import { Website } from '@app/database/websites/website.entity';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoreInputDto } from 'dtos/scanners/core.input.dto';
+import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
 import { ProducerService } from '../producer/producer.service';
 import { TaskService } from './task.service';

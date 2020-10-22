@@ -29,6 +29,18 @@
       ],
       "@app/logger/*": [
         "libs/logger/src/*"
+      ],
+      "@app/browser": [
+        "libs/browser/src"
+      ],
+      "@app/browser/*": [
+        "libs/browser/src/*"
+      ],
+      "@app/core-scanner": [
+        "libs/core-scanner/src"
+      ],
+      "@app/core-scanner/*": [
+        "libs/core-scanner/src/*"
       ]
     }
   }

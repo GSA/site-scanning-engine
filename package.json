@@ -15,7 +15,7 @@
     "start:api": "nest start api",
     "start:producer": "nest start producer",
     "start:scanner": "nest start scanner",
-    "start:all": "concurrently \"npm run start producer\" \"npm run start scanner\" \"npm run start api\"",
+    "start:all": "concurrently \"npm run start producer\" \"npm run start scan-engine\" \"npm run start api\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:no-e2e": "jest --testPathIgnorePatterns ./apps/**/test/*",
@@ -94,7 +94,11 @@
       "@app/database/(.*)": "<rootDir>/libs/database/src/$1",
       "@app/database": "<rootDir>/libs/database/src",
       "@app/logger/(.*)": "<rootDir>/libs/logger/src/$1",
-      "@app/logger": "<rootDir>/libs/logger/src"
+      "@app/logger": "<rootDir>/libs/logger/src",
+      "@app/browser/(.*)": "<rootDir>/libs/browser/src/$1",
+      "@app/browser": "<rootDir>/libs/browser/src",
+      "@app/core-scanner/(.*)": "<rootDir>/libs/core-scanner/src/$1",
+      "@app/core-scanner": "<rootDir>/libs/core-scanner/src"
     }
   }
 }

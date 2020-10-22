@@ -2,7 +2,7 @@ import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import { getQueueToken } from '@nestjs/bull';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Queue, Job } from 'bull';
-import { CoreInputDto } from 'dtos/scanners/core.input.dto';
+import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { ProducerService } from './producer.service';
 
@@ -37,10 +37,9 @@ describe('ProducerService', () => {
   });
 
   it('should add jobs to the Scanner queue', async () => {
-    const data = {
+    const data: CoreInputDto = {
+      websiteId: 1,
       url: 'https://18f.gov',
-      agency: 'GSA',
-      branch: 'Executive',
     };
     mockJob.data = data;
 

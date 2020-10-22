@@ -3,17 +3,21 @@ import { CoreResultService } from '@app/database/core-results/core-result.servic
 import { LoggerModule, LoggerService } from '@app/logger';
 import { MessageQueueModule } from '@app/message-queue';
 import { Module } from '@nestjs/common';
-import { CoreScanner } from '../scanners/core/core.scanner';
-import { ScannersModule } from '../scanners/scanners.module';
+import { CoreScannerModule, CoreScannerService } from 'libs/core-scanner/src';
 import { ScanEngineConsumer } from './scan-engine.consumer';
 
 @Module({
-  imports: [ScannersModule, MessageQueueModule, DatabaseModule, LoggerModule],
+  imports: [
+    MessageQueueModule,
+    DatabaseModule,
+    CoreScannerModule,
+    LoggerModule,
+  ],
   providers: [
-    CoreScanner,
-    ScanEngineConsumer,
+    CoreScannerService,
     CoreResultService,
     LoggerService,
+    ScanEngineConsumer,
   ],
 })
-export class ScanEngineModule {}
+export class AppModule {}
