@@ -1,4 +1,5 @@
 import { BROWSER_TOKEN } from '@app/browser';
+import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
 import { mock, MockProxy } from 'jest-mock-extended';
@@ -10,17 +11,23 @@ describe('CoreScannerService', () => {
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
   let mockResponse: MockProxy<Response>;
+  let mockLogger: MockProxy<LoggerService>;
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
     mockPage = mock<Page>();
     mockResponse = mock<Response>();
+    mockLogger = mock<LoggerService>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CoreScannerService,
         {
           provide: BROWSER_TOKEN,
           useValue: mockBrowser,
+        },
+        {
+          provide: LoggerService,
+          useValue: mockLogger,
         },
       ],
     }).compile();

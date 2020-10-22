@@ -63,6 +63,9 @@ describe('ScanEngineConsumer', () => {
     const coreOutputDto: CoreOutputDto = {
       websiteId: input.websiteId,
       finalUrl: 'https://18f.gsa.gov',
+      finalUrlIsLive: true,
+      finalUrlBaseDomain: 'gsa.gov',
+      targetUrlRedirects: true,
     };
 
     const createCoreResultDto: CreateCoreResultDto = {
