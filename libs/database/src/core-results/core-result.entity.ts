@@ -22,9 +22,18 @@ export class CoreResult {
   @Column()
   finalUrl: string;
 
+  @Column()
+  finalUrlIsLive: boolean;
+
+  @Column()
+  finalUrlBaseDomain: string;
+
+  @Column()
+  targetUrlRedirects: boolean;
+
   @ManyToOne(
     () => Website,
     website => website.id,
   )
-  websiteId: number;
+  website: number;
 }

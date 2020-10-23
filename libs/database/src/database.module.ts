@@ -18,7 +18,8 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
       type: 'postgres',
       url: configService.get<string>('database.url'),
       entities: [Website, CoreResult],
-      synchronize: true,
+      synchronize: true, // do not use this in production
+      dropSchema: true, // do not use this in production
     };
   },
   inject: [ConfigService],

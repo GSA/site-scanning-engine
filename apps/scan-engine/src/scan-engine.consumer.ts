@@ -44,6 +44,9 @@ export class ScanEngineConsumer {
       await this.coreResultService.create({
         websiteId: job.data.websiteId,
         finalUrl: result.finalUrl,
+        finalUrlIsLive: result.finalUrlIsLive,
+        finalUrlBaseDomain: result.finalUrlBaseDomain,
+        targetUrlRedirects: result.targetUrlRedirects,
       });
       this.logger.debug(`wrote result for ${job.data.url}`);
       await job.moveToCompleted();

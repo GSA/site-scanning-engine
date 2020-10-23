@@ -35,7 +35,7 @@ describe('CoreResultService', () => {
 
   it('should return all CoreResults', async () => {
     const coreResult = new CoreResult();
-    coreResult.websiteId = 1;
+    coreResult.website = 1;
     coreResult.finalUrl = 'https://18f.gsa.gov';
 
     const expected = [coreResult];
@@ -60,11 +60,17 @@ describe('CoreResultService', () => {
     const coreResultDto: CreateCoreResultDto = {
       websiteId: 1,
       finalUrl: 'https://18f.gsa.gov',
+      finalUrlIsLive: true,
+      finalUrlBaseDomain: 'gsa.gov',
+      targetUrlRedirects: true,
     };
 
     const coreResult = new CoreResult();
     coreResult.finalUrl = coreResultDto.finalUrl;
-    coreResult.websiteId = coreResultDto.websiteId;
+    coreResult.website = coreResultDto.websiteId;
+    coreResult.finalUrlBaseDomain = coreResultDto.finalUrlBaseDomain;
+    coreResult.finalUrlIsLive = coreResultDto.finalUrlIsLive;
+    coreResult.targetUrlRedirects = coreResultDto.targetUrlRedirects;
 
     await service.create(coreResultDto);
     expect(mockRepository.save).toHaveBeenCalledWith(coreResult);
