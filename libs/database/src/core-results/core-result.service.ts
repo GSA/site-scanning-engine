@@ -29,12 +29,24 @@ export class CoreResultService {
   }
 
   async create(createCoreResultDto: CreateCoreResultDto) {
-    const coreResult = new CoreResult();
-    coreResult.website = createCoreResultDto.websiteId;
-    coreResult.finalUrl = createCoreResultDto.finalUrl;
-    coreResult.finalUrlIsLive = createCoreResultDto.finalUrlIsLive;
-    coreResult.finalUrlBaseDomain = createCoreResultDto.finalUrlBaseDomain;
-    coreResult.targetUrlRedirects = createCoreResultDto.targetUrlRedirects;
-    await this.coreResult.save(coreResult);
+    const result = await this.coreResult.findOne({
+      finalUrl: createCoreResultDto.finalUrl,
+    });
+
+    if (result) {
+      result.finalUrl = createCoreResultDto.finalUrl;
+      result.finalUrlBaseDomain = createCoreResultDto.finalUrlBaseDomain;
+      result.finalUrlIsLive = createCoreResultDto.finalUrlIsLive;
+      result.targetUrlRedirects = createCoreResultDto.targetUrlRedirects;
+      await this.coreResult.save(result);
+    } else {
+      const coreResult = new CoreResult();
+      coreResult.website = createCoreResultDto.websiteId;
+      coreResult.finalUrl = createCoreResultDto.finalUrl;
+      coreResult.finalUrlIsLive = createCoreResultDto.finalUrlIsLive;
+      coreResult.finalUrlBaseDomain = createCoreResultDto.finalUrlBaseDomain;
+      coreResult.targetUrlRedirects = createCoreResultDto.targetUrlRedirects;
+      await this.coreResult.save(coreResult);
+    }
   }
 }

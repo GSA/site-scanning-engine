@@ -15,9 +15,9 @@ export class TaskService {
     this.logger.setContext(TaskService.name);
   }
 
-  @Cron('46 * * * * *')
+  @Cron('*/10 * * * *')
   async coreScanProducer() {
-    this.logger.debug('Called at 46 seconds into every minute.');
+    this.logger.debug('Called every 10 minutes.');
 
     try {
       const websites = await this.websiteService.findAll();
