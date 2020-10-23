@@ -43,7 +43,7 @@ export class CoreScannerService
   // 18f.gsa.gov -> gsa.gov
   private getBaseDomain(url: string) {
     const parsedUrl = new URL(url);
-    const baseDomain = takeRight(split(parsedUrl.hostname), 2);
+    const baseDomain = takeRight(split(parsedUrl.hostname, '.'), 2);
     return join(baseDomain, '.');
   }
 
