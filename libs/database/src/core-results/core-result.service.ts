@@ -22,7 +22,7 @@ export class CoreResultService {
 
   async findResultsWithWebsite() {
     const result = await this.coreResult.find({
-      relations: ['websiteId'],
+      relations: ['website'],
     });
 
     return result;
@@ -30,8 +30,11 @@ export class CoreResultService {
 
   async create(createCoreResultDto: CreateCoreResultDto) {
     const coreResult = new CoreResult();
-    coreResult.websiteId = createCoreResultDto.websiteId;
+    coreResult.website = createCoreResultDto.websiteId;
     coreResult.finalUrl = createCoreResultDto.finalUrl;
+    coreResult.finalUrlIsLive = createCoreResultDto.finalUrlIsLive;
+    coreResult.finalUrlBaseDomain = createCoreResultDto.finalUrlBaseDomain;
+    coreResult.targetUrlRedirects = createCoreResultDto.targetUrlRedirects;
     await this.coreResult.save(coreResult);
   }
 }
