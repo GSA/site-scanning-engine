@@ -2,6 +2,7 @@ import { BROWSER_TOKEN } from '@app/browser';
 import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
+import { CoreOutputDto } from 'common/dtos/scanners/core.output.dto';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { CoreScannerService } from './core-scanner.service';
@@ -54,16 +55,25 @@ describe('CoreScannerService', () => {
     redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
     mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
     mockResponse.request.calledWith().mockReturnValue(mockRequest);
+    mockResponse.status.calledWith().mockReturnValue(200);
 
     mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
     mockPage.url.calledWith().mockReturnValue(finalUrl);
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
 
     const result = await service.scan(coreInputDto);
-    expect(result.finalUrl).toStrictEqual(finalUrl);
+    const expected: CoreOutputDto = {
+      websiteId: 1,
+      finalUrl: finalUrl,
+      finalUrlBaseDomain: 'gsa.gov',
+      finalUrlIsLive: true,
+      targetUrlRedirects: true,
+    };
+
+    expect(result).toStrictEqual(expected);
   });
 
-  it('closes the browser onModuleDestory lifecycle event', async () => {
+  it('closes the browser onModuleDestroy lifecycle event', async () => {
     await service.onModuleDestroy();
     expect(mockBrowser.close).toHaveBeenCalled();
   });
