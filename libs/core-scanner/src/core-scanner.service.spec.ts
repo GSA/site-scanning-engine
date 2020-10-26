@@ -15,6 +15,7 @@ describe('CoreScannerService', () => {
   let mockLogger: MockProxy<LoggerService>;
   let mockRequest: MockProxy<Request>;
   let redirectRequest: MockProxy<Request>;
+  const finalUrl = 'https://18f.gsa.gov';
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
@@ -23,6 +24,14 @@ describe('CoreScannerService', () => {
     mockLogger = mock<LoggerService>();
     mockRequest = mock<Request>();
     redirectRequest = mock<Request>();
+
+    redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
+    mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
+    mockResponse.request.calledWith().mockReturnValue(mockRequest);
+    mockResponse.status.calledWith().mockReturnValue(200);
+    mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
+    mockPage.url.calledWith().mockReturnValue(finalUrl);
+    mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -45,21 +54,11 @@ describe('CoreScannerService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return final url', async () => {
+  it('should return a CoreOutputDto with the correct fields', async () => {
     const coreInputDto: CoreInputDto = {
       websiteId: 1,
       url: 'https://18f.gov',
     };
-    const finalUrl = 'https://18f.gsa.gov';
-
-    redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
-    mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
-    mockResponse.request.calledWith().mockReturnValue(mockRequest);
-    mockResponse.status.calledWith().mockReturnValue(200);
-
-    mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
-    mockPage.url.calledWith().mockReturnValue(finalUrl);
-    mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
 
     const result = await service.scan(coreInputDto);
     const expected: CoreOutputDto = {
@@ -71,6 +70,17 @@ describe('CoreScannerService', () => {
     };
 
     expect(result).toStrictEqual(expected);
+  });
+
+  it('should close the page after scanning', async () => {
+    const coreInputDto: CoreInputDto = {
+      websiteId: 1,
+      url: 'https://18f.gov',
+    };
+    mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
+    await service.scan(coreInputDto);
+
+    expect(mockPage.close).toHaveBeenCalled();
   });
 
   it('closes the browser onModuleDestroy lifecycle event', async () => {
