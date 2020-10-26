@@ -21,8 +21,20 @@ export class Website {
   url: string;
 
   @Column()
+  type: string;
+
+  @Column()
   agency: string;
 
   @Column()
-  branch: string;
+  organization: string;
+
+  @Column()
+  city: string;
+
+  @Column()
+  state: string;
+
+  @Column()
+  securityContactEmail: string;
 }

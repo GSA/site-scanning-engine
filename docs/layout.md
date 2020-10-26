@@ -26,6 +26,7 @@ The libraries are:
 * [Database](../libs/database) which is responsible for all data access. 
 * [Message Queue](../libs/message-queue) which is responsible for handling the message queue.
 * [Logger](../libs/logger) which is responsible for handling application logging.
+* [Ingest](../libs/ingest) which is responsible for ingesting data into the system. Currently, it handles target urls.
 
 #### Adding a new Library
 To add a new library, use the Nest.js CLI to scaffold the library.

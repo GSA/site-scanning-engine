@@ -3,6 +3,10 @@
  */
 export class CreateWebsiteDto {
   url: string;
+  type: string;
   agency: string;
-  branch: string;
+  organization: string;
+  city: string;
+  state: string;
+  securityContactEmail: string;
 }
