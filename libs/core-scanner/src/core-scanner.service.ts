@@ -36,6 +36,9 @@ export class CoreScannerService
       finalUrlBaseDomain: this.getBaseDomain(finalUrl),
     };
 
+    await page.close();
+    this.logger.debug('closed puppeteer page');
+
     this.logger.debug(`result for ${input.url}: ${JSON.stringify(result)}`);
     return result;
   }
