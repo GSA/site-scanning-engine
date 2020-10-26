@@ -1,6 +1,8 @@
 import { Website } from '@app/database/websites/website.entity';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
+import { ConfigService } from '@nestjs/config';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
@@ -31,6 +33,14 @@ describe('TaskService', () => {
         {
           provide: LoggerService,
           useValue: loggerMock,
+        },
+        {
+          provide: ConfigService,
+          useValue: {},
+        },
+        {
+          provide: SchedulerRegistry,
+          useValue: {},
         },
       ],
     }).compile();

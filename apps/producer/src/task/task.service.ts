@@ -1,9 +1,11 @@
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { ConfigService } from '@nestjs/config';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
 import { ProducerService } from '../producer/producer.service';
+import { CronJob } from 'cron';
 
 @Injectable()
 export class TaskService {
@@ -11,15 +13,29 @@ export class TaskService {
     private producerService: ProducerService,
     private websiteService: WebsiteService,
     private logger: LoggerService,
+    private configService: ConfigService,
+    private scheduler: SchedulerRegistry,
   ) {
     this.logger.setContext(TaskService.name);
   }
 
-  @Cron('*/10 * * * *')
-  async coreScanProducer() {
-    this.logger.debug('Called every 10 minutes.');
+  async start() {
+    const schedule =
+      this.configService.get('CORE_SCAN_SCHEDULE') || '*/10 * * * *';
+    this.logger.debug(`using schedule ${schedule}`);
 
+    const job = new CronJob(schedule, async () => {
+      await this.coreScanProducer();
+    });
+
+    this.scheduler.addCronJob('core-scan', job);
+    job.start();
+  }
+
+  async coreScanProducer() {
     try {
+      await this.producerService.empty();
+
       const websites = await this.websiteService.findAll();
       websites.forEach(website => {
         const coreInput: CoreInputDto = {

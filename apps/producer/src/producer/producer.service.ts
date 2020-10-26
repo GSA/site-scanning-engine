@@ -22,7 +22,17 @@ export class ProducerService {
    * @returns a Bull.Job<any> object.
    */
   async addCoreJob(coreInput: CoreInputDto) {
-    const job = await this.scannerQueue.add(CORE_SCAN_JOB_NAME, coreInput);
+    const job = await this.scannerQueue.add(CORE_SCAN_JOB_NAME, coreInput, {
+      removeOnComplete: true,
+      attempts: 3,
+    });
     return job;
+  }
+
+  /**
+   * `empty` clears the queue. Note that stalled or delayed jobs are not emptied.
+   */
+  async empty() {
+    await this.scannerQueue.empty();
   }
 }

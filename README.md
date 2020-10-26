@@ -49,6 +49,7 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=<add a password here>
 QUEUE_HOST=localhost
 QUEUE_PORT=6379
+CORE_SCAN_SCHEDULE=* * * * *
 ```
 
 ### Docker
