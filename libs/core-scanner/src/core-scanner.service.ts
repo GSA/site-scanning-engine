@@ -19,8 +19,11 @@ export class CoreScannerService
   async scan(input: CoreInputDto) {
     const page = await this.browser.newPage();
 
-    this.logger.debug(`loading ${input.url}`);
-    const response = await page.goto(input.url);
+    const url = this.getHttpsUrls(input.url);
+
+    this.logger.debug(`loading ${url}`);
+
+    const response = await page.goto(url);
     const redirects = response.request().redirectChain();
 
     redirects.forEach(req => {
@@ -39,7 +42,7 @@ export class CoreScannerService
     await page.close();
     this.logger.debug('closed puppeteer page');
 
-    this.logger.debug(`result for ${input.url}: ${JSON.stringify(result)}`);
+    this.logger.debug(`result for ${url}: ${JSON.stringify(result)}`);
     return result;
   }
 
@@ -53,6 +56,14 @@ export class CoreScannerService
   private getFinalUrl(page: Page) {
     const finalUrl = page.url();
     return finalUrl;
+  }
+
+  private getHttpsUrls(url: string) {
+    if (!url.startsWith('https://')) {
+      return `https://${url.toLowerCase()}`;
+    } else {
+      return url.toLowerCase();
+    }
   }
 
   private isLive(res: Response) {

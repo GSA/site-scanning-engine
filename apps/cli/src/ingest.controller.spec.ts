@@ -23,8 +23,9 @@ describe('IngestController', () => {
   });
 
   describe('root', () => {
-    it('should call writeUrls', () => {
-      expect(ingestController.writeUrls).toHaveBeenCalled();
+    it('should writes Urls', async () => {
+      await ingestController.writeUrls();
+      expect(mockIngestService.writeUrls).toHaveBeenCalled();
     });
   });
 });
