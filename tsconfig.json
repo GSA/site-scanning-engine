@@ -41,6 +41,12 @@
       ],
       "@app/core-scanner/*": [
         "libs/core-scanner/src/*"
+      ],
+      "@app/ingest": [
+        "libs/ingest/src"
+      ],
+      "@app/ingest/*": [
+        "libs/ingest/src/*"
       ]
     }
   }

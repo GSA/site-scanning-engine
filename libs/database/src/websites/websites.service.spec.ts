@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { lookup } from 'dns';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
@@ -57,14 +56,22 @@ describe('WebsiteService', () => {
   it('should create a Website', async () => {
     const createWebsiteDto: CreateWebsiteDto = {
       url: 'https://18f.gov',
-      agency: 'GSA',
-      branch: 'Executive',
+      type: 'Federal Agency - Executive',
+      agency: 'General Services Administration',
+      organization: 'GSA,FAS,Technology Transformation Service',
+      city: 'Washington',
+      state: 'DC',
+      securityContactEmail: 'gsa-vulnerability-reports@gsa.gov',
     };
 
     const website = new Website();
     website.url = createWebsiteDto.url;
+    website.type = createWebsiteDto.type;
     website.agency = createWebsiteDto.agency;
-    website.branch = createWebsiteDto.branch;
+    website.organization = createWebsiteDto.organization;
+    website.city = createWebsiteDto.city;
+    website.state = createWebsiteDto.state;
+    website.securityContactEmail = createWebsiteDto.securityContactEmail;
 
     await service.create(createWebsiteDto);
     expect(mockRepository.save).toHaveBeenCalledWith(website);

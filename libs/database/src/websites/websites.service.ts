@@ -24,7 +24,12 @@ export class WebsiteService {
     const website = new Website();
     website.url = createWebsiteDto.url;
     website.agency = createWebsiteDto.agency;
-    website.branch = createWebsiteDto.branch;
+    website.organization = createWebsiteDto.organization;
+    website.type = createWebsiteDto.type;
+    website.city = createWebsiteDto.city;
+    website.state = createWebsiteDto.state;
+    website.securityContactEmail = createWebsiteDto.securityContactEmail;
+
     await this.website.save(website);
   }
 }

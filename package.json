@@ -9,6 +9,7 @@
     "rmdist": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
+    "ingest": "nest start cli -- ingest",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -18,11 +19,11 @@
     "start:all": "concurrently \"npm run start producer\" \"npm run start scan-engine\" \"npm run start api\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
-    "test:no-e2e": "jest --testPathIgnorePatterns ./apps/**/test/*",
+    "test:unit": "jest --testPathIgnorePatterns ./apps/**/test/*",
+    "test:e2e": "jest ./apps/**/test/",
     "test:watch": "jest --watch --testPathIgnorePatterns ./apps/**/test/*",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/**/test/jest-e2e.json"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
     "@nestjs/bull": "^0.2.2",
@@ -34,7 +35,9 @@
     "@nestjs/typeorm": "^7.1.4",
     "bull": "^3.18.0",
     "class-validator": "^0.12.2",
+    "commander": "^6.2.0",
     "cron": "^1.8.2",
+    "fast-csv": "^4.3.2",
     "http-status-codes": "^2.1.4",
     "lodash": "^4.17.20",
     "pg": "^8.4.0",
@@ -100,7 +103,9 @@
       "@app/browser/(.*)": "<rootDir>/libs/browser/src/$1",
       "@app/browser": "<rootDir>/libs/browser/src",
       "@app/core-scanner/(.*)": "<rootDir>/libs/core-scanner/src/$1",
-      "@app/core-scanner": "<rootDir>/libs/core-scanner/src"
+      "@app/core-scanner": "<rootDir>/libs/core-scanner/src",
+      "@app/ingest/(.*)": "<rootDir>/libs/ingest/src/$1",
+      "@app/ingest": "<rootDir>/libs/ingest/src"
     }
   }
 }

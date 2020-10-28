@@ -6,6 +6,6 @@ import { WebsiteService } from './websites.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Website])],
   providers: [WebsiteService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, WebsiteService],
 })
 export class WebsiteModule {}
