@@ -8,6 +8,7 @@ The current applications are:
 * [The Scan Engine](../apps/scan-engine) which listens to the message queue and routes work to the appropriate scanner.
 * [The  Producer](../apps/producer) which uses CRON to schedule jobs on the message queue. 
 * [The API](../apps/api) which is responsible for managing HTTPS access to the data.
+* [The CLI](../apps/cli) which is a general purpose CLI for interacting with the site scanner components. Currently used to ingest the Target URLs that the site scanner uses.
 
 See each of the applications' `README.md`s for more info.
 
