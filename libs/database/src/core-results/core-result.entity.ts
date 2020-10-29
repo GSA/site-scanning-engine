@@ -2,7 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,9 +33,7 @@ export class CoreResult {
   @Column()
   targetUrlRedirects: boolean;
 
-  @ManyToOne(
-    () => Website,
-    website => website.id,
-  )
-  website: number;
+  @OneToOne(() => Website)
+  @JoinColumn()
+  website: Website;
 }

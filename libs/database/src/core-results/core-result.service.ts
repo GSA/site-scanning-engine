@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Website } from '../websites/website.entity';
 import { CoreResult } from './core-result.entity';
 import { CreateCoreResultDto } from './dto/create-core-result.dto';
 
@@ -41,7 +42,9 @@ export class CoreResultService {
       await this.coreResult.save(result);
     } else {
       const coreResult = new CoreResult();
-      coreResult.website = createCoreResultDto.websiteId;
+      const website = new Website();
+      website.id = createCoreResultDto.websiteId;
+      coreResult.website = website;
       coreResult.finalUrl = createCoreResultDto.finalUrl;
       coreResult.finalUrlIsLive = createCoreResultDto.finalUrlIsLive;
       coreResult.finalUrlBaseDomain = createCoreResultDto.finalUrlBaseDomain;
