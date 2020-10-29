@@ -4,7 +4,7 @@ import { LoggerService } from '@app/logger';
 import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
-import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 /**
  * ScanEngineConsumer is a consumer of the Scanner message queue.

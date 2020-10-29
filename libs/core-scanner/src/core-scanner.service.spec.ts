@@ -1,11 +1,11 @@
 import { BROWSER_TOKEN } from '@app/browser';
 import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
-import { CoreOutputDto } from 'common/dtos/scanners/core.output.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { CoreScannerService } from './core-scanner.service';
+import { CoreOutputDto } from './core.output.dto';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;

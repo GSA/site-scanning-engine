@@ -1,12 +1,12 @@
 import { BROWSER_TOKEN } from '@app/browser';
 import { LoggerService } from '@app/logger';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
-import { CoreOutputDto } from 'common/dtos/scanners/core.output.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { join, split, takeRight } from 'lodash';
 import { Browser, Page, Response } from 'puppeteer';
 import { URL } from 'url';
+import { CoreOutputDto } from './core.output.dto';
 
 @Injectable()
 export class CoreScannerService

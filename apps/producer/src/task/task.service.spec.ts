@@ -4,7 +4,7 @@ import { LoggerService } from '@app/logger';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
 import { ProducerService } from '../producer/producer.service';
 import { TaskService } from './task.service';
