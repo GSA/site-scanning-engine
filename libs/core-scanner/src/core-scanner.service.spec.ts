@@ -65,6 +65,7 @@ describe('CoreScannerService', () => {
       websiteId: 1,
       finalUrl: finalUrl,
       finalUrlBaseDomain: 'gsa.gov',
+      targetUrlBaseDomain: '18f.gov',
       finalUrlIsLive: true,
       targetUrlRedirects: true,
     };

@@ -35,6 +35,7 @@ export class CoreScannerService
       websiteId: input.websiteId,
       targetUrlRedirects: redirects.length > 0,
       finalUrl: finalUrl,
+      targetUrlBaseDomain: this.getBaseDomain(url),
       finalUrlIsLive: this.isLive(response),
       finalUrlBaseDomain: this.getBaseDomain(finalUrl),
     };

@@ -3,5 +3,6 @@ export class CoreOutputDto {
   finalUrl: string;
   finalUrlIsLive: boolean;
   finalUrlBaseDomain: string;
+  targetUrlBaseDomain: string;
   targetUrlRedirects: boolean;
 }
