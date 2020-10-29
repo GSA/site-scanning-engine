@@ -35,6 +35,7 @@ export class CoreScannerService
       websiteId: input.websiteId,
       targetUrlRedirects: redirects.length > 0,
       finalUrl: finalUrl,
+      finalUrlMIMEType: this.getMIMEType(response),
       targetUrlBaseDomain: this.getBaseDomain(url),
       finalUrlIsLive: this.isLive(response),
       finalUrlBaseDomain: this.getBaseDomain(finalUrl),
@@ -57,6 +58,15 @@ export class CoreScannerService
   private getFinalUrl(page: Page) {
     const finalUrl = page.url();
     return finalUrl;
+  }
+
+  private getMIMEType(res: Response) {
+    const headers = res.headers();
+    if (headers['Content-Type'] || headers['content-type']) {
+      return headers['Content-Type'] || headers['content-type'];
+    } else {
+      return '';
+    }
   }
 
   private getHttpsUrls(url: string) {

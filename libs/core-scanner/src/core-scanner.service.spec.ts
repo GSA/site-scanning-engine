@@ -29,6 +29,9 @@ describe('CoreScannerService', () => {
     mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
     mockResponse.request.calledWith().mockReturnValue(mockRequest);
     mockResponse.status.calledWith().mockReturnValue(200);
+    mockResponse.headers.calledWith().mockReturnValue({
+      'Content-Type': 'text/html',
+    });
     mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
     mockPage.url.calledWith().mockReturnValue(finalUrl);
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
@@ -67,6 +70,7 @@ describe('CoreScannerService', () => {
       finalUrlBaseDomain: 'gsa.gov',
       targetUrlBaseDomain: '18f.gov',
       finalUrlIsLive: true,
+      finalUrlMIMEType: 'text/html',
       targetUrlRedirects: true,
     };
 
