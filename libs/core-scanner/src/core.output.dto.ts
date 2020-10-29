@@ -7,4 +7,5 @@ export class CoreOutputDto {
   targetUrlRedirects: boolean;
   finalUrlMIMEType: string;
   finalUrlSameDomain: boolean;
+  finalUrlSameWebsite: boolean;
 }

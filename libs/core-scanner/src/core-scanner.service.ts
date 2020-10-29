@@ -41,6 +41,9 @@ export class CoreScannerService
       finalUrlBaseDomain: this.getBaseDomain(finalUrl),
       finalUrlSameDomain:
         this.getBaseDomain(finalUrl) === this.getBaseDomain(url),
+      finalUrlSameWebsite:
+        this.getPathname(finalUrl) === this.getPathname(url) &&
+        this.getBaseDomain(finalUrl) == this.getBaseDomain(url),
     };
 
     await page.close();
@@ -69,6 +72,11 @@ export class CoreScannerService
     } else {
       return '';
     }
+  }
+
+  private getPathname(url: string) {
+    const parsed = new URL(url);
+    return parsed.pathname;
   }
 
   private getHttpsUrls(url: string) {

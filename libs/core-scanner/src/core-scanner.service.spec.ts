@@ -73,6 +73,7 @@ describe('CoreScannerService', () => {
       finalUrlMIMEType: 'text/html',
       targetUrlRedirects: true,
       finalUrlSameDomain: false,
+      finalUrlSameWebsite: false,
     };
 
     expect(result).toStrictEqual(expected);
