@@ -39,6 +39,8 @@ export class CoreScannerService
       targetUrlBaseDomain: this.getBaseDomain(url),
       finalUrlIsLive: this.isLive(response),
       finalUrlBaseDomain: this.getBaseDomain(finalUrl),
+      finalUrlSameDomain:
+        this.getBaseDomain(finalUrl) === this.getBaseDomain(url),
     };
 
     await page.close();

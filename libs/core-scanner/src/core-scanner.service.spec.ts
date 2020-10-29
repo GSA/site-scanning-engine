@@ -72,6 +72,7 @@ describe('CoreScannerService', () => {
       finalUrlIsLive: true,
       finalUrlMIMEType: 'text/html',
       targetUrlRedirects: true,
+      finalUrlSameDomain: false,
     };
 
     expect(result).toStrictEqual(expected);

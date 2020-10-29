@@ -6,4 +6,5 @@ export class CoreOutputDto {
   targetUrlBaseDomain: string;
   targetUrlRedirects: boolean;
   finalUrlMIMEType: string;
+  finalUrlSameDomain: boolean;
 }
