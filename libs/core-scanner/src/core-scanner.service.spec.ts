@@ -74,6 +74,7 @@ describe('CoreScannerService', () => {
       targetUrlRedirects: true,
       finalUrlSameDomain: false,
       finalUrlSameWebsite: false,
+      finalUrlStatusCode: 200,
     };
 
     expect(result).toStrictEqual(expected);
