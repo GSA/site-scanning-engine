@@ -5,6 +5,7 @@ export class CreateCoreResultDto {
   finalUrlBaseDomain: string;
   finalUrlMIMEType: string;
   finalUrlSameDomain: boolean;
+  finalUrlStatusCode: number;
   finalUrlSameWebsite: boolean;
   targetUrlBaseDomain: string;
   targetUrlRedirects: boolean;

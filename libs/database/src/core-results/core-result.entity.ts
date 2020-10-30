@@ -36,6 +36,9 @@ export class CoreResult {
   finalUrlSameDomain: boolean;
 
   @Column()
+  finalUrlStatusCode: number;
+
+  @Column()
   finalUrlSameWebsite: boolean;
 
   @Column()

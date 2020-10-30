@@ -54,6 +54,7 @@ export class ScanEngineConsumer {
         finalUrlMIMEType: result.finalUrlMIMEType,
         finalUrlSameDomain: result.finalUrlSameDomain,
         finalUrlSameWebsite: result.finalUrlSameWebsite,
+        finalUrlStatusCode: result.finalUrlStatusCode,
         targetUrlBaseDomain: result.targetUrlBaseDomain,
         targetUrlRedirects: result.targetUrlRedirects,
       };

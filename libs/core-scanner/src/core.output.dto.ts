@@ -3,9 +3,10 @@ export class CoreOutputDto {
   finalUrl: string;
   finalUrlIsLive: boolean;
   finalUrlBaseDomain: string;
-  targetUrlBaseDomain: string;
-  targetUrlRedirects: boolean;
   finalUrlMIMEType: string;
   finalUrlSameDomain: boolean;
   finalUrlSameWebsite: boolean;
+  finalUrlStatusCode: number;
+  targetUrlBaseDomain: string;
+  targetUrlRedirects: boolean;
 }

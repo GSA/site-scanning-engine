@@ -26,10 +26,6 @@ export class CoreScannerService
     const response = await page.goto(url);
     const redirects = response.request().redirectChain();
 
-    redirects.forEach(req => {
-      this.logger.debug(req.url());
-    });
-
     const finalUrl = this.getFinalUrl(page);
     const result: CoreOutputDto = {
       websiteId: input.websiteId,
@@ -44,6 +40,7 @@ export class CoreScannerService
       finalUrlSameWebsite:
         this.getPathname(finalUrl) === this.getPathname(url) &&
         this.getBaseDomain(finalUrl) == this.getBaseDomain(url),
+      finalUrlStatusCode: response.status(),
     };
 
     await page.close();
@@ -70,7 +67,7 @@ export class CoreScannerService
     if (headers['Content-Type'] || headers['content-type']) {
       return headers['Content-Type'] || headers['content-type'];
     } else {
-      return '';
+      return 'unknown';
     }
   }
 

@@ -41,6 +41,7 @@ export class CoreResultService {
       result.finalUrlMIMEType = createCoreResultDto.finalUrlMIMEType;
       result.finalUrlSameDomain = createCoreResultDto.finalUrlSameDomain;
       result.finalUrlSameWebsite = createCoreResultDto.finalUrlSameWebsite;
+      result.finalUrlStatusCode = createCoreResultDto.finalUrlStatusCode;
       result.targetUrlBaseDomain = createCoreResultDto.targetUrlBaseDomain;
       result.targetUrlRedirects = createCoreResultDto.targetUrlRedirects;
       await this.coreResult.save(result);
@@ -55,6 +56,7 @@ export class CoreResultService {
       coreResult.finalUrlMIMEType = createCoreResultDto.finalUrlMIMEType;
       coreResult.finalUrlSameDomain = createCoreResultDto.finalUrlSameDomain;
       coreResult.finalUrlSameWebsite = createCoreResultDto.finalUrlSameWebsite;
+      coreResult.finalUrlStatusCode = createCoreResultDto.finalUrlStatusCode;
       coreResult.targetUrlBaseDomain = createCoreResultDto.targetUrlBaseDomain;
       coreResult.targetUrlRedirects = createCoreResultDto.targetUrlRedirects;
       await this.coreResult.save(coreResult);
