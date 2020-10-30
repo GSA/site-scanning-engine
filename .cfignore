@@ -1,7 +1,20 @@
-# ignore everything
-.
+README.md
+common
+coverage
+deploy-cloudgov.sh
+docker-compose.yml
+docs
+libs
+manifest.yml
+nest-cli.json
+node_modules
+tsconfig.build.json
+tsconfig.json
 
-# except these
-!dist
-!package.json
-!package-lock.json
+.cfignore
+.dockerignore
+.env
+.eslintrc.js
+.gitignore
+.nvmrc
+.prettierrc
