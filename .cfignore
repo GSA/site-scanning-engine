@@ -1,14 +1,13 @@
 README.md
-apps/
-common/
-coverage/
-deploy-cloudgov.sh/
+common
+coverage
+deploy-cloudgov.sh
 docker-compose.yml
-docs/
-libs/
+docs
+libs
 manifest.yml
 nest-cli.json
-node_modules/
+node_modules
 tsconfig.build.json
 tsconfig.json
 
