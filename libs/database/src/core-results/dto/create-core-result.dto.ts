@@ -3,5 +3,9 @@ export class CreateCoreResultDto {
   finalUrl: string;
   finalUrlIsLive: boolean;
   finalUrlBaseDomain: string;
+  finalUrlMIMEType: string;
+  finalUrlSameDomain: boolean;
+  finalUrlSameWebsite: boolean;
+  targetUrlBaseDomain: string;
   targetUrlRedirects: boolean;
 }

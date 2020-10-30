@@ -36,8 +36,12 @@ export class CoreResultService {
 
     if (result) {
       result.finalUrl = createCoreResultDto.finalUrl;
-      result.finalUrlBaseDomain = createCoreResultDto.finalUrlBaseDomain;
       result.finalUrlIsLive = createCoreResultDto.finalUrlIsLive;
+      result.finalUrlBaseDomain = createCoreResultDto.finalUrlBaseDomain;
+      result.finalUrlMIMEType = createCoreResultDto.finalUrlMIMEType;
+      result.finalUrlSameDomain = createCoreResultDto.finalUrlSameDomain;
+      result.finalUrlSameWebsite = createCoreResultDto.finalUrlSameWebsite;
+      result.targetUrlBaseDomain = createCoreResultDto.targetUrlBaseDomain;
       result.targetUrlRedirects = createCoreResultDto.targetUrlRedirects;
       await this.coreResult.save(result);
     } else {
@@ -48,6 +52,10 @@ export class CoreResultService {
       coreResult.finalUrl = createCoreResultDto.finalUrl;
       coreResult.finalUrlIsLive = createCoreResultDto.finalUrlIsLive;
       coreResult.finalUrlBaseDomain = createCoreResultDto.finalUrlBaseDomain;
+      coreResult.finalUrlMIMEType = createCoreResultDto.finalUrlMIMEType;
+      coreResult.finalUrlSameDomain = createCoreResultDto.finalUrlSameDomain;
+      coreResult.finalUrlSameWebsite = createCoreResultDto.finalUrlSameWebsite;
+      coreResult.targetUrlBaseDomain = createCoreResultDto.targetUrlBaseDomain;
       coreResult.targetUrlRedirects = createCoreResultDto.targetUrlRedirects;
       await this.coreResult.save(coreResult);
     }

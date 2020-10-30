@@ -88,7 +88,8 @@ export class CoreScannerService
   }
 
   private isLive(res: Response) {
-    const isLive = res.status() / 100 == 2; // 2xx family
+    const isLive = res.status() / 100 === 2; // 2xx family
+    this.logger.debug(`status for ${res.url()} is ${res.status()}`);
     return isLive;
   }
 

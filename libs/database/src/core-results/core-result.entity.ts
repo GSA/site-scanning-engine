@@ -30,6 +30,18 @@ export class CoreResult {
   finalUrlBaseDomain: string;
 
   @Column()
+  finalUrlMIMEType: string;
+
+  @Column()
+  finalUrlSameDomain: boolean;
+
+  @Column()
+  finalUrlSameWebsite: boolean;
+
+  @Column()
+  targetUrlBaseDomain: string;
+
+  @Column()
   targetUrlRedirects: boolean;
 
   @OneToOne(() => Website)
