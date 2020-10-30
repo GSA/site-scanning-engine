@@ -68,5 +68,3 @@ describe('WebsiteController', () => {
     });
   });
 });
-
-// 18F.GOV,Federal Agency - Executive,General Services Administration,"GSA,FAS,Technology Transformation Service",Washington,DC,gsa-vulnerability-reports@gsa.gov
