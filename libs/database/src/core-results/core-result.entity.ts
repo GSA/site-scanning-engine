@@ -2,7 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -29,11 +30,24 @@ export class CoreResult {
   finalUrlBaseDomain: string;
 
   @Column()
+  finalUrlMIMEType: string;
+
+  @Column()
+  finalUrlSameDomain: boolean;
+
+  @Column()
+  finalUrlStatusCode: number;
+
+  @Column()
+  finalUrlSameWebsite: boolean;
+
+  @Column()
+  targetUrlBaseDomain: string;
+
+  @Column()
   targetUrlRedirects: boolean;
 
-  @ManyToOne(
-    () => Website,
-    website => website.id,
-  )
-  website: number;
+  @OneToOne(() => Website)
+  @JoinColumn()
+  website: Website;
 }

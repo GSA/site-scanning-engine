@@ -2,7 +2,7 @@ import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import { getQueueToken } from '@nestjs/bull';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Queue, Job } from 'bull';
-import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { ProducerService } from './producer.service';
 

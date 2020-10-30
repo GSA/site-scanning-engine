@@ -2,6 +2,9 @@ import { CoreResultService } from '@app/database/core-results/core-result.servic
 import { CreateWebsiteDto } from '@app/database/websites/dto/create-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { map } from 'lodash';
+import { WebsiteResult } from './website-result.dto';
+import { fromCoreResult } from './website-result.mapper';
 
 @Controller('websites')
 export class WebsiteController {
@@ -11,9 +14,10 @@ export class WebsiteController {
   ) {}
 
   @Get()
-  async getResults() {
+  async getResults(): Promise<WebsiteResult[]> {
     const websites = await this.coreResultService.findResultsWithWebsite();
-    return websites;
+    const res = map(websites, fromCoreResult);
+    return res;
   }
 
   @Post()

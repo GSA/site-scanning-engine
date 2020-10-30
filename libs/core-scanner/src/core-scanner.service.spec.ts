@@ -1,11 +1,11 @@
 import { BROWSER_TOKEN } from '@app/browser';
 import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
-import { CoreOutputDto } from 'common/dtos/scanners/core.output.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { CoreScannerService } from './core-scanner.service';
+import { CoreOutputDto } from './core.output.dto';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
@@ -29,6 +29,9 @@ describe('CoreScannerService', () => {
     mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
     mockResponse.request.calledWith().mockReturnValue(mockRequest);
     mockResponse.status.calledWith().mockReturnValue(200);
+    mockResponse.headers.calledWith().mockReturnValue({
+      'Content-Type': 'text/html',
+    });
     mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
     mockPage.url.calledWith().mockReturnValue(finalUrl);
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
@@ -65,8 +68,13 @@ describe('CoreScannerService', () => {
       websiteId: 1,
       finalUrl: finalUrl,
       finalUrlBaseDomain: 'gsa.gov',
+      targetUrlBaseDomain: '18f.gov',
       finalUrlIsLive: true,
+      finalUrlMIMEType: 'text/html',
       targetUrlRedirects: true,
+      finalUrlSameDomain: false,
+      finalUrlSameWebsite: false,
+      finalUrlStatusCode: 200,
     };
 
     expect(result).toStrictEqual(expected);

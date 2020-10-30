@@ -1,12 +1,12 @@
 import { BROWSER_TOKEN } from '@app/browser';
 import { LoggerService } from '@app/logger';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
-import { CoreOutputDto } from 'common/dtos/scanners/core.output.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { join, split, takeRight } from 'lodash';
 import { Browser, Page, Response } from 'puppeteer';
 import { URL } from 'url';
+import { CoreOutputDto } from './core.output.dto';
 
 @Injectable()
 export class CoreScannerService
@@ -26,17 +26,21 @@ export class CoreScannerService
     const response = await page.goto(url);
     const redirects = response.request().redirectChain();
 
-    redirects.forEach(req => {
-      this.logger.debug(req.url());
-    });
-
     const finalUrl = this.getFinalUrl(page);
     const result: CoreOutputDto = {
       websiteId: input.websiteId,
       targetUrlRedirects: redirects.length > 0,
       finalUrl: finalUrl,
+      finalUrlMIMEType: this.getMIMEType(response),
+      targetUrlBaseDomain: this.getBaseDomain(url),
       finalUrlIsLive: this.isLive(response),
       finalUrlBaseDomain: this.getBaseDomain(finalUrl),
+      finalUrlSameDomain:
+        this.getBaseDomain(finalUrl) === this.getBaseDomain(url),
+      finalUrlSameWebsite:
+        this.getPathname(finalUrl) === this.getPathname(url) &&
+        this.getBaseDomain(finalUrl) == this.getBaseDomain(url),
+      finalUrlStatusCode: response.status(),
     };
 
     await page.close();
@@ -58,6 +62,20 @@ export class CoreScannerService
     return finalUrl;
   }
 
+  private getMIMEType(res: Response) {
+    const headers = res.headers();
+    if (headers['Content-Type'] || headers['content-type']) {
+      return headers['Content-Type'] || headers['content-type'];
+    } else {
+      return 'unknown';
+    }
+  }
+
+  private getPathname(url: string) {
+    const parsed = new URL(url);
+    return parsed.pathname;
+  }
+
   private getHttpsUrls(url: string) {
     if (!url.startsWith('https://')) {
       return `https://${url.toLowerCase()}`;
@@ -67,7 +85,8 @@ export class CoreScannerService
   }
 
   private isLive(res: Response) {
-    const isLive = res.status() / 100 == 2; // 2xx family
+    const isLive = res.status() / 100 === 2; // 2xx family
+    this.logger.debug(`status for ${res.url()} is ${res.status()}`);
     return isLive;
   }
 

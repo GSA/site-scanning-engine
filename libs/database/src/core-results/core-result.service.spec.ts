@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
+import { Website } from '../websites/website.entity';
 import { CoreResult } from './core-result.entity';
 import { CoreResultService } from './core-result.service';
 import { CreateCoreResultDto } from './dto/create-core-result.dto';
@@ -35,7 +36,8 @@ describe('CoreResultService', () => {
 
   it('should return all CoreResults', async () => {
     const coreResult = new CoreResult();
-    coreResult.website = 1;
+    coreResult.website = new Website();
+
     coreResult.finalUrl = 'https://18f.gsa.gov';
 
     const expected = [coreResult];
@@ -66,8 +68,10 @@ describe('CoreResultService', () => {
     };
 
     const coreResult = new CoreResult();
+    const website = new Website();
+    website.id = 1;
     coreResult.finalUrl = coreResultDto.finalUrl;
-    coreResult.website = coreResultDto.websiteId;
+    coreResult.website = website;
     coreResult.finalUrlBaseDomain = coreResultDto.finalUrlBaseDomain;
     coreResult.finalUrlIsLive = coreResultDto.finalUrlIsLive;
     coreResult.targetUrlRedirects = coreResultDto.targetUrlRedirects;

@@ -3,7 +3,7 @@ import { LoggerService } from '@app/logger';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { CoreInputDto } from 'common/dtos/scanners/core.input.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { ProducerService } from '../producer/producer.service';
 import { CronJob } from 'cron';
 
