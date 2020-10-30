@@ -8,7 +8,7 @@ applications:
   memory: 500M
   instances: 1
   random-route: true
-  command: node dist/apps/api/main
+  command: npm run start:prod:api
 
 - name: site-scanner-producer
   disk_quota: 4096M
@@ -18,8 +18,11 @@ applications:
   memory: 500M
   instances: 1
   no-route: true
-  command: node dist/apps/producer/main
+  command: npm run start:prod:producer
   health-check-type: process
+  env:
+    CORE_SCANNER_SCHEDULE: "15 * * * *"
+
 
 - name: site-scanner-consumer
   disk_quota: 4096M
@@ -32,5 +35,5 @@ applications:
     - https://github.com/cloudfoundry/nodejs-buildpack/
   instances: 2
   no-route: true
-  command: node dist/apps/scan-engine/main
+  command: npm run start:prod:scan-engine
   health-check-type: process

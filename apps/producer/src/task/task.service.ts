@@ -21,7 +21,7 @@ export class TaskService {
 
   async start() {
     const schedule =
-      this.configService.get('CORE_SCAN_SCHEDULE') || '*/10 * * * *';
+      this.configService.get('CORE_SCAN_SCHEDULE') || '0 8 * * *';
     this.logger.debug(`using schedule ${schedule}`);
 
     const job = new CronJob(schedule, async () => {
