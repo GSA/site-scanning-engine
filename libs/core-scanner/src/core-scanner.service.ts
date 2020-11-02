@@ -65,7 +65,9 @@ export class CoreScannerService
   private getMIMEType(res: Response) {
     const headers = res.headers();
     if (headers['Content-Type'] || headers['content-type']) {
-      return headers['Content-Type'] || headers['content-type'];
+      const contentType = headers['Content-Type'] || headers['content-type'];
+      const mimetype = split(contentType, ';')[0];
+      return mimetype;
     } else {
       return 'unknown';
     }

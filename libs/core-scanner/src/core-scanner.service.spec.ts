@@ -30,7 +30,7 @@ describe('CoreScannerService', () => {
     mockResponse.request.calledWith().mockReturnValue(mockRequest);
     mockResponse.status.calledWith().mockReturnValue(200);
     mockResponse.headers.calledWith().mockReturnValue({
-      'Content-Type': 'text/html',
+      'Content-Type': 'text/html; charset=utf-8',
     });
     mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
     mockPage.url.calledWith().mockReturnValue(finalUrl);
