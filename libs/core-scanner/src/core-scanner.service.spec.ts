@@ -7,6 +7,7 @@ import { Browser, Page, Response, Request } from 'puppeteer';
 import { CoreScannerService } from './core-scanner.service';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
+import { ScanStatus } from './scan-status';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
@@ -69,6 +70,7 @@ describe('CoreScannerService', () => {
 
     const result = await service.scan(coreInputDto);
     const expected = new CoreResult();
+    expected.status = ScanStatus.Completed;
     expected.finalUrl = 'https://18f.gsa.gov';
     expected.finalUrlBaseDomain = 'gsa.gov';
     expected.finalUrlIsLive = true;

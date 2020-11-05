@@ -27,6 +27,9 @@ export class CoreResult {
   @Column()
   targetUrlBaseDomain: string;
 
+  @Column()
+  status: string;
+
   @Column({ nullable: true })
   finalUrl?: string;
 

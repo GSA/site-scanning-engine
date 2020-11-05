@@ -3,11 +3,12 @@ import { LoggerService } from '@app/logger';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Scanner } from 'common/interfaces/scanner.interface';
-import { join, split, takeRight } from 'lodash';
+import { join, split, takeRight, some, includes } from 'lodash';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { URL } from 'url';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
+import { ScanStatus } from './scan-status';
 
 @Injectable()
 export class CoreScannerService
@@ -21,33 +22,52 @@ export class CoreScannerService
     const page = await this.browser.newPage();
     const url = this.getHttpsUrls(input.url);
 
-    // load the url
-    this.logger.debug(`loading ${url}`);
-    const response = await page.goto(url);
-
-    const redirectChain = response.request().redirectChain();
-
-    // calculate the finalUrl
-    const finalUrl = this.getFinalUrl(page);
-
     const result = new CoreResult();
     const website = new Website();
     website.id = input.websiteId;
 
-    // construct the CoreResult from the scan fields
-    result.website = website;
-    result.targetUrlRedirects = this.redirects(redirectChain);
-    result.targetUrlBaseDomain = this.getBaseDomain(url);
-    result.finalUrl = finalUrl;
-    result.finalUrlMIMEType = this.getMIMEType(response);
-    result.finalUrlIsLive = this.isLive(response);
-    result.finalUrlBaseDomain = this.getBaseDomain(finalUrl);
-    result.finalUrlSameDomain =
-      this.getBaseDomain(url) === this.getBaseDomain(finalUrl);
-    result.finalUrlSameWebsite =
-      this.getPathname(url) == this.getPathname(finalUrl) &&
-      this.getBaseDomain(url) == this.getBaseDomain(finalUrl);
-    result.finalUrlStatusCode = response.status();
+    try {
+      // load the url
+      this.logger.debug(`loading ${url}`);
+      const response = await page.goto(url);
+      const redirectChain = response.request().redirectChain();
+
+      // calculate the finalUrl
+      const finalUrl = this.getFinalUrl(page);
+
+      // construct the CoreResult from the scan fields
+      result.website = website;
+      result.targetUrlRedirects = this.redirects(redirectChain);
+      result.targetUrlBaseDomain = this.getBaseDomain(url);
+      result.finalUrl = finalUrl;
+      result.finalUrlMIMEType = this.getMIMEType(response);
+      result.finalUrlIsLive = this.isLive(response);
+      result.finalUrlBaseDomain = this.getBaseDomain(finalUrl);
+      result.finalUrlSameDomain =
+        this.getBaseDomain(url) === this.getBaseDomain(finalUrl);
+      result.finalUrlSameWebsite =
+        this.getPathname(url) == this.getPathname(finalUrl) &&
+        this.getBaseDomain(url) == this.getBaseDomain(finalUrl);
+      result.finalUrlStatusCode = response.status();
+      result.status = ScanStatus.Completed;
+    } catch (e) {
+      const err = e as Error;
+      result.website = website;
+      result.targetUrlBaseDomain = this.getBaseDomain(url);
+
+      const dnsError = some(err.message, el =>
+        includes('ERR_NAME_NOT_RESOLVED', el),
+      );
+
+      if (err.name == 'TimeoutError') {
+        result.status = ScanStatus.Timeout;
+      } else if (dnsError) {
+        result.status = ScanStatus.DNSResolutionError;
+      } else {
+        this.logger.error(err.message, err.stack);
+        result.status = ScanStatus.UnknownError;
+      }
+    }
 
     await page.close();
     this.logger.debug('closed puppeteer page');

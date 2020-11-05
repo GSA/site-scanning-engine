@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { result } from 'lodash';
 import { Repository } from 'typeorm';
 import { CoreResult } from '../../../../entities/core-result.entity';
 
