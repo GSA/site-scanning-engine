@@ -20,34 +20,34 @@ export class CoreResult {
   @UpdateDateColumn()
   updated: string;
 
-  @Column()
-  finalUrl: string;
-
-  @Column()
-  finalUrlIsLive: boolean;
-
-  @Column()
-  finalUrlBaseDomain: string;
-
-  @Column()
-  finalUrlMIMEType: string;
-
-  @Column()
-  finalUrlSameDomain: boolean;
-
-  @Column()
-  finalUrlStatusCode: number;
-
-  @Column()
-  finalUrlSameWebsite: boolean;
+  @OneToOne(() => Website)
+  @JoinColumn()
+  website: Website;
 
   @Column()
   targetUrlBaseDomain: string;
 
-  @Column()
-  targetUrlRedirects: boolean;
+  @Column({ nullable: true })
+  finalUrl?: string;
 
-  @OneToOne(() => Website)
-  @JoinColumn()
-  website: Website;
+  @Column({ nullable: true })
+  finalUrlIsLive?: boolean;
+
+  @Column({ nullable: true })
+  finalUrlBaseDomain?: string;
+
+  @Column({ nullable: true })
+  finalUrlMIMEType?: string;
+
+  @Column({ nullable: true })
+  finalUrlSameDomain?: boolean;
+
+  @Column({ nullable: true })
+  finalUrlStatusCode?: number;
+
+  @Column({ nullable: true })
+  finalUrlSameWebsite?: boolean;
+
+  @Column({ nullable: true })
+  targetUrlRedirects?: boolean;
 }
