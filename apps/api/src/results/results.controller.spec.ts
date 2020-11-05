@@ -1,6 +1,6 @@
-import { CoreResult } from '@app/database/core-results/core-result.entity';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CoreResult } from 'entities/core-result.entity';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { ResultsController } from './results.controller';
 

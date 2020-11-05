@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
-import { Website } from './website.entity';
+import { Website } from '../../../../entities/website.entity';
 import { WebsiteService } from './websites.service';
 
 describe('WebsiteService', () => {

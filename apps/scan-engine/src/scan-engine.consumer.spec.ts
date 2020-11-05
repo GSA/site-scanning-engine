@@ -3,23 +3,22 @@ import { mock, mockReset, MockProxy } from 'jest-mock-extended';
 import { ScanEngineConsumer } from './scan-engine.consumer';
 import { Job } from 'bull';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
-import { CreateCoreResultDto } from '@app/database/core-results/dto/create-core-result.dto';
 import { LoggerService } from '@app/logger';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { CoreScannerService } from '@app/core-scanner';
-import { CoreOutputDto } from '@app/core-scanner/core.output.dto';
+import { CoreResult } from 'entities/core-result.entity';
 
 describe('ScanEngineConsumer', () => {
   let consumer: ScanEngineConsumer;
   let module: TestingModule;
-  let mockCoreScanner: MockProxy<Scanner<CoreInputDto, CoreOutputDto>>;
+  let mockCoreScanner: MockProxy<Scanner<CoreInputDto, CoreResult>>;
   let mockCoreResultService: MockProxy<CoreResultService>;
   let mockJob: MockProxy<Job<CoreInputDto>>;
   let mockLogger: MockProxy<LoggerService>;
 
   beforeEach(async () => {
-    mockCoreScanner = mock<Scanner<CoreInputDto, CoreOutputDto>>();
+    mockCoreScanner = mock<Scanner<CoreInputDto, CoreResult>>();
     mockCoreResultService = mock<CoreResultService>();
     mockJob = mock<Job<CoreInputDto>>();
     mockLogger = mock<LoggerService>();
@@ -60,30 +59,15 @@ describe('ScanEngineConsumer', () => {
       url: 'https://18f.gov',
     };
 
-    const coreOutputDto: CoreOutputDto = {
-      websiteId: input.websiteId,
-      finalUrl: 'https://18f.gsa.gov',
-      finalUrlIsLive: true,
-      finalUrlBaseDomain: 'gsa.gov',
-      targetUrlRedirects: true,
-    };
-
-    const createCoreResultDto: CreateCoreResultDto = {
-      websiteId: coreOutputDto.websiteId,
-      finalUrl: coreOutputDto.finalUrl,
-      finalUrlIsLive: coreOutputDto.finalUrlIsLive,
-      finalUrlBaseDomain: coreOutputDto.finalUrlBaseDomain,
-      targetUrlRedirects: coreOutputDto.targetUrlRedirects,
-    };
-
     mockJob.data = input;
 
-    mockCoreScanner.scan.calledWith(input).mockResolvedValue(coreOutputDto);
+    const coreResult = new CoreResult();
+    coreResult.id = 1;
+
+    mockCoreScanner.scan.calledWith(input).mockResolvedValue(coreResult);
     await consumer.processCore(mockJob);
 
     expect(mockCoreScanner.scan).toHaveBeenCalledWith(input);
-    expect(mockCoreResultService.create).toHaveBeenCalledWith(
-      createCoreResultDto,
-    );
+    expect(mockCoreResultService.create).toHaveBeenCalledWith(coreResult);
   });
 });

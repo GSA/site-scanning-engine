@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Website } from '../websites/website.entity';
+import { Website } from './website.entity';
 
 @Entity()
 export class CoreResult {
