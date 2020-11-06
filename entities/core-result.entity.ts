@@ -66,6 +66,10 @@ export class CoreResult {
   finalUrlSameWebsite?: boolean;
 
   @Column({ nullable: true })
+  @Expose({ name: 'target_url_404_test ' })
+  targetUrl404Test?: boolean;
+
+  @Column({ nullable: true })
   @Expose({ name: 'target_url_redirects' })
   targetUrlRedirects?: boolean;
 }

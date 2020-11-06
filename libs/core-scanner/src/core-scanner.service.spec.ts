@@ -8,6 +8,9 @@ import { CoreScannerService } from './core-scanner.service';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 import { ScanStatus } from './scan-status';
+import { HttpModule, HttpService } from '@nestjs/common';
+import { AxiosResponse } from 'axios';
+import { of } from 'rxjs';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
@@ -17,6 +20,7 @@ describe('CoreScannerService', () => {
   let mockLogger: MockProxy<LoggerService>;
   let mockRequest: MockProxy<Request>;
   let redirectRequest: MockProxy<Request>;
+  let httpService: HttpService;
   const finalUrl = 'https://18f.gsa.gov';
 
   beforeEach(async () => {
@@ -39,6 +43,7 @@ describe('CoreScannerService', () => {
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
 
     const module: TestingModule = await Test.createTestingModule({
+      imports: [HttpModule],
       providers: [
         CoreScannerService,
         {
@@ -53,6 +58,7 @@ describe('CoreScannerService', () => {
     }).compile();
 
     service = module.get<CoreScannerService>(CoreScannerService);
+    httpService = module.get<HttpService>(HttpService);
   });
 
   it('should be defined', () => {
@@ -64,6 +70,16 @@ describe('CoreScannerService', () => {
       websiteId: 1,
       url: 'https://18f.gov',
     };
+
+    const resp: AxiosResponse = {
+      data: {},
+      status: 404,
+      statusText: 'Not Found',
+      headers: {},
+      config: {},
+    };
+
+    jest.spyOn(httpService, 'get').mockImplementationOnce(() => of(resp));
 
     const website = new Website();
     website.id = coreInputDto.websiteId;
@@ -81,6 +97,7 @@ describe('CoreScannerService', () => {
     expected.targetUrlBaseDomain = '18f.gov';
     expected.targetUrlRedirects = true;
     expected.website = website;
+    expected.targetUrl404Test = true;
 
     expect(result).toStrictEqual(expected);
   });

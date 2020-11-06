@@ -1,6 +1,12 @@
 import { BROWSER_TOKEN } from '@app/browser';
 import { LoggerService } from '@app/logger';
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import {
+  HttpService,
+  HttpStatus,
+  Inject,
+  Injectable,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { join, split, takeRight, some, includes } from 'lodash';
@@ -9,6 +15,7 @@ import { URL } from 'url';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 import { ScanStatus } from './scan-status';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class CoreScannerService
@@ -16,6 +23,7 @@ export class CoreScannerService
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
+    private httpService: HttpService,
   ) {}
 
   async scan(input: CoreInputDto) {
@@ -31,6 +39,7 @@ export class CoreScannerService
       this.logger.debug(`loading ${url}`);
       const response = await page.goto(url);
       const redirectChain = response.request().redirectChain();
+      const redirectTest = await this.notFoundTest(url);
 
       // calculate the finalUrl
       const finalUrl = this.getFinalUrl(page);
@@ -50,6 +59,7 @@ export class CoreScannerService
         this.getBaseDomain(url) == this.getBaseDomain(finalUrl);
       result.finalUrlStatusCode = response.status();
       result.status = ScanStatus.Completed;
+      result.targetUrl404Test = redirectTest;
     } catch (e) {
       const err = e as Error;
       result.website = website;
@@ -120,6 +130,14 @@ export class CoreScannerService
     const isLive = res.status() / 100 === 2; // 2xx family
     this.logger.debug(`status for ${res.url()} is ${res.status()}`);
     return isLive;
+  }
+
+  private async notFoundTest(url: string): Promise<boolean> {
+    const randomUrl = new URL(url);
+    randomUrl.pathname = `notfound-test${v4()}`;
+    const resp = await this.httpService.get(randomUrl.toString()).toPromise();
+
+    return resp.status == HttpStatus.NOT_FOUND;
   }
 
   async onModuleDestroy() {
