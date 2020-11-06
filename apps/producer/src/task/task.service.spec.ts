@@ -1,4 +1,3 @@
-import { Website } from '@app/database/websites/website.entity';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
 import { ConfigService } from '@nestjs/config';
@@ -8,6 +7,7 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { mock, mockReset, MockProxy } from 'jest-mock-extended';
 import { ProducerService } from '../producer/producer.service';
 import { TaskService } from './task.service';
+import { Website } from 'entities/website.entity';
 
 describe('TaskService', () => {
   let service: TaskService;

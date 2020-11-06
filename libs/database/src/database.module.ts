@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CoreResult } from './core-results/core-result.entity';
 import { CoreResultModule } from './core-results/core-result.module';
-import { Website } from './websites/website.entity';
 import { WebsiteModule } from './websites/website.module';
 import dbconfig from './config/db.config';
+import { Website } from 'entities/website.entity';
+import { CoreResult } from 'entities/core-result.entity';
 
 const ScannerDatabase = TypeOrmModule.forRootAsync({
   imports: [

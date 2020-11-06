@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { CoreResult } from 'entities/core-result.entity';
+import { Website } from 'entities/website.entity';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
-import { Website } from '../websites/website.entity';
-import { CoreResult } from './core-result.entity';
 import { CoreResultService } from './core-result.service';
-import { CreateCoreResultDto } from './dto/create-core-result.dto';
 
 describe('CoreResultService', () => {
   let service: CoreResultService;
@@ -59,24 +58,13 @@ describe('CoreResultService', () => {
   });
 
   it('should create a CoreResult', async () => {
-    const coreResultDto: CreateCoreResultDto = {
-      websiteId: 1,
-      finalUrl: 'https://18f.gsa.gov',
-      finalUrlIsLive: true,
-      finalUrlBaseDomain: 'gsa.gov',
-      targetUrlRedirects: true,
-    };
-
     const coreResult = new CoreResult();
     const website = new Website();
     website.id = 1;
-    coreResult.finalUrl = coreResultDto.finalUrl;
+    coreResult.id = 1;
     coreResult.website = website;
-    coreResult.finalUrlBaseDomain = coreResultDto.finalUrlBaseDomain;
-    coreResult.finalUrlIsLive = coreResultDto.finalUrlIsLive;
-    coreResult.targetUrlRedirects = coreResultDto.targetUrlRedirects;
 
-    await service.create(coreResultDto);
+    await service.create(coreResult);
     expect(mockRepository.save).toHaveBeenCalledWith(coreResult);
   });
 });

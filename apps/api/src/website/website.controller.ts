@@ -2,9 +2,8 @@ import { CoreResultService } from '@app/database/core-results/core-result.servic
 import { CreateWebsiteDto } from '@app/database/websites/dto/create-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { websiteSerializer } from './serializer';
 import { map } from 'lodash';
-import { WebsiteResult } from './website-result.dto';
-import { fromCoreResult } from './website-result.mapper';
 
 @Controller('websites')
 export class WebsiteController {
@@ -14,10 +13,11 @@ export class WebsiteController {
   ) {}
 
   @Get()
-  async getResults(): Promise<WebsiteResult[]> {
+  async getResults() {
     const websites = await this.coreResultService.findResultsWithWebsite();
-    const res = map(websites, fromCoreResult);
-    return res;
+    const serialized = map(websites, websiteSerializer);
+
+    return serialized;
   }
 
   @Post()

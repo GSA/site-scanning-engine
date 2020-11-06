@@ -5,7 +5,9 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { CoreScannerService } from './core-scanner.service';
-import { CoreOutputDto } from './core.output.dto';
+import { CoreResult } from 'entities/core-result.entity';
+import { Website } from 'entities/website.entity';
+import { ScanStatus } from './scan-status';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
@@ -30,7 +32,7 @@ describe('CoreScannerService', () => {
     mockResponse.request.calledWith().mockReturnValue(mockRequest);
     mockResponse.status.calledWith().mockReturnValue(200);
     mockResponse.headers.calledWith().mockReturnValue({
-      'Content-Type': 'text/html',
+      'Content-Type': 'text/html; charset=utf-8',
     });
     mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
     mockPage.url.calledWith().mockReturnValue(finalUrl);
@@ -57,25 +59,28 @@ describe('CoreScannerService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return a CoreOutputDto with the correct fields', async () => {
+  it('should return a CoreResult with the correct fields', async () => {
     const coreInputDto: CoreInputDto = {
       websiteId: 1,
       url: 'https://18f.gov',
     };
 
+    const website = new Website();
+    website.id = coreInputDto.websiteId;
+
     const result = await service.scan(coreInputDto);
-    const expected: CoreOutputDto = {
-      websiteId: 1,
-      finalUrl: finalUrl,
-      finalUrlBaseDomain: 'gsa.gov',
-      targetUrlBaseDomain: '18f.gov',
-      finalUrlIsLive: true,
-      finalUrlMIMEType: 'text/html',
-      targetUrlRedirects: true,
-      finalUrlSameDomain: false,
-      finalUrlSameWebsite: false,
-      finalUrlStatusCode: 200,
-    };
+    const expected = new CoreResult();
+    expected.status = ScanStatus.Completed;
+    expected.finalUrl = 'https://18f.gsa.gov';
+    expected.finalUrlBaseDomain = 'gsa.gov';
+    expected.finalUrlIsLive = true;
+    expected.finalUrlMIMEType = 'text/html';
+    expected.finalUrlSameDomain = false;
+    expected.finalUrlSameWebsite = false;
+    expected.finalUrlStatusCode = 200;
+    expected.targetUrlBaseDomain = '18f.gov';
+    expected.targetUrlRedirects = true;
+    expected.website = website;
 
     expect(result).toStrictEqual(expected);
   });

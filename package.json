@@ -37,6 +37,7 @@
     "@nestjs/schedule": "^0.4.1",
     "@nestjs/typeorm": "^7.1.4",
     "bull": "^3.18.0",
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "commander": "^6.2.0",
     "cron": "^1.8.2",
@@ -95,6 +96,9 @@
     "roots": [
       "<rootDir>/apps/",
       "<rootDir>/libs/"
+    ],
+    "modulePaths": [
+      "<rootDir>"
     ],
     "moduleNameMapper": {
       "@app/message-queue/(.*)": "<rootDir>/libs/message-queue/src/$1",
