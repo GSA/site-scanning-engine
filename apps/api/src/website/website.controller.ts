@@ -15,9 +15,7 @@ export class WebsiteController {
   @Get()
   async getResults() {
     const websites = await this.coreResultService.findResultsWithWebsite();
-    const serialized = map(websites, website => {
-      return websiteSerializer(website);
-    });
+    const serialized = map(websites, websiteSerializer);
 
     return serialized;
   }
