@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CoreResult } from 'entities/core-result.entity';
 import { Repository } from 'typeorm';
-import { CoreResult } from '../../../../entities/core-result.entity';
 
 @Injectable()
 export class CoreResultService {

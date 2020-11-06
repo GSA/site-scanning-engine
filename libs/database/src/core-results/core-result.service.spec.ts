@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { CoreResult } from 'entities/core-result.entity';
+import { Website } from 'entities/website.entity';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
-import { Website } from '../../../../entities/website.entity';
-import { CoreResult } from '../../../../entities/core-result.entity';
 import { CoreResultService } from './core-result.service';
 
 describe('CoreResultService', () => {
