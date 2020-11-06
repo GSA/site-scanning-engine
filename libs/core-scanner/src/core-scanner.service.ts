@@ -39,7 +39,7 @@ export class CoreScannerService
       this.logger.debug(`loading ${url}`);
       const response = await page.goto(url);
       const redirectChain = response.request().redirectChain();
-      const redirectTest = await this.notFoundTest(url);
+      const notFoundTest = await this.notFoundTest(url);
 
       // calculate the finalUrl
       const finalUrl = this.getFinalUrl(page);
@@ -59,7 +59,7 @@ export class CoreScannerService
         this.getBaseDomain(url) == this.getBaseDomain(finalUrl);
       result.finalUrlStatusCode = response.status();
       result.status = ScanStatus.Completed;
-      result.targetUrl404Test = redirectTest;
+      result.targetUrl404Test = notFoundTest;
     } catch (e) {
       const err = e as Error;
       result.website = website;
@@ -134,8 +134,14 @@ export class CoreScannerService
 
   private async notFoundTest(url: string): Promise<boolean> {
     const randomUrl = new URL(url);
-    randomUrl.pathname = `notfound-test${v4()}`;
-    const resp = await this.httpService.get(randomUrl.toString()).toPromise();
+    randomUrl.pathname = `not-found-test${v4()}`;
+    const resp = await this.httpService
+      .get(randomUrl.toString(), {
+        validateStatus: _ => {
+          return true;
+        },
+      })
+      .toPromise();
 
     return resp.status == HttpStatus.NOT_FOUND;
   }
