@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { WebsiteController } from './website.controller';
 import { CoreResult } from 'entities/core-result.entity';
+import { websiteSerializer } from './serializer';
 
 describe('WebsiteController', () => {
   let websiteController: WebsiteController;
@@ -44,8 +45,9 @@ describe('WebsiteController', () => {
         .mockResolvedValue(Promise.resolve([coreResult]));
 
       const result = await websiteController.getResults();
+      const serialized = websiteSerializer(coreResult);
 
-      expect(result).toStrictEqual([coreResult]);
+      expect(result).toStrictEqual([serialized]);
     });
   });
 });
