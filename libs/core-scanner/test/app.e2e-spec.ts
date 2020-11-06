@@ -1,6 +1,7 @@
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { LoggerService } from '@app/logger';
+import { NestApplication } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
@@ -9,9 +10,10 @@ import { noop } from 'lodash';
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;
   let logger: LoggerService;
+  let moduleFixture: TestingModule;
 
   beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    moduleFixture = await Test.createTestingModule({
       imports: [CoreScannerModule],
     }).compile();
 
@@ -23,6 +25,7 @@ describe('CoreScanner (e2e)', () => {
 
   afterAll(async () => {
     await service.onModuleDestroy();
+    await moduleFixture.close();
   });
 
   it('returns results for a url', async () => {
