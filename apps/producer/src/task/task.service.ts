@@ -21,7 +21,7 @@ export class TaskService {
 
   async start() {
     // first clear out the queue
-    await this.producerService.empty();
+    await this.producerService.emptyAndClean();
     this.logger.debug('producer queue emptied.');
 
     const schedule =
