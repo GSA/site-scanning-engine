@@ -20,6 +20,10 @@ export class TaskService {
   }
 
   async start() {
+    // first clear out the queue
+    await this.producerService.empty();
+    this.logger.debug('producer queue emptied.');
+
     const schedule =
       this.configService.get('CORE_SCAN_SCHEDULE') || '0 0 * * *';
     this.logger.debug(`using schedule ${schedule}`);
@@ -34,8 +38,6 @@ export class TaskService {
 
   async coreScanProducer() {
     try {
-      await this.producerService.empty();
-
       const websites = await this.websiteService.findAll();
       websites.forEach(website => {
         const coreInput: CoreInputDto = {
