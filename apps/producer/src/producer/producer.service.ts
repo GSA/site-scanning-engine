@@ -30,9 +30,17 @@ export class ProducerService {
   }
 
   /**
-   * `empty` clears the queue. Note that stalled or delayed jobs are not emptied.
+   * `emptyAndClean` clears the queue and cleans up old jobs.
    */
-  async empty() {
+  async emptyAndClean() {
     await this.scannerQueue.empty();
+    await Promise.all([
+      this.scannerQueue.clean(0, 'active'),
+      this.scannerQueue.clean(0, 'completed'),
+      this.scannerQueue.clean(0, 'delayed'),
+      this.scannerQueue.clean(0, 'failed'),
+      this.scannerQueue.clean(0, 'paused'),
+      this.scannerQueue.clean(0, 'wait'),
+    ]);
   }
 }
