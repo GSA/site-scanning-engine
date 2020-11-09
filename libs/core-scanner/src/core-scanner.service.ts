@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Scanner } from 'common/interfaces/scanner.interface';
-import { join, split, takeRight, some, includes } from 'lodash';
+import { join, split, takeRight } from 'lodash';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { URL } from 'url';
 import { CoreResult } from 'entities/core-result.entity';
@@ -65,14 +65,18 @@ export class CoreScannerService
       result.website = website;
       result.targetUrlBaseDomain = this.getBaseDomain(url);
 
-      const dnsError = some(err.message, el =>
-        includes('ERR_NAME_NOT_RESOLVED', el),
+      const dnsError = err.message.startsWith('net::ERR_NAME_NOT_RESOLVED');
+      const timeoutError = err.name === 'TimeoutError';
+      const sslError = err.message.startsWith(
+        'net::ERR_CERT_COMMON_NAME_INVALID',
       );
 
-      if (err.name == 'TimeoutError') {
+      if (timeoutError) {
         result.status = ScanStatus.Timeout;
       } else if (dnsError) {
         result.status = ScanStatus.DNSResolutionError;
+      } else if (sslError) {
+        result.status = ScanStatus.InvalidSSLCert;
       } else {
         this.logger.error(err.message, err.stack);
         result.status = ScanStatus.UnknownError;
