@@ -16,15 +16,14 @@ describe('AppController (e2e)', () => {
   });
 
   afterAll(async () => {
-    app.close();
+    await app.close();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect({
-        endpoints: ['websites', 'results'],
-      });
+  it('/ (GET)', async () => {
+    const response = await request(app.getHttpServer()).get('/');
+    expect(response.status).toStrictEqual(200);
+    expect(response.body).toStrictEqual({
+      endpoints: ['websites', 'results'],
+    });
   });
 });

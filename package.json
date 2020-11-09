@@ -22,9 +22,9 @@
     "start:all": "concurrently \"npm run start producer\" \"npm run start scan-engine\" \"npm run start api\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
-    "test:unit": "jest --testPathIgnorePatterns ./apps/**/test/*",
-    "test:e2e": "jest ./apps/**/test/",
-    "test:watch": "jest --watch --testPathIgnorePatterns ./apps/**/test/*",
+    "test:unit": "jest --testPathIgnorePatterns ./{apps,libs}/**/test/*",
+    "test:e2e": "jest ./{apps,libs}/**/test/",
+    "test:watch": "jest --watch --testPathIgnorePatterns ./{apps,libs}/**/test/*",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
