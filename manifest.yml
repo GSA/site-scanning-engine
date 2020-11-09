@@ -21,7 +21,7 @@ applications:
   command: npm run start:prod:producer
   health-check-type: process
   env:
-    CORE_SCANNER_SCHEDULE: "15 * * * *"
+    CORE_SCAN_SCHEDULE: "25 * * * *"
 
 
 - name: site-scanner-consumer
