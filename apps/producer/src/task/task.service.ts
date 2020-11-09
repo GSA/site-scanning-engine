@@ -25,7 +25,7 @@ export class TaskService {
     this.logger.debug('producer queue emptied.');
 
     const schedule =
-      this.configService.get('CORE_SCAN_SCHEDULE') || '0 0 * * *';
+      this.configService.get<string>('CORE_SCAN_SCHEDULE') || '0 0 * * *';
     this.logger.debug(`using schedule ${schedule}`);
 
     const job = new CronJob(schedule, async () => {
