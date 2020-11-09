@@ -65,8 +65,6 @@ export class CoreScannerService
       result.website = website;
       result.targetUrlBaseDomain = this.getBaseDomain(url);
 
-      // 'net::ERR_CERT_COMMON_NAME_INVALID at https://libraryofcongress.gov'
-
       const dnsError = err.message.startsWith('net::ERR_NAME_NOT_RESOLVED');
       const timeoutError = err.name === 'TimeoutError';
       const sslError = err.message.startsWith(
