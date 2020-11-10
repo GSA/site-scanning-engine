@@ -97,6 +97,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/cli/tsconfig.app.json"
       }
+    },
+    "uswds-scanner": {
+      "type": "library",
+      "root": "libs/uswds-scanner",
+      "entryFile": "index",
+      "sourceRoot": "libs/uswds-scanner/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/uswds-scanner/tsconfig.lib.json"
+      }
     }
   }
 }
