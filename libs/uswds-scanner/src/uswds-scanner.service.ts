@@ -24,10 +24,18 @@ export class UswdsScannerService
     const url = this.getHttpsUrls(input.url);
     await page.goto(url);
 
-    const usaClasses = await page.evaluate(() => {
-      return document.querySelectorAll("[class^='usa-']");
+    const usaClassesCount = await page.evaluate(() => {
+      const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
+      let score = 0;
+
+      if (usaClasses.length > 0) {
+        score = round(Math.sqrt(usaClasses.length)) * 5;
+      }
+
+      return score;
     });
-    result.usaClassesDetected = this.uswdsUsaClasses(usaClasses);
+
+    result.usaClassesDetected = usaClassesCount;
 
     await this.browser.close();
     return result;
@@ -39,14 +47,6 @@ export class UswdsScannerService
     } else {
       return url.toLowerCase();
     }
-  }
-
-  private uswdsUsaClasses(usaClasses: NodeListOf<Element>) {
-    let score = 0;
-    if (usaClasses.length > 0) {
-      score = round(Math.sqrt(usaClasses.length)) * 5;
-    }
-    return score;
   }
 
   async onModuleDestroy() {
