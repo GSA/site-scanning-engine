@@ -1,16 +1,19 @@
 import { BROWSER_TOKEN } from '@app/browser';
+import { LoggerService } from '@app/logger';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { UswdsResult } from 'entities/uswds-result.entity';
 import { Website } from 'entities/website.entity';
-import { round } from 'lodash';
 import { Browser } from 'puppeteer';
 import { UswdsInputDto } from './uswds.input.dto';
 
 @Injectable()
 export class UswdsScannerService
   implements Scanner<UswdsInputDto, UswdsResult>, OnModuleDestroy {
-  constructor(@Inject(BROWSER_TOKEN) private browser: Browser) {}
+  constructor(
+    @Inject(BROWSER_TOKEN) private browser: Browser,
+    private logger: LoggerService,
+  ) {}
 
   async scan(input: UswdsInputDto): Promise<UswdsResult> {
     const page = await this.browser.newPage();
@@ -29,7 +32,7 @@ export class UswdsScannerService
       let score = 0;
 
       if (usaClasses.length > 0) {
-        score = round(Math.sqrt(usaClasses.length)) * 5;
+        score = Math.round(Math.sqrt(usaClasses.length)) * 5;
       }
 
       return score;

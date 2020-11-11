@@ -1,4 +1,5 @@
 import { BROWSER_TOKEN } from '@app/browser';
+import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UswdsResult } from 'entities/uswds-result.entity';
 import { Website } from 'entities/website.entity';
@@ -11,11 +12,13 @@ describe('UswdsScannerService', () => {
   let service: UswdsScannerService;
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
+  let mockLogger: MockProxy<LoggerService>;
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
     mockPage = mock<Page>();
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
+    mockLogger = mock<LoggerService>();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -23,6 +26,10 @@ describe('UswdsScannerService', () => {
         {
           provide: BROWSER_TOKEN,
           useValue: mockBrowser,
+        },
+        {
+          provide: LoggerService,
+          useValue: mockLogger,
         },
       ],
     }).compile();
