@@ -1,6 +1,13 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "lib": [
+      "ES2020.String", 
+      "es5", 
+      "es6", 
+      "dom", 
+      "dom.iterable"
+    ],
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

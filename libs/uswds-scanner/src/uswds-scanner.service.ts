@@ -25,7 +25,7 @@ export class UswdsScannerService
     result.website = website;
 
     const url = this.getHttpsUrls(input.url);
-    await page.goto(url);
+    const response = await page.goto(url);
 
     const usaClassesCount = await page.evaluate(() => {
       const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
@@ -38,7 +38,8 @@ export class UswdsScannerService
       return score;
     });
 
-    result.usaClassesDetected = usaClassesCount;
+    result.usaClasses = usaClassesCount;
+    result.uswdsString = this.uswdsInHtml(await response.text());
 
     await this.browser.close();
     return result;
@@ -50,6 +51,13 @@ export class UswdsScannerService
     } else {
       return url.toLowerCase();
     }
+  }
+
+  private uswdsInHtml(htmlText: string) {
+    const re = /uswds/g;
+    const occurrenceCount = [...htmlText.matchAll(re)].length;
+    this.logger.debug(`uswds occurs ${occurrenceCount} times`);
+    return occurrenceCount;
   }
 
   async onModuleDestroy() {

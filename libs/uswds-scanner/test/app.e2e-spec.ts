@@ -31,7 +31,8 @@ describe('UswdsScanner (e2e)', () => {
 
     const expected = new UswdsResult();
     expected.website = website;
-    expected.usaClassesDetected = 50;
+    expected.usaClasses = 50;
+    expected.uswdsString = 1;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

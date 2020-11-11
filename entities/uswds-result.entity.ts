@@ -29,10 +29,11 @@ export class UswdsResult {
   @Exclude({ toPlainOnly: true })
   website: Website;
 
-  /**
-   * usaClassesDetected contributes to overall score.
-   */
   @Column({ nullable: true })
-  @Expose({ name: 'uswds_usa_classes_detected' })
-  usaClassesDetected?: number;
+  @Expose({ name: 'uswds_usa_classes' })
+  usaClasses?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_string' })
+  uswdsString?: number;
 }

@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UswdsResult } from 'entities/uswds-result.entity';
 import { Website } from 'entities/website.entity';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { Browser, Page } from 'puppeteer';
+import { Browser, Page, Response } from 'puppeteer';
 import { UswdsScannerService } from './uswds-scanner.service';
 import { UswdsInputDto } from './uswds.input.dto';
 
@@ -13,10 +13,12 @@ describe('UswdsScannerService', () => {
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
   let mockLogger: MockProxy<LoggerService>;
+  let mockResponse: MockProxy<Response>;
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
     mockPage = mock<Page>();
+    mockResponse = mock<Response>();
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
     mockLogger = mock<LoggerService>();
 
@@ -51,12 +53,15 @@ describe('UswdsScannerService', () => {
     website.id = input.websiteId;
 
     mockPage.evaluate.mockResolvedValue(4);
+    mockResponse.text.mockResolvedValue('uswds is uswds');
+    mockPage.goto.mockResolvedValue(mockResponse);
 
     const result = await service.scan(input);
     const expected = new UswdsResult();
 
     expected.website = website;
-    expected.usaClassesDetected = 4;
+    expected.usaClasses = 4;
+    expected.uswdsString = 2;
 
     expect(result).toStrictEqual(expected);
   });
