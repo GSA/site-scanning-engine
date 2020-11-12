@@ -43,7 +43,8 @@ export class UswdsScannerService
     result.usaClasses = usaClassesCount;
     result.uswdsString = this.uswdsInHtml(htmlText);
     result.uswdsTables = this.tableCount(htmlText);
-    result.uswdsInlineCss = this.inlineUsaCSS(htmlText);
+    result.uswdsInlineCss = this.inlineUsaCssCount(htmlText);
+    result.uswdsUsFlag = this.uswdsFlagDetected(htmlText);
 
     await this.browser.close();
     return result;
@@ -82,11 +83,25 @@ export class UswdsScannerService
     return deduction;
   }
 
-  private inlineUsaCSS(htmlText: string) {
-    const re = /\.usa-/;
+  private inlineUsaCssCount(htmlText: string) {
+    const re = /\.usa-/g;
     const occurrenceCount = [...htmlText.matchAll(re)].length;
 
     return occurrenceCount;
+  }
+
+  private uswdsFlagDetected(htmlText: string) {
+    // these are the asset names of the small us flag in the USA Header for differnt uswds versions and devices.
+    const re = /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
+
+    // all we need is one match to give the points;
+    const occurrenceCount = htmlText.match(re);
+    let score = 0;
+
+    if (occurrenceCount) {
+      score = 20;
+    }
+    return score;
   }
 
   async onModuleDestroy() {

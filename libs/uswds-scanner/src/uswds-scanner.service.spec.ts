@@ -53,7 +53,9 @@ describe('UswdsScannerService', () => {
     website.id = input.websiteId;
 
     mockPage.evaluate.mockResolvedValue(4);
-    mockResponse.text.mockResolvedValue('uswds uswds <table> .usa-');
+    mockResponse.text.mockResolvedValue(
+      'uswds uswds <table> .usa- us_flag_small.png',
+    );
     mockPage.goto.mockResolvedValue(mockResponse);
 
     const result = await service.scan(input);
@@ -64,6 +66,7 @@ describe('UswdsScannerService', () => {
     expected.uswdsString = 2;
     expected.uswdsTables = -10;
     expected.uswdsInlineCss = 1;
+    expected.uswdsUsFlag = 20;
 
     expect(result).toStrictEqual(expected);
   });

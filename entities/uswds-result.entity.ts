@@ -44,4 +44,8 @@ export class UswdsResult {
   @Column({ nullable: true })
   @Expose({ name: 'uswds_usa' })
   uswdsInlineCss?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_favicon' })
+  uswdsUsFlag?: number;
 }
