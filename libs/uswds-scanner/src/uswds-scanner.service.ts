@@ -54,6 +54,7 @@ export class UswdsScannerService
     result.uswdsUsFlag = this.uswdsFlagDetected(htmlText);
     result.uswdsStringInCss = this.uswdsInCss(cssPages);
     result.uswdsUsFlagInCss = this.uswdsFlagInCSS(cssPages);
+    result.uswdsMerriweatherFont = this.uswdsMerriweatherFont(cssPages);
 
     await this.browser.close();
     return result;
@@ -115,11 +116,14 @@ export class UswdsScannerService
 
   private uswdsInCss(cssPages: string[]) {
     let score = 0;
-    const re = /uswds/gi;
+    const re = /uswds/i;
 
     for (const page of cssPages) {
-      const occurrenceCount = [...page.matchAll(re)].length;
-      score += occurrenceCount;
+      const match = page.match(re);
+      if (match) {
+        score = 20;
+        break;
+      }
     }
 
     return score;
@@ -134,6 +138,21 @@ export class UswdsScannerService
       const match = page.match(re);
       if (match) {
         score = 20;
+        break;
+      }
+    }
+
+    return score;
+  }
+
+  private uswdsMerriweatherFont(cssPages: string[]) {
+    const re = /[Mm]erriweather/;
+    let score = 0;
+
+    for (const page of cssPages) {
+      const match = page.match(re);
+      if (match) {
+        score = 5;
         break;
       }
     }

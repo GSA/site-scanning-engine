@@ -56,4 +56,8 @@ export class UswdsResult {
   @Column({ nullable: true })
   @Expose({ name: 'uswds_favicon_in_css' })
   uswdsUsFlagInCss?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_merriweather_font' })
+  uswdsMerriweatherFont?: number;
 }
