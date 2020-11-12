@@ -70,6 +70,7 @@ describe('UswdsScannerService', () => {
     expected.uswdsStringInCss = 0; // :TODO mock this
     expected.uswdsUsFlagInCss = 0; // :TODO mock this
     expected.uswdsMerriweatherFont = 0; // :TODO mock this
+    expected.uswdsPublicSansFont = 0;
 
     expect(result).toStrictEqual(expected);
   });

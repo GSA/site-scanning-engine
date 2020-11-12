@@ -55,6 +55,7 @@ export class UswdsScannerService
     result.uswdsStringInCss = this.uswdsInCss(cssPages);
     result.uswdsUsFlagInCss = this.uswdsFlagInCSS(cssPages);
     result.uswdsMerriweatherFont = this.uswdsMerriweatherFont(cssPages);
+    result.uswdsPublicSansFont = this.uswdsPublicSansFont(cssPages);
 
     await this.browser.close();
     return result;
@@ -153,6 +154,21 @@ export class UswdsScannerService
       const match = page.match(re);
       if (match) {
         score = 5;
+        break;
+      }
+    }
+
+    return score;
+  }
+
+  private uswdsPublicSansFont(cssPages: string[]) {
+    const re = /[Pp]ublic.[Ss]ans/;
+    let score = 0;
+
+    for (const page of cssPages) {
+      const match = page.match(re);
+      if (match) {
+        score = 20;
         break;
       }
     }

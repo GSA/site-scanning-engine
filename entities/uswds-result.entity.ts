@@ -60,4 +60,8 @@ export class UswdsResult {
   @Column({ nullable: true })
   @Expose({ name: 'uswds_merriweather_font' })
   uswdsMerriweatherFont?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_publicsans_font' })
+  uswdsPublicSansFont?: number;
 }
