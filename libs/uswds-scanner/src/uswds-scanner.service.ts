@@ -4,6 +4,7 @@ import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { UswdsResult } from 'entities/uswds-result.entity';
 import { Website } from 'entities/website.entity';
+import { sum } from 'lodash';
 import { Browser } from 'puppeteer';
 import { UswdsInputDto } from './uswds.input.dto';
 
@@ -47,16 +48,39 @@ export class UswdsScannerService
 
     const htmlText = await response.text();
 
+    const uswdsInHtml = this.uswdsInHtml(htmlText);
+    const uswdsTables = this.tableCount(htmlText);
+    const inlineCssCount = this.inlineUsaCssCount(htmlText);
+    const usFlagHtml = this.uswdsFlagDetected(htmlText);
+    const usFlagCss = this.uswdsFlagInCSS(cssPages);
+    const uswdsCss = this.uswdsInCss(cssPages);
+    const merriweatherFont = this.uswdsMerriweatherFont(cssPages);
+    const publicSansFont = this.uswdsPublicSansFont(cssPages);
+    const sourceSansFont = this.uswdsSourceSansFont(cssPages);
+    const uswdsCount = sum([
+      usaClassesCount,
+      uswdsInHtml,
+      uswdsTables,
+      inlineCssCount,
+      usFlagHtml,
+      usFlagCss,
+      uswdsCss,
+      merriweatherFont,
+      sourceSansFont,
+      publicSansFont,
+    ]);
+
     result.usaClasses = usaClassesCount;
-    result.uswdsString = this.uswdsInHtml(htmlText);
-    result.uswdsTables = this.tableCount(htmlText);
-    result.uswdsInlineCss = this.inlineUsaCssCount(htmlText);
-    result.uswdsUsFlag = this.uswdsFlagDetected(htmlText);
-    result.uswdsStringInCss = this.uswdsInCss(cssPages);
-    result.uswdsUsFlagInCss = this.uswdsFlagInCSS(cssPages);
-    result.uswdsMerriweatherFont = this.uswdsMerriweatherFont(cssPages);
-    result.uswdsPublicSansFont = this.uswdsPublicSansFont(cssPages);
-    result.uswdsSourceSansFont = this.uswdsSourceSansFont(cssPages);
+    result.uswdsString = uswdsInHtml;
+    result.uswdsTables = uswdsTables;
+    result.uswdsInlineCss = inlineCssCount;
+    result.uswdsUsFlag = usFlagHtml;
+    result.uswdsUsFlagInCss = usFlagCss;
+    result.uswdsStringInCss = uswdsCss;
+    result.uswdsMerriweatherFont = merriweatherFont;
+    result.uswdsPublicSansFont = publicSansFont;
+    result.uswdsSourceSansFont = sourceSansFont;
+    result.uswdsCount = uswdsCount;
 
     await this.browser.close();
     return result;

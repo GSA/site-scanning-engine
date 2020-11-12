@@ -68,4 +68,8 @@ export class UswdsResult {
   @Column({ nullable: true })
   @Expose({ name: 'uswds_source_sans_font' })
   uswdsSourceSansFont?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_count' })
+  uswdsCount?: number;
 }

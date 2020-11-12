@@ -72,6 +72,7 @@ describe('UswdsScannerService', () => {
     expected.uswdsMerriweatherFont = 0; // :TODO mock this
     expected.uswdsPublicSansFont = 0; // :TODO mock this
     expected.uswdsSourceSansFont = 0; // :TODO mock this
+    expected.uswdsCount = 17;
 
     expect(result).toStrictEqual(expected);
   });
