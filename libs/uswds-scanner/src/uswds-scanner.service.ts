@@ -43,6 +43,7 @@ export class UswdsScannerService
     result.usaClasses = usaClassesCount;
     result.uswdsString = this.uswdsInHtml(htmlText);
     result.uswdsTables = this.tableCount(htmlText);
+    result.uswdsInlineCss = this.inlineUsaCSS(htmlText);
 
     await this.browser.close();
     return result;
