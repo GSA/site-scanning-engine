@@ -24,7 +24,10 @@ export class UswdsResult {
   @Exclude({ toPlainOnly: true })
   updated: string;
 
-  @OneToOne(() => Website)
+  @OneToOne(
+    () => Website,
+    website => website.uswdsResult,
+  )
   @JoinColumn()
   @Exclude({ toPlainOnly: true })
   website: Website;

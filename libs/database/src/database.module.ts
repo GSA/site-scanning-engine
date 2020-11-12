@@ -6,6 +6,7 @@ import { WebsiteModule } from './websites/website.module';
 import dbconfig from './config/db.config';
 import { Website } from 'entities/website.entity';
 import { CoreResult } from 'entities/core-result.entity';
+import { UswdsResult } from 'entities/uswds-result.entity';
 
 const ScannerDatabase = TypeOrmModule.forRootAsync({
   imports: [
@@ -17,7 +18,7 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
     return {
       type: 'postgres',
       url: configService.get<string>('database.url'),
-      entities: [Website, CoreResult],
+      entities: [Website, CoreResult, UswdsResult],
       synchronize: true, // do not use this in production
       dropSchema: true, // do not use this in production
     };

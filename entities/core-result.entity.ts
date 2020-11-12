@@ -24,7 +24,10 @@ export class CoreResult {
   @Expose({ name: 'scan_date' })
   updated: string;
 
-  @OneToOne(() => Website)
+  @OneToOne(
+    () => Website,
+    website => website.coreResult,
+  )
   @JoinColumn()
   @Exclude({ toPlainOnly: true })
   website: Website;
