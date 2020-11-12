@@ -37,6 +37,7 @@ describe('UswdsScanner (e2e)', () => {
     expected.uswdsInlineCss = 0;
     expected.uswdsUsFlag = 20;
     expected.uswdsStringInCss = 33;
+    expected.uswdsUsFlagInCss = 0;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

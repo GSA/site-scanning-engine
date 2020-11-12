@@ -67,7 +67,8 @@ describe('UswdsScannerService', () => {
     expected.uswdsTables = -10;
     expected.uswdsInlineCss = 1;
     expected.uswdsUsFlag = 20;
-    expected.uswdsStringInCss = 0; // need to mock this eventually
+    expected.uswdsStringInCss = 0; // :TODO mock this
+    expected.uswdsUsFlagInCss = 0; // :TODO mock this
 
     expect(result).toStrictEqual(expected);
   });

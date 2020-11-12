@@ -53,6 +53,7 @@ export class UswdsScannerService
     result.uswdsInlineCss = this.inlineUsaCssCount(htmlText);
     result.uswdsUsFlag = this.uswdsFlagDetected(htmlText);
     result.uswdsStringInCss = this.uswdsInCss(cssPages);
+    result.uswdsUsFlagInCss = this.uswdsFlagInCSS(cssPages);
 
     await this.browser.close();
     return result;
@@ -119,6 +120,22 @@ export class UswdsScannerService
     for (const page of cssPages) {
       const occurrenceCount = [...page.matchAll(re)].length;
       score += occurrenceCount;
+    }
+
+    return score;
+  }
+
+  private uswdsFlagInCSS(cssPages: string[]) {
+    // these are the asset names of the small us flag in the USA Header for differnt uswds versions and devices.
+    const re = /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
+    let score = 0;
+
+    for (const page of cssPages) {
+      const match = page.match(re);
+      if (match) {
+        score = 20;
+        break;
+      }
     }
 
     return score;
