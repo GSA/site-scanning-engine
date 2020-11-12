@@ -64,4 +64,8 @@ export class UswdsResult {
   @Column({ nullable: true })
   @Expose({ name: 'uswds_publicsans_font' })
   uswdsPublicSansFont?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_source_sans_font' })
+  uswdsSourceSansFont?: number;
 }

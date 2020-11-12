@@ -40,6 +40,7 @@ describe('UswdsScanner (e2e)', () => {
     expected.uswdsUsFlagInCss = 0;
     expected.uswdsMerriweatherFont = 5;
     expected.uswdsPublicSansFont = 20;
+    expected.uswdsSourceSansFont = 5;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);
