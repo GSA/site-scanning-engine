@@ -38,8 +38,11 @@ export class UswdsScannerService
       return score;
     });
 
+    const htmlText = await response.text();
+
     result.usaClasses = usaClassesCount;
-    result.uswdsString = this.uswdsInHtml(await response.text());
+    result.uswdsString = this.uswdsInHtml(htmlText);
+    result.uswdsTables = this.tableCount(htmlText);
 
     await this.browser.close();
     return result;
@@ -57,6 +60,31 @@ export class UswdsScannerService
     const re = /uswds/g;
     const occurrenceCount = [...htmlText.matchAll(re)].length;
     this.logger.debug(`uswds occurs ${occurrenceCount} times`);
+    return occurrenceCount;
+  }
+
+  /**
+   * tableCount detects the presence of <table> elements in HTML. This is a negative indicator of USWDS.
+   *
+   * @param htmlText html in text.
+   */
+  private tableCount(htmlText: string) {
+    const re = /<table/g;
+    const occurrenceCount = [...htmlText.matchAll(re)].length;
+    let deduction = 0;
+
+    if (occurrenceCount > 0) {
+      const tableDeduction = -10;
+      deduction = tableDeduction * occurrenceCount;
+    }
+
+    return deduction;
+  }
+
+  private inlineUsaCSS(htmlText: string) {
+    const re = /\.usa-/;
+    const occurrenceCount = [...htmlText.matchAll(re)].length;
+
     return occurrenceCount;
   }
 

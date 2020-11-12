@@ -43,7 +43,7 @@ describe('UswdsScannerService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return whether usa- is found in class selectors', async () => {
+  it('should return the correct response', async () => {
     const input: UswdsInputDto = {
       websiteId: 1,
       url: '18f.gov',
@@ -53,7 +53,7 @@ describe('UswdsScannerService', () => {
     website.id = input.websiteId;
 
     mockPage.evaluate.mockResolvedValue(4);
-    mockResponse.text.mockResolvedValue('uswds is uswds');
+    mockResponse.text.mockResolvedValue('uswds is uswds <table');
     mockPage.goto.mockResolvedValue(mockResponse);
 
     const result = await service.scan(input);
@@ -62,6 +62,7 @@ describe('UswdsScannerService', () => {
     expected.website = website;
     expected.usaClasses = 4;
     expected.uswdsString = 2;
+    expected.uswdsTables = -10;
 
     expect(result).toStrictEqual(expected);
   });

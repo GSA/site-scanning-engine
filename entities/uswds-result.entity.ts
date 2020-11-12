@@ -36,4 +36,8 @@ export class UswdsResult {
   @Column({ nullable: true })
   @Expose({ name: 'uswds_string' })
   uswdsString?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_tables' })
+  uswdsTables?: number;
 }
