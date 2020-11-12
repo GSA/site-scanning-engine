@@ -67,6 +67,7 @@ describe('UswdsScannerService', () => {
     expected.uswdsTables = -10;
     expected.uswdsInlineCss = 1;
     expected.uswdsUsFlag = 20;
+    expected.uswdsStringInCss = 0; // need to mock this eventually
 
     expect(result).toStrictEqual(expected);
   });

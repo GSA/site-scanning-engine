@@ -21,8 +21,15 @@ export class UswdsScannerService
     const result = new UswdsResult();
     const website = new Website();
     website.id = input.websiteId;
-
     result.website = website;
+
+    const cssPages: string[] = [];
+    page.on('response', async response => {
+      if (response.request().resourceType() == 'stylesheet') {
+        const cssPage = await response.text();
+        cssPages.push(cssPage);
+      }
+    });
 
     const url = this.getHttpsUrls(input.url);
     const response = await page.goto(url);
@@ -45,6 +52,7 @@ export class UswdsScannerService
     result.uswdsTables = this.tableCount(htmlText);
     result.uswdsInlineCss = this.inlineUsaCssCount(htmlText);
     result.uswdsUsFlag = this.uswdsFlagDetected(htmlText);
+    result.uswdsStringInCss = this.uswdsInCss(cssPages);
 
     await this.browser.close();
     return result;
@@ -101,6 +109,18 @@ export class UswdsScannerService
     if (occurrenceCount) {
       score = 20;
     }
+    return score;
+  }
+
+  private uswdsInCss(cssPages: string[]) {
+    let score = 0;
+    const re = /uswds/gi;
+
+    for (const page of cssPages) {
+      const occurrenceCount = [...page.matchAll(re)].length;
+      score += occurrenceCount;
+    }
+
     return score;
   }
 
