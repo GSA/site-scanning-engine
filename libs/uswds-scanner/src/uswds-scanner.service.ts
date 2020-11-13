@@ -46,6 +46,7 @@ export class UswdsScannerService
         this.logger.error(err.message, err.stack);
       }
       result.status = errorType;
+      return result;
     }
 
     const usaClassesCount = await page.evaluate(() => {

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { mock, mockReset, MockProxy } from 'jest-mock-extended';
+import { mock, MockProxy } from 'jest-mock-extended';
 import { ScanEngineConsumer } from './scan-engine.consumer';
 import { Job } from 'bull';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
