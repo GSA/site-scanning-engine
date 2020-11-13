@@ -6,6 +6,6 @@ import { UswdsResultService } from './uswds-result.service';
 @Module({
   imports: [TypeOrmModule.forFeature([UswdsResult])],
   providers: [UswdsResultService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, UswdsResultService],
 })
 export class UswdsResultModule {}
