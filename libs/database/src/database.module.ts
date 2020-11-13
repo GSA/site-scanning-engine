@@ -7,6 +7,7 @@ import dbconfig from './config/db.config';
 import { Website } from 'entities/website.entity';
 import { CoreResult } from 'entities/core-result.entity';
 import { UswdsResult } from 'entities/uswds-result.entity';
+import { UswdsResultModule } from './uswds-result/uswds-result.module';
 
 const ScannerDatabase = TypeOrmModule.forRootAsync({
   imports: [
@@ -27,8 +28,18 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
 });
 
 @Module({
-  imports: [ScannerDatabase, WebsiteModule, CoreResultModule],
+  imports: [
+    ScannerDatabase,
+    WebsiteModule,
+    CoreResultModule,
+    UswdsResultModule,
+  ],
   providers: [],
-  exports: [ScannerDatabase, WebsiteModule, CoreResultModule],
+  exports: [
+    ScannerDatabase,
+    WebsiteModule,
+    CoreResultModule,
+    UswdsResultModule,
+  ],
 })
 export class DatabaseModule {}
