@@ -115,8 +115,8 @@
       "@app/core-scanner": "<rootDir>/libs/core-scanner/src",
       "@app/ingest/(.*)": "<rootDir>/libs/ingest/src/$1",
       "@app/ingest": "<rootDir>/libs/ingest/src",
-      "@app/uswds-scanner/(.*)": "<rootDir>/libs/uswds-scanner/src/$1",
-      "@app/uswds-scanner": "<rootDir>/libs/uswds-scanner/src"
+      "@app/solutions-scanner/(.*)": "<rootDir>/libs/solutions-scanner/src/$1",
+      "@app/solutions-scanner": "<rootDir>/libs/solutions-scanner/src"
     }
   }
 }

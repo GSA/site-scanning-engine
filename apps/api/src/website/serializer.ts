@@ -4,11 +4,11 @@ import { Website } from 'entities/website.entity';
 function websiteSerializer(website: Website) {
   const serializedWebsite = classToPlain(website);
   const serializedCoreResult = classToPlain(website.coreResult);
-  const serializedUswdsResult = classToPlain(website.uswdsResult);
+  const serializedSolutionsResult = classToPlain(website.solutionsResult);
 
   return {
     ...serializedCoreResult,
-    ...serializedUswdsResult,
+    ...serializedSolutionsResult,
     ...serializedWebsite,
   };
 }

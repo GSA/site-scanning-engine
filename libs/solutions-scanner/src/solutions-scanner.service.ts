@@ -3,24 +3,24 @@ import { ScanStatus } from '@app/core-scanner/scan-status';
 import { LoggerService } from '@app/logger';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
-import { UswdsResult } from 'entities/uswds-result.entity';
+import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum } from 'lodash';
 import { Browser, Response } from 'puppeteer';
-import { UswdsInputDto } from './uswds.input.dto';
+import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
-export class UswdsScannerService
-  implements Scanner<UswdsInputDto, UswdsResult>, OnModuleDestroy {
+export class SolutionsScannerService
+  implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy {
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
   ) {}
 
-  async scan(input: UswdsInputDto): Promise<UswdsResult> {
+  async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
     const page = await this.browser.newPage();
 
-    const result = new UswdsResult();
+    const result = new SolutionsResult();
     const website = new Website();
     website.id = input.websiteId;
     result.website = website;

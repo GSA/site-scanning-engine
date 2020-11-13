@@ -55,11 +55,11 @@
       "@app/ingest/*": [
         "libs/ingest/src/*"
       ],
-      "@app/uswds-scanner": [
-        "libs/uswds-scanner/src"
+      "@app/solutions-scanner": [
+        "libs/solutions-scanner/src"
       ],
-      "@app/uswds-scanner/*": [
-        "libs/uswds-scanner/src/*"
+      "@app/solutions-scanner/*": [
+        "libs/solutions-scanner/src/*"
       ]
     }
   }

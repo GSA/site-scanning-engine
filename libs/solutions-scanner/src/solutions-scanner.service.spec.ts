@@ -2,15 +2,15 @@ import { BROWSER_TOKEN } from '@app/browser';
 import { ScanStatus } from '@app/core-scanner/scan-status';
 import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UswdsResult } from 'entities/uswds-result.entity';
+import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response } from 'puppeteer';
-import { UswdsScannerService } from './uswds-scanner.service';
-import { UswdsInputDto } from './uswds.input.dto';
+import { SolutionsScannerService } from './solutions-scanner.service';
+import { SolutionsInputDto } from './solutions.input.dto';
 
-describe('UswdsScannerService', () => {
-  let service: UswdsScannerService;
+describe('SolutionsScannerService', () => {
+  let service: SolutionsScannerService;
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
   let mockLogger: MockProxy<LoggerService>;
@@ -25,7 +25,7 @@ describe('UswdsScannerService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        UswdsScannerService,
+        SolutionsScannerService,
         {
           provide: BROWSER_TOKEN,
           useValue: mockBrowser,
@@ -37,7 +37,7 @@ describe('UswdsScannerService', () => {
       ],
     }).compile();
 
-    service = module.get<UswdsScannerService>(UswdsScannerService);
+    service = module.get<SolutionsScannerService>(SolutionsScannerService);
   });
 
   it('should be defined', () => {
@@ -45,7 +45,7 @@ describe('UswdsScannerService', () => {
   });
 
   it('should return the correct response', async () => {
-    const input: UswdsInputDto = {
+    const input: SolutionsInputDto = {
       websiteId: 1,
       url: '18f.gov',
     };
@@ -60,7 +60,7 @@ describe('UswdsScannerService', () => {
     mockPage.goto.mockResolvedValue(mockResponse);
 
     const result = await service.scan(input);
-    const expected = new UswdsResult();
+    const expected = new SolutionsResult();
 
     expected.website = website;
     expected.usaClasses = 4;

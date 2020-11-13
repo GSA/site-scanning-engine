@@ -8,29 +8,32 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { CoreScannerService } from '@app/core-scanner';
 import { CoreResult } from 'entities/core-result.entity';
-import { UswdsResultService } from '@app/database/uswds-result/uswds-result.service';
-import { UswdsInputDto } from '@app/uswds-scanner/uswds.input.dto';
-import { UswdsResult } from 'entities/uswds-result.entity';
-import { UswdsScannerService } from '@app/uswds-scanner';
+import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
+import { SolutionsInputDto } from 'libs/solutions-scanner/src/solutions.input.dto';
+import { SolutionsResult } from 'entities/solutions-result.entity';
+import { SolutionsScannerService } from 'libs/solutions-scanner/src';
 
 describe('ScanEngineConsumer', () => {
   let consumer: ScanEngineConsumer;
   let module: TestingModule;
   let mockCoreScanner: MockProxy<Scanner<CoreInputDto, CoreResult>>;
   let mockCoreResultService: MockProxy<CoreResultService>;
-  let mockUswdsScanner: MockProxy<Scanner<UswdsInputDto, UswdsResult>>;
-  let mockUswdsResultService: MockProxy<UswdsResultService>;
+  let mockSolutionsScanner: MockProxy<Scanner<
+    SolutionsInputDto,
+    SolutionsResult
+  >>;
+  let mockSolutionsResultService: MockProxy<SolutionsResultService>;
   let mockCoreJob: MockProxy<Job<CoreInputDto>>;
-  let mockUswdsJob: MockProxy<Job<UswdsInputDto>>;
+  let mockSolutionsJob: MockProxy<Job<SolutionsInputDto>>;
   let mockLogger: MockProxy<LoggerService>;
 
   beforeEach(async () => {
     mockCoreScanner = mock<Scanner<CoreInputDto, CoreResult>>();
     mockCoreResultService = mock<CoreResultService>();
-    mockUswdsScanner = mock<Scanner<UswdsInputDto, UswdsResult>>();
-    mockUswdsResultService = mock<UswdsResultService>();
+    mockSolutionsScanner = mock<Scanner<SolutionsInputDto, SolutionsResult>>();
+    mockSolutionsResultService = mock<SolutionsResultService>();
     mockCoreJob = mock<Job<CoreInputDto>>();
-    mockUswdsJob = mock<Job<UswdsInputDto>>();
+    mockSolutionsJob = mock<Job<SolutionsInputDto>>();
     mockLogger = mock<LoggerService>();
     module = await Test.createTestingModule({
       providers: [
@@ -44,12 +47,12 @@ describe('ScanEngineConsumer', () => {
           useValue: mockCoreResultService,
         },
         {
-          provide: UswdsScannerService,
-          useValue: mockUswdsScanner,
+          provide: SolutionsScannerService,
+          useValue: mockSolutionsScanner,
         },
         {
-          provide: UswdsResultService,
-          useValue: mockUswdsResultService,
+          provide: SolutionsResultService,
+          useValue: mockSolutionsResultService,
         },
         {
           provide: LoggerService,
@@ -83,21 +86,25 @@ describe('ScanEngineConsumer', () => {
     expect(mockCoreResultService.create).toHaveBeenCalledWith(coreResult);
   });
 
-  it('should call the UswdsScanner and UswdsResultService', async () => {
-    const input: UswdsInputDto = {
+  it('should call the SolutionsScanner and SolutionsResultService', async () => {
+    const input: SolutionsInputDto = {
       websiteId: 1,
       url: 'https://18f.gov',
     };
 
-    mockUswdsJob.data = input;
+    mockSolutionsJob.data = input;
 
-    const uswdsResult = new UswdsResult();
-    uswdsResult.id = 1;
+    const solutionsResult = new SolutionsResult();
+    solutionsResult.id = 1;
 
-    mockUswdsScanner.scan.calledWith(input).mockResolvedValue(uswdsResult);
-    await consumer.processUswds(mockUswdsJob);
+    mockSolutionsScanner.scan
+      .calledWith(input)
+      .mockResolvedValue(solutionsResult);
+    await consumer.processSolutions(mockSolutionsJob);
 
-    expect(mockUswdsScanner.scan).toHaveBeenCalledWith(input);
-    expect(mockUswdsResultService.create).toHaveBeenLastCalledWith(uswdsResult);
+    expect(mockSolutionsScanner.scan).toHaveBeenCalledWith(input);
+    expect(mockSolutionsResultService.create).toHaveBeenLastCalledWith(
+      solutionsResult,
+    );
   });
 });

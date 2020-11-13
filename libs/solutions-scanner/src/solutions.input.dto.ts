@@ -1,9 +1,9 @@
 import { IsNumber, IsUrl } from 'class-validator';
 
 /**
- * UswdsInputDto is a Data Transfer Object for input to the UswdsScanner.
+ * SolutionsInputDto is a Data Transfer Object for input to the SolutionsScanner.
  */
-export class UswdsInputDto {
+export class SolutionsInputDto {
   /**
    * websiteId is the id of the Website that we are scanning for. This is needed for creating one-to-one relations
    * between results and websites.

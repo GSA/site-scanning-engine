@@ -1,13 +1,13 @@
 import {
   CORE_SCAN_JOB_NAME,
   SCANNER_QUEUE_NAME,
-  USWDS_SCAN_JOB_NAME,
+  SOLUTIONS_SCAN_JOB_NAME,
 } from '@app/message-queue';
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { UswdsInputDto } from '@app/uswds-scanner/uswds.input.dto';
+import { SolutionsInputDto } from 'libs/solutions-scanner/src/solutions.input.dto';
 
 /**
  * ProducerService writes jobs to the message queue.
@@ -34,11 +34,15 @@ export class ProducerService {
     return job;
   }
 
-  async addUswdsJob(uswdsInput: UswdsInputDto) {
-    const job = await this.scannerQueue.add(USWDS_SCAN_JOB_NAME, uswdsInput, {
-      removeOnComplete: true,
-      attempts: 3,
-    });
+  async addSolutionsJob(solutionsInput: SolutionsInputDto) {
+    const job = await this.scannerQueue.add(
+      SOLUTIONS_SCAN_JOB_NAME,
+      solutionsInput,
+      {
+        removeOnComplete: true,
+        attempts: 3,
+      },
+    );
 
     return job;
   }
