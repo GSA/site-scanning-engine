@@ -1,3 +1,4 @@
+import { ScanStatus } from '@app/core-scanner/scan-status';
 import * as puppeteer from 'puppeteer';
 
 /**
@@ -28,4 +29,24 @@ const BrowserService = {
   },
 };
 
-export { BROWSER_TOKEN, BrowserService };
+function parseBrowserError(err: Error) {
+  const dnsError = err.message.startsWith('net::ERR_NAME_NOT_RESOLVED');
+  const timeoutError = err.name === 'TimeoutError';
+  const sslError = err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID');
+
+  let errorType: ScanStatus;
+
+  if (timeoutError) {
+    errorType = ScanStatus.Timeout;
+  } else if (dnsError) {
+    errorType = ScanStatus.DNSResolutionError;
+  } else if (sslError) {
+    errorType = ScanStatus.InvalidSSLCert;
+  } else {
+    errorType = ScanStatus.UnknownError;
+  }
+
+  return errorType;
+}
+
+export { BROWSER_TOKEN, BrowserService, parseBrowserError };

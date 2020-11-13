@@ -1,4 +1,5 @@
 import { BROWSER_TOKEN } from '@app/browser';
+import { ScanStatus } from '@app/core-scanner/scan-status';
 import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UswdsResult } from 'entities/uswds-result.entity';
@@ -73,6 +74,7 @@ describe('UswdsScannerService', () => {
     expected.uswdsPublicSansFont = 0; // :TODO mock this
     expected.uswdsSourceSansFont = 0; // :TODO mock this
     expected.uswdsCount = 17;
+    expected.status = ScanStatus.Completed;
 
     expect(result).toStrictEqual(expected);
   });

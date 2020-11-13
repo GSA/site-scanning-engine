@@ -32,6 +32,10 @@ export class UswdsResult {
   @Exclude({ toPlainOnly: true })
   website: Website;
 
+  @Column()
+  @Expose({ name: 'uswds_status' })
+  status: string;
+
   @Column({ nullable: true })
   @Expose({ name: 'uswds_usa_classes' })
   usaClasses?: number;
