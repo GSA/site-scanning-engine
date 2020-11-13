@@ -1,12 +1,14 @@
 import { classToPlain } from 'class-transformer';
-import { CoreResult } from 'entities/core-result.entity';
+import { Website } from 'entities/website.entity';
 
-function websiteSerializer(coreResult: CoreResult) {
-  const serializedCoreResult = classToPlain(coreResult);
-  const serializedWebsite = classToPlain(coreResult.website);
+function websiteSerializer(website: Website) {
+  const serializedWebsite = classToPlain(website);
+  const serializedCoreResult = classToPlain(website.coreResult);
+  const serializedUswdsResult = classToPlain(website.uswdsResult);
 
   return {
     ...serializedCoreResult,
+    ...serializedUswdsResult,
     ...serializedWebsite,
   };
 }

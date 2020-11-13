@@ -15,6 +15,13 @@ export class WebsiteService {
     return websites;
   }
 
+  async findAllWithResult(): Promise<Website[]> {
+    const result = await this.website.find({
+      relations: ['coreResult', 'uswdsResult'],
+    });
+    return result;
+  }
+
   async findOne(id: number): Promise<Website> {
     const website = await this.website.findOne(id);
     return website;
