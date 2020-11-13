@@ -1,10 +1,17 @@
 import { CoreScannerService } from '@app/core-scanner';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { LoggerService } from '@app/logger';
-import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
+import {
+  CORE_SCAN_JOB_NAME,
+  USWDS_SCAN_JOB_NAME,
+  SCANNER_QUEUE_NAME,
+} from '@app/message-queue';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+import { UswdsResultService } from '@app/database/uswds-result/uswds-result.service';
+import { UswdsScannerService } from '@app/uswds-scanner';
+import { UswdsInputDto } from '@app/uswds-scanner/uswds.input.dto';
 
 /**
  * ScanEngineConsumer is a consumer of the Scanner message queue.
@@ -25,6 +32,8 @@ export class ScanEngineConsumer {
   constructor(
     private coreScanner: CoreScannerService,
     private coreResultService: CoreResultService,
+    private uswdsScanner: UswdsScannerService,
+    private uswdsResultService: UswdsResultService,
     private logger: LoggerService,
   ) {
     this.logger.setContext(ScanEngineConsumer.name);
@@ -47,10 +56,33 @@ export class ScanEngineConsumer {
       await this.coreResultService.create(result);
       this.logger.debug(`wrote result for ${job.data.url}`);
       await job.moveToCompleted();
-    } catch (error) {
-      this.logger.error(`error scanning ${job.data.url}`, error);
+    } catch (e) {
+      const err = e as Error;
+      this.logger.error(err.message, err.stack);
       await job.moveToFailed({
-        message: error,
+        message: err.message,
+      });
+    }
+  }
+
+  @Process({
+    name: USWDS_SCAN_JOB_NAME,
+    concurrency: 5,
+  })
+  async processUswds(job: Job<UswdsInputDto>) {
+    this.logger.debug(`scanning ${job.data.url} for uswds`);
+
+    try {
+      const result = await this.uswdsScanner.scan(job.data);
+      await this.uswdsResultService.create(result);
+
+      this.logger.debug(`wrote uswds result for ${job.data.url}`);
+      await job.moveToCompleted();
+    } catch (e) {
+      const err = e as Error;
+      this.logger.error(err.message, err.stack);
+      await job.moveToFailed({
+        message: err.message,
       });
     }
   }
