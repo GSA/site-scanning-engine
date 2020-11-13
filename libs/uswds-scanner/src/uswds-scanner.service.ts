@@ -1,11 +1,12 @@
-import { BROWSER_TOKEN } from '@app/browser';
+import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
+import { ScanStatus } from '@app/core-scanner/scan-status';
 import { LoggerService } from '@app/logger';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { UswdsResult } from 'entities/uswds-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum } from 'lodash';
-import { Browser } from 'puppeteer';
+import { Browser, Response } from 'puppeteer';
 import { UswdsInputDto } from './uswds.input.dto';
 
 @Injectable()
@@ -33,7 +34,20 @@ export class UswdsScannerService
     });
 
     const url = this.getHttpsUrls(input.url);
-    const response = await page.goto(url);
+
+    let response: Response;
+
+    try {
+      response = await page.goto(url);
+    } catch (e) {
+      const err = e as Error;
+      const errorType = parseBrowserError(err);
+      if (errorType === ScanStatus.UnknownError) {
+        this.logger.error(err.message, err.stack);
+      }
+      result.status = errorType;
+      return result;
+    }
 
     const usaClassesCount = await page.evaluate(() => {
       const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
@@ -70,6 +84,7 @@ export class UswdsScannerService
       publicSansFont,
     ]);
 
+    result.status = ScanStatus.Completed;
     result.usaClasses = usaClassesCount;
     result.uswdsString = uswdsInHtml;
     result.uswdsTables = uswdsTables;
@@ -82,7 +97,7 @@ export class UswdsScannerService
     result.uswdsSourceSansFont = sourceSansFont;
     result.uswdsCount = uswdsCount;
 
-    await this.browser.close();
+    await page.close();
     return result;
   }
 

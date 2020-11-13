@@ -1,3 +1,4 @@
+import { ScanStatus } from '@app/core-scanner/scan-status';
 import { UswdsScannerModule, UswdsScannerService } from '@app/uswds-scanner';
 import { UswdsInputDto } from '@app/uswds-scanner/uswds.input.dto';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -42,6 +43,7 @@ describe('UswdsScanner (e2e)', () => {
     expected.uswdsPublicSansFont = 20;
     expected.uswdsSourceSansFont = 5;
     expected.uswdsCount = 121;
+    expected.status = ScanStatus.Completed;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

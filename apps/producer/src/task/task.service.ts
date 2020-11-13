@@ -6,6 +6,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { ProducerService } from '../producer/producer.service';
 import { CronJob } from 'cron';
+import { UswdsInputDto } from '@app/uswds-scanner/uswds.input.dto';
 
 @Injectable()
 export class TaskService {
@@ -28,12 +29,12 @@ export class TaskService {
       this.configService.get<string>('CORE_SCAN_SCHEDULE') || '0 0 * * *';
     this.logger.debug(`using schedule ${schedule}`);
 
-    const job = new CronJob(schedule, async () => {
+    const coreJob = new CronJob(schedule, async () => {
       await this.coreScanProducer();
     });
 
-    this.scheduler.addCronJob('core-scan', job);
-    job.start();
+    this.scheduler.addCronJob('core-scan', coreJob);
+    coreJob.start();
   }
 
   async coreScanProducer() {
@@ -45,6 +46,12 @@ export class TaskService {
           url: website.url,
         };
         this.producerService.addCoreJob(coreInput);
+
+        const uswdsInput: UswdsInputDto = {
+          websiteId: website.id,
+          url: website.url,
+        };
+        this.producerService.addUswdsJob(uswdsInput);
       });
     } catch (error) {
       this.logger.error(`error in ${this.coreScanProducer.name}`, error);

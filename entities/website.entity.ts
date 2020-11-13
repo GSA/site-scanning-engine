@@ -3,9 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { CoreResult } from './core-result.entity';
+import { UswdsResult } from './uswds-result.entity';
 
 @Entity()
 export class Website {
@@ -20,6 +23,20 @@ export class Website {
   @UpdateDateColumn()
   @Exclude({ toPlainOnly: true })
   updated: string;
+
+  @OneToOne(
+    () => CoreResult,
+    coreResult => coreResult.website,
+  )
+  @Exclude({ toPlainOnly: true })
+  coreResult: CoreResult;
+
+  @OneToOne(
+    () => UswdsResult,
+    uswdsResult => uswdsResult.website,
+  )
+  @Exclude({ toPlainOnly: true })
+  uswdsResult: UswdsResult;
 
   @Column()
   @Expose({ name: 'target_url' })

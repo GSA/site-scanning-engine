@@ -1,4 +1,4 @@
-import { BROWSER_TOKEN } from '@app/browser';
+import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
 import { LoggerService } from '@app/logger';
 import {
   HttpService,
@@ -65,22 +65,12 @@ export class CoreScannerService
       result.website = website;
       result.targetUrlBaseDomain = this.getBaseDomain(url);
 
-      const dnsError = err.message.startsWith('net::ERR_NAME_NOT_RESOLVED');
-      const timeoutError = err.name === 'TimeoutError';
-      const sslError = err.message.startsWith(
-        'net::ERR_CERT_COMMON_NAME_INVALID',
-      );
-
-      if (timeoutError) {
-        result.status = ScanStatus.Timeout;
-      } else if (dnsError) {
-        result.status = ScanStatus.DNSResolutionError;
-      } else if (sslError) {
-        result.status = ScanStatus.InvalidSSLCert;
-      } else {
+      const errorType = parseBrowserError(err);
+      if (errorType === ScanStatus.UnknownError) {
         this.logger.error(err.message, err.stack);
-        result.status = ScanStatus.UnknownError;
       }
+
+      result.status = errorType;
     }
 
     await page.close();

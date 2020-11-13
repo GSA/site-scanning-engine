@@ -6,6 +6,6 @@ import { CoreResultService } from './core-result.service';
 @Module({
   imports: [TypeOrmModule.forFeature([CoreResult])],
   providers: [CoreResultService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, CoreResultService],
 })
 export class CoreResultModule {}

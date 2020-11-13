@@ -5,25 +5,21 @@ import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { WebsiteController } from './website.controller';
 import { CoreResult } from 'entities/core-result.entity';
 import { websiteSerializer } from './serializer';
+import { UswdsResult } from 'entities/uswds-result.entity';
+import { Website } from 'entities/website.entity';
 
 describe('WebsiteController', () => {
   let websiteController: WebsiteController;
   let mockWebsiteService: MockProxy<WebsiteService>;
-  let mockCoreResultsService: MockProxy<CoreResultService>;
 
   beforeEach(async () => {
     mockWebsiteService = mock<WebsiteService>();
-    mockCoreResultsService = mock<CoreResultService>();
     const app: TestingModule = await Test.createTestingModule({
       controllers: [WebsiteController],
       providers: [
         {
           provide: WebsiteService,
           useValue: mockWebsiteService,
-        },
-        {
-          provide: CoreResultService,
-          useValue: mockCoreResultsService,
         },
       ],
     }).compile();
@@ -39,13 +35,18 @@ describe('WebsiteController', () => {
     it('should return a list of results', async () => {
       const coreResult = new CoreResult();
       coreResult.id = 1;
+      const uswdsResult = new UswdsResult();
+      const website = new Website();
 
-      mockCoreResultsService.findResultsWithWebsite
+      website.coreResult = coreResult;
+      website.uswdsResult = uswdsResult;
+
+      mockWebsiteService.findAllWithResult
         .calledWith()
-        .mockResolvedValue(Promise.resolve([coreResult]));
+        .mockResolvedValue([website]);
 
       const result = await websiteController.getResults();
-      const serialized = websiteSerializer(coreResult);
+      const serialized = websiteSerializer(website);
 
       expect(result).toStrictEqual([serialized]);
     });
