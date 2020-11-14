@@ -11,7 +11,7 @@ import {
 import { Website } from './website.entity';
 
 @Entity()
-export class UswdsResult {
+export class SolutionsResult {
   @PrimaryGeneratedColumn()
   @Exclude({ toPlainOnly: true })
   id: number;
@@ -26,7 +26,7 @@ export class UswdsResult {
 
   @OneToOne(
     () => Website,
-    website => website.uswdsResult,
+    website => website.solutionsResult,
   )
   @JoinColumn()
   @Exclude({ toPlainOnly: true })

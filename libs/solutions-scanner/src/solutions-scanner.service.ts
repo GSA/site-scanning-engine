@@ -3,24 +3,24 @@ import { ScanStatus } from '@app/core-scanner/scan-status';
 import { LoggerService } from '@app/logger';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
-import { UswdsResult } from 'entities/uswds-result.entity';
+import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum } from 'lodash';
 import { Browser, Response } from 'puppeteer';
-import { UswdsInputDto } from './uswds.input.dto';
+import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
-export class UswdsScannerService
-  implements Scanner<UswdsInputDto, UswdsResult>, OnModuleDestroy {
+export class SolutionsScannerService
+  implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy {
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
   ) {}
 
-  async scan(input: UswdsInputDto): Promise<UswdsResult> {
+  async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
     const page = await this.browser.newPage();
 
-    const result = new UswdsResult();
+    const result = new SolutionsResult();
     const website = new Website();
     website.id = input.websiteId;
     result.website = website;
@@ -35,10 +35,56 @@ export class UswdsScannerService
 
     const url = this.getHttpsUrls(input.url);
 
-    let response: Response;
-
     try {
-      response = await page.goto(url);
+      const response = await page.goto(url);
+
+      const usaClassesCount = await page.evaluate(() => {
+        const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
+        let score = 0;
+
+        if (usaClasses.length > 0) {
+          score = Math.round(Math.sqrt(usaClasses.length)) * 5;
+        }
+
+        return score;
+      });
+
+      const htmlText = await response.text();
+
+      const uswdsInHtml = this.uswdsInHtml(htmlText);
+      const uswdsTables = this.tableCount(htmlText);
+      const inlineCssCount = this.inlineUsaCssCount(htmlText);
+      const usFlagHtml = this.uswdsFlagDetected(htmlText);
+      const usFlagCss = this.uswdsFlagInCSS(cssPages);
+      const uswdsCss = this.uswdsInCss(cssPages);
+      const merriweatherFont = this.uswdsMerriweatherFont(cssPages);
+      const publicSansFont = this.uswdsPublicSansFont(cssPages);
+      const sourceSansFont = this.uswdsSourceSansFont(cssPages);
+      const uswdsCount = sum([
+        usaClassesCount,
+        uswdsInHtml,
+        uswdsTables,
+        inlineCssCount,
+        usFlagHtml,
+        usFlagCss,
+        uswdsCss,
+        merriweatherFont,
+        sourceSansFont,
+        publicSansFont,
+      ]);
+
+      result.status = ScanStatus.Completed;
+      result.usaClasses = usaClassesCount;
+      result.uswdsString = uswdsInHtml;
+      result.uswdsTables = uswdsTables;
+      result.uswdsInlineCss = inlineCssCount;
+      result.uswdsUsFlag = usFlagHtml;
+      result.uswdsUsFlagInCss = usFlagCss;
+      result.uswdsStringInCss = uswdsCss;
+      result.uswdsMerriweatherFont = merriweatherFont;
+      result.uswdsPublicSansFont = publicSansFont;
+      result.uswdsSourceSansFont = sourceSansFont;
+      result.uswdsCount = uswdsCount;
     } catch (e) {
       const err = e as Error;
       const errorType = parseBrowserError(err);
@@ -48,54 +94,6 @@ export class UswdsScannerService
       result.status = errorType;
       return result;
     }
-
-    const usaClassesCount = await page.evaluate(() => {
-      const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
-      let score = 0;
-
-      if (usaClasses.length > 0) {
-        score = Math.round(Math.sqrt(usaClasses.length)) * 5;
-      }
-
-      return score;
-    });
-
-    const htmlText = await response.text();
-
-    const uswdsInHtml = this.uswdsInHtml(htmlText);
-    const uswdsTables = this.tableCount(htmlText);
-    const inlineCssCount = this.inlineUsaCssCount(htmlText);
-    const usFlagHtml = this.uswdsFlagDetected(htmlText);
-    const usFlagCss = this.uswdsFlagInCSS(cssPages);
-    const uswdsCss = this.uswdsInCss(cssPages);
-    const merriweatherFont = this.uswdsMerriweatherFont(cssPages);
-    const publicSansFont = this.uswdsPublicSansFont(cssPages);
-    const sourceSansFont = this.uswdsSourceSansFont(cssPages);
-    const uswdsCount = sum([
-      usaClassesCount,
-      uswdsInHtml,
-      uswdsTables,
-      inlineCssCount,
-      usFlagHtml,
-      usFlagCss,
-      uswdsCss,
-      merriweatherFont,
-      sourceSansFont,
-      publicSansFont,
-    ]);
-
-    result.status = ScanStatus.Completed;
-    result.usaClasses = usaClassesCount;
-    result.uswdsString = uswdsInHtml;
-    result.uswdsTables = uswdsTables;
-    result.uswdsInlineCss = inlineCssCount;
-    result.uswdsUsFlag = usFlagHtml;
-    result.uswdsUsFlagInCss = usFlagCss;
-    result.uswdsStringInCss = uswdsCss;
-    result.uswdsMerriweatherFont = merriweatherFont;
-    result.uswdsPublicSansFont = publicSansFont;
-    result.uswdsSourceSansFont = sourceSansFont;
-    result.uswdsCount = uswdsCount;
 
     await page.close();
     return result;

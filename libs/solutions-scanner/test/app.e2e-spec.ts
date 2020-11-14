@@ -1,20 +1,25 @@
 import { ScanStatus } from '@app/core-scanner/scan-status';
-import { UswdsScannerModule, UswdsScannerService } from '@app/uswds-scanner';
-import { UswdsInputDto } from '@app/uswds-scanner/uswds.input.dto';
+import {
+  SolutionsScannerModule,
+  SolutionsScannerService,
+} from 'libs/solutions-scanner/src';
+import { SolutionsInputDto } from 'libs/solutions-scanner/src/solutions.input.dto';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UswdsResult } from 'entities/uswds-result.entity';
+import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 
-describe('UswdsScanner (e2e)', () => {
-  let service: UswdsScannerService;
+describe('SolutionsScanner (e2e)', () => {
+  let service: SolutionsScannerService;
   let moduleFixture: TestingModule;
 
   beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({
-      imports: [UswdsScannerModule],
+      imports: [SolutionsScannerModule],
     }).compile();
 
-    service = moduleFixture.get<UswdsScannerService>(UswdsScannerService);
+    service = moduleFixture.get<SolutionsScannerService>(
+      SolutionsScannerService,
+    );
   });
 
   afterAll(async () => {
@@ -23,14 +28,14 @@ describe('UswdsScanner (e2e)', () => {
   });
 
   it('returns results for a url', async () => {
-    const input: UswdsInputDto = {
+    const input: SolutionsInputDto = {
       websiteId: 1,
       url: '18f.gov',
     };
     const website = new Website();
     website.id = input.websiteId;
 
-    const expected = new UswdsResult();
+    const expected = new SolutionsResult();
     expected.website = website;
     expected.usaClasses = 50;
     expected.uswdsString = 1;

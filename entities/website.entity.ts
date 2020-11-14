@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CoreResult } from './core-result.entity';
-import { UswdsResult } from './uswds-result.entity';
+import { SolutionsResult } from './solutions-result.entity';
 
 @Entity()
 export class Website {
@@ -32,11 +32,11 @@ export class Website {
   coreResult: CoreResult;
 
   @OneToOne(
-    () => UswdsResult,
-    uswdsResult => uswdsResult.website,
+    () => SolutionsResult,
+    solutionsResult => solutionsResult.website,
   )
   @Exclude({ toPlainOnly: true })
-  uswdsResult: UswdsResult;
+  solutionsResult: SolutionsResult;
 
   @Column()
   @Expose({ name: 'target_url' })

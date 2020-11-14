@@ -5,7 +5,7 @@ import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { WebsiteController } from './website.controller';
 import { CoreResult } from 'entities/core-result.entity';
 import { websiteSerializer } from './serializer';
-import { UswdsResult } from 'entities/uswds-result.entity';
+import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 
 describe('WebsiteController', () => {
@@ -35,11 +35,11 @@ describe('WebsiteController', () => {
     it('should return a list of results', async () => {
       const coreResult = new CoreResult();
       coreResult.id = 1;
-      const uswdsResult = new UswdsResult();
+      const solutionsResult = new SolutionsResult();
       const website = new Website();
 
       website.coreResult = coreResult;
-      website.uswdsResult = uswdsResult;
+      website.solutionsResult = solutionsResult;
 
       mockWebsiteService.findAllWithResult
         .calledWith()
