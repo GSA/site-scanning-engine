@@ -5,13 +5,8 @@ import { Controller } from '@nestjs/common';
 export class IngestController {
   constructor(private readonly ingestService: IngestService) {}
 
-  async writeUrls(dev?: boolean) {
+  async writeUrls(limit?: number) {
     const urls = await this.ingestService.getUrls();
-
-    if (dev) {
-      await this.ingestService.writeUrls(urls, 20);
-    } else {
-      await this.ingestService.writeUrls(urls);
-    }
+    await this.ingestService.writeUrls(urls, limit);
   }
 }
