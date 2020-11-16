@@ -77,6 +77,14 @@ export class SolutionsResult {
   uswdsSourceSansFont?: number;
 
   @Column({ nullable: true })
+  @Expose({ name: 'uswds_semantic_version' })
+  uswdsSemanticVersion?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_version' })
+  uswdsVersion?: number;
+
+  @Column({ nullable: true })
   @Expose({ name: 'uswds_count' })
   uswdsCount?: number;
 }
