@@ -74,6 +74,8 @@ describe('SolutionsScannerService', () => {
     expected.uswdsPublicSansFont = 0; // :TODO mock this
     expected.uswdsSourceSansFont = 0; // :TODO mock this
     expected.uswdsCount = 17;
+    expected.uswdsSemanticVersion = undefined;
+    expected.uswdsVersion = 0;
     expected.status = ScanStatus.Completed;
 
     expect(result).toStrictEqual(expected);

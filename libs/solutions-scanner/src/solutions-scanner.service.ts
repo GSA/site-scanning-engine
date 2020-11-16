@@ -5,8 +5,8 @@ import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
-import { sum } from 'lodash';
-import { Browser, Response } from 'puppeteer';
+import { sum, uniq } from 'lodash';
+import { Browser } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
@@ -36,7 +36,9 @@ export class SolutionsScannerService
     const url = this.getHttpsUrls(input.url);
 
     try {
-      const response = await page.goto(url);
+      const response = await page.goto(url, {
+        waitUntil: 'networkidle2',
+      });
 
       const usaClassesCount = await page.evaluate(() => {
         const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
@@ -60,6 +62,9 @@ export class SolutionsScannerService
       const merriweatherFont = this.uswdsMerriweatherFont(cssPages);
       const publicSansFont = this.uswdsPublicSansFont(cssPages);
       const sourceSansFont = this.uswdsSourceSansFont(cssPages);
+      const uswdsSemanticVersion = this.uswdsSemVer(cssPages);
+      const uswdsVersionScore = uswdsSemanticVersion ? 20 : 0;
+
       const uswdsCount = sum([
         usaClassesCount,
         uswdsInHtml,
@@ -71,6 +76,7 @@ export class SolutionsScannerService
         merriweatherFont,
         sourceSansFont,
         publicSansFont,
+        uswdsVersionScore,
       ]);
 
       result.status = ScanStatus.Completed;
@@ -84,6 +90,8 @@ export class SolutionsScannerService
       result.uswdsMerriweatherFont = merriweatherFont;
       result.uswdsPublicSansFont = publicSansFont;
       result.uswdsSourceSansFont = sourceSansFont;
+      result.uswdsSemanticVersion = uswdsSemanticVersion;
+      result.uswdsVersion = uswdsVersionScore;
       result.uswdsCount = uswdsCount;
     } catch (e) {
       const err = e as Error;
@@ -227,6 +235,31 @@ export class SolutionsScannerService
     }
 
     return score;
+  }
+
+  private uswdsSemVer(cssPages: string[]): string | null {
+    const re = /uswds v?[0-9.]*/i;
+
+    const versions: string[] = [];
+
+    for (const page of cssPages) {
+      const match = page.match(re);
+
+      if (match) {
+        const version = match[0].split(' ')[1];
+        versions.push(version);
+      }
+    }
+
+    if (versions) {
+      const uniqueVersions = uniq(versions);
+      if (uniqueVersions.length > 1) {
+        this.logger.debug(`found multiple USWDS versions ${uniqueVersions}`);
+      }
+      return uniqueVersions[0];
+    } else {
+      return null;
+    }
   }
 
   async onModuleDestroy() {
