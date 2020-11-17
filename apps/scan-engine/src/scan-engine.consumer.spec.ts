@@ -85,26 +85,4 @@ describe('ScanEngineConsumer', () => {
     expect(mockCoreScanner.scan).toHaveBeenCalledWith(input);
     expect(mockCoreResultService.create).toHaveBeenCalledWith(coreResult);
   });
-
-  it('should call the SolutionsScanner and SolutionsResultService', async () => {
-    const input: SolutionsInputDto = {
-      websiteId: 1,
-      url: 'https://18f.gov',
-    };
-
-    mockSolutionsJob.data = input;
-
-    const solutionsResult = new SolutionsResult();
-    solutionsResult.id = 1;
-
-    mockSolutionsScanner.scan
-      .calledWith(input)
-      .mockResolvedValue(solutionsResult);
-    await consumer.processSolutions(mockSolutionsJob);
-
-    expect(mockSolutionsScanner.scan).toHaveBeenCalledWith(input);
-    expect(mockSolutionsResultService.create).toHaveBeenLastCalledWith(
-      solutionsResult,
-    );
-  });
 });

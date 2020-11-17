@@ -6,60 +6,68 @@ import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum, uniq } from 'lodash';
-import { Browser, Page, Response } from 'puppeteer';
+import { Browser, Page } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
 export class SolutionsScannerService
   implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy {
-  private page: Page;
-  private cssPages: string[];
-  private htmlText: string;
-  private response: Response;
-
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
-  ) {
-    this.cssPages = [];
-  }
+  ) {}
 
   async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
     const url = this.getHttpsUrls(input.url);
 
     let result: SolutionsResult;
+    let page: Page;
 
     try {
       // load the page
-      this.page = await this.browser.newPage();
+      page = await this.browser.newPage();
 
       // attach listeners
-      this.page.on('response', async response => {
+
+      const cssPages = [];
+      page.on('response', async response => {
         if (response.request().resourceType() == 'stylesheet') {
           const cssPage = await response.text();
-          this.cssPages.push(cssPage);
+          cssPages.push(cssPage);
         }
       });
 
       // goto url and wait until there are only 2 idle requests
-      this.response = await this.page.goto(url, {
+      const response = await page.goto(url, {
         waitUntil: 'networkidle2',
       });
 
       // extract the html page source
-      this.htmlText = await this.response.text();
+      const htmlText = await response.text();
+
+      // count the usa classes
+      const usaClassesCount = await this.usaClassesCount(page);
 
       // build the result
-      result = await this.buildResult(input.websiteId);
+      result = await this.buildResult(
+        input.websiteId,
+        cssPages,
+        htmlText,
+        usaClassesCount,
+      );
     } catch (error) {
       // build error result
       result = this.buildErrorResult(input.websiteId, error);
       if (result.status === ScanStatus.UnknownError) {
-        this.logger.warn(`Unkown Error calling ${input.url}: ${error.message}`);
+        this.logger.warn(
+          `Unknown Error calling ${input.url}: ${error.message}`,
+        );
       }
+    } finally {
+      await page.close();
+      this.logger.debug('closing puppeteer page');
     }
 
-    await this.page.close();
     return result;
   }
 
@@ -82,24 +90,29 @@ export class SolutionsScannerService
     return result;
   }
 
-  private async buildResult(websiteId: number): Promise<SolutionsResult> {
+  private async buildResult(
+    websiteId: number,
+    cssPages: string[],
+    htmlText: string,
+    usaClassesCount: number,
+  ): Promise<SolutionsResult> {
     const result = new SolutionsResult();
     const website = new Website();
     website.id = websiteId;
     result.website = website;
 
     result.status = ScanStatus.Completed;
-    result.usaClasses = await this.usaClassesCount();
-    result.uswdsString = this.uswdsInHtml(this.htmlText);
-    result.uswdsTables = this.tableCount(this.htmlText);
-    result.uswdsInlineCss = this.inlineUsaCssCount(this.htmlText);
-    result.uswdsUsFlag = this.uswdsFlagDetected(this.htmlText);
-    result.uswdsUsFlagInCss = this.uswdsFlagInCSS(this.cssPages);
-    result.uswdsStringInCss = this.uswdsInCss(this.cssPages);
-    result.uswdsMerriweatherFont = this.uswdsMerriweatherFont(this.cssPages);
-    result.uswdsPublicSansFont = this.uswdsPublicSansFont(this.cssPages);
-    result.uswdsSourceSansFont = this.uswdsSourceSansFont(this.cssPages);
-    result.uswdsSemanticVersion = this.uswdsSemVer(this.cssPages);
+    result.usaClasses = usaClassesCount;
+    result.uswdsString = this.uswdsInHtml(htmlText);
+    result.uswdsTables = this.tableCount(htmlText);
+    result.uswdsInlineCss = this.inlineUsaCssCount(htmlText);
+    result.uswdsUsFlag = this.uswdsFlagDetected(htmlText);
+    result.uswdsUsFlagInCss = this.uswdsFlagInCSS(cssPages);
+    result.uswdsStringInCss = this.uswdsInCss(cssPages);
+    result.uswdsMerriweatherFont = this.uswdsMerriweatherFont(cssPages);
+    result.uswdsPublicSansFont = this.uswdsPublicSansFont(cssPages);
+    result.uswdsSourceSansFont = this.uswdsSourceSansFont(cssPages);
+    result.uswdsSemanticVersion = this.uswdsSemVer(cssPages);
     result.uswdsVersion = result.uswdsSemanticVersion ? 20 : 0;
 
     const uswdsCount = sum([
@@ -121,8 +134,8 @@ export class SolutionsScannerService
     return result;
   }
 
-  private async usaClassesCount() {
-    const usaClassesCount = await this.page.evaluate(() => {
+  private async usaClassesCount(page: Page) {
+    const usaClassesCount = await page.evaluate(() => {
       const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
       let score = 0;
 

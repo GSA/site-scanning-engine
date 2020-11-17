@@ -55,7 +55,7 @@ export class ScanEngineConsumer {
       // add solutions result
       const solutionsResult = await this.solutionsScanner.scan(job.data);
       await this.solutionsResultService.create(solutionsResult);
-      this.logger.debug(`wrote core result for ${job.data.url}`);
+      this.logger.debug(`wrote solutions result for ${job.data.url}`);
 
       await job.moveToCompleted();
     } catch (e) {

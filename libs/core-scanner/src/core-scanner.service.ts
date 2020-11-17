@@ -53,7 +53,7 @@ export class CoreScannerService
 
       // log if the error is unknown
       if (result.status == ScanStatus.UnknownError) {
-        this.logger.warn(`Unkown Error calling ${input.url}: ${err.message}`);
+        this.logger.warn(`Unknown Error calling ${input.url}: ${err.message}`);
       }
     } finally {
       page.close();
