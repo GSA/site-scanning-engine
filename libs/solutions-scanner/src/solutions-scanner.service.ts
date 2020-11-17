@@ -52,13 +52,14 @@ export class SolutionsScannerService
         waitUntil: 'networkidle2',
       });
 
-      const htmlText = await response.text();
+      this.htmlText = await response.text();
+      this.response = response;
 
       const usaClassesCount = await this.usaClassesCount();
-      const uswdsInHtml = this.uswdsInHtml(htmlText);
-      const uswdsTables = this.tableCount(htmlText);
-      const inlineCssCount = this.inlineUsaCssCount(htmlText);
-      const usFlagHtml = this.uswdsFlagDetected(htmlText);
+      const uswdsInHtml = this.uswdsInHtml(this.htmlText);
+      const uswdsTables = this.tableCount(this.htmlText);
+      const inlineCssCount = this.inlineUsaCssCount(this.htmlText);
+      const usFlagHtml = this.uswdsFlagDetected(this.htmlText);
       const usFlagCss = this.uswdsFlagInCSS(this.cssPages);
       const uswdsCss = this.uswdsInCss(this.cssPages);
       const merriweatherFont = this.uswdsMerriweatherFont(this.cssPages);
