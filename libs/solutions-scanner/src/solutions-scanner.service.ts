@@ -24,86 +24,39 @@ export class SolutionsScannerService
     this.cssPages = [];
   }
 
-  /**
-   * init is used for any async construction
-   */
-  private async init() {
-    this.page = await this.browser.newPage();
-    this.page.on('response', async response => {
-      if (response.request().resourceType() == 'stylesheet') {
-        const cssPage = await response.text();
-        this.cssPages.push(cssPage);
-      }
-    });
-  }
-
   async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
-    await this.init();
-
-    const result = new SolutionsResult();
-    const website = new Website();
-    website.id = input.websiteId;
-    result.website = website;
-
     const url = this.getHttpsUrls(input.url);
 
+    let result: SolutionsResult;
+
     try {
-      const response = await this.page.goto(url, {
+      // load the page
+      this.page = await this.browser.newPage();
+
+      // attach listeners
+      this.page.on('response', async response => {
+        if (response.request().resourceType() == 'stylesheet') {
+          const cssPage = await response.text();
+          this.cssPages.push(cssPage);
+        }
+      });
+
+      // goto url and wait until there are only 2 idle requests
+      this.response = await this.page.goto(url, {
         waitUntil: 'networkidle2',
       });
 
-      this.htmlText = await response.text();
-      this.response = response;
+      // extract the html page source
+      this.htmlText = await this.response.text();
 
-      const usaClassesCount = await this.usaClassesCount();
-      const uswdsInHtml = this.uswdsInHtml(this.htmlText);
-      const uswdsTables = this.tableCount(this.htmlText);
-      const inlineCssCount = this.inlineUsaCssCount(this.htmlText);
-      const usFlagHtml = this.uswdsFlagDetected(this.htmlText);
-      const usFlagCss = this.uswdsFlagInCSS(this.cssPages);
-      const uswdsCss = this.uswdsInCss(this.cssPages);
-      const merriweatherFont = this.uswdsMerriweatherFont(this.cssPages);
-      const publicSansFont = this.uswdsPublicSansFont(this.cssPages);
-      const sourceSansFont = this.uswdsSourceSansFont(this.cssPages);
-      const uswdsSemanticVersion = this.uswdsSemVer(this.cssPages);
-      const uswdsVersionScore = uswdsSemanticVersion ? 20 : 0;
-
-      const uswdsCount = sum([
-        usaClassesCount,
-        uswdsInHtml,
-        uswdsTables,
-        inlineCssCount,
-        usFlagHtml,
-        usFlagCss,
-        uswdsCss,
-        merriweatherFont,
-        sourceSansFont,
-        publicSansFont,
-        uswdsVersionScore,
-      ]);
-
-      result.status = ScanStatus.Completed;
-      result.usaClasses = usaClassesCount;
-      result.uswdsString = uswdsInHtml;
-      result.uswdsTables = uswdsTables;
-      result.uswdsInlineCss = inlineCssCount;
-      result.uswdsUsFlag = usFlagHtml;
-      result.uswdsUsFlagInCss = usFlagCss;
-      result.uswdsStringInCss = uswdsCss;
-      result.uswdsMerriweatherFont = merriweatherFont;
-      result.uswdsPublicSansFont = publicSansFont;
-      result.uswdsSourceSansFont = sourceSansFont;
-      result.uswdsSemanticVersion = uswdsSemanticVersion;
-      result.uswdsVersion = uswdsVersionScore;
-      result.uswdsCount = uswdsCount;
-    } catch (e) {
-      const err = e as Error;
-      const errorType = parseBrowserError(err);
-      if (errorType === ScanStatus.UnknownError) {
-        this.logger.error(err.message, err.stack);
+      // build the result
+      result = await this.buildResult(input.websiteId);
+    } catch (error) {
+      // build error result on error
+      result = this.buildErrorResult(input.websiteId, error);
+      if (result.status === ScanStatus.UnknownError) {
+        this.logger.error(error.message, error.stack);
       }
-      result.status = errorType;
-      return result;
     }
 
     await this.page.close();
@@ -116,6 +69,67 @@ export class SolutionsScannerService
     } else {
       return url.toLowerCase();
     }
+  }
+
+  private buildErrorResult(websiteId: number, err: Error) {
+    const errorType = parseBrowserError(err);
+    const result = new SolutionsResult();
+    const website = new Website();
+    website.id = websiteId;
+    result.website = website;
+    result.status = errorType;
+
+    return result;
+  }
+
+  private async buildResult(websiteId: number): Promise<SolutionsResult> {
+    const result = new SolutionsResult();
+    const website = new Website();
+    website.id = websiteId;
+    result.website = website;
+    const usaClassesCount = await this.usaClassesCount();
+    const uswdsInHtml = this.uswdsInHtml(this.htmlText);
+    const uswdsTables = this.tableCount(this.htmlText);
+    const inlineCssCount = this.inlineUsaCssCount(this.htmlText);
+    const usFlagHtml = this.uswdsFlagDetected(this.htmlText);
+    const usFlagCss = this.uswdsFlagInCSS(this.cssPages);
+    const uswdsCss = this.uswdsInCss(this.cssPages);
+    const merriweatherFont = this.uswdsMerriweatherFont(this.cssPages);
+    const publicSansFont = this.uswdsPublicSansFont(this.cssPages);
+    const sourceSansFont = this.uswdsSourceSansFont(this.cssPages);
+    const uswdsSemanticVersion = this.uswdsSemVer(this.cssPages);
+    const uswdsVersionScore = uswdsSemanticVersion ? 20 : 0;
+
+    const uswdsCount = sum([
+      usaClassesCount,
+      uswdsInHtml,
+      uswdsTables,
+      inlineCssCount,
+      usFlagHtml,
+      usFlagCss,
+      uswdsCss,
+      merriweatherFont,
+      sourceSansFont,
+      publicSansFont,
+      uswdsVersionScore,
+    ]);
+
+    result.status = ScanStatus.Completed;
+    result.usaClasses = usaClassesCount;
+    result.uswdsString = uswdsInHtml;
+    result.uswdsTables = uswdsTables;
+    result.uswdsInlineCss = inlineCssCount;
+    result.uswdsUsFlag = usFlagHtml;
+    result.uswdsUsFlagInCss = usFlagCss;
+    result.uswdsStringInCss = uswdsCss;
+    result.uswdsMerriweatherFont = merriweatherFont;
+    result.uswdsPublicSansFont = publicSansFont;
+    result.uswdsSourceSansFont = sourceSansFont;
+    result.uswdsSemanticVersion = uswdsSemanticVersion;
+    result.uswdsVersion = uswdsVersionScore;
+    result.uswdsCount = uswdsCount;
+
+    return result;
   }
 
   private async usaClassesCount() {
@@ -139,8 +153,6 @@ export class SolutionsScannerService
     this.logger.debug(`uswds occurs ${occurrenceCount} times`);
     return occurrenceCount;
   }
-
-  private;
 
   /**
    * tableCount detects the presence of <table> elements in HTML. This is a negative indicator of USWDS.
