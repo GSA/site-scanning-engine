@@ -52,7 +52,7 @@ export class SolutionsScannerService
       // build the result
       result = await this.buildResult(input.websiteId);
     } catch (error) {
-      // build error result on error
+      // build error result
       result = this.buildErrorResult(input.websiteId, error);
       if (result.status === ScanStatus.UnknownError) {
         this.logger.error(error.message, error.stack);
@@ -87,46 +87,35 @@ export class SolutionsScannerService
     const website = new Website();
     website.id = websiteId;
     result.website = website;
-    const usaClassesCount = await this.usaClassesCount();
-    const uswdsInHtml = this.uswdsInHtml(this.htmlText);
-    const uswdsTables = this.tableCount(this.htmlText);
-    const inlineCssCount = this.inlineUsaCssCount(this.htmlText);
-    const usFlagHtml = this.uswdsFlagDetected(this.htmlText);
-    const usFlagCss = this.uswdsFlagInCSS(this.cssPages);
-    const uswdsCss = this.uswdsInCss(this.cssPages);
-    const merriweatherFont = this.uswdsMerriweatherFont(this.cssPages);
-    const publicSansFont = this.uswdsPublicSansFont(this.cssPages);
-    const sourceSansFont = this.uswdsSourceSansFont(this.cssPages);
-    const uswdsSemanticVersion = this.uswdsSemVer(this.cssPages);
-    const uswdsVersionScore = uswdsSemanticVersion ? 20 : 0;
-
-    const uswdsCount = sum([
-      usaClassesCount,
-      uswdsInHtml,
-      uswdsTables,
-      inlineCssCount,
-      usFlagHtml,
-      usFlagCss,
-      uswdsCss,
-      merriweatherFont,
-      sourceSansFont,
-      publicSansFont,
-      uswdsVersionScore,
-    ]);
 
     result.status = ScanStatus.Completed;
-    result.usaClasses = usaClassesCount;
-    result.uswdsString = uswdsInHtml;
-    result.uswdsTables = uswdsTables;
-    result.uswdsInlineCss = inlineCssCount;
-    result.uswdsUsFlag = usFlagHtml;
-    result.uswdsUsFlagInCss = usFlagCss;
-    result.uswdsStringInCss = uswdsCss;
-    result.uswdsMerriweatherFont = merriweatherFont;
-    result.uswdsPublicSansFont = publicSansFont;
-    result.uswdsSourceSansFont = sourceSansFont;
-    result.uswdsSemanticVersion = uswdsSemanticVersion;
-    result.uswdsVersion = uswdsVersionScore;
+    result.usaClasses = await this.usaClassesCount();
+    result.uswdsString = this.uswdsInHtml(this.htmlText);
+    result.uswdsTables = this.tableCount(this.htmlText);
+    result.uswdsInlineCss = this.inlineUsaCssCount(this.htmlText);
+    result.uswdsUsFlag = this.uswdsFlagDetected(this.htmlText);
+    result.uswdsUsFlagInCss = this.uswdsFlagInCSS(this.cssPages);
+    result.uswdsStringInCss = this.uswdsInCss(this.cssPages);
+    result.uswdsMerriweatherFont = this.uswdsMerriweatherFont(this.cssPages);
+    result.uswdsPublicSansFont = this.uswdsPublicSansFont(this.cssPages);
+    result.uswdsSourceSansFont = this.uswdsSourceSansFont(this.cssPages);
+    result.uswdsSemanticVersion = this.uswdsSemVer(this.cssPages);
+    result.uswdsVersion = result.uswdsSemanticVersion ? 20 : 0;
+
+    const uswdsCount = sum([
+      result.usaClasses,
+      result.uswdsString,
+      result.uswdsTables,
+      result.uswdsInlineCss,
+      result.uswdsUsFlag,
+      result.uswdsUsFlagInCss,
+      result.uswdsStringInCss,
+      result.uswdsMerriweatherFont,
+      result.uswdsSourceSansFont,
+      result.uswdsPublicSansFont,
+      result.uswdsVersion,
+    ]);
+
     result.uswdsCount = uswdsCount;
 
     return result;
