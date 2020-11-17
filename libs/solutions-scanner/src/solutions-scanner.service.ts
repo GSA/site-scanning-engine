@@ -55,7 +55,7 @@ export class SolutionsScannerService
       // build error result
       result = this.buildErrorResult(input.websiteId, error);
       if (result.status === ScanStatus.UnknownError) {
-        this.logger.error(error.message, error.stack);
+        this.logger.warn(`Unkown Error calling ${input.url}: ${error.message}`);
       }
     }
 
