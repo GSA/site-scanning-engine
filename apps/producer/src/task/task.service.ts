@@ -6,7 +6,6 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { ProducerService } from '../producer/producer.service';
 import { CronJob } from 'cron';
-import { SolutionsInputDto } from 'libs/solutions-scanner/src/solutions.input.dto';
 
 @Injectable()
 export class TaskService {
@@ -40,19 +39,14 @@ export class TaskService {
   async coreScanProducer() {
     try {
       const websites = await this.websiteService.findAll();
-      websites.forEach(website => {
+
+      for (const website of websites) {
         const coreInput: CoreInputDto = {
           websiteId: website.id,
           url: website.url,
         };
-        this.producerService.addCoreJob(coreInput);
-
-        const solutionsInput: SolutionsInputDto = {
-          websiteId: website.id,
-          url: website.url,
-        };
-        this.producerService.addSolutionsJob(solutionsInput);
-      });
+        await this.producerService.addCoreJob(coreInput);
+      }
     } catch (error) {
       this.logger.error(`error in ${this.coreScanProducer.name}`, error);
     }
