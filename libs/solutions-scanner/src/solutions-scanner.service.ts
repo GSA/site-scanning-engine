@@ -6,63 +6,65 @@ import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum, uniq } from 'lodash';
-import { Browser } from 'puppeteer';
+import { Browser, Page, Response } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
 export class SolutionsScannerService
   implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy {
+  private page: Page;
+  private cssPages: string[];
+  private htmlText: string;
+  private response: Response;
+
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
-  ) {}
+  ) {
+    this.cssPages = [];
+  }
+
+  /**
+   * init is used for any async construction
+   */
+  private async init() {
+    this.page = await this.browser.newPage();
+    this.page.on('response', async response => {
+      if (response.request().resourceType() == 'stylesheet') {
+        const cssPage = await response.text();
+        this.cssPages.push(cssPage);
+      }
+    });
+  }
 
   async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
-    const page = await this.browser.newPage();
+    await this.init();
 
     const result = new SolutionsResult();
     const website = new Website();
     website.id = input.websiteId;
     result.website = website;
 
-    const cssPages: string[] = [];
-    page.on('response', async response => {
-      if (response.request().resourceType() == 'stylesheet') {
-        const cssPage = await response.text();
-        cssPages.push(cssPage);
-      }
-    });
-
     const url = this.getHttpsUrls(input.url);
 
     try {
-      const response = await page.goto(url, {
+      const response = await this.page.goto(url, {
         waitUntil: 'networkidle2',
-      });
-
-      const usaClassesCount = await page.evaluate(() => {
-        const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
-        let score = 0;
-
-        if (usaClasses.length > 0) {
-          score = Math.round(Math.sqrt(usaClasses.length)) * 5;
-        }
-
-        return score;
       });
 
       const htmlText = await response.text();
 
+      const usaClassesCount = await this.usaClassesCount();
       const uswdsInHtml = this.uswdsInHtml(htmlText);
       const uswdsTables = this.tableCount(htmlText);
       const inlineCssCount = this.inlineUsaCssCount(htmlText);
       const usFlagHtml = this.uswdsFlagDetected(htmlText);
-      const usFlagCss = this.uswdsFlagInCSS(cssPages);
-      const uswdsCss = this.uswdsInCss(cssPages);
-      const merriweatherFont = this.uswdsMerriweatherFont(cssPages);
-      const publicSansFont = this.uswdsPublicSansFont(cssPages);
-      const sourceSansFont = this.uswdsSourceSansFont(cssPages);
-      const uswdsSemanticVersion = this.uswdsSemVer(cssPages);
+      const usFlagCss = this.uswdsFlagInCSS(this.cssPages);
+      const uswdsCss = this.uswdsInCss(this.cssPages);
+      const merriweatherFont = this.uswdsMerriweatherFont(this.cssPages);
+      const publicSansFont = this.uswdsPublicSansFont(this.cssPages);
+      const sourceSansFont = this.uswdsSourceSansFont(this.cssPages);
+      const uswdsSemanticVersion = this.uswdsSemVer(this.cssPages);
       const uswdsVersionScore = uswdsSemanticVersion ? 20 : 0;
 
       const uswdsCount = sum([
@@ -103,7 +105,7 @@ export class SolutionsScannerService
       return result;
     }
 
-    await page.close();
+    await this.page.close();
     return result;
   }
 
@@ -115,12 +117,29 @@ export class SolutionsScannerService
     }
   }
 
+  private async usaClassesCount() {
+    const usaClassesCount = await this.page.evaluate(() => {
+      const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
+      let score = 0;
+
+      if (usaClasses.length > 0) {
+        score = Math.round(Math.sqrt(usaClasses.length)) * 5;
+      }
+
+      return score;
+    });
+
+    return usaClassesCount;
+  }
+
   private uswdsInHtml(htmlText: string) {
     const re = /uswds/g;
     const occurrenceCount = [...htmlText.matchAll(re)].length;
     this.logger.debug(`uswds occurs ${occurrenceCount} times`);
     return occurrenceCount;
   }
+
+  private;
 
   /**
    * tableCount detects the presence of <table> elements in HTML. This is a negative indicator of USWDS.
