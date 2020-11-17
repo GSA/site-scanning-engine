@@ -20,6 +20,9 @@ import { v4 } from 'uuid';
 @Injectable()
 export class CoreScannerService
   implements Scanner<CoreInputDto, CoreResult>, OnModuleDestroy {
+  private page: Page;
+  private response: Response;
+
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
@@ -27,56 +30,83 @@ export class CoreScannerService
   ) {}
 
   async scan(input: CoreInputDto) {
-    const page = await this.browser.newPage();
-    const url = this.getHttpsUrls(input.url);
+    const url = this.getHttpsUrl(input.url);
+
+    let result: CoreResult;
+
+    try {
+      // load a page
+      this.page = await this.browser.newPage();
+
+      // load the url
+      this.logger.debug(`loading ${url}`);
+      this.response = await this.page.goto(url);
+
+      // do the redirect tst
+      const notFoundTest = await this.notFoundTest(url);
+
+      // construct the CoreResult
+      result = this.buildResult(input, notFoundTest);
+    } catch (error) {
+      const err = error as Error;
+
+      // build error result on error
+      result = this.buildErrorResult(input, err);
+
+      // log if the error is unknown
+      if (result.status == ScanStatus.UnknownError) {
+        this.logger.error(err.message, err.stack);
+      }
+    }
+
+    await this.page.close();
+    this.logger.debug('closed puppeteer page');
+
+    this.logger.debug(`result for ${url}: ${JSON.stringify(result)}`);
+    return result;
+  }
+
+  private buildResult(input: CoreInputDto, notFoundTest: boolean) {
+    const url = this.getHttpsUrl(input.url);
 
     const result = new CoreResult();
     const website = new Website();
     website.id = input.websiteId;
 
-    try {
-      // load the url
-      this.logger.debug(`loading ${url}`);
-      const response = await page.goto(url);
-      const redirectChain = response.request().redirectChain();
-      const notFoundTest = await this.notFoundTest(url);
+    const redirectChain = this.response.request().redirectChain();
+    const finalUrl = this.getFinalUrl(this.page);
 
-      // calculate the finalUrl
-      const finalUrl = this.getFinalUrl(page);
+    result.website = website;
+    result.targetUrlRedirects = this.redirects(redirectChain);
+    result.targetUrlBaseDomain = this.getBaseDomain(url);
+    result.finalUrl = finalUrl;
+    result.finalUrlMIMEType = this.getMIMEType(this.response);
+    result.finalUrlIsLive = this.isLive(this.response);
+    result.finalUrlBaseDomain = this.getBaseDomain(finalUrl);
+    result.finalUrlSameDomain =
+      this.getBaseDomain(url) === this.getBaseDomain(finalUrl);
+    result.finalUrlSameWebsite =
+      this.getPathname(url) == this.getPathname(finalUrl) &&
+      this.getBaseDomain(url) == this.getBaseDomain(finalUrl);
+    result.finalUrlStatusCode = this.response.status();
+    result.status = ScanStatus.Completed;
+    result.targetUrl404Test = notFoundTest;
 
-      // construct the CoreResult from the scan fields
-      result.website = website;
-      result.targetUrlRedirects = this.redirects(redirectChain);
-      result.targetUrlBaseDomain = this.getBaseDomain(url);
-      result.finalUrl = finalUrl;
-      result.finalUrlMIMEType = this.getMIMEType(response);
-      result.finalUrlIsLive = this.isLive(response);
-      result.finalUrlBaseDomain = this.getBaseDomain(finalUrl);
-      result.finalUrlSameDomain =
-        this.getBaseDomain(url) === this.getBaseDomain(finalUrl);
-      result.finalUrlSameWebsite =
-        this.getPathname(url) == this.getPathname(finalUrl) &&
-        this.getBaseDomain(url) == this.getBaseDomain(finalUrl);
-      result.finalUrlStatusCode = response.status();
-      result.status = ScanStatus.Completed;
-      result.targetUrl404Test = notFoundTest;
-    } catch (e) {
-      const err = e as Error;
-      result.website = website;
-      result.targetUrlBaseDomain = this.getBaseDomain(url);
+    return result;
+  }
 
-      const errorType = parseBrowserError(err);
-      if (errorType === ScanStatus.UnknownError) {
-        this.logger.error(err.message, err.stack);
-      }
+  private buildErrorResult(input: CoreInputDto, err: Error) {
+    const url = this.getHttpsUrl(input.url);
+    const errorType = parseBrowserError(err);
 
-      result.status = errorType;
-    }
+    const website = new Website();
+    website.id = input.websiteId;
 
-    await page.close();
-    this.logger.debug('closed puppeteer page');
+    const result = new CoreResult();
+    result.website = website;
+    result.targetUrlBaseDomain = this.getBaseDomain(url);
+    result.status = errorType;
 
-    this.logger.debug(`result for ${url}: ${JSON.stringify(result)}`);
     return result;
   }
 
@@ -112,7 +142,7 @@ export class CoreScannerService
     return parsed.pathname;
   }
 
-  private getHttpsUrls(url: string) {
+  private getHttpsUrl(url: string) {
     if (!url.startsWith('https://')) {
       return `https://${url.toLowerCase()}`;
     } else {
