@@ -32,7 +32,9 @@ const BrowserService = {
 function parseBrowserError(err: Error) {
   const dnsError = err.message.startsWith('net::ERR_NAME_NOT_RESOLVED');
   const timeoutError = err.name === 'TimeoutError';
-  const sslError = err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID');
+  const sslError =
+    err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID') ||
+    err.message.startsWith('unable to verify the first certificate');
 
   let errorType: ScanStatus;
 
