@@ -36,6 +36,7 @@ export class CoreScannerService
     try {
       // load a page
       page = await this.browser.newPage();
+      await page.setCacheEnabled(false);
 
       // load the url
       this.logger.debug(`loading ${url}`);
