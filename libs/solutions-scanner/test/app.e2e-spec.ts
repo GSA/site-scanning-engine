@@ -7,10 +7,13 @@ import { SolutionsInputDto } from 'libs/solutions-scanner/src/solutions.input.dt
 import { Test, TestingModule } from '@nestjs/testing';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
+import { LoggerService } from '@app/logger';
+import { noop } from 'lodash';
 
 describe('SolutionsScanner (e2e)', () => {
   let service: SolutionsScannerService;
   let moduleFixture: TestingModule;
+  let logger: LoggerService;
 
   beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({
@@ -20,6 +23,9 @@ describe('SolutionsScanner (e2e)', () => {
     service = moduleFixture.get<SolutionsScannerService>(
       SolutionsScannerService,
     );
+    logger = moduleFixture.get<LoggerService>(LoggerService);
+
+    jest.spyOn(logger, 'debug').mockImplementation(noop);
   });
 
   afterAll(async () => {

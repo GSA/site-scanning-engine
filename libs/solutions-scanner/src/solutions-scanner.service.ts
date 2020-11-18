@@ -6,7 +6,7 @@ import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum, uniq } from 'lodash';
-import { Browser } from 'puppeteer';
+import { Browser, Page } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
@@ -18,92 +18,56 @@ export class SolutionsScannerService
   ) {}
 
   async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
-    const page = await this.browser.newPage();
-
-    const result = new SolutionsResult();
-    const website = new Website();
-    website.id = input.websiteId;
-    result.website = website;
-
-    const cssPages: string[] = [];
-    page.on('response', async response => {
-      if (response.request().resourceType() == 'stylesheet') {
-        const cssPage = await response.text();
-        cssPages.push(cssPage);
-      }
-    });
-
     const url = this.getHttpsUrls(input.url);
 
+    let result: SolutionsResult;
+    let page: Page;
+
     try {
+      // load the page
+      page = await this.browser.newPage();
+
+      // attach listeners
+
+      const cssPages = [];
+      page.on('response', async response => {
+        if (response.request().resourceType() == 'stylesheet') {
+          const cssPage = await response.text();
+          cssPages.push(cssPage);
+        }
+      });
+
+      // goto url and wait until there are only 2 idle requests
       const response = await page.goto(url, {
         waitUntil: 'networkidle2',
       });
 
-      const usaClassesCount = await page.evaluate(() => {
-        const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
-        let score = 0;
-
-        if (usaClasses.length > 0) {
-          score = Math.round(Math.sqrt(usaClasses.length)) * 5;
-        }
-
-        return score;
-      });
-
+      // extract the html page source
       const htmlText = await response.text();
 
-      const uswdsInHtml = this.uswdsInHtml(htmlText);
-      const uswdsTables = this.tableCount(htmlText);
-      const inlineCssCount = this.inlineUsaCssCount(htmlText);
-      const usFlagHtml = this.uswdsFlagDetected(htmlText);
-      const usFlagCss = this.uswdsFlagInCSS(cssPages);
-      const uswdsCss = this.uswdsInCss(cssPages);
-      const merriweatherFont = this.uswdsMerriweatherFont(cssPages);
-      const publicSansFont = this.uswdsPublicSansFont(cssPages);
-      const sourceSansFont = this.uswdsSourceSansFont(cssPages);
-      const uswdsSemanticVersion = this.uswdsSemVer(cssPages);
-      const uswdsVersionScore = uswdsSemanticVersion ? 20 : 0;
+      // count the usa classes
+      const usaClassesCount = await this.usaClassesCount(page);
 
-      const uswdsCount = sum([
+      // build the result
+      result = await this.buildResult(
+        input.websiteId,
+        cssPages,
+        htmlText,
         usaClassesCount,
-        uswdsInHtml,
-        uswdsTables,
-        inlineCssCount,
-        usFlagHtml,
-        usFlagCss,
-        uswdsCss,
-        merriweatherFont,
-        sourceSansFont,
-        publicSansFont,
-        uswdsVersionScore,
-      ]);
-
-      result.status = ScanStatus.Completed;
-      result.usaClasses = usaClassesCount;
-      result.uswdsString = uswdsInHtml;
-      result.uswdsTables = uswdsTables;
-      result.uswdsInlineCss = inlineCssCount;
-      result.uswdsUsFlag = usFlagHtml;
-      result.uswdsUsFlagInCss = usFlagCss;
-      result.uswdsStringInCss = uswdsCss;
-      result.uswdsMerriweatherFont = merriweatherFont;
-      result.uswdsPublicSansFont = publicSansFont;
-      result.uswdsSourceSansFont = sourceSansFont;
-      result.uswdsSemanticVersion = uswdsSemanticVersion;
-      result.uswdsVersion = uswdsVersionScore;
-      result.uswdsCount = uswdsCount;
-    } catch (e) {
-      const err = e as Error;
-      const errorType = parseBrowserError(err);
-      if (errorType === ScanStatus.UnknownError) {
-        this.logger.error(err.message, err.stack);
+      );
+    } catch (error) {
+      // build error result
+      result = this.buildErrorResult(input.websiteId, error);
+      if (result.status === ScanStatus.UnknownError) {
+        this.logger.warn(
+          `Unknown Error calling ${input.url}: ${error.message}`,
+        );
       }
-      result.status = errorType;
-      return result;
+    } finally {
+      await page.close();
+      this.logger.debug('closing puppeteer page');
     }
 
-    await page.close();
     return result;
   }
 
@@ -113,6 +77,76 @@ export class SolutionsScannerService
     } else {
       return url.toLowerCase();
     }
+  }
+
+  private buildErrorResult(websiteId: number, err: Error) {
+    const errorType = parseBrowserError(err);
+    const result = new SolutionsResult();
+    const website = new Website();
+    website.id = websiteId;
+    result.website = website;
+    result.status = errorType;
+
+    return result;
+  }
+
+  private async buildResult(
+    websiteId: number,
+    cssPages: string[],
+    htmlText: string,
+    usaClassesCount: number,
+  ): Promise<SolutionsResult> {
+    const result = new SolutionsResult();
+    const website = new Website();
+    website.id = websiteId;
+    result.website = website;
+
+    result.status = ScanStatus.Completed;
+    result.usaClasses = usaClassesCount;
+    result.uswdsString = this.uswdsInHtml(htmlText);
+    result.uswdsTables = this.tableCount(htmlText);
+    result.uswdsInlineCss = this.inlineUsaCssCount(htmlText);
+    result.uswdsUsFlag = this.uswdsFlagDetected(htmlText);
+    result.uswdsUsFlagInCss = this.uswdsFlagInCSS(cssPages);
+    result.uswdsStringInCss = this.uswdsInCss(cssPages);
+    result.uswdsMerriweatherFont = this.uswdsMerriweatherFont(cssPages);
+    result.uswdsPublicSansFont = this.uswdsPublicSansFont(cssPages);
+    result.uswdsSourceSansFont = this.uswdsSourceSansFont(cssPages);
+    result.uswdsSemanticVersion = this.uswdsSemVer(cssPages);
+    result.uswdsVersion = result.uswdsSemanticVersion ? 20 : 0;
+
+    const uswdsCount = sum([
+      result.usaClasses,
+      result.uswdsString,
+      result.uswdsTables,
+      result.uswdsInlineCss,
+      result.uswdsUsFlag,
+      result.uswdsUsFlagInCss,
+      result.uswdsStringInCss,
+      result.uswdsMerriweatherFont,
+      result.uswdsSourceSansFont,
+      result.uswdsPublicSansFont,
+      result.uswdsVersion,
+    ]);
+
+    result.uswdsCount = uswdsCount;
+
+    return result;
+  }
+
+  private async usaClassesCount(page: Page) {
+    const usaClassesCount = await page.evaluate(() => {
+      const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
+      let score = 0;
+
+      if (usaClasses.length > 0) {
+        score = Math.round(Math.sqrt(usaClasses.length)) * 5;
+      }
+
+      return score;
+    });
+
+    return usaClassesCount;
   }
 
   private uswdsInHtml(htmlText: string) {
