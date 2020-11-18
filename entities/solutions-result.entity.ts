@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -87,4 +87,26 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'uswds_count' })
   uswdsCount?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'dap_detected_final_url' })
+  dapDetected?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'dap_parameters_final_url' })
+  @Transform(
+    value => {
+      if (value) {
+        const urlSearchParams = new URLSearchParams(value);
+        const result = {};
+        for (const [key, value] of urlSearchParams.entries()) {
+          result[key] = value;
+        }
+        return result;
+      }
+      return value;
+    },
+    { toPlainOnly: true },
+  )
+  dapParameters?: string;
 }
