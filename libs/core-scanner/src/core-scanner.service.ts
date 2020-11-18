@@ -16,6 +16,7 @@ import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 import { ScanStatus } from './scan-status';
 import { v4 } from 'uuid';
+import { Agent } from 'https';
 
 @Injectable()
 export class CoreScannerService
@@ -38,9 +39,11 @@ export class CoreScannerService
 
       // load the url
       this.logger.debug(`loading ${url}`);
-      const response = await page.goto(url);
+      const response = await page.goto(url, {
+        waitUntil: 'networkidle2',
+      });
 
-      // do the redirect tst
+      // do the redirect test
       const notFoundTest = await this.notFoundTest(url);
 
       // construct the CoreResult
@@ -162,11 +165,17 @@ export class CoreScannerService
   private async notFoundTest(url: string): Promise<boolean> {
     const randomUrl = new URL(url);
     randomUrl.pathname = `not-found-test${v4()}`;
+
+    const agent = new Agent({
+      rejectUnauthorized: false,
+    });
+
     const resp = await this.httpService
       .get(randomUrl.toString(), {
         validateStatus: _ => {
           return true;
         },
+        httpsAgent: agent,
       })
       .toPromise();
 
