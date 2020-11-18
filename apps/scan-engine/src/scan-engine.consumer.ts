@@ -41,7 +41,7 @@ export class ScanEngineConsumer {
    */
   @Process({
     name: CORE_SCAN_JOB_NAME,
-    concurrency: 5,
+    concurrency: 10,
   })
   async processCore(job: Job<CoreInputDto>) {
     this.logger.debug(`scanning ${job.data.url}`);
