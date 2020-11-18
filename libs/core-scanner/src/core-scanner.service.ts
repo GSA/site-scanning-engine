@@ -56,7 +56,7 @@ export class CoreScannerService
         this.logger.warn(`Unknown Error calling ${input.url}: ${err.message}`);
       }
     } finally {
-      page.close();
+      await page.close();
       this.logger.debug('closed puppeteer page');
     }
 
