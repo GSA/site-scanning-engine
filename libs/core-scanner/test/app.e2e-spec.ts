@@ -1,3 +1,4 @@
+import { BrowserService, BROWSER_TOKEN } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { LoggerService } from '@app/logger';
@@ -5,11 +6,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 import { noop } from 'lodash';
+import { Browser } from 'puppeteer';
 
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;
   let logger: LoggerService;
   let moduleFixture: TestingModule;
+  let browser: Browser;
 
   beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({
@@ -18,12 +21,13 @@ describe('CoreScanner (e2e)', () => {
 
     service = moduleFixture.get<CoreScannerService>(CoreScannerService);
     logger = moduleFixture.get<LoggerService>(LoggerService);
+    browser = moduleFixture.get<Browser>(BROWSER_TOKEN);
 
     jest.spyOn(logger, 'debug').mockImplementation(noop);
   });
 
   afterAll(async () => {
-    await service.onModuleDestroy();
+    await browser.close();
     await moduleFixture.close();
   });
 
