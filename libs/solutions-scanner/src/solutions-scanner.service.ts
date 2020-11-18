@@ -5,7 +5,7 @@ import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
-import { find, noop, sum, uniq } from 'lodash';
+import { sum, uniq } from 'lodash';
 import { Browser, Page, Request } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
