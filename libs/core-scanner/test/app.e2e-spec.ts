@@ -31,7 +31,7 @@ describe('CoreScanner (e2e)', () => {
     await moduleFixture.close();
   });
 
-  it('returns results for a url', async () => {
+  it('returns results for 18f.gov', async () => {
     const input: CoreInputDto = {
       websiteId: 1,
       url: '18f.gov',
@@ -50,6 +50,32 @@ describe('CoreScanner (e2e)', () => {
     expected.status = 'completed';
     expected.targetUrl404Test = true;
     expected.targetUrlBaseDomain = '18f.gov';
+    expected.targetUrlRedirects = true;
+    expected.website = website;
+
+    const result = await service.scan(input);
+    expect(result).toStrictEqual(expected);
+  });
+
+  it('returns results for poolsafety.gov', async () => {
+    const input: CoreInputDto = {
+      websiteId: 1,
+      url: 'poolsafety.gov',
+    };
+    const website = new Website();
+    website.id = input.websiteId;
+
+    const expected = new CoreResult();
+    expected.finalUrl = 'https://www.poolsafely.gov/';
+    expected.finalUrlBaseDomain = 'poolsafely.gov';
+    expected.finalUrlIsLive = true;
+    expected.finalUrlMIMEType = 'text/html';
+    expected.finalUrlSameDomain = false;
+    expected.finalUrlSameWebsite = false;
+    expected.finalUrlStatusCode = 200;
+    expected.status = 'completed';
+    expected.targetUrl404Test = false;
+    expected.targetUrlBaseDomain = 'poolsafety.gov';
     expected.targetUrlRedirects = true;
     expected.website = website;
 
