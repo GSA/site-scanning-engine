@@ -26,9 +26,9 @@ export class SolutionsScannerService
     try {
       // load the page
       page = await this.browser.newPage();
+      await page.setCacheEnabled(false);
 
       // attach listeners
-
       const cssPages = [];
       page.on('response', async response => {
         if (response.request().resourceType() == 'stylesheet') {
