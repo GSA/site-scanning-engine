@@ -6,7 +6,7 @@ import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum, uniq } from 'lodash';
-import { Browser, Page } from 'puppeteer';
+import { Browser, Page, Request } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
@@ -37,6 +37,11 @@ export class SolutionsScannerService
         }
       });
 
+      const outboundRequests: Request[] = [];
+      page.on('request', request => {
+        outboundRequests.push(request);
+      });
+
       // goto url and wait until there are only 2 idle requests
       const response = await page.goto(url, {
         waitUntil: 'networkidle2',
@@ -54,6 +59,7 @@ export class SolutionsScannerService
         cssPages,
         htmlText,
         usaClassesCount,
+        outboundRequests,
       );
     } catch (error) {
       // build error result
@@ -95,6 +101,7 @@ export class SolutionsScannerService
     cssPages: string[],
     htmlText: string,
     usaClassesCount: number,
+    outboundRequests: Request[],
   ): Promise<SolutionsResult> {
     const result = new SolutionsResult();
     const website = new Website();
@@ -114,6 +121,8 @@ export class SolutionsScannerService
     result.uswdsSourceSansFont = this.uswdsSourceSansFont(cssPages);
     result.uswdsSemanticVersion = this.uswdsSemVer(cssPages);
     result.uswdsVersion = result.uswdsSemanticVersion ? 20 : 0;
+    result.dapDetected = this.dapDetected(outboundRequests);
+    result.dapParameters = this.dapParameters(outboundRequests);
 
     const uswdsCount = sum([
       result.usaClasses,
@@ -294,6 +303,52 @@ export class SolutionsScannerService
     } else {
       return null;
     }
+  }
+
+  /**
+   * dapDetected looks to see if the Digital Analytics Program is detected on a page.
+   *
+   * It works by looking for the Google Analytics UA Identifier in either the URL or Post Data.
+   * @param outboundRequests
+   */
+  private dapDetected(outboundRequests: Request[]) {
+    const dapUaId = 'UA-33523145-1';
+    let detected = false;
+
+    for (const request of outboundRequests) {
+      if (request.url().includes(dapUaId)) {
+        detected = true;
+        break;
+      }
+
+      try {
+        if (request.postData().includes(dapUaId)) {
+          detected = true;
+          break;
+        }
+      } catch (error) {
+        // fine to ignore if there's no post body.
+      }
+    }
+
+    return detected;
+  }
+
+  private dapParameters(outboundRequests: Request[]) {
+    const dapUrl = 'dap.digitalgov.gov/Universal-Federated-Analytics-Min.js';
+
+    let parameters: string;
+    for (const request of outboundRequests) {
+      const requestUrl = request.url();
+
+      if (requestUrl.includes(dapUrl)) {
+        const parsedUrl = new URL(requestUrl);
+        parameters = parsedUrl.searchParams.toString();
+        break;
+      }
+    }
+
+    return parameters;
   }
 
   async onModuleDestroy() {

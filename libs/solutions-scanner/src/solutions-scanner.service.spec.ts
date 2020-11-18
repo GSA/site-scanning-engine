@@ -76,6 +76,8 @@ describe('SolutionsScannerService', () => {
     expected.uswdsCount = 17;
     expected.uswdsSemanticVersion = undefined;
     expected.uswdsVersion = 0;
+    expected.dapDetected = false;
+    expected.dapParameters = undefined;
     expected.status = ScanStatus.Completed;
 
     expect(result).toStrictEqual(expected);
