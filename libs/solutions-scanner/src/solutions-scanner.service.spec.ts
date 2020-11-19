@@ -56,6 +56,7 @@ describe('SolutionsScannerService', () => {
 
     mockPage.evaluate.mockResolvedValueOnce(4);
     mockPage.evaluate.mockResolvedValueOnce('Page Title');
+    mockPage.evaluate.mockResolvedValueOnce('Page Description');
     mockResponse.text.mockResolvedValue(source);
     mockPage.goto.mockResolvedValue(mockResponse);
 
@@ -79,6 +80,7 @@ describe('SolutionsScannerService', () => {
     expected.dapDetected = false;
     expected.dapParameters = undefined;
     expected.ogTitleFinalUrl = 'Page Title';
+    expected.ogDescriptionFinalUrl = 'Page Description';
 
     expected.status = ScanStatus.Completed;
 

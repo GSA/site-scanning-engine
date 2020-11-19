@@ -127,6 +127,10 @@ export class SolutionsScannerService
 
     // seo
     result.ogTitleFinalUrl = await this.findOpenGraphTag(page, 'og:title');
+    result.ogDescriptionFinalUrl = await this.findOpenGraphTag(
+      page,
+      'og:description',
+    );
 
     return result;
   }

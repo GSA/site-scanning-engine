@@ -114,4 +114,8 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'og_title_final_url' })
   ogTitleFinalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'og_description_final_url' })
+  ogDescriptionFinalUrl?: string;
 }
