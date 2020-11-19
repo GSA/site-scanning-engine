@@ -50,15 +50,12 @@ export class SolutionsScannerService
       // extract the html page source
       const htmlText = await response.text();
 
-      // count the usa classes
-      const usaClassesCount = await this.usaClassesCount(page);
-
       // build the result
       result = await this.buildResult(
         input.websiteId,
         cssPages,
         htmlText,
-        usaClassesCount,
+        page,
         outboundRequests,
       );
     } catch (error) {
@@ -100,7 +97,7 @@ export class SolutionsScannerService
     websiteId: number,
     cssPages: string[],
     htmlText: string,
-    usaClassesCount: number,
+    page: Page,
     outboundRequests: Request[],
   ): Promise<SolutionsResult> {
     const result = new SolutionsResult();
@@ -109,7 +106,7 @@ export class SolutionsScannerService
     result.website = website;
 
     result.status = ScanStatus.Completed;
-    result.usaClasses = usaClassesCount;
+    result.usaClasses = await this.usaClassesCount(page);
     result.uswdsString = this.uswdsInHtml(htmlText);
     result.uswdsTables = this.tableCount(htmlText);
     result.uswdsInlineCss = this.inlineUsaCssCount(htmlText);
@@ -121,8 +118,14 @@ export class SolutionsScannerService
     result.uswdsSourceSansFont = this.uswdsSourceSansFont(cssPages);
     result.uswdsSemanticVersion = this.uswdsSemVer(cssPages);
     result.uswdsVersion = result.uswdsSemanticVersion ? 20 : 0;
+
+    // dap
     result.dapDetected = this.dapDetected(outboundRequests);
     result.dapParameters = this.dapParameters(outboundRequests);
+
+    // seo
+    const ogData = await this.openGraphData(page);
+    result.ogTitleFinalUrl = this.findOpenGraphContent(ogData, 'og:title');
 
     const uswdsCount = sum([
       result.usaClasses,
@@ -349,6 +352,25 @@ export class SolutionsScannerService
     }
 
     return parameters;
+  }
+
+  private async openGraphData(page: Page) {
+    const openGraphTags = await page.evaluate(() => {
+      const ogTags = [
+        ...document.querySelectorAll('head > meta[property^=og:'),
+      ];
+      return ogTags;
+    });
+
+    return openGraphTags;
+  }
+
+  private findOpenGraphContent(elems: Element[], target: string) {
+    for (const elem of elems) {
+      if (elem.getAttribute('property') === target) {
+        return elem.getAttribute('content');
+      }
+    }
   }
 
   async onModuleDestroy() {

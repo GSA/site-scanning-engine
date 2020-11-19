@@ -92,6 +92,7 @@ export class SolutionsResult {
   @Expose({ name: 'dap_detected_final_url' })
   dapDetected?: boolean;
 
+  // dap_parameters need to be parsed into JSON on serialization.
   @Column({ nullable: true })
   @Expose({ name: 'dap_parameters_final_url' })
   @Transform(
@@ -109,4 +110,8 @@ export class SolutionsResult {
     { toPlainOnly: true },
   )
   dapParameters?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'og_title_final_url' })
+  ogTitleFinalUrl?: string;
 }
