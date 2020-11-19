@@ -59,6 +59,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.status = ScanStatus.Completed;
     expected.dapDetected = true;
     expected.dapParameters = 'agency=GSA&subagency=TTS%2C18F';
+    expected.ogTitleFinalUrl = '18F: Digital service delivery | Home';
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

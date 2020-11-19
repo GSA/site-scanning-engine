@@ -65,6 +65,7 @@ export class SolutionsScannerService
         this.logger.warn(
           `Unknown Error calling ${input.url}: ${error.message}`,
         );
+        console.log(error);
       }
     } finally {
       await page.close();
@@ -118,15 +119,19 @@ export class SolutionsScannerService
     result.uswdsSourceSansFont = this.uswdsSourceSansFont(cssPages);
     result.uswdsSemanticVersion = this.uswdsSemVer(cssPages);
     result.uswdsVersion = result.uswdsSemanticVersion ? 20 : 0;
+    result.uswdsCount = this.uswdsCount(result);
 
     // dap
     result.dapDetected = this.dapDetected(outboundRequests);
     result.dapParameters = this.dapParameters(outboundRequests);
 
     // seo
-    const ogData = await this.openGraphData(page);
-    result.ogTitleFinalUrl = this.findOpenGraphContent(ogData, 'og:title');
+    result.ogTitleFinalUrl = await this.findOpenGraphTag(page, 'og:title');
 
+    return result;
+  }
+
+  private uswdsCount(result: SolutionsResult) {
     const uswdsCount = sum([
       result.usaClasses,
       result.uswdsString,
@@ -140,15 +145,13 @@ export class SolutionsScannerService
       result.uswdsPublicSansFont,
       result.uswdsVersion,
     ]);
-
-    result.uswdsCount = uswdsCount;
-
-    return result;
+    return uswdsCount;
   }
 
   private async usaClassesCount(page: Page) {
     const usaClassesCount = await page.evaluate(() => {
       const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
+
       let score = 0;
 
       if (usaClasses.length > 0) {
@@ -354,23 +357,20 @@ export class SolutionsScannerService
     return parameters;
   }
 
-  private async openGraphData(page: Page) {
-    const openGraphTags = await page.evaluate(() => {
-      const ogTags = [
-        ...document.querySelectorAll('head > meta[property^=og:'),
-      ];
-      return ogTags;
-    });
+  private async findOpenGraphTag(page: Page, target: string) {
+    const openGraphResult = await page.evaluate((target: string) => {
+      const ogTag = document.querySelector<Element>(
+        `head > meta[property="${target}"]`,
+      );
 
-    return openGraphTags;
-  }
-
-  private findOpenGraphContent(elems: Element[], target: string) {
-    for (const elem of elems) {
-      if (elem.getAttribute('property') === target) {
-        return elem.getAttribute('content');
+      let result: string | null = null;
+      if (ogTag) {
+        result = ogTag.getAttribute('content');
       }
-    }
+      return result;
+    }, target);
+
+    return openGraphResult;
   }
 
   async onModuleDestroy() {

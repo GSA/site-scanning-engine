@@ -8,6 +8,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response } from 'puppeteer';
 import { SolutionsScannerService } from './solutions-scanner.service';
 import { SolutionsInputDto } from './solutions.input.dto';
+import { source } from './testPageSource';
 
 describe('SolutionsScannerService', () => {
   let service: SolutionsScannerService;
@@ -53,10 +54,9 @@ describe('SolutionsScannerService', () => {
     const website = new Website();
     website.id = input.websiteId;
 
-    mockPage.evaluate.mockResolvedValue(4);
-    mockResponse.text.mockResolvedValue(
-      'uswds uswds <table> .usa- us_flag_small.png',
-    );
+    mockPage.evaluate.mockResolvedValueOnce(4);
+    mockPage.evaluate.mockResolvedValueOnce('Page Title');
+    mockResponse.text.mockResolvedValue(source);
     mockPage.goto.mockResolvedValue(mockResponse);
 
     const result = await service.scan(input);
@@ -64,20 +64,22 @@ describe('SolutionsScannerService', () => {
 
     expected.website = website;
     expected.usaClasses = 4;
-    expected.uswdsString = 2;
-    expected.uswdsTables = -10;
-    expected.uswdsInlineCss = 1;
+    expected.uswdsString = 1;
+    expected.uswdsTables = 0;
+    expected.uswdsInlineCss = 0;
     expected.uswdsUsFlag = 20;
     expected.uswdsStringInCss = 0; // :TODO mock this
     expected.uswdsUsFlagInCss = 0; // :TODO mock this
     expected.uswdsMerriweatherFont = 0; // :TODO mock this
     expected.uswdsPublicSansFont = 0; // :TODO mock this
     expected.uswdsSourceSansFont = 0; // :TODO mock this
-    expected.uswdsCount = 17;
+    expected.uswdsCount = 25;
     expected.uswdsSemanticVersion = undefined;
     expected.uswdsVersion = 0;
     expected.dapDetected = false;
     expected.dapParameters = undefined;
+    expected.ogTitleFinalUrl = 'Page Title';
+
     expected.status = ScanStatus.Completed;
 
     expect(result).toStrictEqual(expected);
