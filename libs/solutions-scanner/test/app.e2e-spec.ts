@@ -62,7 +62,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.ogTitleFinalUrl = '18F: Digital service delivery | Home';
     expected.ogDescriptionFinalUrl =
       '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.';
-    expected.mainElementFinalUrl = null;
+    expected.mainElementFinalUrl = false;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

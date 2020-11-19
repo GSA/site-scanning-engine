@@ -382,11 +382,7 @@ export class SolutionsScannerService
     const main = await page.evaluate(() => {
       const main = [...document.getElementsByTagName('main')];
 
-      if (main.length > 0) {
-        return main[0].innerHTML;
-      } else {
-        return null;
-      }
+      return main.length > 0;
     });
 
     return main;

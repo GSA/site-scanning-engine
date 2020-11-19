@@ -120,6 +120,6 @@ export class SolutionsResult {
   ogDescriptionFinalUrl?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'main_element_final_url' })
-  mainElementFinalUrl?: string;
+  @Expose({ name: 'main_element_present_final_url' })
+  mainElementFinalUrl?: boolean;
 }
