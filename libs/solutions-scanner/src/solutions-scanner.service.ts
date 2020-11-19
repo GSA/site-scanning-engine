@@ -131,6 +131,7 @@ export class SolutionsScannerService
       page,
       'og:description',
     );
+    result.mainElementFinalUrl = await this.findMainElement(page);
 
     return result;
   }
@@ -375,6 +376,20 @@ export class SolutionsScannerService
     }, target);
 
     return openGraphResult;
+  }
+
+  private async findMainElement(page: Page) {
+    const main = await page.evaluate(() => {
+      const main = [...document.getElementsByTagName('main')];
+
+      if (main.length > 0) {
+        return main[0].innerHTML;
+      } else {
+        return null;
+      }
+    });
+
+    return main;
   }
 
   async onModuleDestroy() {
