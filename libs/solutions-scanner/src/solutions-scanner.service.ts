@@ -6,7 +6,7 @@ import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum, uniq } from 'lodash';
-import { Browser, Page, Request } from 'puppeteer';
+import { Browser, Page, Request, Response } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
@@ -22,11 +22,14 @@ export class SolutionsScannerService
 
     let result: SolutionsResult;
     let page: Page;
+    let robotsPage: Page;
 
     try {
-      // load the page
+      // load the pages
       page = await this.browser.newPage();
+      robotsPage = await this.browser.newPage();
       await page.setCacheEnabled(false);
+      await robotsPage.setCacheEnabled(false);
 
       // attach listeners
       const cssPages = [];
@@ -47,6 +50,12 @@ export class SolutionsScannerService
         waitUntil: 'networkidle2',
       });
 
+      // go to the robots page from the final url
+      const finalUrl = response.url();
+      const robotsUrl = new URL(finalUrl);
+      robotsUrl.pathname = 'robots.txt';
+      const robotsResponse = await robotsPage.goto(robotsUrl.toString());
+
       // extract the html page source
       const htmlText = await response.text();
 
@@ -57,6 +66,7 @@ export class SolutionsScannerService
         htmlText,
         page,
         outboundRequests,
+        robotsResponse,
       );
     } catch (error) {
       // build error result
@@ -69,7 +79,9 @@ export class SolutionsScannerService
       }
     } finally {
       await page.close();
-      this.logger.debug('closing puppeteer page');
+      this.logger.debug('closing page');
+      await robotsPage.close();
+      this.logger.debug('closing robots page');
     }
 
     return result;
@@ -100,6 +112,7 @@ export class SolutionsScannerService
     htmlText: string,
     page: Page,
     outboundRequests: Request[],
+    robotsResponse: Response,
   ): Promise<SolutionsResult> {
     const result = new SolutionsResult();
     const website = new Website();
@@ -132,6 +145,7 @@ export class SolutionsScannerService
       'og:description',
     );
     result.mainElementFinalUrl = await this.findMainElement(page);
+    result.robotsTxtFinalUrl = robotsResponse.url();
 
     return result;
   }

@@ -63,6 +63,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.ogDescriptionFinalUrl =
       '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.';
     expected.mainElementFinalUrl = false;
+    expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

@@ -14,14 +14,19 @@ describe('SolutionsScannerService', () => {
   let service: SolutionsScannerService;
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
+  let mockRobotsPage: MockProxy<Page>;
   let mockLogger: MockProxy<LoggerService>;
   let mockResponse: MockProxy<Response>;
+  let mockRobotsResponse: MockProxy<Response>;
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
     mockPage = mock<Page>();
+    mockRobotsPage = mock<Page>();
     mockResponse = mock<Response>();
-    mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
+    mockRobotsResponse = mock<Response>();
+    mockBrowser.newPage.mockResolvedValueOnce(mockPage);
+    mockBrowser.newPage.mockResolvedValueOnce(mockRobotsPage);
     mockLogger = mock<LoggerService>();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -59,7 +64,10 @@ describe('SolutionsScannerService', () => {
     mockPage.evaluate.mockResolvedValueOnce('Page Description');
     mockPage.evaluate.mockResolvedValueOnce(true);
     mockResponse.text.mockResolvedValue(source);
+    mockResponse.url.mockReturnValue('https://18f.gsa.gov');
     mockPage.goto.mockResolvedValue(mockResponse);
+    mockRobotsResponse.url.mockReturnValue('https://18f.gsa.gov/robots.txt');
+    mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
 
     const result = await service.scan(input);
     const expected = new SolutionsResult();
@@ -83,6 +91,7 @@ describe('SolutionsScannerService', () => {
     expected.ogTitleFinalUrl = 'Page Title';
     expected.ogDescriptionFinalUrl = 'Page Description';
     expected.mainElementFinalUrl = true;
+    expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
 
     expected.status = ScanStatus.Completed;
 

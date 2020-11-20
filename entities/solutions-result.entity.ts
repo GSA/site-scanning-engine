@@ -122,4 +122,8 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'main_element_present_final_url' })
   mainElementFinalUrl?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url' })
+  robotsTxtFinalUrl: string;
 }
