@@ -67,6 +67,7 @@ describe('SolutionsScannerService', () => {
     mockResponse.url.mockReturnValue('https://18f.gsa.gov');
     mockPage.goto.mockResolvedValue(mockResponse);
     mockRobotsResponse.url.mockReturnValue('https://18f.gsa.gov/robots.txt');
+    mockRobotsResponse.status.mockReturnValue(200);
     mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
 
     const result = await service.scan(input);
@@ -92,6 +93,7 @@ describe('SolutionsScannerService', () => {
     expected.ogDescriptionFinalUrl = 'Page Description';
     expected.mainElementFinalUrl = true;
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
+    expected.robotsTxtFinalUrlLive = true;
 
     expected.status = ScanStatus.Completed;
 

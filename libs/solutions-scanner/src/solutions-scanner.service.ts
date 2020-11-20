@@ -146,6 +146,7 @@ export class SolutionsScannerService
     );
     result.mainElementFinalUrl = await this.findMainElement(page);
     result.robotsTxtFinalUrl = robotsResponse.url();
+    result.robotsTxtFinalUrlLive = robotsResponse.status() / 100 === 2;
 
     return result;
   }

@@ -125,5 +125,9 @@ export class SolutionsResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'robots_txt_final_url' })
-  robotsTxtFinalUrl: string;
+  robotsTxtFinalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url_live' })
+  robotsTxtFinalUrlLive?: boolean;
 }
