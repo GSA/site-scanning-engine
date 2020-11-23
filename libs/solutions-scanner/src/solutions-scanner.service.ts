@@ -153,6 +153,9 @@ export class SolutionsScannerService
       robotsResponse.request().redirectChain().length > 0;
     result.robotsTxtFinalUrlSize = Buffer.byteLength(robotsText, 'utf-8');
     result.robotsTxtCrawlDelay = this.findRobotsCrawlDelay(robotsText);
+    result.robotsTxtSitemapLocations = this.findRobotsSitemapLocations(
+      robotsText,
+    );
 
     return result;
   }
@@ -422,13 +425,32 @@ export class SolutionsScannerService
           this.logger.warn(
             `Could not parse this crawl delay: ${directive}. ${err.message}`,
           );
-        } finally {
-          break;
         }
       }
     }
 
     return crawlDelay;
+  }
+
+  private findRobotsSitemapLocations(robotsTxt: string) {
+    const directives = robotsTxt.split('\n');
+    const sitemapLocations: string[] = [];
+
+    for (const directive of directives) {
+      if (directive.toLowerCase().startsWith('sitemap:')) {
+        try {
+          const sitemapLocation = directive.split(' ')[1];
+          sitemapLocations.push(sitemapLocation);
+        } catch (e) {
+          const err = e as Error;
+          this.logger.warn(
+            `Could not parse this sitemap: ${directive}. ${err.message}`,
+          );
+        }
+      }
+    }
+
+    return sitemapLocations.join(',');
   }
 
   async onModuleDestroy() {

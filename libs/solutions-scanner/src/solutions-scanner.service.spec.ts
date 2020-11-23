@@ -101,8 +101,10 @@ describe('SolutionsScannerService', () => {
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
     expected.robotsTxtTargetUrlRedirects = false;
-    expected.robotsTxtFinalUrlSize = 82;
+    expected.robotsTxtFinalUrlSize = 125;
     expected.robotsTxtCrawlDelay = 10;
+    expected.robotsTxtSitemapLocations =
+      'https://18f.gsa.gov/sitemap1.xml,https://18f.gsa.gov/sitemap2.xml';
 
     expected.status = ScanStatus.Completed;
 

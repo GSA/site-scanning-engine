@@ -142,4 +142,13 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'robots_txt_crawl_delay' })
   robotsTxtCrawlDelay?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_sitemap_locations' })
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    }
+  })
+  robotsTxtSitemapLocations?: string;
 }

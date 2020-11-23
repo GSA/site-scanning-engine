@@ -1017,7 +1017,8 @@ const testRobotsTxt = `
 User-agent: *
 Disallow:
 Crawl-delay: 10
-Sitemap: https://18f.gsa.gov/sitemap.xml
+Sitemap: https://18f.gsa.gov/sitemap1.xml
+Sitemap: https://18f.gsa.gov/sitemap2.xml
 `;
 
 export { source, testRobotsTxt };
