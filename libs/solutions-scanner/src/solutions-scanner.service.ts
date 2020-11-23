@@ -5,7 +5,7 @@ import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
-import { sum, uniq } from 'lodash';
+import { split, sum, uniq } from 'lodash';
 import { Browser, Page, Request, Response } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
@@ -181,6 +181,7 @@ export class SolutionsScannerService
     result.sitemapXmlFinalUrlLive = sitemapLive;
     result.sitemapTargetUrlRedirects =
       sitemapResponse.request().redirectChain().length > 0;
+    result.sitemapXmlFinalUrlMimeType = this.getMIMEType(sitemapResponse);
 
     // conditional fields depending on whether it's a real sitemap
     if (sitemapUrl.pathname === '/sitemap.xml' && sitemapLive) {
@@ -192,7 +193,6 @@ export class SolutionsScannerService
     } else {
       result.sitemapXmlDetected = false;
     }
-
     return result;
   }
 
@@ -487,6 +487,17 @@ export class SolutionsScannerService
     }
 
     return sitemapLocations.join(',');
+  }
+
+  private getMIMEType(res: Response) {
+    const headers = res.headers();
+    if (headers['Content-Type'] || headers['content-type']) {
+      const contentType = headers['Content-Type'] || headers['content-type'];
+      const mimetype = contentType.split(';')[0];
+      return mimetype;
+    } else {
+      return 'unknown';
+    }
   }
 
   async onModuleDestroy() {

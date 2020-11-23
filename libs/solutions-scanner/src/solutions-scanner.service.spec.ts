@@ -80,6 +80,9 @@ describe('SolutionsScannerService', () => {
     mockRobotsResponse.status.mockReturnValue(200);
     mockRobotsResponse.request.mockReturnValue(redirectRequest);
     mockRobotsResponse.text.mockResolvedValue(testRobotsTxt);
+    mockRobotsResponse.headers.calledWith().mockReturnValue({
+      'Content-Type': 'application/xml; charset=utf-8',
+    });
     mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
 
     // sitemap setup
@@ -87,6 +90,9 @@ describe('SolutionsScannerService', () => {
     mockSitemapResponse.status.mockReturnValue(200);
     mockSitemapResponse.request.mockReturnValue(redirectRequest);
     mockSitemapResponse.text.mockResolvedValue(testSitemapXml);
+    mockSitemapResponse.headers.calledWith().mockReturnValue({
+      'Content-Type': 'application/xml; charset=utf-8',
+    });
     mockSitemapPage.goto.mockResolvedValue(mockSitemapResponse);
 
     const result = await service.scan(input);
@@ -123,6 +129,7 @@ describe('SolutionsScannerService', () => {
     expected.sitemapXmlFinalUrlLive = true;
     expected.sitemapTargetUrlRedirects = false;
     expected.sitemapXmlFinalUrlFilesize = 95060;
+    expected.sitemapXmlFinalUrlMimeType = 'application/xml';
 
     expected.status = ScanStatus.Completed;
 

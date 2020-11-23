@@ -74,6 +74,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.sitemapXmlFinalUrlLive = true;
     expected.sitemapTargetUrlRedirects = true;
     expected.sitemapXmlFinalUrlFilesize = 95143;
+    expected.sitemapXmlFinalUrlMimeType = 'application/xml';
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);
