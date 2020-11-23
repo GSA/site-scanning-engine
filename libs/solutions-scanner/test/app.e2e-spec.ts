@@ -71,6 +71,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.robotsTxtSitemapLocations = 'https://18f.gsa.gov/sitemap.xml';
     expected.sitemapXmlDetected = true;
     expected.sitemapXmlFinalUrl = 'https://18f.gsa.gov/sitemap.xml';
+    expected.sitemapXmlFinalUrlLive = true;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

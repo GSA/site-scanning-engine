@@ -159,4 +159,8 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'sitemap_xml_final_url' })
   sitemapXmlFinalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_final_url_live' })
+  sitemapXmlFinalUrlLive?: boolean;
 }

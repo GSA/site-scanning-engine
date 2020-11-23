@@ -120,6 +120,7 @@ describe('SolutionsScannerService', () => {
       'https://18f.gsa.gov/sitemap1.xml,https://18f.gsa.gov/sitemap2.xml';
     expected.sitemapXmlFinalUrl = 'https://18f.gsa.gov/sitemap.xml';
     expected.sitemapXmlDetected = true;
+    expected.sitemapXmlFinalUrlLive = true;
 
     expected.status = ScanStatus.Completed;
 

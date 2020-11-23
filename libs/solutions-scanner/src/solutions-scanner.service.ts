@@ -179,6 +179,7 @@ export class SolutionsScannerService
     if (sitemapUrl.pathname === '/sitemap.xml' && sitemapLive) {
       result.sitemapXmlDetected = true;
       result.sitemapXmlFinalUrl = sitemapUrl.toString();
+      result.sitemapXmlFinalUrlLive = sitemapLive;
     } else {
       result.sitemapXmlDetected = false;
     }
