@@ -176,10 +176,15 @@ export class SolutionsScannerService
     // sitemap.xml
     const sitemapUrl = new URL(sitemapResponse.url());
     const sitemapLive = sitemapResponse.status() / 100 == 2;
+
+    result.sitemapXmlFinalUrl = sitemapUrl.toString();
+    result.sitemapXmlFinalUrlLive = sitemapLive;
+    result.sitemapTargetUrlRedirects =
+      sitemapResponse.request().redirectChain().length > 0;
+
+    // conditional fields depending on whether it's a real sitemap
     if (sitemapUrl.pathname === '/sitemap.xml' && sitemapLive) {
       result.sitemapXmlDetected = true;
-      result.sitemapXmlFinalUrl = sitemapUrl.toString();
-      result.sitemapXmlFinalUrlLive = sitemapLive;
     } else {
       result.sitemapXmlDetected = false;
     }
