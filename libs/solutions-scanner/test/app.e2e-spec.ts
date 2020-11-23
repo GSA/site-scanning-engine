@@ -66,6 +66,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
     expected.robotsTxtTargetUrlRedirects = true;
+    expected.robotsTxtFinalUrlSize = 65;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

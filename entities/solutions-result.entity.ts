@@ -134,4 +134,8 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'robots_txt_target_url_redirects' })
   robotsTxtTargetUrlRedirects?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url_size_in_bytes' })
+  robotsTxtFinalUrlSize?: number;
 }

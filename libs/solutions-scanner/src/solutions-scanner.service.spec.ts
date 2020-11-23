@@ -72,6 +72,7 @@ describe('SolutionsScannerService', () => {
     mockRobotsResponse.url.mockReturnValue('https://18f.gsa.gov/robots.txt');
     mockRobotsResponse.status.mockReturnValue(200);
     mockRobotsResponse.request.mockReturnValue(redirectRequest);
+    mockRobotsResponse.text.mockResolvedValue('a');
 
     mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
 
@@ -100,6 +101,7 @@ describe('SolutionsScannerService', () => {
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
     expected.robotsTxtTargetUrlRedirects = false;
+    expected.robotsTxtFinalUrlSize = 1;
 
     expected.status = ScanStatus.Completed;
 

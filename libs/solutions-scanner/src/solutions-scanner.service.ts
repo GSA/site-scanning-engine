@@ -57,6 +57,7 @@ export class SolutionsScannerService
 
       // extract the html page source
       const htmlText = await response.text();
+      const robotsText = await robotsResponse.text();
 
       // build the result
       result = await this.buildResult(
@@ -66,6 +67,7 @@ export class SolutionsScannerService
         page,
         outboundRequests,
         robotsResponse,
+        robotsText,
       );
     } catch (error) {
       // build error result
@@ -112,6 +114,7 @@ export class SolutionsScannerService
     page: Page,
     outboundRequests: Request[],
     robotsResponse: Response,
+    robotsText: string,
   ): Promise<SolutionsResult> {
     const result = new SolutionsResult();
     const website = new Website();
@@ -148,6 +151,7 @@ export class SolutionsScannerService
     result.robotsTxtFinalUrlLive = robotsResponse.status() / 100 === 2;
     result.robotsTxtTargetUrlRedirects =
       robotsResponse.request().redirectChain().length > 0;
+    result.robotsTxtFinalUrlSize = Buffer.byteLength(robotsText, 'utf-8');
 
     return result;
   }
