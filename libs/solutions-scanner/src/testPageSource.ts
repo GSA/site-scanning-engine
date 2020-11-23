@@ -1013,4 +1013,11 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 </html>
 `;
 
-export { source };
+const testRobotsTxt = `
+User-agent: *
+Disallow:
+Crawl-delay: 10
+Sitemap: https://18f.gsa.gov/sitemap.xml
+`;
+
+export { source, testRobotsTxt };

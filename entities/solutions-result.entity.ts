@@ -138,4 +138,8 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'robots_txt_final_url_size_in_bytes' })
   robotsTxtFinalUrlSize?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_crawl_delay' })
+  robotsTxtCrawlDelay?: number;
 }

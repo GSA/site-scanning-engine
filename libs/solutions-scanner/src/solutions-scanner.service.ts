@@ -152,6 +152,7 @@ export class SolutionsScannerService
     result.robotsTxtTargetUrlRedirects =
       robotsResponse.request().redirectChain().length > 0;
     result.robotsTxtFinalUrlSize = Buffer.byteLength(robotsText, 'utf-8');
+    result.robotsTxtCrawlDelay = this.findRobotsCrawlDelay(robotsText);
 
     return result;
   }
@@ -406,6 +407,28 @@ export class SolutionsScannerService
     });
 
     return main;
+  }
+
+  private findRobotsCrawlDelay(robotsTxt: string) {
+    const directives = robotsTxt.split('\n');
+    let crawlDelay: number;
+
+    for (const directive of directives) {
+      if (directive.toLowerCase().startsWith('crawl-delay:')) {
+        try {
+          crawlDelay = parseInt(directive.split(' ')[1]);
+        } catch (e) {
+          const err = e as Error;
+          this.logger.warn(
+            `Could not parse this crawl delay: ${directive}. ${err.message}`,
+          );
+        } finally {
+          break;
+        }
+      }
+    }
+
+    return crawlDelay;
   }
 
   async onModuleDestroy() {

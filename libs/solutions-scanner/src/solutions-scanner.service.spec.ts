@@ -8,7 +8,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { SolutionsScannerService } from './solutions-scanner.service';
 import { SolutionsInputDto } from './solutions.input.dto';
-import { source } from './testPageSource';
+import { source, testRobotsTxt } from './testPageSource';
 
 describe('SolutionsScannerService', () => {
   let service: SolutionsScannerService;
@@ -72,7 +72,7 @@ describe('SolutionsScannerService', () => {
     mockRobotsResponse.url.mockReturnValue('https://18f.gsa.gov/robots.txt');
     mockRobotsResponse.status.mockReturnValue(200);
     mockRobotsResponse.request.mockReturnValue(redirectRequest);
-    mockRobotsResponse.text.mockResolvedValue('a');
+    mockRobotsResponse.text.mockResolvedValue(testRobotsTxt);
 
     mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
 
@@ -101,7 +101,8 @@ describe('SolutionsScannerService', () => {
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
     expected.robotsTxtTargetUrlRedirects = false;
-    expected.robotsTxtFinalUrlSize = 1;
+    expected.robotsTxtFinalUrlSize = 82;
+    expected.robotsTxtCrawlDelay = 10;
 
     expected.status = ScanStatus.Completed;
 

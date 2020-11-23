@@ -67,6 +67,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.robotsTxtFinalUrlLive = true;
     expected.robotsTxtTargetUrlRedirects = true;
     expected.robotsTxtFinalUrlSize = 65;
+    expected.robotsTxtCrawlDelay = undefined;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);
