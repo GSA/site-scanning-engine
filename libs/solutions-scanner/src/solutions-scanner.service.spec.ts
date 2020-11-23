@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { Browser, Page, Response } from 'puppeteer';
+import { Browser, Page, Response, Request } from 'puppeteer';
 import { SolutionsScannerService } from './solutions-scanner.service';
 import { SolutionsInputDto } from './solutions.input.dto';
 import { source } from './testPageSource';
@@ -18,6 +18,7 @@ describe('SolutionsScannerService', () => {
   let mockLogger: MockProxy<LoggerService>;
   let mockResponse: MockProxy<Response>;
   let mockRobotsResponse: MockProxy<Response>;
+  let redirectRequest: MockProxy<Request>;
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
@@ -28,6 +29,7 @@ describe('SolutionsScannerService', () => {
     mockBrowser.newPage.mockResolvedValueOnce(mockPage);
     mockBrowser.newPage.mockResolvedValueOnce(mockRobotsPage);
     mockLogger = mock<LoggerService>();
+    redirectRequest = mock<Request>();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -66,8 +68,11 @@ describe('SolutionsScannerService', () => {
     mockResponse.text.mockResolvedValue(source);
     mockResponse.url.mockReturnValue('https://18f.gsa.gov');
     mockPage.goto.mockResolvedValue(mockResponse);
+    redirectRequest.redirectChain.mockReturnValue([]);
     mockRobotsResponse.url.mockReturnValue('https://18f.gsa.gov/robots.txt');
     mockRobotsResponse.status.mockReturnValue(200);
+    mockRobotsResponse.request.mockReturnValue(redirectRequest);
+
     mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
 
     const result = await service.scan(input);
@@ -94,6 +99,7 @@ describe('SolutionsScannerService', () => {
     expected.mainElementFinalUrl = true;
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
+    expected.robotsTxtTargetUrlRedirects = false;
 
     expected.status = ScanStatus.Completed;
 

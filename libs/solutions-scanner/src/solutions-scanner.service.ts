@@ -51,8 +51,7 @@ export class SolutionsScannerService
       });
 
       // go to the robots page from the final url
-      const finalUrl = response.url();
-      const robotsUrl = new URL(finalUrl);
+      const robotsUrl = new URL(url);
       robotsUrl.pathname = 'robots.txt';
       const robotsResponse = await robotsPage.goto(robotsUrl.toString());
 
@@ -147,6 +146,8 @@ export class SolutionsScannerService
     result.mainElementFinalUrl = await this.findMainElement(page);
     result.robotsTxtFinalUrl = robotsResponse.url();
     result.robotsTxtFinalUrlLive = robotsResponse.status() / 100 === 2;
+    result.robotsTxtTargetUrlRedirects =
+      robotsResponse.request().redirectChain().length > 0;
 
     return result;
   }
