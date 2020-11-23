@@ -69,6 +69,8 @@ describe('SolutionsScanner (e2e)', () => {
     expected.robotsTxtFinalUrlSize = 65;
     expected.robotsTxtCrawlDelay = undefined;
     expected.robotsTxtSitemapLocations = 'https://18f.gsa.gov/sitemap.xml';
+    expected.sitemapXmlDetected = true;
+    expected.sitemapXmlFinalUrl = 'https://18f.gsa.gov/sitemap.xml';
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

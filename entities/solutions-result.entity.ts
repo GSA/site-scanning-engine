@@ -151,4 +151,12 @@ export class SolutionsResult {
     }
   })
   robotsTxtSitemapLocations?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_detected' })
+  sitemapXmlDetected?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_final_url' })
+  sitemapXmlFinalUrl?: string;
 }

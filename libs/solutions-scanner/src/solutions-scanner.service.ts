@@ -23,11 +23,13 @@ export class SolutionsScannerService
     let result: SolutionsResult;
     let page: Page;
     let robotsPage: Page;
+    let sitemapPage: Page;
 
     try {
       // load the pages
       page = await this.browser.newPage();
       robotsPage = await this.browser.newPage();
+      sitemapPage = await this.browser.newPage();
       await page.setCacheEnabled(false);
       await robotsPage.setCacheEnabled(false);
 
@@ -50,14 +52,20 @@ export class SolutionsScannerService
         waitUntil: 'networkidle2',
       });
 
-      // go to the robots page from the final url
+      // go to the robots page from the target url
       const robotsUrl = new URL(url);
       robotsUrl.pathname = 'robots.txt';
       const robotsResponse = await robotsPage.goto(robotsUrl.toString());
 
+      // go to the sitemap page from the targeet url
+      const sitemapUrl = new URL(url);
+      sitemapUrl.pathname = 'sitemap.xml';
+      const sitemapResponse = await sitemapPage.goto(sitemapUrl.toString());
+
       // extract the html page source
       const htmlText = await response.text();
       const robotsText = await robotsResponse.text();
+      const sitemapText = await sitemapResponse.text();
 
       // build the result
       result = await this.buildResult(
@@ -68,6 +76,8 @@ export class SolutionsScannerService
         outboundRequests,
         robotsResponse,
         robotsText,
+        sitemapResponse,
+        sitemapText,
       );
     } catch (error) {
       // build error result
@@ -83,6 +93,8 @@ export class SolutionsScannerService
       this.logger.debug('closing page');
       await robotsPage.close();
       this.logger.debug('closing robots page');
+      await sitemapPage.close();
+      this.logger.debug('closing sitemap page');
     }
 
     return result;
@@ -115,6 +127,8 @@ export class SolutionsScannerService
     outboundRequests: Request[],
     robotsResponse: Response,
     robotsText: string,
+    sitemapResponse: Response,
+    sitemapText: string,
   ): Promise<SolutionsResult> {
     const result = new SolutionsResult();
     const website = new Website();
@@ -147,6 +161,8 @@ export class SolutionsScannerService
       'og:description',
     );
     result.mainElementFinalUrl = await this.findMainElement(page);
+
+    // robots.txt
     result.robotsTxtFinalUrl = robotsResponse.url();
     result.robotsTxtFinalUrlLive = robotsResponse.status() / 100 === 2;
     result.robotsTxtTargetUrlRedirects =
@@ -156,6 +172,16 @@ export class SolutionsScannerService
     result.robotsTxtSitemapLocations = this.findRobotsSitemapLocations(
       robotsText,
     );
+
+    // sitemap.xml
+    const sitemapUrl = new URL(sitemapResponse.url());
+    const sitemapLive = sitemapResponse.status() / 100 == 2;
+    if (sitemapUrl.pathname === '/sitemap.xml' && sitemapLive) {
+      result.sitemapXmlDetected = true;
+      result.sitemapXmlFinalUrl = sitemapUrl.toString();
+    } else {
+      result.sitemapXmlDetected = false;
+    }
 
     return result;
   }

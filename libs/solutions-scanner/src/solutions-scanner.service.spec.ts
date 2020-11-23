@@ -8,26 +8,31 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { SolutionsScannerService } from './solutions-scanner.service';
 import { SolutionsInputDto } from './solutions.input.dto';
-import { source, testRobotsTxt } from './testPageSource';
+import { source, testRobotsTxt, testSitemapXml } from './testPageSource';
 
 describe('SolutionsScannerService', () => {
   let service: SolutionsScannerService;
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
   let mockRobotsPage: MockProxy<Page>;
+  let mockSitemapPage: MockProxy<Page>;
   let mockLogger: MockProxy<LoggerService>;
   let mockResponse: MockProxy<Response>;
   let mockRobotsResponse: MockProxy<Response>;
+  let mockSitemapResponse: MockProxy<Response>;
   let redirectRequest: MockProxy<Request>;
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
     mockPage = mock<Page>();
     mockRobotsPage = mock<Page>();
+    mockSitemapPage = mock<Page>();
     mockResponse = mock<Response>();
     mockRobotsResponse = mock<Response>();
+    mockSitemapResponse = mock<Response>();
     mockBrowser.newPage.mockResolvedValueOnce(mockPage);
     mockBrowser.newPage.mockResolvedValueOnce(mockRobotsPage);
+    mockBrowser.newPage.mockResolvedValueOnce(mockSitemapPage);
     mockLogger = mock<LoggerService>();
     redirectRequest = mock<Request>();
 
@@ -69,12 +74,20 @@ describe('SolutionsScannerService', () => {
     mockResponse.url.mockReturnValue('https://18f.gsa.gov');
     mockPage.goto.mockResolvedValue(mockResponse);
     redirectRequest.redirectChain.mockReturnValue([]);
+
+    // Robots setup
     mockRobotsResponse.url.mockReturnValue('https://18f.gsa.gov/robots.txt');
     mockRobotsResponse.status.mockReturnValue(200);
     mockRobotsResponse.request.mockReturnValue(redirectRequest);
     mockRobotsResponse.text.mockResolvedValue(testRobotsTxt);
-
     mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
+
+    // sitemap setup
+    mockSitemapResponse.url.mockReturnValue('https://18f.gsa.gov/sitemap.xml');
+    mockSitemapResponse.status.mockReturnValue(200);
+    mockSitemapResponse.request.mockReturnValue(redirectRequest);
+    mockSitemapResponse.text.mockResolvedValue(testSitemapXml);
+    mockSitemapPage.goto.mockResolvedValue(mockSitemapResponse);
 
     const result = await service.scan(input);
     const expected = new SolutionsResult();
@@ -105,6 +118,8 @@ describe('SolutionsScannerService', () => {
     expected.robotsTxtCrawlDelay = 10;
     expected.robotsTxtSitemapLocations =
       'https://18f.gsa.gov/sitemap1.xml,https://18f.gsa.gov/sitemap2.xml';
+    expected.sitemapXmlFinalUrl = 'https://18f.gsa.gov/sitemap.xml';
+    expected.sitemapXmlDetected = true;
 
     expected.status = ScanStatus.Completed;
 
