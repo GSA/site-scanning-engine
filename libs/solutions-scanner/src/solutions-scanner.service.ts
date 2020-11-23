@@ -185,6 +185,10 @@ export class SolutionsScannerService
     // conditional fields depending on whether it's a real sitemap
     if (sitemapUrl.pathname === '/sitemap.xml' && sitemapLive) {
       result.sitemapXmlDetected = true;
+      result.sitemapXmlFinalUrlFilesize = Buffer.byteLength(
+        sitemapText,
+        'utf-8',
+      );
     } else {
       result.sitemapXmlDetected = false;
     }

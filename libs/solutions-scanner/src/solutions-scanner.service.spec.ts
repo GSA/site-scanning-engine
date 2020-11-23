@@ -122,6 +122,7 @@ describe('SolutionsScannerService', () => {
     expected.sitemapXmlDetected = true;
     expected.sitemapXmlFinalUrlLive = true;
     expected.sitemapTargetUrlRedirects = false;
+    expected.sitemapXmlFinalUrlFilesize = 95060;
 
     expected.status = ScanStatus.Completed;
 

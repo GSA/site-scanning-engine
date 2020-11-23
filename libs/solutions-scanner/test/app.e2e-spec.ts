@@ -73,6 +73,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.sitemapXmlFinalUrl = 'https://18f.gsa.gov/sitemap.xml';
     expected.sitemapXmlFinalUrlLive = true;
     expected.sitemapTargetUrlRedirects = true;
+    expected.sitemapXmlFinalUrlFilesize = 95143;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

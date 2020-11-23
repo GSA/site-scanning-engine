@@ -167,4 +167,8 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'sitemap_xml_target_url_redirects' })
   sitemapTargetUrlRedirects?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_final_url_filesize' })
+  sitemapXmlFinalUrlFilesize?: number;
 }
