@@ -32,6 +32,7 @@ export class SolutionsScannerService
       sitemapPage = await this.browser.newPage();
       await page.setCacheEnabled(false);
       await robotsPage.setCacheEnabled(false);
+      await sitemapPage.setCacheEnabled(false);
 
       // attach listeners
       const cssPages = [];
@@ -175,10 +176,10 @@ export class SolutionsScannerService
 
     // robots.txt
     const robotsUrl = new URL(robotsResponse.url());
-    const robotsLive = robotsResponse.status() / 100 == 2;
+    const robotsLive = robotsResponse.status() / 100 === 2;
 
     result.robotsTxtFinalUrl = robotsResponse.url();
-    result.robotsTxtFinalUrlLive = robotsResponse.status() / 100 === 2;
+    result.robotsTxtFinalUrlLive = robotsLive;
     result.robotsTxtTargetUrlRedirects =
       robotsResponse.request().redirectChain().length > 0;
     result.robotsTxtFinalUrlMimeType = this.getMIMEType(robotsResponse);
@@ -196,7 +197,7 @@ export class SolutionsScannerService
 
     // sitemap.xml
     const sitemapUrl = new URL(sitemapResponse.url());
-    const sitemapLive = sitemapResponse.status() / 100 == 2;
+    const sitemapLive = sitemapResponse.status() / 100 === 2;
 
     result.sitemapXmlFinalUrl = sitemapUrl.toString();
     result.sitemapXmlFinalUrlLive = sitemapLive;
