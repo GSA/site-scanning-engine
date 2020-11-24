@@ -84,7 +84,7 @@ describe('SolutionsScannerService', () => {
     mockRobotsResponse.request.mockReturnValue(redirectRequest);
     mockRobotsResponse.text.mockResolvedValue(testRobotsTxt);
     mockRobotsResponse.headers.calledWith().mockReturnValue({
-      'Content-Type': 'application/xml; charset=utf-8',
+      'Content-Type': 'text/plain; charset=utf-8',
     });
     mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
 
@@ -126,6 +126,7 @@ describe('SolutionsScannerService', () => {
     expected.robotsTxtDetected = true;
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
+    expected.robotsTxtFinalUrlMimeType = 'text/plain';
     expected.robotsTxtTargetUrlRedirects = false;
     expected.robotsTxtFinalUrlSize = 125;
     expected.robotsTxtCrawlDelay = 10;

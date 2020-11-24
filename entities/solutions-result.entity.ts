@@ -144,6 +144,10 @@ export class SolutionsResult {
   robotsTxtDetected?: boolean;
 
   @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url_MIMETYPE' })
+  robotsTxtFinalUrlMimeType?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'robots_txt_target_url_redirects' })
   robotsTxtTargetUrlRedirects?: boolean;
 

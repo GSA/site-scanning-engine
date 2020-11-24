@@ -68,6 +68,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.robotsTxtDetected = true;
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
+    expected.robotsTxtFinalUrlMimeType = 'text/plain';
     expected.robotsTxtTargetUrlRedirects = true;
     expected.robotsTxtFinalUrlSize = 65;
     expected.robotsTxtCrawlDelay = undefined;

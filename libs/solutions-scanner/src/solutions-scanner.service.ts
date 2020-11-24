@@ -181,6 +181,7 @@ export class SolutionsScannerService
     result.robotsTxtFinalUrlLive = robotsResponse.status() / 100 === 2;
     result.robotsTxtTargetUrlRedirects =
       robotsResponse.request().redirectChain().length > 0;
+    result.robotsTxtFinalUrlMimeType = this.getMIMEType(robotsResponse);
 
     if (robotsUrl.pathname === '/robots.txt' && robotsLive) {
       result.robotsTxtDetected = true;
