@@ -120,6 +120,14 @@ export class SolutionsResult {
   ogDescriptionFinalUrl?: string;
 
   @Column({ nullable: true })
+  @Expose({ name: 'og_article_published_final_url' })
+  ogArticlePublishedFinalUrl?: Date;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'og_article_modified_final_url' })
+  ogArticleModifiedFinalUrl?: Date;
+
+  @Column({ nullable: true })
   @Expose({ name: 'main_element_present_final_url' })
   mainElementFinalUrl?: boolean;
 

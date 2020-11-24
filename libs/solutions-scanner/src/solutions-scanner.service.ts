@@ -162,6 +162,15 @@ export class SolutionsScannerService
       page,
       'og:description',
     );
+    result.ogArticlePublishedFinalUrl = await this.findOpenGraphDates(
+      page,
+      'article:published_date',
+    );
+    result.ogArticleModifiedFinalUrl = await this.findOpenGraphDates(
+      page,
+      'article:modified_date',
+    );
+
     result.mainElementFinalUrl = await this.findMainElement(page);
 
     // robots.txt
@@ -440,6 +449,21 @@ export class SolutionsScannerService
     }, target);
 
     return openGraphResult;
+  }
+
+  private async findOpenGraphDates(page: Page, target: string) {
+    const targetDate: string = await this.findOpenGraphTag(page, target);
+
+    if (targetDate) {
+      try {
+        const date = new Date(targetDate);
+        return date;
+      } catch (e) {
+        const err = e as Error;
+        this.logger.warn(`Could not parse date ${targetDate}: ${err.message}`);
+        return null;
+      }
+    }
   }
 
   private async findMainElement(page: Page) {
