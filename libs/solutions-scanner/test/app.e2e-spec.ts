@@ -59,6 +59,28 @@ describe('SolutionsScanner (e2e)', () => {
     expected.status = ScanStatus.Completed;
     expected.dapDetected = true;
     expected.dapParameters = 'agency=GSA&subagency=TTS%2C18F';
+    expected.ogTitleFinalUrl = '18F: Digital service delivery | Home';
+    expected.ogDescriptionFinalUrl =
+      '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.';
+    expected.ogArticlePublishedFinalUrl = undefined;
+    expected.ogArticleModifiedFinalUrl = undefined;
+    expected.mainElementFinalUrl = false;
+    expected.robotsTxtDetected = true;
+    expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
+    expected.robotsTxtFinalUrlLive = true;
+    expected.robotsTxtFinalUrlMimeType = 'text/plain';
+    expected.robotsTxtTargetUrlRedirects = true;
+    expected.robotsTxtFinalUrlSize = 65;
+    expected.robotsTxtCrawlDelay = undefined;
+    expected.robotsTxtSitemapLocations = 'https://18f.gsa.gov/sitemap.xml';
+    expected.sitemapXmlDetected = true;
+    expected.sitemapXmlFinalUrl = 'https://18f.gsa.gov/sitemap.xml';
+    expected.sitemapXmlFinalUrlLive = true;
+    expected.sitemapTargetUrlRedirects = true;
+    expected.sitemapXmlFinalUrlFilesize = 95328;
+    expected.sitemapXmlFinalUrlMimeType = 'application/xml';
+    expected.sitemapXmlCount = 687;
+    expected.sitemapXmlPdfCount = 0;
 
     const result = await service.scan(input);
     expect(result).toStrictEqual(expected);

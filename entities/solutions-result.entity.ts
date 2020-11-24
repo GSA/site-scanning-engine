@@ -92,6 +92,7 @@ export class SolutionsResult {
   @Expose({ name: 'dap_detected_final_url' })
   dapDetected?: boolean;
 
+  // dap_parameters need to be parsed into JSON on serialization.
   @Column({ nullable: true })
   @Expose({ name: 'dap_parameters_final_url' })
   @Transform(
@@ -109,4 +110,93 @@ export class SolutionsResult {
     { toPlainOnly: true },
   )
   dapParameters?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'og_title_final_url' })
+  ogTitleFinalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'og_description_final_url' })
+  ogDescriptionFinalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'og_article_published_final_url' })
+  ogArticlePublishedFinalUrl?: Date;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'og_article_modified_final_url' })
+  ogArticleModifiedFinalUrl?: Date;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'main_element_present_final_url' })
+  mainElementFinalUrl?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url' })
+  robotsTxtFinalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url_live' })
+  robotsTxtFinalUrlLive?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_detected' })
+  robotsTxtDetected?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url_MIMETYPE' })
+  robotsTxtFinalUrlMimeType?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_target_url_redirects' })
+  robotsTxtTargetUrlRedirects?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url_size_in_bytes' })
+  robotsTxtFinalUrlSize?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_crawl_delay' })
+  robotsTxtCrawlDelay?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_sitemap_locations' })
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    }
+  })
+  robotsTxtSitemapLocations?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_detected' })
+  sitemapXmlDetected?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_final_url' })
+  sitemapXmlFinalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_final_url_live' })
+  sitemapXmlFinalUrlLive?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_target_url_redirects' })
+  sitemapTargetUrlRedirects?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_final_url_filesize' })
+  sitemapXmlFinalUrlFilesize?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_final_url_MIMETYPE' })
+  sitemapXmlFinalUrlMimeType?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_count' })
+  sitemapXmlCount?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_pdf_count' })
+  sitemapXmlPdfCount?: number;
 }
