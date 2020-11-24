@@ -175,4 +175,8 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'sitemap_xml_final_url_MIMETYPE' })
   sitemapXmlFinalUrlMimeType?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_count' })
+  sitemapXmlCount?: number;
 }

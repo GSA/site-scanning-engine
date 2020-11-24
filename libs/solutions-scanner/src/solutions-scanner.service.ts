@@ -5,7 +5,7 @@ import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Scanner } from 'common/interfaces/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
-import { split, sum, uniq } from 'lodash';
+import { sum, uniq } from 'lodash';
 import { Browser, Page, Request, Response } from 'puppeteer';
 import { SolutionsInputDto } from './solutions.input.dto';
 
@@ -78,6 +78,7 @@ export class SolutionsScannerService
         robotsText,
         sitemapResponse,
         sitemapText,
+        sitemapPage,
       );
     } catch (error) {
       // build error result
@@ -129,6 +130,7 @@ export class SolutionsScannerService
     robotsText: string,
     sitemapResponse: Response,
     sitemapText: string,
+    sitemapPage: Page,
   ): Promise<SolutionsResult> {
     const result = new SolutionsResult();
     const website = new Website();
@@ -190,6 +192,7 @@ export class SolutionsScannerService
         sitemapText,
         'utf-8',
       );
+      result.sitemapXmlCount = await this.getUrlCount(sitemapPage);
     } else {
       result.sitemapXmlDetected = false;
     }
@@ -262,7 +265,7 @@ export class SolutionsScannerService
   }
 
   private uswdsFlagDetected(htmlText: string) {
-    // these are the asset names of the small us flag in the USA Header for differnt uswds versions and devices.
+    // these are the asset names of the small us flag in the USA Header for different uswds versions and devices.
     const re = /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
 
     // all we need is one match to give the points;
@@ -498,6 +501,15 @@ export class SolutionsScannerService
     } else {
       return 'unknown';
     }
+  }
+
+  private async getUrlCount(page: Page) {
+    const urlCount = await page.evaluate(() => {
+      const urls = [...document.getElementsByTagName('url')];
+      return urls.length;
+    });
+
+    return urlCount;
   }
 
   async onModuleDestroy() {

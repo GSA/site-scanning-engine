@@ -94,6 +94,7 @@ describe('SolutionsScannerService', () => {
       'Content-Type': 'application/xml; charset=utf-8',
     });
     mockSitemapPage.goto.mockResolvedValue(mockSitemapResponse);
+    mockSitemapPage.evaluate.mockResolvedValueOnce(200);
 
     const result = await service.scan(input);
     const expected = new SolutionsResult();
@@ -130,6 +131,7 @@ describe('SolutionsScannerService', () => {
     expected.sitemapTargetUrlRedirects = false;
     expected.sitemapXmlFinalUrlFilesize = 95060;
     expected.sitemapXmlFinalUrlMimeType = 'application/xml';
+    expected.sitemapXmlCount = 200;
 
     expected.status = ScanStatus.Completed;
 
