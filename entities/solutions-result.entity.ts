@@ -179,4 +179,8 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'sitemap_xml_count' })
   sitemapXmlCount?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_pdf_count' })
+  sitemapXmlPdfCount?: number;
 }

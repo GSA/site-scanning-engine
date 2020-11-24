@@ -193,6 +193,7 @@ export class SolutionsScannerService
         'utf-8',
       );
       result.sitemapXmlCount = await this.getUrlCount(sitemapPage);
+      result.sitemapXmlPdfCount = this.getPdfCount(sitemapText);
     } else {
       result.sitemapXmlDetected = false;
     }
@@ -510,6 +511,12 @@ export class SolutionsScannerService
     });
 
     return urlCount;
+  }
+
+  private getPdfCount(sitemapText: string) {
+    const re = /\.pdf/g;
+    const occurrenceCount = [...sitemapText.matchAll(re)].length;
+    return occurrenceCount;
   }
 
   async onModuleDestroy() {
