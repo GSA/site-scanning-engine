@@ -174,15 +174,24 @@ export class SolutionsScannerService
     result.mainElementFinalUrl = await this.findMainElement(page);
 
     // robots.txt
+    const robotsUrl = new URL(robotsResponse.url());
+    const robotsLive = robotsResponse.status() / 100 == 2;
+
     result.robotsTxtFinalUrl = robotsResponse.url();
     result.robotsTxtFinalUrlLive = robotsResponse.status() / 100 === 2;
     result.robotsTxtTargetUrlRedirects =
       robotsResponse.request().redirectChain().length > 0;
-    result.robotsTxtFinalUrlSize = Buffer.byteLength(robotsText, 'utf-8');
-    result.robotsTxtCrawlDelay = this.findRobotsCrawlDelay(robotsText);
-    result.robotsTxtSitemapLocations = this.findRobotsSitemapLocations(
-      robotsText,
-    );
+
+    if (robotsUrl.pathname === '/robots.txt' && robotsLive) {
+      result.robotsTxtDetected = true;
+      result.robotsTxtFinalUrlSize = Buffer.byteLength(robotsText, 'utf-8');
+      result.robotsTxtCrawlDelay = this.findRobotsCrawlDelay(robotsText);
+      result.robotsTxtSitemapLocations = this.findRobotsSitemapLocations(
+        robotsText,
+      );
+    } else {
+      result.robotsTxtDetected = false;
+    }
 
     // sitemap.xml
     const sitemapUrl = new URL(sitemapResponse.url());

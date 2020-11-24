@@ -140,6 +140,10 @@ export class SolutionsResult {
   robotsTxtFinalUrlLive?: boolean;
 
   @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_detected' })
+  robotsTxtDetected?: boolean;
+
+  @Column({ nullable: true })
   @Expose({ name: 'robots_txt_target_url_redirects' })
   robotsTxtTargetUrlRedirects?: boolean;
 

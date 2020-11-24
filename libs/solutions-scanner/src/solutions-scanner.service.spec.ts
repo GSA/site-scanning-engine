@@ -123,6 +123,7 @@ describe('SolutionsScannerService', () => {
     expected.ogArticlePublishedFinalUrl = new Date('2018-09-15T19:53:00.000Z');
     expected.ogArticleModifiedFinalUrl = new Date('2018-09-15T19:53:00.000Z');
     expected.mainElementFinalUrl = true;
+    expected.robotsTxtDetected = true;
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
     expected.robotsTxtTargetUrlRedirects = false;

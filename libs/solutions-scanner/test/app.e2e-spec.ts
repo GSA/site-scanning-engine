@@ -65,6 +65,7 @@ describe('SolutionsScanner (e2e)', () => {
     expected.ogArticlePublishedFinalUrl = undefined;
     expected.ogArticleModifiedFinalUrl = undefined;
     expected.mainElementFinalUrl = false;
+    expected.robotsTxtDetected = true;
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
     expected.robotsTxtFinalUrlLive = true;
     expected.robotsTxtTargetUrlRedirects = true;
