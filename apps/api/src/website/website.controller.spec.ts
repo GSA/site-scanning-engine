@@ -1,10 +1,8 @@
-import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { WebsiteController } from './website.controller';
 import { CoreResult } from 'entities/core-result.entity';
-import { websiteSerializer } from './serializer';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 
@@ -46,9 +44,8 @@ describe('WebsiteController', () => {
         .mockResolvedValue([website]);
 
       const result = await websiteController.getResults();
-      const serialized = websiteSerializer(website);
 
-      expect(result).toStrictEqual([serialized]);
+      expect(result).toStrictEqual([website]);
     });
   });
 });
