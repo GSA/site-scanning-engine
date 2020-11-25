@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Website } from 'entities/website.entity';
 import { Repository } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
+import { FilterWebsiteDto } from './dto/filter-website.dto';
 
 @Injectable()
 export class WebsiteService {
@@ -15,11 +16,19 @@ export class WebsiteService {
     return websites;
   }
 
-  async findAllWithResult(): Promise<Website[]> {
-    const result = await this.website.find({
-      relations: ['coreResult', 'solutionsResult'],
-    });
-    return result;
+  async findAllWithResult(dto: FilterWebsiteDto): Promise<Website[]> {
+    const query = this.website
+      .createQueryBuilder('website')
+      .leftJoinAndSelect('website.coreResult', 'coreResult')
+      .leftJoinAndSelect('website.solutionsResult', 'solutionsResult');
+
+    if (dto.baseDomain) {
+      query.where('coreResult.targetUrlBaseDomain = :baseDomain', {
+        baseDomain: dto.baseDomain,
+      });
+    }
+
+    return await query.getMany();
   }
 
   async findOne(id: number): Promise<Website> {

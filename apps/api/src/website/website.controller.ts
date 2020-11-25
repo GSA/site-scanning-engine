@@ -1,5 +1,6 @@
+import { FilterWebsiteDto } from '@app/database/websites/dto/filter-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
-import { Controller, Get, Param, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { NotFoundInterceptor } from '../not-found.interceptor';
 import { WebsiteSerializerInterceptor } from './website-serializer.interceptor';
 
@@ -9,8 +10,8 @@ export class WebsiteController {
 
   @Get()
   @UseInterceptors(WebsiteSerializerInterceptor)
-  async getResults() {
-    const websites = await this.websiteService.findAllWithResult();
+  async getResults(@Query() query: FilterWebsiteDto) {
+    const websites = await this.websiteService.findAllWithResult(query);
     return websites;
   }
 
