@@ -22,9 +22,15 @@ export class WebsiteService {
       .leftJoinAndSelect('website.coreResult', 'coreResult')
       .leftJoinAndSelect('website.solutionsResult', 'solutionsResult');
 
-    if (dto.baseDomain) {
-      query.where('coreResult.targetUrlBaseDomain = :baseDomain', {
-        baseDomain: dto.baseDomain,
+    if (dto.target_url_domain) {
+      query.andWhere('coreResult.targetUrlBaseDomain = :baseDomain', {
+        baseDomain: dto.target_url_domain,
+      });
+    }
+
+    if (dto.final_url_domain) {
+      query.andWhere('coreResult.finalUrlBaseDomain = :baseDomain', {
+        baseDomain: dto.final_url_domain,
       });
     }
 
