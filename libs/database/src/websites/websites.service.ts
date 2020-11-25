@@ -27,6 +27,16 @@ export class WebsiteService {
     return website;
   }
 
+  async findByUrl(url: string): Promise<Website> {
+    const result = await this.website.findOne({
+      relations: ['coreResult', 'solutionsResult'],
+      where: {
+        url: url,
+      },
+    });
+    return result;
+  }
+
   async create(createWebsiteDto: CreateWebsiteDto) {
     const website = new Website();
     website.url = createWebsiteDto.url;
