@@ -15,17 +15,18 @@ export class WebsiteSerializerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((result: Website | Website[]) => {
         if (result instanceof Website) {
-          return this.serialize(result);
+          return this.serializer(result);
         } else if (result instanceof Array) {
           return result.map(website => {
-            return this.serialize(website);
+            const serialized = this.serializer(website);
+            return serialized;
           });
         }
       }),
     );
   }
 
-  private serialize(website: Website) {
+  private serializer(website: Website) {
     const serializedWebsite = classToPlain(website);
     const serializedCoreResult = classToPlain(website.coreResult);
     const serializedSolutionsResult = classToPlain(website.solutionsResult);
