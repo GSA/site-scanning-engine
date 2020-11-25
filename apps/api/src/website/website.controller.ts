@@ -20,7 +20,7 @@ export class WebsiteController {
     WebsiteSerializerInterceptor,
   )
   async getResultByUrl(@Param('url') url: string) {
-    const result = await this.websiteService.findByUrl(url);
+    const result = await this.websiteService.findByUrl(url.toUpperCase());
     return result;
   }
 }
