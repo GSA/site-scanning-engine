@@ -9,6 +9,7 @@ import { Website } from 'entities/website.entity';
 describe('WebsiteController', () => {
   let websiteController: WebsiteController;
   let mockWebsiteService: MockProxy<WebsiteService>;
+  let website: Website;
 
   beforeEach(async () => {
     mockWebsiteService = mock<WebsiteService>();
@@ -23,6 +24,13 @@ describe('WebsiteController', () => {
     }).compile();
 
     websiteController = app.get<WebsiteController>(WebsiteController);
+
+    const coreResult = new CoreResult();
+    coreResult.id = 1;
+    const solutionsResult = new SolutionsResult();
+    const website = new Website();
+    website.coreResult = coreResult;
+    website.solutionsResult = solutionsResult;
   });
 
   afterEach(async () => {
@@ -31,14 +39,6 @@ describe('WebsiteController', () => {
 
   describe('websites', () => {
     it('should return a list of results', async () => {
-      const coreResult = new CoreResult();
-      coreResult.id = 1;
-      const solutionsResult = new SolutionsResult();
-      const website = new Website();
-
-      website.coreResult = coreResult;
-      website.solutionsResult = solutionsResult;
-
       mockWebsiteService.findAllWithResult
         .calledWith()
         .mockResolvedValue([website]);
@@ -46,6 +46,15 @@ describe('WebsiteController', () => {
       const result = await websiteController.getResults();
 
       expect(result).toStrictEqual([website]);
+    });
+
+    it('should return a result by url', async () => {
+      const url = '18f.gov';
+      mockWebsiteService.findByUrl.calledWith(url).mockResolvedValue(website);
+
+      const result = await websiteController.getResultByUrl(url);
+
+      expect(result).toStrictEqual(website);
     });
   });
 });

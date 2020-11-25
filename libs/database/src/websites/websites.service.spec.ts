@@ -53,6 +53,14 @@ describe('WebsiteService', () => {
     expect(result).toStrictEqual(website);
   });
 
+  it('should return a Website by url', async () => {
+    const website = new Website();
+    mockRepository.findOne.mockResolvedValue(website);
+
+    const result = await service.findByUrl('18f.gov');
+    expect(result).toStrictEqual(website);
+  });
+
   it('should create a Website', async () => {
     const createWebsiteDto: CreateWebsiteDto = {
       url: 'https://18f.gov',
