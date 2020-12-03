@@ -28,7 +28,7 @@ describe('WebsiteController', () => {
     const coreResult = new CoreResult();
     coreResult.id = 1;
     const solutionsResult = new SolutionsResult();
-    const website = new Website();
+    website = new Website();
     website.coreResult = coreResult;
     website.solutionsResult = solutionsResult;
   });
@@ -39,18 +39,18 @@ describe('WebsiteController', () => {
 
   describe('websites', () => {
     it('should return a list of results', async () => {
-      mockWebsiteService.findAllWithResult
-        .calledWith()
-        .mockResolvedValue([website]);
+      mockWebsiteService.findAllWithResult.mockResolvedValue([website]);
 
-      const result = await websiteController.getResults();
+      const result = await websiteController.getResults({
+        final_url_live: true,
+      });
 
       expect(result).toStrictEqual([website]);
     });
 
     it('should return a result by url', async () => {
       const url = '18f.gov';
-      mockWebsiteService.findByUrl.calledWith(url).mockResolvedValue(website);
+      mockWebsiteService.findByUrl.mockResolvedValue(website);
 
       const result = await websiteController.getResultByUrl(url);
 
