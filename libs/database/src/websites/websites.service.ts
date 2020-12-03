@@ -46,6 +46,12 @@ export class WebsiteService {
       });
     }
 
+    if (dto.scan_status) {
+      query.andWhere('coreResult.status = :status', {
+        status: dto.scan_status,
+      });
+    }
+
     if (typeof dto.final_url_live != 'undefined') {
       query.andWhere('coreResult.finalUrlIsLive = :finalUrlLive', {
         finalUrlLive: dto.final_url_live,

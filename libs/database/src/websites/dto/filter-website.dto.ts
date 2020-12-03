@@ -1,4 +1,7 @@
-import { IsBooleanString, IsString, IsUrl } from 'class-validator';
+import { ScanStatus } from '@app/core-scanner/scan-status';
+import { IsBooleanString, IsIn, IsString, IsUrl } from 'class-validator';
+
+const statuses = Object.values(ScanStatus);
 
 export class FilterWebsiteDto {
   @IsUrl()
@@ -18,4 +21,7 @@ export class FilterWebsiteDto {
 
   @IsString()
   target_url_bureau_owner?: string;
+
+  @IsIn(statuses)
+  scan_status?: string;
 }
