@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Website } from 'entities/website.entity';
 import { Repository } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
+import { FilterWebsiteDto } from './dto/filter-website.dto';
 
 @Injectable()
 export class WebsiteService {
@@ -15,11 +16,61 @@ export class WebsiteService {
     return websites;
   }
 
-  async findAllWithResult(): Promise<Website[]> {
-    const result = await this.website.find({
-      relations: ['coreResult', 'solutionsResult'],
-    });
-    return result;
+  async findAllWithResult(dto: FilterWebsiteDto): Promise<Website[]> {
+    const query = this.website
+      .createQueryBuilder('website')
+      .leftJoinAndSelect('website.coreResult', 'coreResult')
+      .leftJoinAndSelect('website.solutionsResult', 'solutionsResult');
+
+    if (dto.target_url_domain) {
+      query.andWhere('coreResult.targetUrlBaseDomain = :baseDomain', {
+        baseDomain: dto.target_url_domain,
+      });
+    }
+
+    if (dto.final_url_domain) {
+      query.andWhere('coreResult.finalUrlBaseDomain = :baseDomain', {
+        baseDomain: dto.final_url_domain,
+      });
+    }
+
+    if (dto.target_url_agency_owner) {
+      query.andWhere('agency = :agency', {
+        agency: dto.target_url_agency_owner,
+      });
+    }
+
+    if (dto.target_url_bureau_owner) {
+      query.andWhere('organization = :organization', {
+        organization: dto.target_url_bureau_owner,
+      });
+    }
+
+    if (dto.scan_status) {
+      query.andWhere('coreResult.status = :status', {
+        status: dto.scan_status,
+      });
+    }
+
+    if (typeof dto.final_url_live != 'undefined') {
+      query.andWhere('coreResult.finalUrlIsLive = :finalUrlLive', {
+        finalUrlLive: dto.final_url_live,
+      });
+    }
+
+    if (typeof dto.target_url_redirects != 'undefined') {
+      query.andWhere('coreResult.targetUrlRedirects = :targetUrlRedirects', {
+        targetUrlRedirects: dto.target_url_redirects,
+      });
+    }
+
+    if (typeof dto.dap_detected_final_url != 'undefined') {
+      query.andWhere('solutionsResult.dapDetected = :dapDetected', {
+        dapDetected: dto.dap_detected_final_url,
+      });
+    }
+
+    return await query.getMany();
   }
 
   async findOne(id: number): Promise<Website> {
