@@ -24,4 +24,7 @@ export class FilterWebsiteDto {
 
   @IsIn(statuses)
   scan_status?: string;
+
+  @IsBooleanString()
+  dap_detected_final_url?: boolean;
 }

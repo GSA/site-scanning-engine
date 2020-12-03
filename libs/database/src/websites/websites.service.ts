@@ -64,6 +64,12 @@ export class WebsiteService {
       });
     }
 
+    if (typeof dto.dap_detected_final_url != 'undefined') {
+      query.andWhere('solutionsResult.dapDetected = :dapDetected', {
+        dapDetected: dto.dap_detected_final_url,
+      });
+    }
+
     return await query.getMany();
   }
 
