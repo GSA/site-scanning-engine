@@ -45,7 +45,7 @@ export class CoreResult {
   finalUrl?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_live ' })
+  @Expose({ name: 'final_url_live' })
   finalUrlIsLive?: boolean;
 
   @Column({ nullable: true })

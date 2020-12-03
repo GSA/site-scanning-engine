@@ -34,6 +34,12 @@ export class WebsiteService {
       });
     }
 
+    if (typeof dto.final_url_live != undefined) {
+      query.andWhere('coreResult.finalUrlIsLive = :finalUrlLive', {
+        finalUrlLive: dto.final_url_live,
+      });
+    }
+
     return await query.getMany();
   }
 
