@@ -40,6 +40,12 @@ export class WebsiteService {
       });
     }
 
+    if (dto.target_url_bureau_owner) {
+      query.andWhere('organization = :organization', {
+        organization: dto.target_url_bureau_owner,
+      });
+    }
+
     if (typeof dto.final_url_live != 'undefined') {
       query.andWhere('coreResult.finalUrlIsLive = :finalUrlLive', {
         finalUrlLive: dto.final_url_live,
