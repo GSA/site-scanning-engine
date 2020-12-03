@@ -1,4 +1,5 @@
-import { IsBooleanString, IsUrl } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBooleanString, IsString, IsUrl } from 'class-validator';
 
 export class FilterWebsiteDto {
   @IsUrl()
@@ -12,4 +13,10 @@ export class FilterWebsiteDto {
 
   @IsBooleanString()
   target_url_redirects?: boolean;
+
+  // @Transform((value: string) => {
+  //   decodeURI(value);
+  // })
+  @IsString()
+  target_url_agency_owner?: string;
 }

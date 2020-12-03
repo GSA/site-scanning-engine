@@ -34,6 +34,12 @@ export class WebsiteService {
       });
     }
 
+    if (dto.target_url_agency_owner) {
+      query.andWhere('agency = :agency', {
+        agency: dto.target_url_agency_owner,
+      });
+    }
+
     if (typeof dto.final_url_live != 'undefined') {
       query.andWhere('coreResult.finalUrlIsLive = :finalUrlLive', {
         finalUrlLive: dto.final_url_live,
