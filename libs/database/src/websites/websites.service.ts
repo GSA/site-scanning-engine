@@ -40,6 +40,12 @@ export class WebsiteService {
       });
     }
 
+    if (typeof dto.target_url_redirects != undefined) {
+      query.andWhere('coreResult.targetUrlRedirects = :targetUrlRedirects', {
+        targetUrlRedirects: dto.target_url_redirects,
+      });
+    }
+
     return await query.getMany();
   }
 
