@@ -34,13 +34,13 @@ export class WebsiteService {
       });
     }
 
-    if (typeof dto.final_url_live != undefined) {
+    if (typeof dto.final_url_live != 'undefined') {
       query.andWhere('coreResult.finalUrlIsLive = :finalUrlLive', {
         finalUrlLive: dto.final_url_live,
       });
     }
 
-    if (typeof dto.target_url_redirects != undefined) {
+    if (typeof dto.target_url_redirects != 'undefined') {
       query.andWhere('coreResult.targetUrlRedirects = :targetUrlRedirects', {
         targetUrlRedirects: dto.target_url_redirects,
       });
