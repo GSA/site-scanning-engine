@@ -5,11 +5,13 @@ import { WebsiteController } from './website.controller';
 import { CoreResult } from 'entities/core-result.entity';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 describe('WebsiteController', () => {
   let websiteController: WebsiteController;
   let mockWebsiteService: MockProxy<WebsiteService>;
   let website: Website;
+  let paginated: Pagination<Website>;
 
   beforeEach(async () => {
     mockWebsiteService = mock<WebsiteService>();
@@ -31,6 +33,13 @@ describe('WebsiteController', () => {
     website = new Website();
     website.coreResult = coreResult;
     website.solutionsResult = solutionsResult;
+    paginated = new Pagination([website], {
+      itemCount: 10,
+      currentPage: 1,
+      totalItems: 100,
+      totalPages: 10,
+      itemsPerPage: 10,
+    });
   });
 
   afterEach(async () => {
@@ -39,13 +48,13 @@ describe('WebsiteController', () => {
 
   describe('websites', () => {
     it('should return a list of results', async () => {
-      mockWebsiteService.findAllWithResult.mockResolvedValue([website]);
+      mockWebsiteService.paginatedFilter.mockResolvedValue(paginated);
 
       const result = await websiteController.getResults({
         final_url_live: true,
       });
 
-      expect(result).toStrictEqual([website]);
+      expect(result).toStrictEqual(paginated);
     });
 
     it('should return a result by url', async () => {

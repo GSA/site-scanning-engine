@@ -10,6 +10,7 @@ applications:
   random-route: true
   command: npm run start:prod:api
 
+
 - name: site-scanner-producer
   disk_quota: 4096M
   services:

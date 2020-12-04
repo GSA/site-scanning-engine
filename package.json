@@ -76,6 +76,7 @@
     "jest": "26.4.2",
     "jest-mock-extended": "^1.0.10",
     "mermaid": "^8.8.3",
+    "nestjs-typeorm-paginate": "^2.2.6",
     "prettier": "^1.19.1",
     "rimraf": "^3.0.2",
     "supertest": "^4.0.2",
