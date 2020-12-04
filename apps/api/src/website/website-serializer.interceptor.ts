@@ -23,10 +23,11 @@ export class WebsiteSerializerInterceptor implements NestInterceptor {
             return serialized;
           });
 
-          const apiResult = {
+          const apiResult = new Pagination(
             serializedItems,
-            ...result,
-          };
+            result.meta,
+            result.links,
+          );
 
           return apiResult;
         }
