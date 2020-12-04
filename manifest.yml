@@ -9,8 +9,6 @@ applications:
   instances: 1
   random-route: true
   command: npm run start:prod:api
-  env:
-    API_ROUTE: https://api.gsa.gov/technology/site-scanning/v1/
 
 
 - name: site-scanner-producer
