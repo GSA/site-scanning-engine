@@ -10,8 +10,16 @@ export class WebsiteController {
 
   @Get()
   @UseInterceptors(WebsiteSerializerInterceptor)
-  async getResults(@Query() query: FilterWebsiteDto) {
-    const websites = await this.websiteService.findAllWithResult(query);
+  async getResults(
+    @Query() query: FilterWebsiteDto,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    const websites = await this.websiteService.paginatedFilter(query, {
+      page: page,
+      limit: limit,
+      route: 'http://localhost:3000',
+    });
     return websites;
   }
 
@@ -21,7 +29,7 @@ export class WebsiteController {
     WebsiteSerializerInterceptor,
   )
   async getResultByUrl(@Param('url') url: string) {
-    const result = await this.websiteService.findByUrl(url.toUpperCase());
+    const result = await this.websiteService.findByUrl(url);
     return result;
   }
 }

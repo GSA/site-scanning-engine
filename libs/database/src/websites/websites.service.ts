@@ -4,6 +4,11 @@ import { Website } from 'entities/website.entity';
 import { Repository } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { FilterWebsiteDto } from './dto/filter-website.dto';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class WebsiteService {
@@ -16,7 +21,10 @@ export class WebsiteService {
     return websites;
   }
 
-  async findAllWithResult(dto: FilterWebsiteDto): Promise<Website[]> {
+  async paginatedFilter(
+    dto: FilterWebsiteDto,
+    options: IPaginationOptions,
+  ): Promise<Pagination<Website>> {
     const query = this.website
       .createQueryBuilder('website')
       .leftJoinAndSelect('website.coreResult', 'coreResult')
@@ -70,7 +78,9 @@ export class WebsiteService {
       });
     }
 
-    return await query.getMany();
+    query.orderBy('website.url', 'DESC');
+
+    return await paginate(query, options);
   }
 
   async findOne(id: number): Promise<Website> {
@@ -79,10 +89,11 @@ export class WebsiteService {
   }
 
   async findByUrl(url: string): Promise<Website> {
+    const upperUrl = url.toUpperCase();
     const result = await this.website.findOne({
       relations: ['coreResult', 'solutionsResult'],
       where: {
-        url: url,
+        url: upperUrl,
       },
     });
     return result;
