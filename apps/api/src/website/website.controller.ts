@@ -19,8 +19,8 @@ export class WebsiteController {
     @Query('limit', ParseOptionalIntPipe) limit = 10,
   ) {
     const websites = await this.websiteService.paginatedFilter(query, {
-      page: page || 1,
-      limit: limit || 10,
+      page: page,
+      limit: limit,
       route: `/${WEBSITE_ROUTE_NAME}`,
     });
     return websites;
