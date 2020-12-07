@@ -5,7 +5,7 @@
 export default () => {
   if (process.env.VCAP_SERVICES) {
     const vcap = JSON.parse(process.env.VCAP_SERVICES);
-    const redis = vcap['redis32'][0];
+    const redis = vcap['aws-elasticache-redis'][0];
     return {
       redis: {
         host: redis.credentials.hostname,

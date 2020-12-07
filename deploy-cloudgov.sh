@@ -57,7 +57,7 @@ wait_until_created()
 SCANNER_POSTGRES_NAME="scanner-postgres"
 SCANNER_POSTGRES_PLAN="micro-psql"
 SCANNER_MESSAGE_QUEUE_NAME="scanner-message-queue"
-SCANNER_MESSAGE_QUEUE_PLAN="standard"
+SCANNER_MESSAGE_QUEUE_PLAN="redis-3node"
 
 
 if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
@@ -76,7 +76,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   if service_exists "$SCANNER_MESSAGE_QUEUE_NAME" ; then
     already_exists "$SCANNER_MESSAGE_QUEUE_NAME"
   else
-    cf create-service redis32 $SCANNER_MESSAGE_QUEUE_PLAN $SCANNER_MESSAGE_QUEUE_NAME
+    cf create-service aws-elasticache-redis $SCANNER_MESSAGE_QUEUE_PLAN $SCANNER_MESSAGE_QUEUE_NAME
   fi
 
   wait_until_created $SCANNER_POSTGRES_NAME
