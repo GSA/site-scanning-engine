@@ -5,7 +5,7 @@ applications:
   timeout: 10 # seconds
   services:
     - scanner-postgres
-  memory: 500M
+  memory: 2048M
   instances: 1
   random-route: true
   command: npm run start:prod:api
@@ -16,7 +16,7 @@ applications:
   services:
     - scanner-postgres
     - scanner-message-queue
-  memory: 500M
+  memory: 2048M
   instances: 1
   no-route: true
   command: npm run start:prod:producer
@@ -34,7 +34,7 @@ applications:
   buildpacks:
     - https://github.com/cloudfoundry/apt-buildpack/
     - https://github.com/cloudfoundry/nodejs-buildpack/
-  instances: 2
+  instances: 3
   no-route: true
   command: npm run start:prod:scan-engine
   health-check-type: process
