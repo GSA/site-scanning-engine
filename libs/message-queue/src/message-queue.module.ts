@@ -19,6 +19,7 @@ const ScannerQueue = BullModule.registerQueueAsync({
       host: configService.get('redis.host'),
       port: +configService.get<number>('redis.port'),
       password: configService.get('redis.password'),
+      tls: {},
     },
   }),
   inject: [ConfigService],
