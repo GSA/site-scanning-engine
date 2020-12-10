@@ -125,6 +125,7 @@ describe('SolutionsScannerService', () => {
     expected.mainElementFinalUrl = true;
     expected.robotsTxtDetected = true;
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
+    expected.robotsTxtStatusCode = 200;
     expected.robotsTxtFinalUrlLive = true;
     expected.robotsTxtFinalUrlMimeType = 'text/plain';
     expected.robotsTxtTargetUrlRedirects = false;
@@ -133,6 +134,7 @@ describe('SolutionsScannerService', () => {
     expected.robotsTxtSitemapLocations =
       'https://18f.gsa.gov/sitemap1.xml,https://18f.gsa.gov/sitemap2.xml';
     expected.sitemapXmlFinalUrl = 'https://18f.gsa.gov/sitemap.xml';
+    expected.sitemapXmlStatusCode = 200;
     expected.sitemapXmlDetected = true;
     expected.sitemapXmlFinalUrlLive = true;
     expected.sitemapTargetUrlRedirects = false;

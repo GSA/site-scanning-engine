@@ -33,7 +33,7 @@ export class SolutionsResult {
   website: Website;
 
   @Column()
-  @Expose({ name: 'uswds_status' })
+  @Expose({ name: 'solutions_scan_status' })
   status: string;
 
   @Column({ nullable: true })
@@ -136,6 +136,10 @@ export class SolutionsResult {
   robotsTxtFinalUrl?: string;
 
   @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_final_url_status_code' })
+  robotsTxtStatusCode?: number;
+
+  @Column({ nullable: true })
   @Expose({ name: 'robots_txt_final_url_live' })
   robotsTxtFinalUrlLive?: boolean;
 
@@ -171,6 +175,10 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'sitemap_xml_detected' })
   sitemapXmlDetected?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_final_url_status_code' })
+  sitemapXmlStatusCode?: number;
 
   @Column({ nullable: true })
   @Expose({ name: 'sitemap_xml_final_url' })
