@@ -63,14 +63,16 @@ describe('SolutionsScannerService', () => {
       url: '18f.gov',
     };
 
+    const time = new Date('2018-09-15T15:53:00');
+
     const website = new Website();
     website.id = input.websiteId;
 
     mockPage.evaluate.mockResolvedValueOnce(4);
     mockPage.evaluate.mockResolvedValueOnce('Page Title');
     mockPage.evaluate.mockResolvedValueOnce('Page Description');
-    mockPage.evaluate.mockResolvedValueOnce('2018-09-15T15:53:00');
-    mockPage.evaluate.mockResolvedValueOnce('2018-09-15T15:53:00');
+    mockPage.evaluate.mockResolvedValueOnce(time.toString());
+    mockPage.evaluate.mockResolvedValueOnce(time.toString());
     mockPage.evaluate.mockResolvedValueOnce(true);
 
     mockResponse.text.mockResolvedValue(source);
@@ -120,8 +122,8 @@ describe('SolutionsScannerService', () => {
     expected.dapParameters = undefined;
     expected.ogTitleFinalUrl = 'Page Title';
     expected.ogDescriptionFinalUrl = 'Page Description';
-    expected.ogArticlePublishedFinalUrl = new Date('2018-09-15T19:53:00.000Z');
-    expected.ogArticleModifiedFinalUrl = new Date('2018-09-15T19:53:00.000Z');
+    expected.ogArticlePublishedFinalUrl = time;
+    expected.ogArticleModifiedFinalUrl = time;
     expected.mainElementFinalUrl = true;
     expected.robotsTxtDetected = true;
     expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
