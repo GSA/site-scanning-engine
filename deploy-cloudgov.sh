@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-#/ Usage: bash create-services.sh
+#/ Usage: bash deploy-cloudgov.sh
 #/ Description: This script creates the services (if necessary) to deploy to cloud.gov.
 #/ Then it runs any deploy scripts.
 #/ Examples:    
@@ -71,15 +71,19 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
     already_exists "$SCANNER_POSTGRES_NAME"
   else 
     cf create-service aws-rds $SCANNER_POSTGRES_PLAN $SCANNER_POSTGRES_NAME
+    wait_until_created $SCANNER_POSTGRES_NAME
   fi
 
   if service_exists "$SCANNER_MESSAGE_QUEUE_NAME" ; then
     already_exists "$SCANNER_MESSAGE_QUEUE_NAME"
   else
     cf create-service aws-elasticache-redis $SCANNER_MESSAGE_QUEUE_PLAN $SCANNER_MESSAGE_QUEUE_NAME
+    wait_until_created $SCANNER_MESSAGE_QUEUE_NAME
   fi
 
-  wait_until_created $SCANNER_POSTGRES_NAME
-  wait_until_created $SCANNER_MESSAGE_QUEUE_NAME
-  
+  # next, compile the typescript for all of the apps
+  npm run build:all
+
+  # deploy to cloud.gov
+  cf push
 fi
