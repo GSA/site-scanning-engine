@@ -3,6 +3,7 @@
  */
 
 export default () => {
+  const env = process.env.NODE_ENV;
   if (process.env.VCAP_SERVICES) {
     const vcap = JSON.parse(process.env.VCAP_SERVICES);
     const redis = vcap['aws-elasticache-redis'][0];
@@ -11,7 +12,7 @@ export default () => {
         host: redis.credentials.hostname,
         port: redis.credentials.port,
         password: redis.credentials.password,
-        tls: {},
+        env: env
       },
     };
   } else {
@@ -20,7 +21,7 @@ export default () => {
         host: process.env.QUEUE_HOST,
         port: process.env.QUEUE_PORT,
         password: process.env.QUEUE_PASSWORD,
-        tls: undefined,
+        env: env
       },
     };
   }
