@@ -20,7 +20,9 @@ export class CoreResult {
   @Exclude({ toPlainOnly: true })
   created: string;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: "timestamptz"
+  })
   @Expose({ name: 'scan_date' })
   updated: string;
 
