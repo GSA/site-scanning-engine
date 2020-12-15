@@ -128,7 +128,9 @@
       "@app/solutions-scanner/(.*)": "<rootDir>/libs/solutions-scanner/src/$1",
       "@app/solutions-scanner": "<rootDir>/libs/solutions-scanner/src",
       "@app/storage/(.*)": "<rootDir>/libs/storage/src/$1",
-      "@app/storage": "<rootDir>/libs/storage/src"
+      "@app/storage": "<rootDir>/libs/storage/src",
+      "@app/snapshot/(.*)": "<rootDir>/libs/snapshot/src/$1",
+      "@app/snapshot": "<rootDir>/libs/snapshot/src"
     }
   }
 }

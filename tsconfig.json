@@ -66,6 +66,12 @@
       ],
       "@app/storage/*": [
         "libs/storage/src/*"
+      ],
+      "@app/snapshot": [
+        "libs/snapshot/src"
+      ],
+      "@app/snapshot/*": [
+        "libs/snapshot/src/*"
       ]
     }
   }

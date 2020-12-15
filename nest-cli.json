@@ -115,6 +115,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/storage/tsconfig.lib.json"
       }
+    },
+    "snapshot": {
+      "type": "library",
+      "root": "libs/snapshot",
+      "entryFile": "index",
+      "sourceRoot": "libs/snapshot/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/snapshot/tsconfig.lib.json"
+      }
     }
   }
 }
