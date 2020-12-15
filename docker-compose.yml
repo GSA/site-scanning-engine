@@ -20,6 +20,17 @@ services:
         networks:
             - webnet
 
+    s3:
+        container_name: s3
+        image: minio/minio
+        command: server /data
+        ports:
+            - "9000:9000"
+        env_file:
+            - .env
+        networks:
+            - webnet
+
 networks:
     webnet:
 
