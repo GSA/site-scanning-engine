@@ -20,16 +20,11 @@ export class CoreResult {
   @Exclude({ toPlainOnly: true })
   created: string;
 
-  @UpdateDateColumn({
-    type: "timestamptz"
-  })
+  @UpdateDateColumn()
   @Expose({ name: 'scan_date' })
   updated: string;
 
-  @OneToOne(
-    () => Website,
-    website => website.coreResult,
-  )
+  @OneToOne(() => Website, (website) => website.coreResult)
   @JoinColumn()
   @Exclude({ toPlainOnly: true })
   website: Website;

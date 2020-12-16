@@ -1,3 +1,4 @@
+import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { CoreResult } from 'entities/core-result.entity';
@@ -9,15 +10,21 @@ import { CoreResultService } from './core-result.service';
 describe('CoreResultService', () => {
   let service: CoreResultService;
   let mockRepository: MockProxy<Repository<CoreResult>>;
+  let mockLogger: MockProxy<LoggerService>;
 
   beforeEach(async () => {
     mockRepository = mock<Repository<CoreResult>>();
+    mockLogger = mock<LoggerService>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CoreResultService,
         {
           provide: getRepositoryToken(CoreResult),
           useValue: mockRepository,
+        },
+        {
+          provide: LoggerService,
+          useValue: mockLogger,
         },
       ],
     }).compile();
@@ -65,6 +72,6 @@ describe('CoreResultService', () => {
     coreResult.website = website;
 
     await service.create(coreResult);
-    expect(mockRepository.save).toHaveBeenCalledWith(coreResult);
+    expect(mockRepository.insert).toHaveBeenCalledWith(coreResult);
   });
 });
