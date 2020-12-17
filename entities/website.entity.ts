@@ -73,9 +73,4 @@ export class Website {
 
     return aggregate;
   }
-
-  toJSON() {
-    const result = this.serialized();
-    return JSON.stringify(result);
-  }
 }
