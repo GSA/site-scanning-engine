@@ -57,6 +57,6 @@ describe('SolutionsResultService', () => {
     solutionsResult.website = website;
 
     await service.create(solutionsResult);
-    expect(mockRespository.save).toHaveBeenCalledWith(solutionsResult);
+    expect(mockRespository.insert).toHaveBeenCalledWith(solutionsResult);
   });
 });

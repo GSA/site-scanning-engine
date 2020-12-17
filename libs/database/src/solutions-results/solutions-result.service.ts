@@ -31,12 +31,9 @@ export class SolutionsResultService {
 
     if (exists) {
       // then update
-      await this.solutionsResult.save({
-        ...exists,
-        ...solutionsResult,
-      });
+      await this.solutionsResult.update(exists.id, solutionsResult);
     } else {
-      await this.solutionsResult.save(solutionsResult);
+      await this.solutionsResult.insert(solutionsResult);
     }
   }
 }
