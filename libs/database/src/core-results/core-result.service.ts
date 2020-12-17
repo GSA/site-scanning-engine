@@ -2,7 +2,7 @@ import { LoggerService } from '@app/logger';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoreResult } from 'entities/core-result.entity';
-import { Repository, SaveOptions } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CoreResultService {
