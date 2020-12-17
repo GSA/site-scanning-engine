@@ -1,3 +1,4 @@
+import { LoggerService } from '@app/logger';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CoreResult } from 'entities/core-result.entity';
@@ -7,6 +8,7 @@ import { Repository } from 'typeorm';
 export class CoreResultService {
   constructor(
     @InjectRepository(CoreResult) private coreResult: Repository<CoreResult>,
+    private logger: LoggerService,
   ) {}
 
   async findAll(): Promise<CoreResult[]> {
@@ -35,15 +37,10 @@ export class CoreResultService {
         },
       },
     });
-
     if (exists) {
-      // then update
-      await this.coreResult.save({
-        ...exists,
-        ...coreResult,
-      });
+      await this.coreResult.update(exists.id, coreResult);
     } else {
-      await this.coreResult.save(coreResult);
+      await this.coreResult.insert(coreResult);
     }
   }
 }
