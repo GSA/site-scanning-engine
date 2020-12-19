@@ -23,7 +23,7 @@ services:
     s3:
         container_name: s3
         image: minio/minio
-        command: server /data
+        command: server /site-scanning-snapshot
         ports:
             - "9000:9000"
         env_file:
