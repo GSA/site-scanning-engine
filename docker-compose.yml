@@ -22,7 +22,7 @@ services:
         container_name: minio
         image: minio/minio
         volumes:
-            - ./storage/:/storage
+            - $TMPDIR/storage/:/storage
         env_file: 
             - .env
         command: server /storage
