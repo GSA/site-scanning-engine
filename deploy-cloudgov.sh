@@ -27,7 +27,7 @@ cleanup() {
 service_exists()
 {
   info "checking if ${1} exists..."
-  cf service "$1" >/dev/null 2>&1
+  cf service "$1" > /dev/null 2>&1
 }
 
 service_status()
@@ -58,6 +58,8 @@ SCANNER_POSTGRES_NAME="scanner-postgres"
 SCANNER_POSTGRES_PLAN="micro-psql"
 SCANNER_MESSAGE_QUEUE_NAME="scanner-message-queue"
 SCANNER_MESSAGE_QUEUE_PLAN="redis-3node"
+SCANNER_PUBLIC_STORAGE_NAME="scanner-public-storage"
+SCANNER_PUBLIC_STORAGE_PLAN="basic-public"
 
 
 if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
@@ -79,6 +81,13 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   else
     cf create-service aws-elasticache-redis $SCANNER_MESSAGE_QUEUE_PLAN $SCANNER_MESSAGE_QUEUE_NAME
     wait_until_created $SCANNER_MESSAGE_QUEUE_NAME
+  fi
+
+  if service_exists "$SCANNER_PUBLIC_STORAGE_NAME"; then
+    already_exists "$SCANNER_PUBLIC_STORAGE_NAME"
+  else
+    cf create-service s3 $SCANNER_PUBLIC_STORAGE_PLAN $SCANNER_PUBLIC_STORAGE_NAME
+    wait_until_created $SCANNER_PUBLIC_STORAGE_NAME
   fi
 
   # next, compile the typescript for all of the apps

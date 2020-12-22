@@ -2,10 +2,10 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": [
-      "ES2020.String", 
-      "es5", 
-      "es6", 
-      "dom", 
+      "ES2020.String",
+      "es5",
+      "es6",
+      "dom",
       "dom.iterable"
     ],
     "declaration": true,
@@ -60,6 +60,24 @@
       ],
       "@app/solutions-scanner/*": [
         "libs/solutions-scanner/src/*"
+      ],
+      "@app/storage": [
+        "libs/storage/src"
+      ],
+      "@app/storage/*": [
+        "libs/storage/src/*"
+      ],
+      "@app/snapshot": [
+        "libs/snapshot/src"
+      ],
+      "@app/snapshot/*": [
+        "libs/snapshot/src/*"
+      ],
+      "@app/datetime": [
+        "libs/datetime/src"
+      ],
+      "@app/datetime/*": [
+        "libs/datetime/src/*"
       ]
     }
   }

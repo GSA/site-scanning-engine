@@ -1,4 +1,4 @@
-import { Exclude, Expose } from 'class-transformer';
+import { classToPlain, Exclude, Expose } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -24,17 +24,11 @@ export class Website {
   @Exclude({ toPlainOnly: true })
   updated: string;
 
-  @OneToOne(
-    () => CoreResult,
-    coreResult => coreResult.website,
-  )
+  @OneToOne(() => CoreResult, (coreResult) => coreResult.website)
   @Exclude({ toPlainOnly: true })
   coreResult: CoreResult;
 
-  @OneToOne(
-    () => SolutionsResult,
-    solutionsResult => solutionsResult.website,
-  )
+  @OneToOne(() => SolutionsResult, (solutionsResult) => solutionsResult.website)
   @Exclude({ toPlainOnly: true })
   solutionsResult: SolutionsResult;
 
@@ -65,4 +59,18 @@ export class Website {
   @Column()
   @Exclude({ toPlainOnly: true })
   securityContactEmail: string;
+
+  serialized() {
+    const serializedWebsite = classToPlain(this);
+    const serializedCoreResult = classToPlain(this.coreResult);
+    const serializedSolutionsResult = classToPlain(this.solutionsResult);
+
+    const aggregate = {
+      ...serializedCoreResult,
+      ...serializedSolutionsResult,
+      ...serializedWebsite,
+    };
+
+    return aggregate;
+  }
 }

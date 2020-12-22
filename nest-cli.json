@@ -106,6 +106,33 @@
       "compilerOptions": {
         "tsConfigPath": "libs/solutions-scanner/tsconfig.lib.json"
       }
+    },
+    "storage": {
+      "type": "library",
+      "root": "libs/storage",
+      "entryFile": "index",
+      "sourceRoot": "libs/storage/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/storage/tsconfig.lib.json"
+      }
+    },
+    "snapshot": {
+      "type": "library",
+      "root": "libs/snapshot",
+      "entryFile": "index",
+      "sourceRoot": "libs/snapshot/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/snapshot/tsconfig.lib.json"
+      }
+    },
+    "datetime": {
+      "type": "library",
+      "root": "libs/datetime",
+      "entryFile": "index",
+      "sourceRoot": "libs/datetime/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/datetime/tsconfig.lib.json"
+      }
     }
   }
 }

@@ -4,7 +4,6 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { classToPlain } from 'class-transformer';
 import { Website } from 'entities/website.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { Observable } from 'rxjs';
@@ -16,10 +15,10 @@ export class WebsiteSerializerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((result: Website | Pagination<Website>) => {
         if (result instanceof Website) {
-          return this.serializer(result);
+          return result.serialized();
         } else {
-          const serializedItems = result.items.map(website => {
-            const serialized = this.serializer(website);
+          const serializedItems = result.items.map((website) => {
+            const serialized = website.serialized();
             return serialized;
           });
 
@@ -33,17 +32,5 @@ export class WebsiteSerializerInterceptor implements NestInterceptor {
         }
       }),
     );
-  }
-
-  private serializer(website: Website) {
-    const serializedWebsite = classToPlain(website);
-    const serializedCoreResult = classToPlain(website.coreResult);
-    const serializedSolutionsResult = classToPlain(website.solutionsResult);
-
-    return {
-      ...serializedCoreResult,
-      ...serializedSolutionsResult,
-      ...serializedWebsite,
-    };
   }
 }

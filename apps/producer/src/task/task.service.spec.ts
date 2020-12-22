@@ -8,17 +8,20 @@ import { mock, mockReset, MockProxy } from 'jest-mock-extended';
 import { ProducerService } from '../producer/producer.service';
 import { TaskService } from './task.service';
 import { Website } from 'entities/website.entity';
+import { SnapshotService } from '@app/snapshot';
 
 describe('TaskService', () => {
   let service: TaskService;
   let producerMock: MockProxy<ProducerService>;
   let websiteServiceMock: MockProxy<WebsiteService>;
   let loggerMock: MockProxy<LoggerService>;
+  let snapshotMock: MockProxy<SnapshotService>;
 
   beforeEach(async () => {
     producerMock = mock<ProducerService>();
     websiteServiceMock = mock<WebsiteService>();
     loggerMock = mock<LoggerService>();
+    snapshotMock = mock<SnapshotService>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TaskService,
@@ -42,14 +45,14 @@ describe('TaskService', () => {
           provide: SchedulerRegistry,
           useValue: {},
         },
+        {
+          provide: SnapshotService,
+          useValue: snapshotMock,
+        },
       ],
     }).compile();
 
     service = module.get<TaskService>(TaskService);
-  });
-
-  afterEach(async () => {
-    mockReset(producerMock);
   });
 
   it('should be defined', () => {
@@ -69,5 +72,10 @@ describe('TaskService', () => {
     };
     await service.coreScanProducer();
     expect(producerMock.addCoreJob).toBeCalledWith(expected);
+  });
+
+  it('should create snapshot jobs', async () => {
+    await service.snapshot();
+    expect(snapshotMock.weeklySnapshot).toHaveBeenCalled();
   });
 });

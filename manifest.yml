@@ -16,6 +16,7 @@ applications:
   services:
     - scanner-postgres
     - scanner-message-queue
+    - scanner-public-storage
   memory: 2048M
   instances: 1
   no-route: true
@@ -23,6 +24,7 @@ applications:
   health-check-type: process
   env:
     CORE_SCAN_SCHEDULE: "0 0 * * *"
+    SNAPSHOT_SCHEDULE: "0 0 * * *"
 
 
 - name: site-scanner-consumer
