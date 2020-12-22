@@ -26,15 +26,19 @@ export class TaskService {
     await this.producerService.emptyAndClean();
     this.logger.debug('producer queue emptied.');
 
-    const schedule =
+    const scanSchedule =
       this.configService.get<string>('CORE_SCAN_SCHEDULE') || '0 0 * * *';
-    this.logger.debug(`using schedule ${schedule}`);
+    this.logger.debug(`core scan schedule ${scanSchedule}`);
 
-    const coreJob = new CronJob(schedule, async () => {
+    const snapshotSchedule =
+      this.configService.get<string>('SNAPSHOT_SCHEDULE') || '0 0 * * *';
+    this.logger.debug(`snapshot schedule ${snapshotSchedule}`);
+
+    const coreJob = new CronJob(scanSchedule, async () => {
       await this.coreScanProducer();
     });
 
-    const snapshotJob = new CronJob(schedule, async () => {
+    const snapshotJob = new CronJob(snapshotSchedule, async () => {
       await this.snapshot();
     });
 
