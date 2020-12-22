@@ -20,7 +20,7 @@ export default () => {
     return {
       s3: {
         bucketName: s3BucketName,
-        endpoint: `${s3Host}:${s3Port}`,
+        endpoint: `http://${s3Host}:${s3Port}`,
         accessKeyId: accessKeyId,
         secretAccessKey: secretAccessKey,
       },

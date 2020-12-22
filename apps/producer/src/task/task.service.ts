@@ -6,6 +6,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { ProducerService } from '../producer/producer.service';
 import { CronJob } from 'cron';
+import { SnapshotService } from '@app/snapshot';
 
 @Injectable()
 export class TaskService {
@@ -15,6 +16,7 @@ export class TaskService {
     private logger: LoggerService,
     private configService: ConfigService,
     private scheduler: SchedulerRegistry,
+    private snapshotService: SnapshotService,
   ) {
     this.logger.setContext(TaskService.name);
   }
@@ -32,8 +34,15 @@ export class TaskService {
       await this.coreScanProducer();
     });
 
+    const snapshotJob = new CronJob(schedule, async () => {
+      await this.snapshot();
+    });
+
     this.scheduler.addCronJob('core-scan', coreJob);
     coreJob.start();
+
+    this.scheduler.addCronJob('weekly-snapshot', snapshotJob);
+    snapshotJob.start();
   }
 
   async coreScanProducer() {
@@ -48,7 +57,19 @@ export class TaskService {
         await this.producerService.addCoreJob(coreInput);
       }
     } catch (error) {
-      this.logger.error(`error in ${this.coreScanProducer.name}`, error);
+      const err = error as Error;
+      this.logger.error(err.message, err.stack);
+    }
+  }
+
+  async snapshot() {
+    try {
+      this.snapshotService.save({
+        name: 'weekly-snapshot.json',
+      });
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(err.message, err.stack);
     }
   }
 }

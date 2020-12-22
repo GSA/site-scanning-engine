@@ -35,7 +35,6 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.0.0",
     "@nestjs/bull": "^0.3.1",
     "@nestjs/common": "^7.6.1",
     "@nestjs/config": "^0.6.1",
@@ -43,6 +42,7 @@
     "@nestjs/platform-express": "^7.6.1",
     "@nestjs/schedule": "^0.4.1",
     "@nestjs/typeorm": "^7.1.5",
+    "aws-sdk": "^2.815.0",
     "bull": "^3.20.0",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
