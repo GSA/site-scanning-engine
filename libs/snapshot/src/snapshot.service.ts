@@ -3,7 +3,8 @@ import { LoggerService } from '@app/logger';
 import { StorageService } from '@app/storage';
 import { Injectable } from '@nestjs/common';
 import { DatetimeService } from 'libs/datetime/src';
-import { SnapshotSaveOptions } from './snapshot-save-options.interface';
+import { Parser, transforms } from 'json2csv';
+import { Website } from 'entities/website.entity';
 
 @Injectable()
 export class SnapshotService {
@@ -24,27 +25,59 @@ export class SnapshotService {
     const date = this.datetimeService.now();
     date.setDate(date.getDate() - 7);
 
-    const newJsonName = `archive/weekly-snapshot-${date.toISOString()}.json`;
+    const newJsonName = `archive/json/weekly-snapshot-${date.toISOString()}.json`;
+    const newCsvName = `archive/csv/weekly-snapshot-${date.toISOString()}.csv`;
 
     this.logger.debug('archiving any exisiting files...');
-    await this.archive('weekly-snapshot.json', newJsonName);
+    await Promise.all([
+      await this.archive('weekly-snapshot.json', newJsonName),
+      await this.archive('weekly-snapshot.csv', newCsvName),
+    ]);
+
+    const results = await this.getResults();
+    const jsonData = this.serializeToJson(results);
+    const csvData = this.serializeToCsv(results);
 
     this.logger.debug('saving any new files...');
-    await this.save({
-      name: 'weekly-snapshot.json',
-    });
+    await Promise.all([
+      this.save('weekly-snapshot.json', jsonData),
+      this.save('weekly-snapshot.csv', csvData),
+    ]);
   }
 
-  private async save(options: SnapshotSaveOptions) {
+  private async getResults(): Promise<Website[]> {
     this.logger.debug('finding all results...');
     const results = await this.websiteService.findAll();
+    return results;
+  }
+
+  private serializeToJson(results: Website[]): string {
     const serializedResults = results.map((website) => {
       return website.serialized();
     });
     const stringified = JSON.stringify(serializedResults);
-    this.logger.debug('writing results...');
+    return stringified;
+  }
 
-    await this.storageService.upload(options.name, stringified);
+  private serializeToCsv(results: Website[]) {
+    const serializedResults = results.map((website) => {
+      return website.serialized();
+    });
+    const parser = new Parser({
+      transforms: [
+        transforms.flatten({
+          objects: true,
+          arrays: true,
+          separator: '_',
+        }),
+      ],
+    });
+    const csv = parser.parse(serializedResults);
+    return csv;
+  }
+
+  private async save(fileName: string, data: string) {
+    await this.storageService.upload(fileName, data);
   }
 
   private async archive(fileName: string, newName: string) {

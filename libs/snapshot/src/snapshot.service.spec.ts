@@ -81,7 +81,11 @@ describe('SnapshotService', () => {
     expect(mockStorageService.upload).toBeCalledWith(fileName, body);
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.json',
-      `archive/weekly-snapshot-${date.toISOString()}.json`,
+      `archive/json/weekly-snapshot-${copyDate.toISOString()}.json`,
+    );
+    expect(mockStorageService.copy).toBeCalledWith(
+      'weekly-snapshot.csv',
+      `archive/csv/weekly-snapshot-${copyDate.toISOString()}.csv`,
     );
   });
 });
