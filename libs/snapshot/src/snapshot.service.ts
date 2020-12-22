@@ -12,7 +12,28 @@ export class SnapshotService {
     private websiteService: WebsiteService,
   ) {}
 
-  async save(options: SnapshotSaveOptions) {
+  /**
+   * weeklySnapshot is meant to be called weekly (likely through a CRON job).
+   *
+   * If there is an existing weekly-snapshot.json and weekly-snapshot.csv it copies it to the
+   * archive bucket, and names it weekly-snapshot-<date-one-week-previous>.
+   */
+  async weeklySnapshot() {
+    const date = new Date();
+    date.setDate(date.getDate() - 7);
+
+    const newJsonName = `archive/weekly-snapshot-${date.toISOString()}.json`;
+
+    this.logger.debug('archiving any exisiting files...');
+    await this.archive('weekly-snapshot.json', newJsonName);
+
+    this.logger.debug('saving any new files...');
+    await this.save({
+      name: 'weekly-snapshot.json',
+    });
+  }
+
+  private async save(options: SnapshotSaveOptions) {
     this.logger.debug('finding all results...');
     const results = await this.websiteService.findAll();
     const serializedResults = results.map((website) => {
@@ -22,5 +43,9 @@ export class SnapshotService {
     this.logger.debug('writing results...');
 
     await this.storageService.upload(options.name, stringified);
+  }
+
+  private async archive(fileName: string, newName: string) {
+    await this.storageService.copy(fileName, newName);
   }
 }

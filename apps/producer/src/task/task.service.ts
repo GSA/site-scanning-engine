@@ -68,9 +68,7 @@ export class TaskService {
 
   async snapshot() {
     try {
-      this.snapshotService.save({
-        name: 'weekly-snapshot.json',
-      });
+      this.snapshotService.weeklySnapshot();
     } catch (error) {
       const err = error as Error;
       this.logger.error(err.message, err.stack);

@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class StorageService {
   private s3: AWS.S3;
+  private bucket: string;
+
   constructor(
     private configService: ConfigService,
     private logger: LoggerService,
@@ -17,6 +19,8 @@ export class StorageService {
       s3ForcePathStyle: true,
       signatureVersion: 'v4',
     });
+
+    this.bucket = this.configService.get<string>('s3.bucketName');
   }
 
   async upload(fileName: string, body: string) {
@@ -24,15 +28,47 @@ export class StorageService {
     try {
       await this.s3
         .putObject({
-          Bucket: this.configService.get<string>('s3.bucketName'),
+          Bucket: this.bucket,
           Key: fileName,
           Body: body,
         })
         .promise();
-      this.logger.debug('s3 request completed');
+      this.logger.debug('putObject request completed');
     } catch (error) {
       const err = error as Error;
       this.logger.error(`s3 request failed with: ${err.message}`, err.stack);
+    }
+  }
+
+  async copy(from: string, to: string) {
+    this.logger.debug('attempting s3 copyObject request...');
+    try {
+      await this.s3
+        .copyObject({
+          Bucket: this.bucket,
+          CopySource: `${this.bucket}/${from}`,
+          Key: to,
+        })
+        .promise();
+      this.logger.debug('copyObject request completed');
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(`s3 request failed with: ${err.message}`, err.stack);
+    }
+  }
+
+  async exists(objectName: string): Promise<boolean> {
+    this.logger.debug(`checking if ${objectName} exists...`);
+    try {
+      this.s3.headObject({
+        Bucket: this.bucket,
+        Key: objectName,
+      });
+      return true;
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(`s3 request failed with: ${err.message}`, err.stack);
+      return false;
     }
   }
 }

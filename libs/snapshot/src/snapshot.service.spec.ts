@@ -64,8 +64,9 @@ describe('SnapshotService', () => {
     const body = JSON.stringify([website.serialized()]);
 
     mockWebsiteService.findAll.mockResolvedValue([website]);
-    await service.save({ name: fileName });
+    await service.weeklySnapshot();
 
     expect(mockStorageService.upload).toBeCalledWith(fileName, body);
+    expect(mockStorageService.copy).toBeCalled();
   });
 });
