@@ -6,6 +6,7 @@ import { CoreResult } from 'entities/core-result.entity';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { mock, MockProxy } from 'jest-mock-extended';
+import { DatetimeService } from 'libs/datetime/src';
 import { SnapshotService } from './snapshot.service';
 
 describe('SnapshotService', () => {
@@ -14,11 +15,13 @@ describe('SnapshotService', () => {
   let mockLogger: MockProxy<LoggerService>;
   let mockStorageService: MockProxy<StorageService>;
   let mockWebsiteService: MockProxy<WebsiteService>;
+  let mockDatetimeService: MockProxy<DatetimeService>;
 
   beforeEach(async () => {
     mockLogger = mock<LoggerService>();
     mockStorageService = mock<StorageService>();
     mockWebsiteService = mock<WebsiteService>();
+    mockDatetimeService = mock<DatetimeService>();
     module = await Test.createTestingModule({
       providers: [
         SnapshotService,
@@ -33,6 +36,10 @@ describe('SnapshotService', () => {
         {
           provide: WebsiteService,
           useValue: mockWebsiteService,
+        },
+        {
+          provide: DatetimeService,
+          useValue: mockDatetimeService,
         },
       ],
     }).compile();
@@ -52,6 +59,9 @@ describe('SnapshotService', () => {
     const website = new Website();
     const coreResult = new CoreResult();
     const solutionsResult = new SolutionsResult();
+    const date = new Date();
+    const copyDate = new Date(date);
+    mockDatetimeService.now.mockReturnValue(date);
 
     coreResult.status = 'completed';
     solutionsResult.status = 'completed';
@@ -66,7 +76,12 @@ describe('SnapshotService', () => {
     mockWebsiteService.findAll.mockResolvedValue([website]);
     await service.weeklySnapshot();
 
+    copyDate.setDate(copyDate.getDate() - 7);
+
     expect(mockStorageService.upload).toBeCalledWith(fileName, body);
-    expect(mockStorageService.copy).toBeCalled();
+    expect(mockStorageService.copy).toBeCalledWith(
+      'weekly-snapshot.json',
+      `archive/weekly-snapshot-${date.toISOString()}.json`,
+    );
   });
 });

@@ -2,6 +2,7 @@ import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
 import { StorageService } from '@app/storage';
 import { Injectable } from '@nestjs/common';
+import { DatetimeService } from 'libs/datetime/src';
 import { SnapshotSaveOptions } from './snapshot-save-options.interface';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class SnapshotService {
     private storageService: StorageService,
     private logger: LoggerService,
     private websiteService: WebsiteService,
+    private datetimeService: DatetimeService,
   ) {}
 
   /**
@@ -19,7 +21,7 @@ export class SnapshotService {
    * archive bucket, and names it weekly-snapshot-<date-one-week-previous>.
    */
   async weeklySnapshot() {
-    const date = new Date();
+    const date = this.datetimeService.now();
     date.setDate(date.getDate() - 7);
 
     const newJsonName = `archive/weekly-snapshot-${date.toISOString()}.json`;

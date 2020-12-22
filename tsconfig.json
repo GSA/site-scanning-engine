@@ -72,6 +72,12 @@
       ],
       "@app/snapshot/*": [
         "libs/snapshot/src/*"
+      ],
+      "@app/datetime": [
+        "libs/datetime/src"
+      ],
+      "@app/datetime/*": [
+        "libs/datetime/src/*"
       ]
     }
   }

@@ -130,7 +130,9 @@
       "@app/storage/(.*)": "<rootDir>/libs/storage/src/$1",
       "@app/storage": "<rootDir>/libs/storage/src",
       "@app/snapshot/(.*)": "<rootDir>/libs/snapshot/src/$1",
-      "@app/snapshot": "<rootDir>/libs/snapshot/src"
+      "@app/snapshot": "<rootDir>/libs/snapshot/src",
+      "@app/datetime/(.*)": "<rootDir>/libs/datetime/src/$1",
+      "@app/datetime": "<rootDir>/libs/datetime/src"
     }
   }
 }

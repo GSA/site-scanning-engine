@@ -124,6 +124,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/snapshot/tsconfig.lib.json"
       }
+    },
+    "datetime": {
+      "type": "library",
+      "root": "libs/datetime",
+      "entryFile": "index",
+      "sourceRoot": "libs/datetime/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/datetime/tsconfig.lib.json"
+      }
     }
   }
 }
