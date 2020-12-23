@@ -17,9 +17,12 @@ export class WebsiteService {
   ) {}
 
   async findAll(): Promise<Website[]> {
-    const websites = await this.website.find({
-      relations: ['coreResult', 'solutionsResult'],
-    });
+    const websites = this.website
+      .createQueryBuilder('website')
+      .leftJoinAndSelect('website.coreResult', 'coreResult')
+      .leftJoinAndSelect('website.solutionsResult', 'solutionsResult')
+      .getMany();
+
     return websites;
   }
 
@@ -103,13 +106,12 @@ export class WebsiteService {
 
   async create(createWebsiteDto: CreateWebsiteDto) {
     const website = new Website();
-    website.url = createWebsiteDto.url;
+    website.url = createWebsiteDto.website;
     website.agency = createWebsiteDto.agency;
-    website.organization = createWebsiteDto.organization;
-    website.type = createWebsiteDto.type;
-    website.city = createWebsiteDto.city;
-    website.state = createWebsiteDto.state;
-    website.securityContactEmail = createWebsiteDto.securityContactEmail;
+    website.bureau = createWebsiteDto.bureau;
+    website.branch = createWebsiteDto.branch;
+    website.agencyCode = createWebsiteDto.agencyCode;
+    website.bureauCode = createWebsiteDto.bureauCode;
 
     await this.website.save(website);
   }

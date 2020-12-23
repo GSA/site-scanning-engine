@@ -38,27 +38,27 @@ export class Website {
 
   @Column()
   @Expose({ name: 'target_url_branch' })
-  type: string;
+  branch: string;
 
   @Column()
   @Expose({ name: 'target_url_agency_owner' })
   agency: string;
 
+  @Column({
+    nullable: true,
+  })
+  @Expose({ name: 'target_url_agency_code' })
+  agencyCode?: number;
+
   @Column()
   @Expose({ name: 'target_url_bureau_owner' })
-  organization: string;
+  bureau: string;
 
-  @Column()
-  @Exclude({ toPlainOnly: true })
-  city: string;
-
-  @Column()
-  @Exclude({ toPlainOnly: true })
-  state: string;
-
-  @Column()
-  @Exclude({ toPlainOnly: true })
-  securityContactEmail: string;
+  @Column({
+    nullable: true,
+  })
+  @Expose({ name: 'target_url_bureau_code' })
+  bureauCode?: number;
 
   serialized() {
     const serializedWebsite = classToPlain(this);
