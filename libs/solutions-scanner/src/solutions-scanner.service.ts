@@ -15,7 +15,9 @@ export class SolutionsScannerService
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
-  ) {}
+  ) {
+    this.logger.setContext(SolutionsScannerService.name);
+  }
 
   async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
     const url = this.getHttpsUrls(input.url);
@@ -36,7 +38,7 @@ export class SolutionsScannerService
 
       // attach listeners
       const cssPages = [];
-      page.on('response', async response => {
+      page.on('response', async (response) => {
         if (response.request().resourceType() == 'stylesheet') {
           const cssPage = await response.text();
           cssPages.push(cssPage);
@@ -44,7 +46,7 @@ export class SolutionsScannerService
       });
 
       const outboundRequests: Request[] = [];
-      page.on('request', request => {
+      page.on('request', (request) => {
         outboundRequests.push(request);
       });
 

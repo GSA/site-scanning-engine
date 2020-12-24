@@ -9,7 +9,9 @@ export class CoreResultService {
   constructor(
     @InjectRepository(CoreResult) private coreResult: Repository<CoreResult>,
     private logger: LoggerService,
-  ) {}
+  ) {
+    this.logger.setContext(CoreResultService.name);
+  }
 
   async findAll(): Promise<CoreResult[]> {
     const results = await this.coreResult.find();

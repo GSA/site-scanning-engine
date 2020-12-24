@@ -54,8 +54,8 @@ export class WebsiteService {
     }
 
     if (dto.target_url_bureau_owner) {
-      query.andWhere('organization = :organization', {
-        organization: dto.target_url_bureau_owner,
+      query.andWhere('bureau = :bureau', {
+        bureau: dto.target_url_bureau_owner,
       });
     }
 
