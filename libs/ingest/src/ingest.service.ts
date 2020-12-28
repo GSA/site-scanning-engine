@@ -5,6 +5,7 @@ import { parse } from '@fast-csv/parse';
 import { CreateWebsiteDto } from '@app/database/websites/dto/create-website.dto';
 import { LoggerService } from '@app/logger';
 import { SubdomainRow } from './subdomain-row.interface';
+import { writeSync } from 'fs';
 
 @Injectable()
 export class IngestService {
@@ -28,9 +29,26 @@ export class IngestService {
   }
 
   /**
+   * writeToDatabase writes a CSV to the database.
+   * @param row T
+   */
+  async writeToDatabase(row: CreateWebsiteDto) {
+    try {
+      await this.websiteService.create(row);
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(
+        `encountered error saving to database: ${err.message}`,
+        err.stack,
+      );
+    }
+  }
+
+  /**
    * writeUrls writes target urls to the Websites table.
    */
   async writeUrls(urls: string, maxRows?: number) {
+    const writes: Promise<any>[] = [];
     const stream = parse<SubdomainRow, CreateWebsiteDto>({
       headers: [
         'website',
@@ -53,16 +71,8 @@ export class IngestService {
         }),
       )
       .on('error', (error) => this.logger.error(error.message, error.stack))
-      .on('data', async (row: CreateWebsiteDto) => {
-        try {
-          await this.websiteService.create(row);
-        } catch (error) {
-          const err = error as Error;
-          this.logger.error(
-            `encountered error saving to database: ${err.message}`,
-            err.stack,
-          );
-        }
+      .on('data', (row: CreateWebsiteDto) => {
+        writes.push(this.writeToDatabase(row));
       })
       .on('end', (rowCount: number) => {
         this.logger.debug(rowCount);
