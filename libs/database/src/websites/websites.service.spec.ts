@@ -1,17 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Website } from 'entities/website.entity';
-import { mock, MockProxy, mockReset } from 'jest-mock-extended';
-import { Repository } from 'typeorm';
+import { mock, MockProxy } from 'jest-mock-extended';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { WebsiteService } from './websites.service';
 
 describe('WebsiteService', () => {
   let service: WebsiteService;
   let mockRepository: MockProxy<Repository<Website>>;
+  let mockQB: any; // could not get this to typecheck as MockProxy<SelectQueryBuilder<Website>>
 
   beforeEach(async () => {
     mockRepository = mock<Repository<Website>>();
+    mockQB = mock<SelectQueryBuilder<Website>>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WebsiteService,
@@ -25,10 +27,6 @@ describe('WebsiteService', () => {
     service = module.get<WebsiteService>(WebsiteService);
   });
 
-  afterEach(async () => {
-    mockReset(mockRepository);
-  });
-
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -37,10 +35,13 @@ describe('WebsiteService', () => {
     const website = new Website();
     website.url = 'https://18f.gov';
 
-    const expected = [website];
-    mockRepository.find.calledWith().mockResolvedValue(expected);
+    mockQB.leftJoinAndSelect.mockReturnThis();
+    mockQB.getMany.mockResolvedValue([website]);
+    mockRepository.createQueryBuilder.mockReturnValue(mockQB);
+
     const result = await service.findAll();
 
+    const expected = [website];
     expect(result).toStrictEqual(expected);
   });
 
@@ -63,23 +64,21 @@ describe('WebsiteService', () => {
 
   it('should create a Website', async () => {
     const createWebsiteDto: CreateWebsiteDto = {
-      url: 'https://18f.gov',
-      type: 'Federal Agency - Executive',
+      website: 'https://18f.gov',
+      branch: 'Federal Agency - Executive',
       agency: 'General Services Administration',
-      organization: 'GSA,FAS,Technology Transformation Service',
-      city: 'Washington',
-      state: 'DC',
-      securityContactEmail: 'gsa-vulnerability-reports@gsa.gov',
+      bureau: 'GSA,FAS,Technology Transformation Service',
+      agencyCode: 10,
+      bureauCode: 10,
     };
 
     const website = new Website();
-    website.url = createWebsiteDto.url;
-    website.type = createWebsiteDto.type;
+    website.url = createWebsiteDto.website;
+    website.branch = createWebsiteDto.branch;
     website.agency = createWebsiteDto.agency;
-    website.organization = createWebsiteDto.organization;
-    website.city = createWebsiteDto.city;
-    website.state = createWebsiteDto.state;
-    website.securityContactEmail = createWebsiteDto.securityContactEmail;
+    website.bureau = createWebsiteDto.bureau;
+    website.agencyCode = 10;
+    website.bureauCode = 10;
 
     await service.create(createWebsiteDto);
     expect(mockRepository.save).toHaveBeenCalledWith(website);

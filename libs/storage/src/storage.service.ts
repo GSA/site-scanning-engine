@@ -21,6 +21,7 @@ export class StorageService {
     });
 
     this.bucket = this.configService.get<string>('s3.bucketName');
+    this.logger.setContext(StorageService.name);
   }
 
   async upload(fileName: string, body: string) {

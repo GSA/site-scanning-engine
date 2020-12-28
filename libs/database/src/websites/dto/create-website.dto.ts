@@ -2,11 +2,10 @@
  * CreateWebsiteDto is the fields required to create a website.
  */
 export class CreateWebsiteDto {
-  url: string;
-  type: string;
+  website: string;
+  branch: string;
   agency: string;
-  organization: string;
-  city: string;
-  state: string;
-  securityContactEmail: string;
+  agencyCode?: number;
+  bureau: string;
+  bureauCode?: number;
 }

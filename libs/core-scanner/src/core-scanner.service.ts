@@ -25,7 +25,9 @@ export class CoreScannerService
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
     private httpService: HttpService,
-  ) {}
+  ) {
+    this.logger.setContext(CoreScannerService.name);
+  }
 
   async scan(input: CoreInputDto) {
     const url = this.getHttpsUrl(input.url);
@@ -173,7 +175,7 @@ export class CoreScannerService
 
     const resp = await this.httpService
       .get(randomUrl.toString(), {
-        validateStatus: _ => {
+        validateStatus: (_) => {
           return true;
         },
         httpsAgent: agent,

@@ -13,7 +13,9 @@ export class SnapshotService {
     private logger: LoggerService,
     private websiteService: WebsiteService,
     private datetimeService: DatetimeService,
-  ) {}
+  ) {
+    this.logger.setContext(SnapshotService.name);
+  }
 
   /**
    * weeklySnapshot is meant to be called weekly (likely through a CRON job).
