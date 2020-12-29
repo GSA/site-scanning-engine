@@ -72,6 +72,7 @@ export class SolutionsScannerService
 
       // build the result
       result = await this.buildResult(
+        response,
         input.websiteId,
         cssPages,
         htmlText,
@@ -124,6 +125,7 @@ export class SolutionsScannerService
   }
 
   private async buildResult(
+    mainResponse: Response,
     websiteId: number,
     cssPages: string[],
     htmlText: string,
@@ -223,6 +225,15 @@ export class SolutionsScannerService
     } else {
       result.sitemapXmlDetected = false;
     }
+
+    // third party services
+    const thirdPartyResult = this.thirdPartyServices(
+      outboundRequests,
+      mainResponse.url(),
+    );
+    result.thirdPartyServiceDomains = thirdPartyResult.domains;
+    result.thirdPartyServiceCount = thirdPartyResult.count;
+
     return result;
   }
 
@@ -560,7 +571,35 @@ export class SolutionsScannerService
     return occurrenceCount;
   }
 
+  private thirdPartyServices(
+    outboundRequests: Request[],
+    finalUrl: string,
+  ): ThirdPartyServicesResult {
+    const parsedUrl = new URL(finalUrl);
+    const thirdPartyDomains = [];
+
+    for (const request of outboundRequests) {
+      const url = new URL(request.url());
+      if (
+        parsedUrl.hostname != url.hostname &&
+        !request.isNavigationRequest()
+      ) {
+        thirdPartyDomains.push(url.hostname);
+      }
+    }
+    const deduped = uniq(thirdPartyDomains).filter(Boolean);
+    return {
+      domains: deduped.join(','),
+      count: deduped.length,
+    };
+  }
+
   async onModuleDestroy() {
     await this.browser.close();
   }
+}
+
+interface ThirdPartyServicesResult {
+  domains: string;
+  count: number;
 }

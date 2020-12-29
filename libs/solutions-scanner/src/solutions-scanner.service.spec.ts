@@ -144,6 +144,8 @@ describe('SolutionsScannerService', () => {
     expected.sitemapXmlFinalUrlMimeType = 'application/xml';
     expected.sitemapXmlCount = 200;
     expected.sitemapXmlPdfCount = 0;
+    expected.thirdPartyServiceDomains = '';
+    expected.thirdPartyServiceCount = 0;
 
     expected.status = ScanStatus.Completed;
 
