@@ -24,10 +24,7 @@ export class SolutionsResult {
   @Exclude({ toPlainOnly: true })
   updated: string;
 
-  @OneToOne(
-    () => Website,
-    website => website.solutionsResult,
-  )
+  @OneToOne(() => Website, (website) => website.solutionsResult)
   @JoinColumn()
   @Exclude({ toPlainOnly: true })
   website: Website;
@@ -96,7 +93,7 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'dap_parameters_final_url' })
   @Transform(
-    value => {
+    (value) => {
       if (value) {
         const urlSearchParams = new URLSearchParams(value);
         const result = {};
@@ -207,4 +204,19 @@ export class SolutionsResult {
   @Column({ nullable: true })
   @Expose({ name: 'sitemap_xml_pdf_count' })
   sitemapXmlPdfCount?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'third_party_service_domains' })
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  thirdPartyServiceDomains?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'third_party_service_count' })
+  thirdPartyServiceCount?: number;
 }
