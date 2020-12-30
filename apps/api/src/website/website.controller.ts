@@ -2,7 +2,7 @@ import { FilterWebsiteDto } from '@app/database/websites/dto/filter-website.dto'
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { NotFoundInterceptor } from '../not-found.interceptor';
-import { ParseOptionalIntPipe } from '../parse-optional-int.pipe';
+import { PaginationOptions } from '../pagination-options';
 import { WebsiteSerializerInterceptor } from './website-serializer.interceptor';
 
 const WEBSITE_ROUTE_NAME = 'websites';
@@ -15,12 +15,11 @@ export class WebsiteController {
   @UseInterceptors(WebsiteSerializerInterceptor)
   async getResults(
     @Query() query: FilterWebsiteDto,
-    @Query('page', ParseOptionalIntPipe) page = 1,
-    @Query('limit', ParseOptionalIntPipe) limit = 10,
+    @Query() paginationOptions: PaginationOptions,
   ) {
     const websites = await this.websiteService.paginatedFilter(query, {
-      page: page,
-      limit: limit,
+      page: paginationOptions.page,
+      limit: paginationOptions.limit,
       route: `/${WEBSITE_ROUTE_NAME}`,
     });
     return websites;
