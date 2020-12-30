@@ -94,13 +94,14 @@ export class WebsiteService {
   }
 
   async findByUrl(url: string): Promise<Website> {
-    const upperUrl = url.toUpperCase();
+    url = url.toLowerCase();
     const result = await this.website.findOne({
       relations: ['coreResult', 'solutionsResult'],
       where: {
-        url: upperUrl,
+        url: url,
       },
     });
+
     return result;
   }
 

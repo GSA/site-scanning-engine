@@ -65,6 +65,7 @@ export class IngestService {
       .transform(
         (data: SubdomainRow): CreateWebsiteDto => ({
           ...data,
+          website: data.url.toLowerCase(),
           agencyCode: data.agencyCode ? parseInt(data.agencyCode) : null,
           bureauCode: data.bureauCode ? parseInt(data.bureauCode) : null,
         }),
