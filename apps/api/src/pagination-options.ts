@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumber, IsPositive } from 'class-validator';
+import { IsNumber, IsOptional, IsPositive } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class PaginationOptions {
   @ApiPropertyOptional({
@@ -10,6 +11,8 @@ export class PaginationOptions {
   })
   @IsNumber()
   @IsPositive()
+  @IsOptional()
+  @Transform((value) => Number(value))
   page = 1;
 
   @ApiPropertyOptional({
@@ -21,5 +24,6 @@ export class PaginationOptions {
   })
   @IsNumber()
   @IsPositive()
+  @Transform((value) => Number(value))
   limit = 10;
 }
