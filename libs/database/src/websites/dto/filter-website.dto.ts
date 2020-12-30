@@ -1,7 +1,6 @@
 import { ScanStatus } from '@app/core-scanner/scan-status';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationOptions } from 'apps/api/src/pagination-options';
-import { Transform } from 'class-transformer';
 import { IsBooleanString, IsIn, IsString, IsUrl } from 'class-validator';
 
 const statuses = Object.values(ScanStatus);

@@ -1,8 +1,10 @@
 import { FilterWebsiteDto } from '@app/database/websites/dto/filter-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
+import { ApiOkResponse } from '@nestjs/swagger';
 import { NotFoundInterceptor } from '../not-found.interceptor';
 import { PaginationOptions } from '../pagination-options';
+import { WebsiteApiResult } from '../website-api-result';
 import { WebsiteSerializerInterceptor } from './website-serializer.interceptor';
 
 const WEBSITE_ROUTE_NAME = 'websites';
@@ -13,6 +15,10 @@ export class WebsiteController {
 
   @Get()
   @UseInterceptors(WebsiteSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'Successfully retrieved response for query.',
+    type: WebsiteApiResult,
+  })
   async getResults(
     @Query() query: FilterWebsiteDto,
     @Query() paginationOptions: PaginationOptions,
@@ -28,7 +34,7 @@ export class WebsiteController {
   @Get(':url')
   @UseInterceptors(
     WebsiteSerializerInterceptor,
-    new NotFoundInterceptor('No website found for target url'),
+    new NotFoundInterceptor('No website found for provided target url'),
   )
   async getResultByUrl(@Param('url') url: string) {
     const result = await this.websiteService.findByUrl(url);
