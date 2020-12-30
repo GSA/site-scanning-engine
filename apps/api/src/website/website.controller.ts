@@ -28,8 +28,8 @@ export class WebsiteController {
 
   @Get(':url')
   @UseInterceptors(
-    new NotFoundInterceptor('No website found for target url'),
     WebsiteSerializerInterceptor,
+    new NotFoundInterceptor('No website found for target url'),
   )
   async getResultByUrl(@Param('url') url: string) {
     const result = await this.websiteService.findByUrl(url);
