@@ -201,10 +201,8 @@ export class WebsiteApiResultDto {
 
   /**
    * `dap_parameters_final_url` is the an object with Digital Analytics Program parameter keys and values.
-   *
-   * @example { "agency": "GSA", "subagency": "TTS,18F"}
    */
-  dap_parameters_final_url: Record<string, string>;
+  dap_parameters_final_url: any;
 
   /**
    * `og_title_final_url` is the Open Graph title tag if found on the final url.
@@ -336,7 +334,7 @@ export class WebsiteApiResultDto {
   sitemap_xml_target_url_redirects: boolean;
 
   /**
-   * `sitemap_xml_final_url_filesize is a number indicating the filesize of the sitemap.xml page in bytes.
+   * `sitemap_xml_final_url_filesize` is a number indicating the filesize of the sitemap.xml page in bytes.
    *
    * @example 95598
    */
