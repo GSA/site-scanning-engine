@@ -69,7 +69,7 @@ export class SnapshotService {
       transforms: [
         transforms.flatten({
           objects: true,
-          arrays: true,
+          arrays: false,
           separator: '_',
         }),
       ],
