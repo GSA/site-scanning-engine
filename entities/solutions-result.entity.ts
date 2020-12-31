@@ -46,7 +46,7 @@ export class SolutionsResult {
   uswdsTables?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'uswds_usa' })
+  @Expose({ name: 'uswds_inline_css' })
   uswdsInlineCss?: number;
 
   @Column({ nullable: true })
@@ -190,7 +190,7 @@ export class SolutionsResult {
   sitemapTargetUrlRedirects?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url_filesize' })
+  @Expose({ name: 'sitemap_xml_final_url_filesize_in_bytes' })
   sitemapXmlFinalUrlFilesize?: number;
 
   @Column({ nullable: true })
