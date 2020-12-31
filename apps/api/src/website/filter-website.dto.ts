@@ -1,5 +1,5 @@
 import { ScanStatus } from '@app/core-scanner/scan-status';
-import { PaginationRequestDto } from 'apps/api/src/pagination-options.dto';
+import { PaginationRequestDto } from 'apps/api/src/pagination-request.dto';
 import { IsBooleanString, IsIn, IsString, IsUrl } from 'class-validator';
 
 const statuses = Object.values(ScanStatus);

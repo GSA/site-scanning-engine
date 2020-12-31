@@ -1,6 +1,6 @@
 import { ScanStatus } from 'aws-sdk/clients/ecr';
 
-export class WebsiteApiResult {
+export class WebsiteApiResultDto {
   scan_date: string;
   target_url_domain: string;
   scan_status: ScanStatus;

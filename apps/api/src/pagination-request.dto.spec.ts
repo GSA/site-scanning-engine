@@ -1,5 +1,5 @@
 import { validate } from 'class-validator';
-import { PaginationRequestDto } from './pagination-options.dto';
+import { PaginationRequestDto } from './pagination-request.dto';
 
 describe('PaginationRequestDto', () => {
   let paginationRequest: PaginationRequestDto;
