@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.useGlobalPipes(
     new ValidationPipe({
       skipMissingProperties: true,
@@ -13,6 +14,10 @@ async function bootstrap() {
     }),
   );
   app.enableCors();
+
+  if (process.env.NODE_ENV === 'dev') {
+    app.setGlobalPrefix('/technology/site-scanning/v1');
+  }
 
   const options = new DocumentBuilder()
     .setTitle('Site Scanning API')
