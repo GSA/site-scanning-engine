@@ -27,6 +27,8 @@ For more detailed documentation about the Site Scanning program, including **who
 
 Development Requirements:
 
+`git`
+
 `nodejs`
 
 `nvm` (see [.nvmrc](./.nvmrc) for current `node` version.
@@ -40,6 +42,14 @@ Cloud Foundry CLI (aka `cf`)
 `redis-cli` (optional)
 
 ### Installation
+
+First clone the repository:
+
+```bash
+$ git clone https://github.com/18F/site-scanning-two/
+```
+
+
 From the project root run:
 
 ```bash
@@ -108,13 +118,6 @@ Note that you can just build the apps with `npm run build:all`.
 
 All of the app artifacts end up in [/dist](dist). This is ultimately what gets pushed to Cloud Foundry.
 
-## Test
-From the project root run:
-
-```bash
-$ npm run test:unit
-```
-This runs all unit tests. 
 
 ### Ingest Website List
 
@@ -128,4 +131,13 @@ npm run ingest -- --limit 200
 ```
 
 The limit parameter is optional, but it can be useful to use a smaller subset of the total list for local development.
+
+## Test
+From the project root run:
+
+```bash
+$ npm run test:unit
+```
+This runs all unit tests. 
+
 
