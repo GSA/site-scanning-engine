@@ -53,8 +53,15 @@ $ git clone https://github.com/18F/site-scanning-two/
 From the project root run:
 
 ```bash
+nvm
+```
+This will install the correct Node version for the project.
+
+
+```bash
 $ npm i
 ```
+This will install all production and development Node dependencies.
 
 ### Dotenv
 The project uses a dotenv (`.env`) file for local development credentials. Note that this file is not version-controlled and should only be used for local development.
