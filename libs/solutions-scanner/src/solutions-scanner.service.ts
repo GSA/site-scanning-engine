@@ -2,7 +2,7 @@ import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
 import { ScanStatus } from '@app/core-scanner/scan-status';
 import { LoggerService } from '@app/logger';
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Scanner } from 'common/interfaces/scanner.interface';
+import { Scanner } from 'libs/scanner.interface';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { sum, uniq } from 'lodash';

@@ -1,9 +1,15 @@
-import { FilterWebsiteDto } from '@app/database/websites/dto/filter-website.dto';
+import { FilterWebsiteDto } from 'apps/api/src/website/filter-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
 import { NotFoundInterceptor } from '../not-found.interceptor';
-import { ParseOptionalIntPipe } from '../parse-optional-int.pipe';
 import { WebsiteSerializerInterceptor } from './website-serializer.interceptor';
+import {
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+import { WebsiteApiResultDto } from './website-api-result.dto';
+import { PaginatedWebsiteResponseDto } from './paginated-website-response.dto';
 
 const WEBSITE_ROUTE_NAME = 'websites';
 
@@ -13,14 +19,19 @@ export class WebsiteController {
 
   @Get()
   @UseInterceptors(WebsiteSerializerInterceptor)
-  async getResults(
-    @Query() query: FilterWebsiteDto,
-    @Query('page', ParseOptionalIntPipe) page = 1,
-    @Query('limit', ParseOptionalIntPipe) limit = 10,
-  ) {
+  @ApiOkResponse({
+    //  This decorator is for OpenAPI/Swagger documentation.
+    description: 'A successful response from the API.',
+    type: PaginatedWebsiteResponseDto,
+  })
+  @ApiInternalServerErrorResponse({
+    // This decorator is For OpenAPI/Swagger documentation
+    description: 'This response type indicates an internal error.',
+  })
+  async getResults(@Query() query: FilterWebsiteDto) {
     const websites = await this.websiteService.paginatedFilter(query, {
-      page: page,
-      limit: limit,
+      page: query.page,
+      limit: query.limit,
       route: `/${WEBSITE_ROUTE_NAME}`,
     });
     return websites;
@@ -29,8 +40,21 @@ export class WebsiteController {
   @Get(':url')
   @UseInterceptors(
     WebsiteSerializerInterceptor,
-    new NotFoundInterceptor('No website found for target url'),
+    new NotFoundInterceptor('No website found for provided target url'),
   )
+  @ApiOkResponse({
+    //  This decorator is for OpenAPI/Swagger documentation.
+    description: 'A successful response from the API.',
+    type: WebsiteApiResultDto,
+  })
+  @ApiNotFoundResponse({
+    description:
+      'This response indicated that there is no matching `target_url` in the database',
+  })
+  @ApiInternalServerErrorResponse({
+    // This decorator is For OpenAPI/Swagger documentation
+    description: 'This response type indicates an internal error.',
+  })
   async getResultByUrl(@Param('url') url: string) {
     const result = await this.websiteService.findByUrl(url);
     return result;

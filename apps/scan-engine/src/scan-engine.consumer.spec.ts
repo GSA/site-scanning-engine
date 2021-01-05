@@ -5,7 +5,7 @@ import { Job } from 'bull';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { LoggerService } from '@app/logger';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { Scanner } from 'common/interfaces/scanner.interface';
+import { Scanner } from 'libs/scanner.interface';
 import { CoreScannerService } from '@app/core-scanner';
 import { CoreResult } from 'entities/core-result.entity';
 import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
@@ -18,10 +18,9 @@ describe('ScanEngineConsumer', () => {
   let module: TestingModule;
   let mockCoreScanner: MockProxy<Scanner<CoreInputDto, CoreResult>>;
   let mockCoreResultService: MockProxy<CoreResultService>;
-  let mockSolutionsScanner: MockProxy<Scanner<
-    SolutionsInputDto,
-    SolutionsResult
-  >>;
+  let mockSolutionsScanner: MockProxy<
+    Scanner<SolutionsInputDto, SolutionsResult>
+  >;
   let mockSolutionsResultService: MockProxy<SolutionsResultService>;
   let mockCoreJob: MockProxy<Job<CoreInputDto>>;
   let mockSolutionsJob: MockProxy<Job<SolutionsInputDto>>;

@@ -8,7 +8,7 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { Scanner } from 'common/interfaces/scanner.interface';
+import { Scanner } from 'libs/scanner.interface';
 import { join, split, takeRight } from 'lodash';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { URL } from 'url';
