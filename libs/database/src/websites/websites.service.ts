@@ -3,12 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Website } from 'entities/website.entity';
 import { Repository } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
-import { FilterWebsiteDto } from '../../../../apps/api/src/website/filter-website.dto';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { FilterWebsiteDto } from 'apps/api/src/website/filter-website.dto';
 
 @Injectable()
 export class WebsiteService {
