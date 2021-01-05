@@ -15,6 +15,7 @@ For more detailed documentation about the Site Scanning program, including **who
     * [Dotenv](#Dotenv)
     * [Docker](#Docker)
     * [Start all Apps](#start-all-apps)
+    * [Ingest Website List](#ingest-website-list)
     * [Test](#test)
 
 * [Development Documentation](./docs)
@@ -53,7 +54,7 @@ $ git clone https://github.com/18F/site-scanning-two/
 From the project root run:
 
 ```bash
-nvm
+nvm use
 ```
 This will install the correct Node version for the project.
 
@@ -66,8 +67,9 @@ This will install all production and development Node dependencies.
 ### Dotenv
 The project uses a dotenv (`.env`) file for local development credentials. Note that this file is not version-controlled and should only be used for local development.
 
-Before starting Docker, create a `.env` file in the project root and add the following values replacing `<add_a_key_here>` with a local password. 
+Before starting Docker, create a `.env` file in the project root and add the following values replacing `<add_a_key_here>` with a local passwords that are at least 8 characters long.
 
+_**Note: this is only for local development and has no impact on the Cloud.gov configuration**_
 ```
 # postgres configuration
 DATABASE_HOST=localhost
@@ -112,18 +114,39 @@ This will build `(--build)` all of the Docker containers and network interfaces 
 Running `docker-compose up --build -d` will rebuild all of the containers. This is useful if you need to wipe data from the 
 database, for instance. 
 
-### Start all apps
-From the project root run:
+If you encounter any issues starting the containers with `docker-compose`, specifically related to OOM errors (or Exit 137) 
+try upping the resources in your Docker preferences.
 
+### Build and Start all apps
+
+`cd` to the project root and run:
+```bash
+$ npm run build:all
+```
+This command will build the apps, which compiles from Typescript to Javascript, doing any minification and optimization in the process. All of the app artifacts end up in [/dist](dist). This is ultimately what gets pushed to Cloud Foundry. 
+
+Note that you can also build apps seperately:
+
+```bash
+$ npm run build:api
+$ npm run build:producer
+$ npm run build:scan-engine
+$ npm run build:cli
+```
+
+Next, you can start the apps with following command:
 ```bash
 $ npm run start:all
 ```
+The apps are started as follows: first the API starts and then the Site Scanner Consumer and Site Scanner Producer follow after the API becomes available. This is designed so that the API app runs any shared configuration against the database first. 
 
-This command will build the apps, which compiles from Typescript to Javascript, doing any minification and optimization in the process, and then starts the apps. The apps are started as follows: first the API starts and then the Site Scanner Consumer and Site Scanner Producer follow after the API becomes available. This is designed so that the API app runs any shared configuration against the database first. 
+Note, that you can start the apps individually as follows:
 
-Note that you can just build the apps with `npm run build:all`. 
-
-All of the app artifacts end up in [/dist](dist). This is ultimately what gets pushed to Cloud Foundry.
+```bash
+$ npm run start:api
+$ npm run start:producer
+$ npm run start:scan-engine
+```
 
 
 ### Ingest Website List
@@ -146,5 +169,3 @@ From the project root run:
 $ npm run test:unit
 ```
 This runs all unit tests. 
-
-

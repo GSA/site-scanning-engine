@@ -11,7 +11,11 @@
   "scripts": {
     "rmdist": "rimraf dist",
     "build": "nest build",
-    "build:all": "nest build api && nest build producer && nest build scan-engine",
+    "build:api": "nest build api",
+    "build:producer": "nest build producer",
+    "build:scan-engine": "nest build scan-engine",
+    "build:cli": "nest build cli",
+    "build:all": "concurrently \"npm run build:api\" \"npm run build producer\" \"npm run build scan-engine\" \"npm run build cli\"",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "ingest": "nest start cli -- ingest",
     "start": "nest start",
