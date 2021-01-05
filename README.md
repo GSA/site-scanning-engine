@@ -107,7 +107,7 @@ From the project root run:
 docker-compose up --build -d
 ```
 
-This will build `(--build)` all of the Docker containers and network interfaces listed in the [docker-compose.yml](`docker-compose.yml`) file and start them running in the background `(-d)`. 
+This will build `(--build)` all of the Docker containers and network interfaces listed in the [docker-compose.yml](docker-compose.yml) file and start them running in the background `(-d)`. 
 
 `docker-compose down` will stop and remove all containers and network interfaces. 
 
