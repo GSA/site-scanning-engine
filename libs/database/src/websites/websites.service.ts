@@ -113,6 +113,16 @@ export class WebsiteService {
     website.branch = createWebsiteDto.branch;
     website.agencyCode = createWebsiteDto.agencyCode;
     website.bureauCode = createWebsiteDto.bureauCode;
-    await this.website.save(website);
+
+    const exists = await this.website.findOne({
+      where: {
+        url: website.url,
+      },
+    });
+    if (exists) {
+      await this.website.update(exists.id, website);
+    } else {
+      await this.website.insert(website);
+    }
   }
 }

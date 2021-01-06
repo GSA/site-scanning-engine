@@ -62,7 +62,7 @@ describe('WebsiteService', () => {
     expect(result).toStrictEqual(website);
   });
 
-  it('should create a Website', async () => {
+  it('should insert a Website', async () => {
     const createWebsiteDto: CreateWebsiteDto = {
       website: 'https://18f.gov',
       branch: 'Federal Agency - Executive',
@@ -81,6 +81,6 @@ describe('WebsiteService', () => {
     website.bureauCode = 10;
 
     await service.create(createWebsiteDto);
-    expect(mockRepository.save).toHaveBeenCalledWith(website);
+    expect(mockRepository.insert).toHaveBeenCalledWith(website);
   });
 });
