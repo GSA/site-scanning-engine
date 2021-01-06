@@ -7,7 +7,7 @@ async function bootstrap() {
     logger:
       process.env.NODE_ENV === 'dev'
         ? ['log', 'error', 'warn', 'debug', 'verbose']
-        : ['error', 'warn'],
+        : ['log', 'error', 'warn'],
   });
   const taskService = app.get(TaskService);
 
