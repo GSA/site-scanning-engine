@@ -36,7 +36,9 @@ applications:
   buildpacks:
     - https://github.com/cloudfoundry/apt-buildpack/
     - https://github.com/cloudfoundry/nodejs-buildpack/
-  instances: 3
+  instances: 4
   no-route: true
   command: npm run start:prod:scan-engine
   health-check-type: process
+  env:
+    OPTIMIZE_MEMORY: true
