@@ -24,15 +24,15 @@ export class TaskService {
   async start() {
     // first clear out the queue
     await this.producerService.emptyAndClean();
-    this.logger.debug('producer queue emptied.');
+    this.logger.log('producer queue emptied.');
 
     const scanSchedule =
       this.configService.get<string>('CORE_SCAN_SCHEDULE') || '0 0 * * *';
-    this.logger.debug(`core scan schedule ${scanSchedule}`);
+    this.logger.log(`core scan schedule ${scanSchedule}`);
 
     const snapshotSchedule =
       this.configService.get<string>('SNAPSHOT_SCHEDULE') || '0 0 * * *';
-    this.logger.debug(`snapshot schedule ${snapshotSchedule}`);
+    this.logger.log(`snapshot schedule ${snapshotSchedule}`);
 
     const coreJob = new CronJob(scanSchedule, async () => {
       await this.coreScanProducer();
@@ -50,6 +50,8 @@ export class TaskService {
   }
 
   async coreScanProducer() {
+    this.logger.log('starting the Scan Engine Producer...');
+
     try {
       const websites = await this.websiteService.findAll();
 
@@ -60,6 +62,8 @@ export class TaskService {
         };
         await this.producerService.addCoreJob(coreInput);
       }
+
+      this.logger.log('successfully added to queue');
     } catch (error) {
       const err = error as Error;
       this.logger.error(err.message, err.stack);
@@ -67,8 +71,10 @@ export class TaskService {
   }
 
   async snapshot() {
+    this.logger.log('starting the Snapshot Producer...');
     try {
-      this.snapshotService.weeklySnapshot();
+      await this.snapshotService.weeklySnapshot();
+      this.logger.log('sucessfully added snapshot');
     } catch (error) {
       const err = error as Error;
       this.logger.error(err.message, err.stack);
