@@ -61,12 +61,12 @@ export class ScanEngineConsumer {
       // add core result
       const coreResult = await this.coreScanner.scan(job.data);
       await this.coreResultService.create(coreResult);
-      this.logger.debug(`wrote core result for ${job.data.url}`);
+      this.logger.log(`wrote core result for ${job.data.url}`);
 
       // add solutions result
       const solutionsResult = await this.solutionsScanner.scan(job.data);
       await this.solutionsResultService.create(solutionsResult);
-      this.logger.debug(`wrote solutions result for ${job.data.url}`);
+      this.logger.log(`wrote solutions result for ${job.data.url}`);
     } catch (e) {
       const err = e as Error;
       this.logger.error(err.message, err.stack);
@@ -75,7 +75,7 @@ export class ScanEngineConsumer {
 
   @OnQueueActive()
   onActive(job: Job<CoreInputDto>) {
-    this.logger.debug(
+    this.logger.log(
       `Processing job ${job.id} of type ${job.name} with data ${JSON.stringify(
         job.data,
       )}...`,
@@ -84,14 +84,14 @@ export class ScanEngineConsumer {
 
   @OnQueueStalled()
   onStalled(job: Job<CoreInputDto>) {
-    this.logger.debug(
+    this.logger.warn(
       `Queue stalled while processing job ${job.id} of type ${job.name} with data ${job.data}...`,
     );
   }
 
   @OnQueueDrained()
   onDrained() {
-    this.logger.debug(
+    this.logger.log(
       `Queue successfully drained at ${this.logger.getTimestamp()}`,
     );
   }
@@ -106,7 +106,7 @@ export class ScanEngineConsumer {
 
   @OnQueueCompleted()
   onCompleted(job: Job<CoreInputDto>, result: any) {
-    this.logger.debug(
+    this.logger.log(
       `Processed job ${job.id} of type ${job.name} with data ${JSON.stringify(
         job.data,
       )}`,

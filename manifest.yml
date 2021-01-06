@@ -23,7 +23,7 @@ applications:
   command: npm run start:prod:producer
   health-check-type: process
   env:
-    CORE_SCAN_SCHEDULE: "0 0 * * *"
+    CORE_SCAN_SCHEDULE: "0 */2 * * *"
     SNAPSHOT_SCHEDULE: "0 8 * * *"
 
 
