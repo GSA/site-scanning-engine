@@ -83,7 +83,7 @@ export class WebsiteService {
       });
     }
 
-    query.orderBy('website.url', 'DESC');
+    query.orderBy('website.url');
 
     return await paginate(query, options);
   }
