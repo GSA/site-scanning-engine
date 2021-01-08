@@ -16,7 +16,7 @@ export class WebsiteService {
     @InjectRepository(Website) private website: Repository<Website>,
   ) {}
 
-  async findAll(): Promise<Website[]> {
+  async findWebsiteResults(): Promise<Website[]> {
     const websites = this.website
       .createQueryBuilder('website')
       .leftJoinAndSelect('website.coreResult', 'coreResult')
@@ -24,6 +24,11 @@ export class WebsiteService {
       .getMany();
 
     return websites;
+  }
+
+  async findAllWebsites(): Promise<Website[]> {
+    const result = await this.website.find();
+    return result;
   }
 
   async paginatedFilter(

@@ -49,7 +49,7 @@ export class SnapshotService {
 
   private async getResults(): Promise<Website[]> {
     this.logger.debug('finding all results...');
-    const results = await this.websiteService.findAll();
+    const results = await this.websiteService.findWebsiteResults();
     return results;
   }
 

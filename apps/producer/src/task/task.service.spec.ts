@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { mock, mockReset, MockProxy } from 'jest-mock-extended';
+import { mock, MockProxy } from 'jest-mock-extended';
 import { ProducerService } from '../producer/producer.service';
 import { TaskService } from './task.service';
 import { Website } from 'entities/website.entity';
@@ -63,7 +63,7 @@ describe('TaskService', () => {
     const website = new Website();
     website.id = 1;
     website.url = 'https://18f.gov';
-    websiteServiceMock.findAll
+    websiteServiceMock.findAllWebsites
       .calledWith()
       .mockResolvedValue(Promise.resolve([website]));
     const expected: CoreInputDto = {

@@ -73,7 +73,7 @@ describe('SnapshotService', () => {
     const fileName = 'weekly-snapshot.json';
     const body = JSON.stringify([website.serialized()]);
 
-    mockWebsiteService.findAll.mockResolvedValue([website]);
+    mockWebsiteService.findWebsiteResults.mockResolvedValue([website]);
     await service.weeklySnapshot();
 
     copyDate.setDate(copyDate.getDate() - 7);
