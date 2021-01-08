@@ -165,6 +165,8 @@ export class SolutionsResult {
   @Transform((value: string) => {
     if (value) {
       return value.split(',');
+    } else {
+      return null;
     }
   })
   robotsTxtSitemapLocations?: string;
