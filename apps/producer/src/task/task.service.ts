@@ -53,7 +53,7 @@ export class TaskService {
     this.logger.log('starting the Scan Engine Producer...');
 
     try {
-      const websites = await this.websiteService.findAll();
+      const websites = await this.websiteService.findAllWebsites();
 
       for (const website of websites) {
         const coreInput: CoreInputDto = {

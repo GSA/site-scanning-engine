@@ -39,7 +39,7 @@ describe('WebsiteService', () => {
     mockQB.getMany.mockResolvedValue([website]);
     mockRepository.createQueryBuilder.mockReturnValue(mockQB);
 
-    const result = await service.findAll();
+    const result = await service.findWebsiteResults();
 
     const expected = [website];
     expect(result).toStrictEqual(expected);
