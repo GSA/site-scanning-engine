@@ -24,7 +24,7 @@ applications:
   health-check-type: process
   env:
     CORE_SCAN_SCHEDULE: "0 0 * * *"
-    SNAPSHOT_SCHEDULE: "0 8 * * *"
+    SNAPSHOT_SCHEDULE: "0 8 * * Sun"
 
 
 - name: site-scanner-consumer
