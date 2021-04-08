@@ -8,7 +8,7 @@
 # See: https://docs.docker.com/develop/develop-images/multistage-build/ 
 # 
 # the `builder` stage handles building the application
-FROM node:12.18 AS development
+FROM node:12.22.0 AS development
 
 WORKDIR /usr/src/app
 
@@ -21,7 +21,7 @@ COPY . .
 RUN npm run build producer
 
 # the production stage handles running the application
-FROM node:12.18 AS production
+FROM node:12.22.0 AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
