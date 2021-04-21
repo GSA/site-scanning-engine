@@ -11,7 +11,7 @@
 # See: https://docs.docker.com/develop/develop-images/multistage-build/ 
 # 
 # the development stage handles building the application and is designed for local development.
-FROM node:12.18 AS development
+FROM node:12.22 AS development
 
 WORKDIR /usr/src/app
 
@@ -42,7 +42,7 @@ RUN npm run build scanner
 USER pptruser
 
 # the production stage handles running the application
-FROM node:12.18 AS production
+FROM node:12.22 AS production
 
 WORKDIR /usr/src/app
 
