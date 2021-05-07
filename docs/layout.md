@@ -1,5 +1,5 @@
 ## Layout
-The project is laid out into serveral related components. These components can be thought of as either "applications" or "libraries". 
+The project is laid out into several related components. These components can be thought of as either "applications" or "libraries". 
 
 ### Applications
 "Applications" have a `main.js` and are meant to be executables. These are found in the [apps](./apps) directory.
