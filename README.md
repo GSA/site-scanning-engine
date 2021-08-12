@@ -1,11 +1,11 @@
-# Site Scanning Two 
+# Site Scanning Engine
 
 ## Description
 _Note: The project is a work in progress and APIs are unstable._
 
-This repository is for the Site Scanning project. This is the new base scanner repository (a.k.a. Site Scanning Two) which uses Headless Chrome, powered by Puppeteer for scanning. 
+This repository is for the Site Scanning project. This is the new base scanner repository which uses Headless Chrome, powered by Puppeteer for scanning. 
 
-For more detailed documentation about the Site Scanning program, including **who it's for**, **long-term goals**, and **how you can help** please visit the [Site Scanning Documentation Repository](https://github.com/18F/site-scanning-documentation).
+For more detailed documentation about the Site Scanning program, including **who it's for**, **long-term goals**, and **how you can help** please visit the [Site Scanning Documentation Repository](https://github.com/GSA/site-scanning-documentation).
 
 
 ## Table of Contents
@@ -47,7 +47,7 @@ Cloud Foundry CLI (aka `cf`)
 First clone the repository:
 
 ```bash
-$ git clone https://github.com/18F/site-scanning-two/
+$ git clone https://github.com/GSA/site-scanning-engine/
 ```
 
 
@@ -169,3 +169,11 @@ From the project root run:
 $ npm run test:unit
 ```
 This runs all unit tests. 
+
+## Deploy
+
+First, log in to Cloud.gov using the CLI and choose the organization and space. 
+
+Then, you can use the `cloudgov-deploy.sh` script to build and deploy the apps. 
+
+You can optionally pass a different manifest file with `cloudgov-deploy.sh manifest-dev.yml`.
