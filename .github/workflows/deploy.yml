@@ -1,7 +1,7 @@
 name: Deploy 
 on: 
   schedule:
-    cron: "15 22 * * *"
+    - cron: "20 22 * * *"
 jobs:
   deploy:
     # The type of runner that the job will run on
