@@ -97,5 +97,11 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   npm run build cli
 
   # deploy to cloud.gov
-  cf push
+  if [ -n "$1" ] ; then
+    info "using provided manifest"
+    cf push -f "$1"
+  else
+    info "using default manifest"
+    cf push
+  fi
 fi
