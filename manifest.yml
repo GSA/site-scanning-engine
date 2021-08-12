@@ -36,7 +36,7 @@ applications:
   buildpacks:
     - https://github.com/cloudfoundry/apt-buildpack/
     - https://github.com/cloudfoundry/nodejs-buildpack/
-  instances: 2
+  instances: 4
   no-route: true
   command: npm run start:prod:scan-engine
   health-check-type: process
