@@ -1,0 +1,28 @@
+name: Deploy 
+on: 
+  schedule:
+    cron: "15 22 * * *"
+jobs:
+  deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: install
+        run: npm install
+
+      - name: build 
+        run: npm run build:all 
+
+      - name: deploy
+        uses: 18f/cg-deploy-action@main
+        with:
+          cf_username: ${{ secrets.CF_USERNAME }}
+          cf_password: ${{ secrets.CF_PASSWORD }}
+          cf_org: gsatts-sitescan
+          cf_space: prod
+          push_arguments: "site-scanner-consumer site-scanner-producer"
