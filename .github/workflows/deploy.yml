@@ -21,14 +21,14 @@ jobs:
       - name: build 
         run: npm run build:all 
 
-      # - name: deploy producer
-      #   uses: 18f/cg-deploy-action@main
-      #   with:
-      #     cf_username: ${{ secrets.CF_USERNAME }}
-      #     cf_password: ${{ secrets.CF_PASSWORD }}
-      #     cf_org: gsatts-sitescan
-      #     cf_space: prod
-      #     push_arguments: "site-scanner-producer"
+      - name: deploy producer
+        uses: 18f/cg-deploy-action@main
+        with:
+          cf_username: ${{ secrets.CF_USERNAME }}
+          cf_password: ${{ secrets.CF_PASSWORD }}
+          cf_org: gsatts-sitescan
+          cf_space: prod
+          push_arguments: "site-scanner-producer"
 
       - name: deploy consumer
         uses: 18f/cg-deploy-action@main
