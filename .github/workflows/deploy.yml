@@ -30,6 +30,7 @@ jobs:
           cf_space: prod
           push_arguments: "site-scanner-api"
 
+
       - name: deploy producer 
         uses: 18f/cg-deploy-action@main
         with:
@@ -47,6 +48,7 @@ jobs:
           cf_org: gsatts-sitescan
           cf_space: prod
           push_arguments: "site-scanner-consumer"
+
 
 
       
