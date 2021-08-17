@@ -38,7 +38,6 @@ applications:
     - https://github.com/cloudfoundry/nodejs-buildpack/
   instances: 4
   no-route: true
-  timeout: 180
   command: npm run start:prod:scan-engine
   health-check-type: process
   env:
