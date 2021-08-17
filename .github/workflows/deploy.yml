@@ -29,5 +29,4 @@ jobs:
           cf_org: gsatts-sitescan
           cf_space: prod
           push_arguments: "-f manifest.yml"
-
       
