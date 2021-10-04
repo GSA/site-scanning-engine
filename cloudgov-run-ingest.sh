@@ -24,5 +24,5 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   trap cleanup EXIT
   # Script goes here
   info "starting script ..."
-  cf run-task site-scanner-producer "node dist/apps/cli/main.js ingest" -k 1G -m 1G
+  cf run-task site-scanner-producer -c "node dist/apps/cli/main.js ingest" -k 2G -m 4G
 fi
