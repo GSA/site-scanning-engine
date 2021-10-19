@@ -18,6 +18,9 @@ import { ScanStatus } from './scan-status';
 import { v4 } from 'uuid';
 import { Agent } from 'https';
 
+// We set the user agent to what it would be if we were not running headless chrome
+const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36"
+
 @Injectable()
 export class CoreScannerService
   implements Scanner<CoreInputDto, CoreResult>, OnModuleDestroy {
@@ -42,6 +45,7 @@ export class CoreScannerService
 
       // load the url
       this.logger.debug(`loading ${url}`);
+      page.setUserAgent(USER_AGENT)
       const response = await page.goto(url, {
         waitUntil: 'networkidle2',
       });
