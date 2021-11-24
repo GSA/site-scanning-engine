@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
-import { mock, MockProxy } from 'jest-mock-extended';
+import { mock } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
 import { SolutionsResultService } from './solutions-result.service';
 
 describe('SolutionsResultService', () => {
   let service: SolutionsResultService;
-  let mockRespository: MockProxy<Repository<SolutionsResult>>;
+  let mockRespository: any;
 
   beforeEach(async () => {
     mockRespository = mock<Repository<SolutionsResult>>();

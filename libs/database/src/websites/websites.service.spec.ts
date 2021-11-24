@@ -1,14 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Website } from 'entities/website.entity';
-import { mock, MockProxy } from 'jest-mock-extended';
+import { mock } from 'jest-mock-extended';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { WebsiteService } from './websites.service';
 
 describe('WebsiteService', () => {
   let service: WebsiteService;
-  let mockRepository: MockProxy<Repository<Website>>;
+  let mockRepository: any;
   let mockQB: any; // could not get this to typecheck as MockProxy<SelectQueryBuilder<Website>>
 
   beforeEach(async () => {

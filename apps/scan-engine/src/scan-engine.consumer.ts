@@ -91,9 +91,7 @@ export class ScanEngineConsumer {
 
   @OnQueueDrained()
   onDrained() {
-    this.logger.log(
-      `Queue successfully drained at ${this.logger.getTimestamp()}`,
-    );
+    this.logger.log(`Queue successfully drained.`);
   }
 
   @OnQueueError()
@@ -105,7 +103,7 @@ export class ScanEngineConsumer {
   }
 
   @OnQueueCompleted()
-  onCompleted(job: Job<CoreInputDto>, result: any) {
+  onCompleted(job: Job<CoreInputDto>, _: any) {
     this.logger.log(
       `Processed job ${job.id} of type ${job.name} with data ${JSON.stringify(
         job.data,
