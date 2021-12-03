@@ -6,21 +6,28 @@ import { CoreResult } from 'entities/core-result.entity';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
+import { ConfigService } from '@nestjs/config';
 
 describe('WebsiteController', () => {
   let websiteController: WebsiteController;
   let mockWebsiteService: MockProxy<WebsiteService>;
   let website: Website;
   let paginated: Pagination<Website>;
+  let mockConfigService: MockProxy<ConfigService>;
 
   beforeEach(async () => {
     mockWebsiteService = mock<WebsiteService>();
+    mockConfigService = mock<ConfigService>();
     const app: TestingModule = await Test.createTestingModule({
       controllers: [WebsiteController],
       providers: [
         {
           provide: WebsiteService,
           useValue: mockWebsiteService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
       ],
     }).compile();
