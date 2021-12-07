@@ -1,6 +1,13 @@
 import { FilterWebsiteDto } from 'apps/api/src/website/filter-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
-import { Controller, Get, Param, Query, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { NotFoundInterceptor } from '../not-found.interceptor';
 import { WebsiteSerializerInterceptor } from './website-serializer.interceptor';
 import {
@@ -10,10 +17,12 @@ import {
 } from '@nestjs/swagger';
 import { WebsiteApiResultDto } from './website-api-result.dto';
 import { PaginatedWebsiteResponseDto } from './paginated-website-response.dto';
+import { ApiKeyGuard } from '../apikey.guard';
 
 const WEBSITE_ROUTE_NAME = 'websites';
 
 @Controller(WEBSITE_ROUTE_NAME)
+@UseGuards(ApiKeyGuard)
 export class WebsiteController {
   constructor(private readonly websiteService: WebsiteService) {}
 

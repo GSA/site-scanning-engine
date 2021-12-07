@@ -60,6 +60,7 @@ SCANNER_MESSAGE_QUEUE_NAME="scanner-message-queue"
 SCANNER_MESSAGE_QUEUE_PLAN="redis-3node"
 SCANNER_PUBLIC_STORAGE_NAME="scanner-public-storage"
 SCANNER_PUBLIC_STORAGE_PLAN="basic-public"
+SCANNER_USER_PROVIDED_API_KEY="user-provided-api-key"
 
 
 if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
@@ -69,6 +70,13 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
 
   info "creating services if necessary..."
 
+  if service_exists "$SCANNER_USER_PROVIDED_API_KEY" ; then
+    already_exists "$SCANNER_USER_PROVIDED_API_KEY"
+  else
+    info "Create an API_KEY for use with API Umbrella."
+    cf cups $SCANNER_USER_PROVIDED_API_KEY -p "API_KEY"
+  fi
+    
   if service_exists "$SCANNER_POSTGRES_NAME" ; then
     already_exists "$SCANNER_POSTGRES_NAME"
   else 

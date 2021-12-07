@@ -9,7 +9,7 @@ import { CoreResultService } from './core-result.service';
 
 describe('CoreResultService', () => {
   let service: CoreResultService;
-  let mockRepository: MockProxy<Repository<CoreResult>>;
+  let mockRepository: any;
   let mockLogger: MockProxy<LoggerService>;
 
   beforeEach(async () => {

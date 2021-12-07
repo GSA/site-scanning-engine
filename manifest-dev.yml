@@ -5,6 +5,7 @@ applications:
   timeout: 10 # seconds
   services:
     - scanner-postgres
+    - user-provided-api-key
   memory: 512M
   instances: 1
   random-route: true
