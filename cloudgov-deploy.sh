@@ -104,5 +104,29 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   # next, build the cli
   npm run build cli
 
-  cf push -f "${1-manifest.yml}"
+  # grab the space Cloud Foundry is set to use (via `cf target -s`)
+  # and use that as a backstop
+  cf_space="$(cf target | sed -nEe 's/^space:[[:space:]]*([[:alpha:]]*)/\1/pg')"
+
+  # make sure our defaults are relative to the project root; if needed, we can
+  # specify a file other than the project root manually (`$1`)
+  project_root="$(git rev-parse --show-toplevel)"
+
+  # default looks like `manifest-dev.yml`
+  default_manifest_filename="${project_root}/manifest-${cf_space}.yml"
+
+  # if the environment-based default doesn't work, try without the
+  # environment included in the name
+  if [ ! -f "${default_manifest_filename}" ] ; then
+    default_manifest_filename="${project_root}/manifest-dev.yml"
+
+    # ..and if that doesn't work, quit
+    if [ ! -f "${default_manifest_filename}" ] ; then
+      logger -s "Dude, there's no manifest.yml..  quit."
+      exit 1
+    fi
+  fi
+
+  # `$1` (first getopts / ARGV argument may be the filename to use
+  cf push -f "${1:-${default_manifest_filename}}"
 fi
