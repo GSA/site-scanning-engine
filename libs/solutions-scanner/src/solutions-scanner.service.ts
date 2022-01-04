@@ -11,7 +11,8 @@ import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
 export class SolutionsScannerService
-  implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy {
+  implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy
+{
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
@@ -194,9 +195,8 @@ export class SolutionsScannerService
       result.robotsTxtDetected = true;
       result.robotsTxtFinalUrlSize = Buffer.byteLength(robotsText, 'utf-8');
       result.robotsTxtCrawlDelay = this.findRobotsCrawlDelay(robotsText);
-      result.robotsTxtSitemapLocations = this.findRobotsSitemapLocations(
-        robotsText,
-      );
+      result.robotsTxtSitemapLocations =
+        this.findRobotsSitemapLocations(robotsText);
     } else {
       result.robotsTxtDetected = false;
     }
@@ -304,7 +304,8 @@ export class SolutionsScannerService
 
   private uswdsFlagDetected(htmlText: string) {
     // these are the asset names of the small us flag in the USA Header for different uswds versions and devices.
-    const re = /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
+    const re =
+      /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
 
     // all we need is one match to give the points;
     const occurrenceCount = htmlText.match(re);
@@ -333,7 +334,8 @@ export class SolutionsScannerService
 
   private uswdsFlagInCSS(cssPages: string[]) {
     // these are the asset names of the small us flag in the USA Header for differnt uswds versions and devices.
-    const re = /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
+    const re =
+      /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
     let score = 0;
 
     for (const page of cssPages) {

@@ -20,7 +20,8 @@ import { Agent } from 'https';
 
 @Injectable()
 export class CoreScannerService
-  implements Scanner<CoreInputDto, CoreResult>, OnModuleDestroy {
+  implements Scanner<CoreInputDto, CoreResult>, OnModuleDestroy
+{
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
