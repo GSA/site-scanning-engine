@@ -71,6 +71,7 @@ describe('ScanEngineConsumer', () => {
     const input: CoreInputDto = {
       websiteId: 1,
       url: 'https://18f.gov',
+      scanId: '123',
     };
 
     mockCoreJob.data = input;

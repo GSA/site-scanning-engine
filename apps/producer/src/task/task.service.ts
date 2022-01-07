@@ -1,12 +1,16 @@
-import { WebsiteService } from '@app/database/websites/websites.service';
-import { LoggerService } from '@app/logger';
+import { CronJob } from 'cron';
+import * as cuid from 'cuid';
+
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
+
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { ProducerService } from '../producer/producer.service';
-import { CronJob } from 'cron';
+import { WebsiteService } from '@app/database/websites/websites.service';
+import { LoggerService } from '@app/logger';
 import { SnapshotService } from '@app/snapshot';
+
+import { ProducerService } from '../producer/producer.service';
 
 @Injectable()
 export class TaskService {
@@ -59,6 +63,7 @@ export class TaskService {
         const coreInput: CoreInputDto = {
           websiteId: website.id,
           url: website.url,
+          scanId: cuid(),
         };
         await this.producerService.addCoreJob(coreInput);
       }

@@ -54,6 +54,7 @@
     "class-validator": "^0.13.2",
     "commander": "^6.2.1",
     "cron": "^1.8.2",
+    "cuid": "^2.1.8",
     "fast-csv": "^4.3.6",
     "http-status-codes": "^2.1.4",
     "json2csv": "^5.0.6",

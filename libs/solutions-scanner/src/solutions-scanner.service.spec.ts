@@ -61,6 +61,7 @@ describe('SolutionsScannerService', () => {
     const input: SolutionsInputDto = {
       websiteId: 1,
       url: '18f.gov',
+      scanId: '123',
     };
 
     const time = new Date('2018-09-15T15:53:00');

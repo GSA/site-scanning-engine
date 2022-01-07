@@ -35,6 +35,7 @@ describe('CoreScanner (e2e)', () => {
     const input: CoreInputDto = {
       websiteId: 1,
       url: '18f.gov',
+      scanId: '123',
     };
     const website = new Website();
     website.id = input.websiteId;
@@ -61,6 +62,7 @@ describe('CoreScanner (e2e)', () => {
     const input: CoreInputDto = {
       websiteId: 1,
       url: 'poolsafety.gov',
+      scanId: '123',
     };
     const website = new Website();
     website.id = input.websiteId;
