@@ -17,7 +17,7 @@ export class IngestService {
   }
 
   private currentFederalSubdomains =
-    'https://raw.githubusercontent.com/GSA/data/master/dotgov-websites/site-scanning/current-federal-subdomains.csv';
+    'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv';
 
   async getUrls(): Promise<string> {
     const urls = await this.httpService
