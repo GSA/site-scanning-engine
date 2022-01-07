@@ -8,6 +8,8 @@ export default () => {
     return {
       database: {
         url: rds.credentials.uri,
+        // require ssl in the cloud.gov environment
+        ssl: true,
       },
     };
   } else {
@@ -18,6 +20,7 @@ export default () => {
     return {
       database: {
         url: `postgresql://${pgUser}:${pgPassword}@${dbHost}:${dbPort}`,
+        ssl: process.env.NODE_ENV !== 'dev',
       },
     };
   }
