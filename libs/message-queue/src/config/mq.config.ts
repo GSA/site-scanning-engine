@@ -12,7 +12,7 @@ export default () => {
         host: redis.credentials.hostname,
         port: redis.credentials.port,
         password: redis.credentials.password,
-        env: env
+        env: env,
       },
     };
   } else {
@@ -21,7 +21,7 @@ export default () => {
         host: process.env.QUEUE_HOST,
         port: process.env.QUEUE_PORT,
         password: process.env.QUEUE_PASSWORD,
-        env: env
+        env: env,
       },
     };
   }

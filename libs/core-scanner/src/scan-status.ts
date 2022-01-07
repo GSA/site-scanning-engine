@@ -4,4 +4,5 @@ export enum ScanStatus {
   DNSResolutionError = 'dns_resolution_error',
   UnknownError = 'unknown_error',
   InvalidSSLCert = 'invalid_ssl_cert',
+  ConnectionRefused = 'connection_refused',
 }

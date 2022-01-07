@@ -20,7 +20,8 @@ import { Agent } from 'https';
 
 @Injectable()
 export class CoreScannerService
-  implements Scanner<CoreInputDto, CoreResult>, OnModuleDestroy {
+  implements Scanner<CoreInputDto, CoreResult>, OnModuleDestroy
+{
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
@@ -31,6 +32,9 @@ export class CoreScannerService
 
   async scan(input: CoreInputDto) {
     const url = this.getHttpsUrl(input.url);
+    const logData = {
+      ...input,
+    };
 
     let result: CoreResult;
     let page: Page;
@@ -41,7 +45,7 @@ export class CoreScannerService
       await page.setCacheEnabled(false);
 
       // load the url
-      this.logger.debug(`loading ${url}`);
+      this.logger.debug(this.logObj(`loading ${url}`, logData));
       const response = await page.goto(url, {
         waitUntil: 'networkidle2',
       });
@@ -59,14 +63,19 @@ export class CoreScannerService
 
       // log if the error is unknown
       if (result.status == ScanStatus.UnknownError) {
-        this.logger.warn(`Unknown Error calling ${input.url}: ${err.message}`);
+        this.logger.warn(
+          this.logObj(
+            `Unknown Error calling ${input.url}: ${err.message}`,
+            this.logObj,
+          ),
+        );
       }
     } finally {
       await page.close();
-      this.logger.debug('closed puppeteer page');
+      this.logger.debug(this.logObj('closed puppeteer page', logData));
     }
 
-    this.logger.debug(`result for ${url}: ${JSON.stringify(result)}`);
+    this.logger.debug(this.logObj('scan result', logData));
     return result;
   }
 
@@ -161,7 +170,6 @@ export class CoreScannerService
 
   private isLive(res: Response) {
     const isLive = res.status() / 100 === 2; // 2xx family
-    this.logger.debug(`status for ${res.url()} is ${res.status()}`);
     return isLive;
   }
 
@@ -183,6 +191,10 @@ export class CoreScannerService
       .toPromise();
 
     return resp.status == HttpStatus.NOT_FOUND;
+  }
+
+  private logObj(message: string, logData: any) {
+    return { ...logData, message };
   }
 
   async onModuleDestroy() {

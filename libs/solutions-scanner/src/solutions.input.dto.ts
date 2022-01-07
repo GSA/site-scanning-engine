@@ -1,4 +1,4 @@
-import { IsNumber, IsUrl } from 'class-validator';
+import { IsNumber, IsString, IsUrl } from 'class-validator';
 
 /**
  * SolutionsInputDto is a Data Transfer Object for input to the SolutionsScanner.
@@ -18,4 +18,10 @@ export class SolutionsInputDto {
    */
   @IsUrl()
   url: string;
+
+  /**
+   * scanId is a string that will be used to uniquely identify this scan in logs.
+   */
+  @IsString()
+  scanId: string;
 }

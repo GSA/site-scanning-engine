@@ -11,7 +11,8 @@ import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
 export class SolutionsScannerService
-  implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy {
+  implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy
+{
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
     private logger: LoggerService,
@@ -21,6 +22,9 @@ export class SolutionsScannerService
 
   async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
     const url = this.getHttpsUrls(input.url);
+    const logData = {
+      ...input,
+    };
 
     let result: SolutionsResult;
     let page: Page;
@@ -72,6 +76,7 @@ export class SolutionsScannerService
 
       // build the result
       result = await this.buildResult(
+        input,
         response,
         input.websiteId,
         cssPages,
@@ -89,17 +94,20 @@ export class SolutionsScannerService
       result = this.buildErrorResult(input.websiteId, error);
       if (result.status === ScanStatus.UnknownError) {
         this.logger.warn(
-          `Unknown Error calling ${input.url}: ${error.message}`,
+          this.logObj(
+            `Unknown Error calling ${input.url}: ${error.message}`,
+            input,
+          ),
         );
         console.log(error);
       }
     } finally {
       await page.close();
-      this.logger.debug('closing page');
+      this.logger.debug(this.logObj('closing page', logData));
       await robotsPage.close();
-      this.logger.debug('closing robots page');
+      this.logger.debug(this.logObj('closing robots page', logData));
       await sitemapPage.close();
-      this.logger.debug('closing sitemap page');
+      this.logger.debug(this.logObj('closing sitemap page', logData));
     }
 
     return result;
@@ -125,6 +133,7 @@ export class SolutionsScannerService
   }
 
   private async buildResult(
+    logData: any,
     mainResponse: Response,
     websiteId: number,
     cssPages: string[],
@@ -144,7 +153,7 @@ export class SolutionsScannerService
 
     result.status = ScanStatus.Completed;
     result.usaClasses = await this.usaClassesCount(page);
-    result.uswdsString = this.uswdsInHtml(htmlText);
+    result.uswdsString = this.uswdsInHtml(logData, htmlText);
     result.uswdsTables = this.tableCount(htmlText);
     result.uswdsInlineCss = this.inlineUsaCssCount(htmlText);
     result.uswdsUsFlag = this.uswdsFlagDetected(htmlText);
@@ -153,7 +162,7 @@ export class SolutionsScannerService
     result.uswdsMerriweatherFont = this.uswdsMerriweatherFont(cssPages);
     result.uswdsPublicSansFont = this.uswdsPublicSansFont(cssPages);
     result.uswdsSourceSansFont = this.uswdsSourceSansFont(cssPages);
-    result.uswdsSemanticVersion = this.uswdsSemVer(cssPages);
+    result.uswdsSemanticVersion = this.uswdsSemVer(logData, cssPages);
     result.uswdsVersion = result.uswdsSemanticVersion ? 20 : 0;
     result.uswdsCount = this.uswdsCount(result);
 
@@ -168,10 +177,12 @@ export class SolutionsScannerService
       'og:description',
     );
     result.ogArticlePublishedFinalUrl = await this.findOpenGraphDates(
+      logData,
       page,
       'article:published_date',
     );
     result.ogArticleModifiedFinalUrl = await this.findOpenGraphDates(
+      logData,
       page,
       'article:modified_date',
     );
@@ -193,8 +204,12 @@ export class SolutionsScannerService
     if (robotsUrl.pathname === '/robots.txt' && robotsLive) {
       result.robotsTxtDetected = true;
       result.robotsTxtFinalUrlSize = Buffer.byteLength(robotsText, 'utf-8');
-      result.robotsTxtCrawlDelay = this.findRobotsCrawlDelay(robotsText);
+      result.robotsTxtCrawlDelay = this.findRobotsCrawlDelay(
+        logData,
+        robotsText,
+      );
       result.robotsTxtSitemapLocations = this.findRobotsSitemapLocations(
+        logData,
         robotsText,
       );
     } else {
@@ -270,10 +285,12 @@ export class SolutionsScannerService
     return usaClassesCount;
   }
 
-  private uswdsInHtml(htmlText: string) {
+  private uswdsInHtml(logData: any, htmlText: string) {
     const re = /uswds/g;
     const occurrenceCount = [...htmlText.matchAll(re)].length;
-    this.logger.debug(`uswds occurs ${occurrenceCount} times`);
+    this.logger.debug(
+      this.logObj(`uswds occurs ${occurrenceCount} times`, logData),
+    );
     return occurrenceCount;
   }
 
@@ -304,7 +321,8 @@ export class SolutionsScannerService
 
   private uswdsFlagDetected(htmlText: string) {
     // these are the asset names of the small us flag in the USA Header for different uswds versions and devices.
-    const re = /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
+    const re =
+      /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
 
     // all we need is one match to give the points;
     const occurrenceCount = htmlText.match(re);
@@ -333,7 +351,8 @@ export class SolutionsScannerService
 
   private uswdsFlagInCSS(cssPages: string[]) {
     // these are the asset names of the small us flag in the USA Header for differnt uswds versions and devices.
-    const re = /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
+    const re =
+      /us_flag_small.png|favicon-57.png|favicon-192.png|favicon-72.png|favicon-144.png|favicon-114.png/;
     let score = 0;
 
     for (const page of cssPages) {
@@ -392,7 +411,7 @@ export class SolutionsScannerService
     return score;
   }
 
-  private uswdsSemVer(cssPages: string[]): string | null {
+  private uswdsSemVer(logData: any, cssPages: string[]): string | null {
     const re = /uswds v?[0-9.]*/i;
 
     const versions: string[] = [];
@@ -409,7 +428,12 @@ export class SolutionsScannerService
     if (versions) {
       const uniqueVersions = uniq(versions);
       if (uniqueVersions.length > 1) {
-        this.logger.debug(`found multiple USWDS versions ${uniqueVersions}`);
+        this.logger.debug(
+          this.logObj(
+            `found multiple USWDS versions ${uniqueVersions}`,
+            logData,
+          ),
+        );
       }
       return uniqueVersions[0];
     } else {
@@ -479,7 +503,7 @@ export class SolutionsScannerService
     return openGraphResult;
   }
 
-  private async findOpenGraphDates(page: Page, target: string) {
+  private async findOpenGraphDates(logData: any, page: Page, target: string) {
     const targetDate: string = await this.findOpenGraphTag(page, target);
 
     if (targetDate) {
@@ -488,7 +512,12 @@ export class SolutionsScannerService
         return date;
       } catch (e) {
         const err = e as Error;
-        this.logger.warn(`Could not parse date ${targetDate}: ${err.message}`);
+        this.logger.warn(
+          this.logObj(
+            `Could not parse date ${targetDate}: ${err.message}`,
+            logData,
+          ),
+        );
         return null;
       }
     }
@@ -504,7 +533,7 @@ export class SolutionsScannerService
     return main;
   }
 
-  private findRobotsCrawlDelay(robotsTxt: string) {
+  private findRobotsCrawlDelay(logData: any, robotsTxt: string) {
     const directives = robotsTxt.split('\n');
     let crawlDelay: number;
 
@@ -515,7 +544,10 @@ export class SolutionsScannerService
         } catch (e) {
           const err = e as Error;
           this.logger.warn(
-            `Could not parse this crawl delay: ${directive}. ${err.message}`,
+            this.logObj(
+              `Could not parse this crawl delay: ${directive}. ${err.message}`,
+              logData,
+            ),
           );
         }
       }
@@ -524,7 +556,7 @@ export class SolutionsScannerService
     return crawlDelay;
   }
 
-  private findRobotsSitemapLocations(robotsTxt: string) {
+  private findRobotsSitemapLocations(logData: any, robotsTxt: string) {
     const directives = robotsTxt.split('\n');
     const sitemapLocations: string[] = [];
 
@@ -536,7 +568,10 @@ export class SolutionsScannerService
         } catch (e) {
           const err = e as Error;
           this.logger.warn(
-            `Could not parse this sitemap: ${directive}. ${err.message}`,
+            this.logObj(
+              `Could not parse this sitemap: ${directive}. ${err.message}`,
+              logData,
+            ),
           );
         }
       }
@@ -592,6 +627,10 @@ export class SolutionsScannerService
       domains: deduped.join(','),
       count: deduped.length,
     };
+  }
+
+  private logObj(message: string, logData: any) {
+    return { ...logData, message };
   }
 
   async onModuleDestroy() {

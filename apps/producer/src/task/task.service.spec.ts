@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { mock, MockProxy } from 'jest-mock-extended';
+import { anyString, mock, MockProxy } from 'jest-mock-extended';
 import { ProducerService } from '../producer/producer.service';
 import { TaskService } from './task.service';
 import { Website } from 'entities/website.entity';
@@ -66,12 +66,12 @@ describe('TaskService', () => {
     websiteServiceMock.findAllWebsites
       .calledWith()
       .mockResolvedValue(Promise.resolve([website]));
-    const expected: CoreInputDto = {
+    await service.coreScanProducer();
+    expect(producerMock.addCoreJob).toBeCalledWith({
       websiteId: website.id,
       url: website.url,
-    };
-    await service.coreScanProducer();
-    expect(producerMock.addCoreJob).toBeCalledWith(expected);
+      scanId: anyString(),
+    });
   });
 
   it('should create snapshot jobs', async () => {

@@ -1,4 +1,4 @@
-import { IsNumber, IsUrl } from 'class-validator';
+import { IsNumber, IsString, IsUrl } from 'class-validator';
 
 /**
  * CoreInputDto is a Data Transfer Object for input to the Core scanner.
@@ -22,4 +22,10 @@ export class CoreInputDto {
    */
   @IsUrl()
   url: string;
+
+  /**
+   * scanId is a string that will be used to uniquely identify this scan in logs.
+   */
+  @IsString()
+  scanId: string;
 }
