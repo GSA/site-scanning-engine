@@ -23,7 +23,7 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
       synchronize: true,
       ssl: {
         rejectUnauthorized: false,
-      }
+      },
     };
   },
   inject: [ConfigService],
