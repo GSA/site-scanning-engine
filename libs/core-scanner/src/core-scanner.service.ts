@@ -1,5 +1,8 @@
-import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
-import { LoggerService } from '@app/logger';
+import { Agent } from 'https';
+import { join, split, takeRight } from 'lodash';
+import { Browser, Page, Response, Request } from 'puppeteer';
+import { URL } from 'url';
+import { v4 } from 'uuid';
 import {
   HttpService,
   HttpStatus,
@@ -7,16 +10,16 @@ import {
   Injectable,
   OnModuleDestroy,
 } from '@nestjs/common';
+
+import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+import { LoggerService } from '@app/logger';
 import { Scanner } from 'libs/scanner.interface';
-import { join, split, takeRight } from 'lodash';
-import { Browser, Page, Response, Request } from 'puppeteer';
-import { URL } from 'url';
+
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
+
 import { ScanStatus } from './scan-status';
-import { v4 } from 'uuid';
-import { Agent } from 'https';
 
 @Injectable()
 export class CoreScannerService

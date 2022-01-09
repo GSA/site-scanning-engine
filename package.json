@@ -16,7 +16,7 @@
     "build:scan-engine": "nest build scan-engine",
     "build:cli": "nest build cli",
     "build:all": "concurrently \"npm run build:api\" \"npm run build producer\" \"npm run build scan-engine\" \"npm run build cli\"",
-    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\" \"**/*.yml\"",
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\" \"**/*.yml\" \"**/*.json\"",
     "ingest": "nest start cli -- ingest",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -142,7 +142,9 @@
       "@app/snapshot/(.*)": "<rootDir>/libs/snapshot/src/$1",
       "@app/snapshot": "<rootDir>/libs/snapshot/src",
       "@app/datetime/(.*)": "<rootDir>/libs/datetime/src/$1",
-      "@app/datetime": "<rootDir>/libs/datetime/src"
+      "@app/datetime": "<rootDir>/libs/datetime/src",
+      "@app/producer": "<rootDir>/libs/producer/src",
+      "@app/producer/(.*)": "<rootDir>/libs/producer/src/$1"
     }
   }
 }
