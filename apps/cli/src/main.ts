@@ -39,7 +39,7 @@ async function ingest(cmdObj) {
   await nestApp.close();
 }
 
-async function queueScans() {
+async function enqueueScans() {
   const nestApp = await bootstrap();
   const controller = nestApp.get(QueueController);
   console.log('queueing scan jobs');
@@ -85,11 +85,11 @@ async function main() {
 
   // queue-scans
   program
-    .command('queue-scans')
+    .command('enqueue-scans')
     .description(
-      'queue-scans adds each target in the Website database table to the redis queue',
+      'enqueue-scans adds each target in the Website database table to the redis queue',
     )
-    .action(queueScans);
+    .action(enqueueScans);
 
   await program.parseAsync(process.argv);
 }

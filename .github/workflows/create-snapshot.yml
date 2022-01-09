@@ -1,4 +1,4 @@
-name: Ingest website list
+name: Write snapshot of current scans to S3
 on:
   workflow_dispatch:
     inputs:
@@ -6,19 +6,14 @@ on:
         description: deployed cloud.gov space
         required: true
         default: prod
-      federalSubdomainsUrl:
-        description:
-        required: true
-        default: 'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv'
 
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: run ingest cli job in chosen space
+      - name: run create-snapshot cli job in chosen space
         uses: cloud-gov/cg-cli-tools@main
         with:
           cf_api: https://api.fr.cloud.gov
@@ -26,4 +21,4 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: ${{ github.event.inputs.cf_space }}
-          cf_command: 'run-task site-scanner-producer -c "node dist/apps/cli/main.js ingest" -k 2G -m 4G'
+          cf_command: 'run-task site-scanner-producer -c "node dist/apps/cli/main.js create-snapshot" -k 4G -m 4G'
