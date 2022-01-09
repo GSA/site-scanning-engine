@@ -5,6 +5,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { IngestController } from './ingest.controller';
 import { QueueController } from './queue.controller';
+import { SnapshotController } from './snapshot.controller';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule, {
@@ -39,6 +40,16 @@ async function ingest(cmdObj) {
   await nestApp.close();
 }
 
+async function clearQueue() {
+  const nestApp = await bootstrap();
+  const controller = nestApp.get(QueueController);
+  console.log('queueing scan jobs');
+
+  await controller.clearQueue();
+  printMemoryUsage();
+  await nestApp.close();
+}
+
 async function enqueueScans() {
   const nestApp = await bootstrap();
   const controller = nestApp.get(QueueController);
@@ -49,12 +60,12 @@ async function enqueueScans() {
   await nestApp.close();
 }
 
-async function clearQueue() {
+async function createSnapshot() {
   const nestApp = await bootstrap();
-  const controller = nestApp.get(QueueController);
+  const controller = nestApp.get(SnapshotController);
   console.log('queueing scan jobs');
 
-  await controller.clearQueue();
+  await controller.weeklySnapshot();
   printMemoryUsage();
   await nestApp.close();
 }
@@ -90,6 +101,14 @@ async function main() {
       'enqueue-scans adds each target in the Website database table to the redis queue',
     )
     .action(enqueueScans);
+
+  // create-snapshot
+  program
+    .command('create-snapshot')
+    .description(
+      'create-snapshot writes a CSV and JSON of the current scans to S3',
+    )
+    .action(createSnapshot);
 
   await program.parseAsync(process.argv);
 }

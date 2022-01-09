@@ -7,9 +7,17 @@ import { ProducerModule } from '@app/producer';
 
 import { IngestController } from './ingest.controller';
 import { QueueController } from './queue.controller';
+import { SnapshotController } from './snapshot.controller';
+import { SnapshotModule } from '@app/snapshot';
 
 @Module({
-  imports: [DatabaseModule, IngestModule, LoggerModule, ProducerModule],
-  controllers: [IngestController, QueueController],
+  imports: [
+    DatabaseModule,
+    IngestModule,
+    LoggerModule,
+    ProducerModule,
+    SnapshotModule,
+  ],
+  controllers: [IngestController, QueueController, SnapshotController],
 })
 export class AppModule {}
