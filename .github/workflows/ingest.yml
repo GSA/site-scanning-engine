@@ -24,4 +24,4 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: ${{ github.event.inputs.cf_space }}
-          cf_command: 'run-task site-scanner-producer --command \"node dist/apps/cli/main.js ingest\" -k 2G -m 4G --name github-action-run-${{ github.run_id }}'
+          command: 'cf run-task site-scanner-producer --command "node dist/apps/cli/main.js ingest" -k 2G -m 4G --name github-action-run-${{ github.run_id }}'
