@@ -1,8 +1,5 @@
 name: Deploy
 on:
-  schedule:
-    - cron: '20 22 * * *'
-
   workflow_dispatch:
 
 jobs:
