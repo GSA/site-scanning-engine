@@ -7,7 +7,7 @@ on:
         required: true
         default: prod
       federalSubdomainsUrl:
-        description:
+        description: CSV with domain list
         required: true
         default: 'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv'
 
@@ -24,4 +24,4 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: ${{ github.event.inputs.cf_space }}
-          cf_command: 'run-task site-scanner-producer -c "node dist/apps/cli/main.js ingest" -k 2G -m 4G'
+          cf_command: 'run-task site-scanner-consumer -c "node dist/apps/cli/main.js ingest" -k 2G -m 4G'
