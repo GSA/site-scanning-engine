@@ -43,7 +43,7 @@ describe('QueueController', () => {
       await queueController.clearQueue();
       expect(mockProducerService.emptyAndClean).toHaveBeenCalled();
     });
-    it('queueScans should queue scan jobs', async () => {
+    it('queueScans should enqueue scan jobs', async () => {
       mockWebsiteService.findAllWebsites.mockResolvedValue(
         Promise.resolve([new Website(), new Website()]),
       );

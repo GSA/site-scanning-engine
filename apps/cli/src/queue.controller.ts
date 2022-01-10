@@ -15,7 +15,7 @@ export class QueueController {
   ) {}
 
   async queueScans() {
-    this.logger.log('starting to queue scans...');
+    this.logger.log('starting to enqueue scans...');
 
     try {
       const websites = await this.websiteService.findAllWebsites();

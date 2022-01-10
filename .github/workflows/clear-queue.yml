@@ -8,7 +8,7 @@ on:
         default: prod
 
 jobs:
-  deploy:
+  clear:
     runs-on: ubuntu-latest
     steps:
       - name: run clear-queue cli job in chosen space

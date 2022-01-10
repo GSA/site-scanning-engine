@@ -1,4 +1,4 @@
-name: Enqueue scans for current website list
+name: Enqueue scans
 on:
   schedule:
     - cron: '0 0 * * *'
@@ -11,7 +11,7 @@ on:
         default: prod
 
 jobs:
-  deploy:
+  enqueue:
     runs-on: ubuntu-latest
 
     steps:

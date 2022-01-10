@@ -6,10 +6,10 @@ on:
         description: deployed cloud.gov space
         required: true
         default: prod
-      federalSubdomainsUrl:
-        description: CSV with domain list
-        required: true
-        default: 'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv'
+      # federalSubdomainsUrl:
+      #   description: CSV with domain list
+      #   required: true
+      #   default: 'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv'
 
 jobs:
   ingest:
