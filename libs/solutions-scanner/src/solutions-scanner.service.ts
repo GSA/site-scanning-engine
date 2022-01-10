@@ -112,6 +112,9 @@ export class SolutionsScannerService
       this.logger.debug(this.logObj('closing sitemap page', logData));
     }
 
+    this.logger.log(
+      this.logObj('solutions scan results', { ...logData, result }),
+    );
     return result;
   }
 

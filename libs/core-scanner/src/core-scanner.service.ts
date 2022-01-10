@@ -78,7 +78,7 @@ export class CoreScannerService
       this.logger.debug(this.logObj('closed puppeteer page', logData));
     }
 
-    this.logger.debug(this.logObj('scan result', logData));
+    this.logger.log(this.logObj('core scan results', { ...logData, result }));
     return result;
   }
 
