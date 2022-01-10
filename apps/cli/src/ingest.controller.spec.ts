@@ -1,6 +1,7 @@
-import { IngestService } from '@app/ingest';
-import { Test, TestingModule } from '@nestjs/testing';
 import { MockProxy, mock } from 'jest-mock-extended';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { IngestService } from '@app/ingest';
 import { IngestController } from './ingest.controller';
 
 describe('IngestController', () => {

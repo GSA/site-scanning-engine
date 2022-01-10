@@ -55,7 +55,7 @@ export class ScanEngineConsumer {
     concurrency: 3,
   })
   async processCore(job: Job<CoreInputDto>) {
-    this.logger.debug(`scanning ${job.data.url}`);
+    this.logger.debug(`scanning ${job.data.url} ${job.id}`);
 
     try {
       // add core result

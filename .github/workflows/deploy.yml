@@ -1,8 +1,5 @@
-name: Deploy 
-on: 
-  schedule:
-    - cron: "20 22 * * *"
-
+name: Deploy
+on:
   workflow_dispatch:
 
 jobs:
@@ -18,8 +15,8 @@ jobs:
       - name: install
         run: npm install
 
-      - name: build 
-        run: npm run build:all 
+      - name: build
+        run: npm run build:all
 
       - name: deploy api
         uses: 18f/cg-deploy-action@main
@@ -28,17 +25,7 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          push_arguments: "site-scanner-api"
-
-
-      - name: deploy producer 
-        uses: 18f/cg-deploy-action@main
-        with:
-          cf_username: ${{ secrets.CF_USERNAME }}
-          cf_password: ${{ secrets.CF_PASSWORD }}
-          cf_org: gsatts-sitescan
-          cf_space: prod
-          push_arguments: "site-scanner-producer"
+          push_arguments: 'site-scanner-api'
 
       - name: deploy consumer
         uses: 18f/cg-deploy-action@main
@@ -47,8 +34,7 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          push_arguments: "site-scanner-consumer"
-
+          push_arguments: 'site-scanner-consumer'
 
       - name: scale consumer
         uses: cloud-gov/cg-cli-tools@main
@@ -58,8 +44,5 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          cf_command: "scale site-scanner-consumer -i 4 -k 4G -m 2G -f"
+          cf_command: 'scale site-scanner-consumer -i 4 -k 4G -m 2G -f'
           # scale to four instances with 2G memory each and force deploy
-
-
-      

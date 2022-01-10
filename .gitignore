@@ -25,9 +25,13 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
+*.code-workspace
 
 # IDE - VSCode
 .vscode/*
 
-# environment 
+# environment
 .env
+
+# Dev docker-compose minio volume
+storage/
