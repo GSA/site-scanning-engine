@@ -1,5 +1,8 @@
 name: Enqueue scans for current website list
 on:
+  schedule:
+    - cron: '0 0 * * *'
+
   workflow_dispatch:
     inputs:
       cf_space:
@@ -21,5 +24,5 @@ jobs:
           cf_username: ${{ secrets.CF_USERNAME }}
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
-          cf_space: ${{ github.event.inputs.cf_space }}
+          cf_space: ${{ github.event.inputs.cf_space || 'prod' }}
           cf_command: 'run-task site-scanner-producer -c "node dist/apps/cli/main.js enqueue-scans" -k 2G -m 4G'
