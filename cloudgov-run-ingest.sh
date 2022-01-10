@@ -2,7 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-#/ Usage: ./run-ingest-cloud-gov.sh    
+#/ Usage: ./run-ingest-cloud-gov.sh
 #/ Description: Runs the ingest task on Cloud.gov
 #/   --help: Display this help message
 usage() { grep '^#/' "$0" | cut -c4- ; exit 0 ; }
@@ -24,5 +24,5 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   trap cleanup EXIT
   # Script goes here
   info "starting script ..."
-  cf run-task site-scanner-producer -c "node dist/apps/cli/main.js ingest" -k 2G -m 4G
+  cf run-task site-scanner-consumer -c "node dist/apps/cli/main.js ingest" -k 2G -m 4G
 fi
