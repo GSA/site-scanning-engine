@@ -1,13 +1,7 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": [
-      "ES2020.String",
-      "es5",
-      "es6",
-      "dom",
-      "dom.iterable"
-    ],
+    "lib": ["ES2020.String", "es5", "es6", "dom", "dom.iterable"],
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -19,66 +13,28 @@
     "baseUrl": "./",
     "incremental": true,
     "paths": {
-      "@app/message-queue": [
-        "libs/message-queue/src"
-      ],
-      "@app/message-queue/*": [
-        "libs/message-queue/src/*"
-      ],
-      "@app/database": [
-        "libs/database/src"
-      ],
-      "@app/database/*": [
-        "libs/database/src/*"
-      ],
-      "@app/logger": [
-        "libs/logger/src"
-      ],
-      "@app/logger/*": [
-        "libs/logger/src/*"
-      ],
-      "@app/browser": [
-        "libs/browser/src"
-      ],
-      "@app/browser/*": [
-        "libs/browser/src/*"
-      ],
-      "@app/core-scanner": [
-        "libs/core-scanner/src"
-      ],
-      "@app/core-scanner/*": [
-        "libs/core-scanner/src/*"
-      ],
-      "@app/ingest": [
-        "libs/ingest/src"
-      ],
-      "@app/ingest/*": [
-        "libs/ingest/src/*"
-      ],
-      "@app/solutions-scanner": [
-        "libs/solutions-scanner/src"
-      ],
-      "@app/solutions-scanner/*": [
-        "libs/solutions-scanner/src/*"
-      ],
-      "@app/storage": [
-        "libs/storage/src"
-      ],
-      "@app/storage/*": [
-        "libs/storage/src/*"
-      ],
-      "@app/snapshot": [
-        "libs/snapshot/src"
-      ],
-      "@app/snapshot/*": [
-        "libs/snapshot/src/*"
-      ],
-      "@app/datetime": [
-        "libs/datetime/src"
-      ],
-      "@app/datetime/*": [
-        "libs/datetime/src/*"
-      ]
+      "@app/browser": ["libs/browser/src"],
+      "@app/browser/*": ["libs/browser/src/*"],
+      "@app/core-scanner": ["libs/core-scanner/src"],
+      "@app/core-scanner/*": ["libs/core-scanner/src/*"],
+      "@app/database": ["libs/database/src"],
+      "@app/database/*": ["libs/database/src/*"],
+      "@app/datetime": ["libs/datetime/src"],
+      "@app/datetime/*": ["libs/datetime/src/*"],
+      "@app/ingest": ["libs/ingest/src"],
+      "@app/ingest/*": ["libs/ingest/src/*"],
+      "@app/logger": ["libs/logger/src"],
+      "@app/logger/*": ["libs/logger/src/*"],
+      "@app/message-queue": ["libs/message-queue/src"],
+      "@app/message-queue/*": ["libs/message-queue/src/*"],
+      "@app/producer": ["libs/producer/src"],
+      "@app/producer/*": ["libs/producer/src/*"],
+      "@app/snapshot": ["libs/snapshot/src"],
+      "@app/snapshot/*": ["libs/snapshot/src/*"],
+      "@app/solutions-scanner": ["libs/solutions-scanner/src"],
+      "@app/solutions-scanner/*": ["libs/solutions-scanner/src/*"],
+      "@app/storage": ["libs/storage/src"],
+      "@app/storage/*": ["libs/storage/src/*"]
     }
   }
 }

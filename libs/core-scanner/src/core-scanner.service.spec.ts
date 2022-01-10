@@ -1,16 +1,19 @@
-import { BROWSER_TOKEN } from '@app/browser';
-import { LoggerService } from '@app/logger';
-import { Test, TestingModule } from '@nestjs/testing';
-import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+import { AxiosResponse } from 'axios';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
-import { CoreScannerService } from './core-scanner.service';
+import { of } from 'rxjs';
+import { HttpModule, HttpService } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { BROWSER_TOKEN } from '@app/browser';
+import { LoggerService } from '@app/logger';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
+
+import { CoreScannerService } from './core-scanner.service';
 import { ScanStatus } from './scan-status';
-import { HttpModule, HttpService } from '@nestjs/common';
-import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
@@ -20,6 +23,7 @@ describe('CoreScannerService', () => {
   let mockLogger: MockProxy<LoggerService>;
   let mockRequest: MockProxy<Request>;
   let redirectRequest: MockProxy<Request>;
+  let mockHttpService: MockProxy<HttpService>;
   let httpService: HttpService;
   const finalUrl = 'https://18f.gsa.gov';
 
@@ -30,6 +34,7 @@ describe('CoreScannerService', () => {
     mockLogger = mock<LoggerService>();
     mockRequest = mock<Request>();
     redirectRequest = mock<Request>();
+    mockHttpService = mock<HttpService>();
 
     redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
     mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
@@ -54,6 +59,10 @@ describe('CoreScannerService', () => {
           provide: LoggerService,
           useValue: mockLogger,
         },
+        {
+          provide: HttpService,
+          useValue: mockHttpService,
+        },
       ],
     }).compile();
 
@@ -72,15 +81,15 @@ describe('CoreScannerService', () => {
       scanId: '123',
     };
 
-    const resp: AxiosResponse = {
-      data: {},
-      status: 404,
-      statusText: 'Not Found',
-      headers: {},
-      config: {},
-    };
-
-    jest.spyOn(httpService, 'get').mockImplementationOnce(() => of(resp));
+    mockHttpService.get.mockImplementationOnce(() => {
+      return of({
+        data: {},
+        status: 404,
+        statusText: 'Not Found',
+        headers: {},
+        config: {},
+      });
+    });
 
     const website = new Website();
     website.id = coreInputDto.websiteId;

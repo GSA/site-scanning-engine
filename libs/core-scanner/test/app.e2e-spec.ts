@@ -1,4 +1,4 @@
-import { BrowserService, BROWSER_TOKEN } from '@app/browser';
+import { BROWSER_TOKEN } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { LoggerService } from '@app/logger';

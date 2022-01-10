@@ -12,24 +12,20 @@
     "rmdist": "rimraf dist",
     "build": "nest build",
     "build:api": "nest build api",
-    "build:producer": "nest build producer",
     "build:scan-engine": "nest build scan-engine",
     "build:cli": "nest build cli",
-    "build:all": "concurrently \"npm run build:api\" \"npm run build producer\" \"npm run build scan-engine\" \"npm run build cli\"",
-    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
+    "build:all": "concurrently \"npm run build:api\" \"npm run build scan-engine\" \"npm run build cli\"",
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\" \"**/*.yml\" \"**/*.json\"",
     "ingest": "nest start cli -- ingest",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:api": "nest start api",
-    "start:producer": "nest start producer",
     "start:scan-engine": "nest start scan-engine",
     "start:prod:api": "node dist/apps/api/main.js",
-    "start:prod:producer": "node dist/apps/producer/main.js",
     "start:prod:scan-engine": "node dist/apps/scan-engine/main.js",
-    "start:concurrent-producer": "wait-on http://localhost:3000/api-json && nest start producer",
     "start:concurrent-scan-engine": "wait-on http://localhost:3000/api-json && nest start scan-engine",
-    "start:all": "concurrently \"npm run start:api\" \"npm run start:concurrent-producer\" \"npm run start:concurrent-scan-engine\"",
+    "start:all": "concurrently \"npm run start:api\" \"npm run start:concurrent-scan-engine\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns e2e-spec",
@@ -142,7 +138,9 @@
       "@app/snapshot/(.*)": "<rootDir>/libs/snapshot/src/$1",
       "@app/snapshot": "<rootDir>/libs/snapshot/src",
       "@app/datetime/(.*)": "<rootDir>/libs/datetime/src/$1",
-      "@app/datetime": "<rootDir>/libs/datetime/src"
+      "@app/datetime": "<rootDir>/libs/datetime/src",
+      "@app/producer": "<rootDir>/libs/producer/src",
+      "@app/producer/(.*)": "<rootDir>/libs/producer/src/$1"
     }
   }
 }
