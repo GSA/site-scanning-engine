@@ -108,6 +108,9 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   # and use that as a backstop
   cf_space="${1:-$(cf target | sed -nEe 's/^space:[[:space:]]*([[:alpha:]]*)/\1/pg')}"
 
+  # if the user passes a filename, extract the environment (space) out of the filename
+  cf_space="$(echo "${cf_space}" | sed -Ee 's/^.*manifest-([^.]*)[.]ya?ml$/\1/')"
+
   # make sure our defaults are relative to the project root; if needed, we can
   # specify a file other than the project root manually (`$1`)
   project_root="$(git rev-parse --show-toplevel)"
