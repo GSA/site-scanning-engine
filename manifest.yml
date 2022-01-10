@@ -16,6 +16,7 @@ applications:
     services:
       - scanner-postgres
       - scanner-message-queue
+      - scanner-public-storage
     memory: 2048M
     buildpacks:
       - https://github.com/cloudfoundry/apt-buildpack/
