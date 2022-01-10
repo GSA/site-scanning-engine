@@ -12,7 +12,7 @@ on:
         default: 'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv'
 
 jobs:
-  deploy:
+  ingest:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,4 +24,4 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: ${{ github.event.inputs.cf_space }}
-          cf_command: 'run-task site-scanner-producer --command "node dist/apps/cli/main.js ingest" -k 2G -m 4G --name github-action-run-${{ github.run_id }}'
+          cf_command: 'run-task site-scanner-producer --command \"node dist/apps/cli/main.js ingest\" -k 2G -m 4G --name github-action-run-${{ github.run_id }}'
