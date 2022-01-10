@@ -632,7 +632,7 @@ export class SolutionsScannerService
   }
 
   private logObj(message: string, logData: any) {
-    return { ...logData, message };
+    return JSON.stringify({ ...logData, message });
   }
 
   async onModuleDestroy() {
