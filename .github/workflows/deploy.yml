@@ -28,7 +28,7 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          push_arguments: "site-scanner-api"
+          push_arguments: "-f manifest.yml --vars-file vars.yml site-scanner-api"
 
 
       - name: deploy producer 
@@ -38,7 +38,7 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          push_arguments: "site-scanner-producer"
+          push_arguments: "-f manifest.yml --vars-file vars.yml site-scanner-producer"
 
       - name: deploy consumer
         uses: 18f/cg-deploy-action@main
@@ -47,7 +47,7 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          push_arguments: "site-scanner-consumer"
+          push_arguments: "-f manifest.yml --vars-file vars.yml site-scanner-consumer"
 
 
       - name: scale consumer
