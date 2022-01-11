@@ -1,45 +1,45 @@
 ---
 applications:
 - name: site-scanner-api
-  disk_quota: 4096M
+  disk_quota: (( api_disk ))
   timeout: 10 # seconds
   services:
     - scanner-postgres
     - user-provided-api-key
-  memory: 2048M
-  instances: 1
+  memory: (( api_memory ))
+  instances: (( api_instances ))
   random-route: true
-  command: npm run start:prod:api
+  command: npm run start:(( space )):api
 
 
 - name: site-scanner-producer
-  disk_quota: 4096M
+  disk_quota: (( producer_disk ))
   services:
     - scanner-postgres
     - scanner-message-queue
     - scanner-public-storage
-  memory: 2048M
-  instances: 1
+  memory: (( producer_memory ))
+  instances: (( producer_instances ))
   no-route: true
-  command: npm run start:prod:producer
+  command: npm run start:(( space )):producer
   health-check-type: process
   env:
-    CORE_SCAN_SCHEDULE: "0 0 * * *"
-    SNAPSHOT_SCHEDULE: "0 8 * * Sun"
+    CORE_SCAN_SCHEDULE: "(( scan_schedule ))"
+    SNAPSHOT_SCHEDULE: "(( snapshot_schedule ))"
 
 
 - name: site-scanner-consumer
-  disk_quota: 4096M
+  disk_quota: (( consumer_disk ))
   services:
     - scanner-postgres
     - scanner-message-queue
-  memory: 2048M
+  memory: (( consumer_memory ))
   buildpacks:
     - https://github.com/cloudfoundry/apt-buildpack/
     - https://github.com/cloudfoundry/nodejs-buildpack/
-  instances: 1
+  instances: (( consumer_instances ))
   no-route: true
-  command: npm run start:prod:scan-engine
+  command: npm run start:(( space )):scan-engine
   health-check-type: process
   env:
     OPTIMIZE_MEMORY: true

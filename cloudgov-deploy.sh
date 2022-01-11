@@ -104,50 +104,9 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   # next, build the cli
   npm run build cli
 
-  # make sure our defaults are relative to the project root; if needed, we can
-  # specify a file other than the project root manually (`$1`)
-  project_root="$(git rev-parse --show-toplevel)"
+  # capture the manifest's filename from ARGV
+  manifest_filename="${1:-manifest.yml}"
+  vars_filename="$(echo "${manifest_filename}" | sed -Ee 's/\bmanifest\b/vars/g')"
 
-  # grab the space Cloud Foundry is set to use (via `cf target -s`)
-  # and use that as a backstop
-  cf_space="$(cf target | sed -nEe 's/^space:[[:space:]]*([[:alpha:]]*)/\1/pg')"
-
-  manifest_filename="${1:-${cf_space}}"
-  fallback_manifest_filename="${project_root}/manifest-dev.yml"
-  
-  # if what the user passed doesn't exist, we'll build the filename based
-  # on the current space
-  if [ ! -f "$manifest_filename" ] ; then
-
-    if [ -n "$manifest_filename" ] ; then
-      logger -s "The filename passed, '$manifest_filename' doesn't exist;"
-      logger -s "will try creating a filename based on the environment."
-    fi
-
-    # if the user passes a filename, extract the environment (space) out of the filename
-    cf_space="$(echo "${cf_space}" | sed -Ee 's/^.*manifest-([^.]*)[.]ya?ml$/\1/')"
-
-    # mainfest filename looks like `manifest-dev.yml`
-    manifest_filename="${project_root}/manifest-${cf_space}.yml"
-
-    logger -s "Trying '$manifest_filename' as the manifest filename."
-
-  fi
-
-  # if the environment-based default doesn't work, try without the
-  # environment included in the name
-  if [ ! -f "${manifest_filename}" ] ; then
-
-    logger -s "'${manifest_filename}' doesn't exist; trying manifest-dev.yml"
-    manifest_filename="${fallback_manifest_filename}"
-
-    # ..and if that doesn't work, quit
-    if [ ! -f "${manifest_filename}" ] ; then
-      logger -s "Fallback '${manifest_filename}' doesn't exist..  Quitting."
-      exit 1
-    fi
-  fi
-
-  # `$1` (first getopts / ARGV argument may be the filename to use
-  cf push -f "${manifest_filename}"
+  cf push -f "${manifest_filename}" --vars-file "${vars_filename}"
 fi
