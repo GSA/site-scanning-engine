@@ -106,7 +106,35 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
 
   # capture the manifest's filename from ARGV
   manifest_filename="${1:-manifest.yml}"
-  vars_filename="$(echo "${manifest_filename}" | sed -Ee 's/\bmanifest\b/vars/g')"
+
+  # if there's no manifest file, quit
+  if [ ! -e "${manifest_filename}" ] ; then
+    logger -s "  manifest file '${manifest_filename}' is missing."
+    exit 1
+  fi
+
+  # grab the space (environment) from `cf target`; this assumes that
+  # there are only alphanumeric characters in the space's name; so
+  # 'prod2' and 'dev' work file, but 'staging-testing' will not.
+  cf_space="$(cf target site-scanner-api \
+  | sed -nEe 's/^[[:space:]]*space[[:space:]]*:[[:space:]]*([[:alnum:]])/\1/p')"
+
+  # if we can't determine the space, quit
+  if [ -z "${cf_space}" ] ; then
+    logger -s "Could not determine the target space from 'cf target'"
+    exit 1
+  fi
+
+  # take the manifest filename and mangle it to create a vars
+  # filename in the same location as the manifest filename
+  vars_filename="$(echo "${manifest_filename}" \
+  | sed -Ee "s/manifest[^.]*/vars-${cf_space}/g")"
+
+  # if there is no vars file, quit
+  if [ ! -e "${vars_filename}" ] ; then
+    logger -s "  vars file '${vars_filename}' is missing."
+    exit 1
+  fi
 
   cf push -f "${manifest_filename}" --vars-file "${vars_filename}"
 fi
