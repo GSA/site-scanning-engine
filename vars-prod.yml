@@ -11,6 +11,6 @@ producer_disk: 4G
 scan_schedule: "0 0 * * *"
 snapshot_schedule: "0 8 * * Sun"
 
-consumer_instances: 1
+consumer_instances: 4
 consumer_memory: 2G
 consumer_disk: 4G
