@@ -40,6 +40,7 @@ describe('ProducerService', () => {
     const data: CoreInputDto = {
       websiteId: 1,
       url: 'https://18f.gov',
+      scanId: '123',
     };
     mockJob.data = data;
 

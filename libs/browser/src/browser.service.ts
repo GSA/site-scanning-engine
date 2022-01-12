@@ -30,25 +30,26 @@ const BrowserService = {
 };
 
 function parseBrowserError(err: Error) {
-  const dnsError = err.message.startsWith('net::ERR_NAME_NOT_RESOLVED');
-  const timeoutError = err.name === 'TimeoutError';
-  const sslError =
-    err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID') ||
-    err.message.startsWith('unable to verify the first certificate');
-
-  let errorType: ScanStatus;
-
-  if (timeoutError) {
-    errorType = ScanStatus.Timeout;
-  } else if (dnsError) {
-    errorType = ScanStatus.DNSResolutionError;
-  } else if (sslError) {
-    errorType = ScanStatus.InvalidSSLCert;
-  } else {
-    errorType = ScanStatus.UnknownError;
+  if (err.name === 'TimeoutError') {
+    return ScanStatus.Timeout;
   }
 
-  return errorType;
+  if (err.message.startsWith('net::ERR_NAME_NOT_RESOLVED')) {
+    return ScanStatus.DNSResolutionError;
+  }
+
+  if (
+    err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID') ||
+    err.message.startsWith('unable to verify the first certificate')
+  ) {
+    return ScanStatus.InvalidSSLCert;
+  }
+
+  if (err.message.startsWith('net::ERR_CONNECTION_REFUSED')) {
+    return ScanStatus.ConnectionRefused;
+  }
+
+  return ScanStatus.UnknownError;
 }
 
 export { BROWSER_TOKEN, BrowserService, parseBrowserError };

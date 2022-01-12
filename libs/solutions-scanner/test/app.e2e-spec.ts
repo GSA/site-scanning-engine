@@ -1,14 +1,16 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { noop } from 'lodash';
+
+import { LoggerService } from '@app/logger';
 import { ScanStatus } from '@app/core-scanner/scan-status';
 import {
   SolutionsScannerModule,
   SolutionsScannerService,
-} from 'libs/solutions-scanner/src';
-import { SolutionsInputDto } from 'libs/solutions-scanner/src/solutions.input.dto';
-import { Test, TestingModule } from '@nestjs/testing';
+} from '@app/solutions-scanner';
+import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
+
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
-import { LoggerService } from '@app/logger';
-import { noop } from 'lodash';
 
 describe('SolutionsScanner (e2e)', () => {
   let service: SolutionsScannerService;
@@ -37,6 +39,7 @@ describe('SolutionsScanner (e2e)', () => {
     const input: SolutionsInputDto = {
       websiteId: 1,
       url: '18f.gov',
+      scanId: '123',
     };
     const website = new Website();
     website.id = input.websiteId;

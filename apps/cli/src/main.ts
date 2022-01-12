@@ -1,12 +1,29 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { IngestController } from './ingest.controller';
 import { Command } from 'commander';
 import { parseInt } from 'lodash';
+import { NestFactory } from '@nestjs/core';
+
+import { AppModule } from './app.module';
+import { IngestController } from './ingest.controller';
+import { QueueController } from './queue.controller';
+import { SnapshotController } from './snapshot.controller';
 
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule);
+  const app = await NestFactory.createApplicationContext(AppModule, {
+    logger:
+      process.env.NODE_ENV === 'dev'
+        ? ['log', 'error', 'warn', 'debug', 'verbose']
+        : ['log', 'error', 'warn'],
+  });
   return app;
+}
+
+function printMemoryUsage() {
+  const used = process.memoryUsage();
+  for (const key in used) {
+    console.log(
+      `${key} ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`,
+    );
+  }
 }
 
 async function ingest(cmdObj) {
@@ -19,13 +36,38 @@ async function ingest(cmdObj) {
   } else {
     await controller.writeUrls();
   }
+  printMemoryUsage();
+  await nestApp.close();
+}
 
-  const used = process.memoryUsage();
-  for (const key in used) {
-    console.log(
-      `${key} ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`,
-    );
-  }
+async function clearQueue() {
+  const nestApp = await bootstrap();
+  const controller = nestApp.get(QueueController);
+  console.log('queueing scan jobs');
+
+  await controller.clearQueue();
+  printMemoryUsage();
+  await nestApp.close();
+}
+
+async function enqueueScans() {
+  const nestApp = await bootstrap();
+  const controller = nestApp.get(QueueController);
+  console.log('queueing scan jobs');
+
+  await controller.queueScans();
+  printMemoryUsage();
+  await nestApp.close();
+}
+
+async function createSnapshot() {
+  const nestApp = await bootstrap();
+  const controller = nestApp.get(SnapshotController);
+  console.log('queueing scan jobs');
+
+  await controller.weeklySnapshot();
+  printMemoryUsage();
+  await nestApp.close();
 }
 
 async function main() {
@@ -45,6 +87,28 @@ async function main() {
       parseInt,
     )
     .action(ingest);
+
+  // clear-queue
+  program
+    .command('clear-queue')
+    .description('clears the Redis queue and cleans up old jobs')
+    .action(clearQueue);
+
+  // queue-scans
+  program
+    .command('enqueue-scans')
+    .description(
+      'enqueue-scans adds each target in the Website database table to the redis queue',
+    )
+    .action(enqueueScans);
+
+  // create-snapshot
+  program
+    .command('create-snapshot')
+    .description(
+      'create-snapshot writes a CSV and JSON of the current scans to S3',
+    )
+    .action(createSnapshot);
 
   await program.parseAsync(process.argv);
 }

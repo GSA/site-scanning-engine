@@ -1,0 +1,22 @@
+name: Clear scan queue
+on:
+  workflow_dispatch:
+    inputs:
+      cf_space:
+        description: deployed cloud.gov space
+        required: true
+        default: prod
+
+jobs:
+  clear:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run clear-queue cli job in chosen space
+        uses: danielnaab/cg-cli-tools@no-exec
+        with:
+          cf_api: https://api.fr.cloud.gov
+          cf_username: ${{ secrets.CF_USERNAME }}
+          cf_password: ${{ secrets.CF_PASSWORD }}
+          cf_org: gsatts-sitescan
+          cf_space: ${{ github.event.inputs.cf_space }}
+          cf_command: 'run-task site-scanner-consumer -c "node dist/apps/cli/main.js clear-queue" -k 2G -m 4G --name github-action-clear-queue-${{ github.run_id }}'

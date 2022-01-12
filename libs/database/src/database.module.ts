@@ -21,9 +21,11 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
       url: configService.get<string>('database.url'),
       entities: [Website, CoreResult, SolutionsResult],
       synchronize: true,
-      ssl: {
-        rejectUnauthorized: false,
-      }
+      ssl: configService.get<boolean>('database.ssl')
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
     };
   },
   inject: [ConfigService],

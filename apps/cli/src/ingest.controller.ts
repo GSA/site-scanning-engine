@@ -1,5 +1,6 @@
-import { IngestService } from '@app/ingest';
 import { Controller } from '@nestjs/common';
+
+import { IngestService } from '@app/ingest';
 
 @Controller()
 export class IngestController {
