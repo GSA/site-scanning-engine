@@ -1,6 +1,3 @@
-import { CoreScannerService } from '@app/core-scanner';
-import { CoreResultService } from '@app/database/core-results/core-result.service';
-import { LoggerService } from '@app/logger';
 import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 import {
   OnQueueActive,
@@ -12,8 +9,13 @@ import {
   Processor,
 } from '@nestjs/bull';
 import { Job } from 'bull';
+
+import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
+import { LoggerService } from '@app/logger';
+import { QueueService } from '@app/queue';
 import { SolutionsScannerService } from 'libs/solutions-scanner/src';
 
 /**
@@ -38,11 +40,12 @@ export class ScanEngineConsumer {
   constructor(
     private coreScanner: CoreScannerService,
     private coreResultService: CoreResultService,
+    private queueService: QueueService,
     private solutionsScanner: SolutionsScannerService,
     private solutionsResultService: SolutionsResultService,
     private logger: LoggerService,
   ) {
-    this.logger.setContext(ScanEngineConsumer.name);
+    //this.logger.setContext(ScanEngineConsumer.name);
   }
 
   /**
@@ -67,6 +70,11 @@ export class ScanEngineConsumer {
       const solutionsResult = await this.solutionsScanner.scan(job.data);
       await this.solutionsResultService.create(solutionsResult);
       this.logger.log(`wrote solutions result for ${job.data.url}`);
+
+      const queueStatus = await this.queueService.getQueueStatus();
+      this.logger.log(
+        JSON.stringify({ message: 'queue status', queue: queueStatus }),
+      );
     } catch (e) {
       const err = e as Error;
       this.logger.error(err.message, err.stack);

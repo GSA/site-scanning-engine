@@ -43,7 +43,7 @@ async function ingest(cmdObj) {
 async function clearQueue() {
   const nestApp = await bootstrap();
   const controller = nestApp.get(QueueController);
-  console.log('queueing scan jobs');
+  console.log('clearing queue');
 
   await controller.clearQueue();
   printMemoryUsage();
@@ -53,7 +53,7 @@ async function clearQueue() {
 async function enqueueScans() {
   const nestApp = await bootstrap();
   const controller = nestApp.get(QueueController);
-  console.log('queueing scan jobs');
+  console.log('enqueueing scan jobs');
 
   await controller.queueScans();
   printMemoryUsage();
@@ -63,7 +63,7 @@ async function enqueueScans() {
 async function createSnapshot() {
   const nestApp = await bootstrap();
   const controller = nestApp.get(SnapshotController);
-  console.log('queueing scan jobs');
+  console.log('creating snapshot');
 
   await controller.weeklySnapshot();
   printMemoryUsage();

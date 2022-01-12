@@ -4,12 +4,12 @@ import * as cuid from 'cuid';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
-import { ProducerService } from '@app/producer/producer.service';
+import { QueueService } from '@app/queue/queue.service';
 
 @Controller()
 export class QueueController {
   constructor(
-    private producerService: ProducerService,
+    private queueService: QueueService,
     private websiteService: WebsiteService,
     private logger: LoggerService,
   ) {}
@@ -26,10 +26,13 @@ export class QueueController {
           url: website.url,
           scanId: cuid(),
         };
-        await this.producerService.addCoreJob(coreInput);
+        await this.queueService.addCoreJob(coreInput);
       }
 
-      this.logger.log('successfully added to queue');
+      const queueStatus = await this.queueService.getQueueStatus();
+      this.logger.log(
+        JSON.stringify({ message: 'successfully added to queue', queueStatus }),
+      );
     } catch (error) {
       const err = error as Error;
       this.logger.error(err.message, err.stack);
@@ -41,7 +44,7 @@ export class QueueController {
 
     try {
       this.logger.log('successfully cleared queue');
-      await this.producerService.emptyAndClean();
+      await this.queueService.emptyAndClean();
     } catch (error) {
       const err = error as Error;
       this.logger.error(err.message, err.stack);

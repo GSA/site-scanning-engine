@@ -3,20 +3,24 @@
 ## Description
 _Note: The project is a work in progress and APIs are unstable._
 
-This repository is for the Site Scanning project. This is the new base scanner repository which uses Headless Chrome, powered by Puppeteer for scanning. 
+This repository is for the Site Scanning project. This is the new base scanner repository which uses Headless Chrome, powered by Puppeteer for scanning.
 
 For more detailed documentation about the Site Scanning program, including **who it's for**, **long-term goals**, and **how you can help** please visit the [Site Scanning Documentation Repository](https://github.com/GSA/site-scanning-documentation).
 
 
 ## Table of Contents
 
-* [Quickstart](#quickstart)
-    * [Installation](#Installation)
-    * [Dotenv](#Dotenv)
-    * [Docker](#Docker)
-    * [Start all Apps](#start-all-apps)
-    * [Ingest Website List](#ingest-website-list)
-    * [Test](#test)
+- [Site Scanning Engine](#site-scanning-engine)
+  - [Description](#description)
+  - [Table of Contents](#table-of-contents)
+  - [Quickstart](#quickstart)
+    - [Installation](#installation)
+    - [Dotenv](#dotenv)
+    - [Docker](#docker)
+    - [Build and Start all apps](#build-and-start-all-apps)
+    - [Ingest Website List](#ingest-website-list)
+  - [Test](#test)
+  - [Deploy](#deploy)
 
 * [Development Documentation](./docs)
     * [Project Layout](./docs/layout.md)
@@ -107,14 +111,14 @@ From the project root run:
 docker-compose up --build -d
 ```
 
-This will build `(--build)` all of the Docker containers and network interfaces listed in the [docker-compose.yml](docker-compose.yml) file and start them running in the background `(-d)`. 
+This will build `(--build)` all of the Docker containers and network interfaces listed in the [docker-compose.yml](docker-compose.yml) file and start them running in the background `(-d)`.
 
-`docker-compose down` will stop and remove all containers and network interfaces. 
+`docker-compose down` will stop and remove all containers and network interfaces.
 
-Running `docker-compose up --build -d` will rebuild all of the containers. This is useful if you need to wipe data from the 
-database, for instance. 
+Running `docker-compose up --build -d` will rebuild all of the containers. This is useful if you need to wipe data from the
+database, for instance.
 
-If you encounter any issues starting the containers with `docker-compose`, specifically related to OOM errors (or Exit 137) 
+If you encounter any issues starting the containers with `docker-compose`, specifically related to OOM errors (or Exit 137)
 try upping the resources in your Docker preferences.
 
 ### Build and Start all apps
@@ -123,13 +127,12 @@ try upping the resources in your Docker preferences.
 ```bash
 $ npm run build:all
 ```
-This command will build the apps, which compiles from Typescript to Javascript, doing any minification and optimization in the process. All of the app artifacts end up in [/dist](dist). This is ultimately what gets pushed to Cloud Foundry. 
+This command will build the apps, which compiles from Typescript to Javascript, doing any minification and optimization in the process. All of the app artifacts end up in [/dist](dist). This is ultimately what gets pushed to Cloud Foundry.
 
 Note that you can also build apps seperately:
 
 ```bash
 $ npm run build:api
-$ npm run build:producer
 $ npm run build:scan-engine
 $ npm run build:cli
 ```
@@ -138,23 +141,22 @@ Next, you can start the apps with following command:
 ```bash
 $ npm run start:all
 ```
-The apps are started as follows: first the API starts and then the Site Scanner Consumer and Site Scanner Producer follow after the API becomes available. This is designed so that the API app runs any shared configuration against the database first. 
+The apps are started as follows: first the API starts and then the Site Scanner worker follows. This is designed so that the API app runs any shared configuration against the database first.
 
 Note, that you can start the apps individually as follows:
 
 ```bash
 $ npm run start:api
-$ npm run start:producer
 $ npm run start:scan-engine
 ```
 
 
 ### Ingest Website List
 
-The Site Scanner relies on a list of federal domains and metadata about those to domains to operate. 
+The Site Scanner relies on a list of federal domains and metadata about those to domains to operate.
 This list is ingested into the system from a public repository using a the [Ingest Service](libs/ingest).
 
-To run the ingest service do the following: 
+To run the ingest service do the following:
 
 ```bash
 npm run ingest -- --limit 200
@@ -168,12 +170,12 @@ From the project root run:
 ```bash
 $ npm run test:unit
 ```
-This runs all unit tests. 
+This runs all unit tests.
 
 ## Deploy
 
-First, log in to Cloud.gov using the CLI and choose the organization and space. 
+First, log in to Cloud.gov using the CLI and choose the organization and space.
 
-Then, you can use the `cloudgov-deploy.sh` script to build and deploy the apps. 
+Then, you can use the `cloudgov-deploy.sh` script to build and deploy the apps.
 
 You can optionally pass a different manifest file with `cloudgov-deploy.sh manifest-dev.yml`.
