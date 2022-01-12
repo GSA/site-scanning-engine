@@ -11,13 +11,13 @@ import {
 import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
 
 /**
- * ProducerService writes jobs to the message queue.
+ * QueueService writes jobs to the message queue.
  *
- * @remarks The ProducerService is used to write jobs to a queue in order to be processed by
+ * @remarks The QueueService is used to write jobs to a queue in order to be processed by
  * a scanner.
  */
 @Injectable()
-export class ProducerService {
+export class QueueService {
   constructor(@InjectQueue(SCANNER_QUEUE_NAME) private scannerQueue: Queue) {}
 
   /**
@@ -61,5 +61,16 @@ export class ProducerService {
       this.scannerQueue.clean(0, 'paused'),
       this.scannerQueue.clean(0, 'wait'),
     ]);
+  }
+
+  async getQueueStatus() {
+    const [activeCount, count] = await Promise.all([
+      this.scannerQueue.getActiveCount(),
+      this.scannerQueue.count(),
+    ]);
+    return {
+      count,
+      activeCount,
+    };
   }
 }

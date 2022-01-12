@@ -15,6 +15,7 @@ import { Scanner } from 'libs/scanner.interface';
 import { SolutionsScannerService } from 'libs/solutions-scanner/src';
 
 import { ScanEngineConsumer } from './scan-engine.consumer';
+import { QueueService } from '@app/queue';
 
 describe('ScanEngineConsumer', () => {
   let consumer: ScanEngineConsumer;
@@ -27,6 +28,7 @@ describe('ScanEngineConsumer', () => {
   let mockSolutionsResultService: MockProxy<SolutionsResultService>;
   let mockCoreJob: MockProxy<Job<CoreInputDto>>;
   let mockLogger: MockProxy<LoggerService>;
+  let mockQueueService: MockProxy<QueueService>;
 
   beforeEach(async () => {
     mockCoreScanner = mock<Scanner<CoreInputDto, CoreResult>>();
@@ -35,6 +37,7 @@ describe('ScanEngineConsumer', () => {
     mockSolutionsResultService = mock<SolutionsResultService>();
     mockCoreJob = mock<Job<CoreInputDto>>();
     mockLogger = mock<LoggerService>();
+    mockQueueService = mock<QueueService>();
     module = await Test.createTestingModule({
       providers: [
         ScanEngineConsumer,
@@ -57,6 +60,10 @@ describe('ScanEngineConsumer', () => {
         {
           provide: LoggerService,
           useValue: mockLogger,
+        },
+        {
+          provide: QueueService,
+          useValue: mockQueueService,
         },
       ],
     }).compile();

@@ -3,27 +3,27 @@ import { MockProxy, mock } from 'jest-mock-extended';
 
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { LoggerService } from '@app/logger';
-import { ProducerService } from '@app/producer';
+import { QueueService } from '@app/queue';
 
 import { QueueController } from './queue.controller';
 import { Website } from 'entities/website.entity';
 
 describe('QueueController', () => {
   let queueController: QueueController;
-  let mockProducerService: MockProxy<ProducerService>;
+  let mockQueueService: MockProxy<QueueService>;
   let mockWebsiteService: MockProxy<WebsiteService>;
   let mockLogger: MockProxy<LoggerService>;
 
   beforeEach(async () => {
-    mockProducerService = mock<ProducerService>();
+    mockQueueService = mock<QueueService>();
     mockWebsiteService = mock<WebsiteService>();
     mockLogger = mock<LoggerService>();
     const app: TestingModule = await Test.createTestingModule({
       controllers: [QueueController],
       providers: [
         {
-          provide: ProducerService,
-          useValue: mockProducerService,
+          provide: QueueService,
+          useValue: mockQueueService,
         },
         {
           provide: WebsiteService,
@@ -41,7 +41,7 @@ describe('QueueController', () => {
   describe('queue controller', () => {
     it('clearQueue should clear queue', async () => {
       await queueController.clearQueue();
-      expect(mockProducerService.emptyAndClean).toHaveBeenCalled();
+      expect(mockQueueService.emptyAndClean).toHaveBeenCalled();
     });
     it('queueScans should enqueue scan jobs', async () => {
       mockWebsiteService.findAllWebsites.mockResolvedValue(
@@ -49,7 +49,7 @@ describe('QueueController', () => {
       );
       await queueController.queueScans();
       expect(mockWebsiteService.findAllWebsites).toHaveBeenCalled();
-      expect(mockProducerService.addCoreJob).toHaveBeenCalledTimes(2);
+      expect(mockQueueService.addCoreJob).toHaveBeenCalledTimes(2);
     });
   });
 });
