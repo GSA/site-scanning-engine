@@ -1,45 +1,45 @@
 ---
 applications:
-- name: site-scanner-api
-  disk_quota: (( api_disk ))
-  timeout: 10 # seconds
-  services:
-    - scanner-postgres
-    - user-provided-api-key
-  memory: (( api_memory ))
-  instances: (( api_instances ))
-  random-route: true
-  command: npm run start:(( space )):api
+  - name: site-scanner-api
+    disk_quota: (( api_disk ))
+    timeout: 10  # seconds
+    services:
+      - scanner-postgres
+      - user-provided-api-key
+    memory: (( api_memory ))
+    instances: (( api_instances ))
+    random-route: true
+    command: npm run start:(( space )):api
 
 
-- name: site-scanner-producer
-  disk_quota: (( producer_disk ))
-  services:
-    - scanner-postgres
-    - scanner-message-queue
-    - scanner-public-storage
-  memory: (( producer_memory ))
-  instances: (( producer_instances ))
-  no-route: true
-  command: npm run start:(( space )):producer
-  health-check-type: process
-  env:
-    CORE_SCAN_SCHEDULE: "(( scan_schedule ))"
-    SNAPSHOT_SCHEDULE: "(( snapshot_schedule ))"
+  - name: site-scanner-producer
+    disk_quota: (( producer_disk ))
+    services:
+      - scanner-postgres
+      - scanner-message-queue
+      - scanner-public-storage
+    memory: (( producer_memory ))
+    instances: (( producer_instances ))
+    no-route: true
+    command: npm run start:(( space )):producer
+    health-check-type: process
+    env:
+      CORE_SCAN_SCHEDULE: "(( scan_schedule ))"
+      SNAPSHOT_SCHEDULE: "(( snapshot_schedule ))"
 
 
-- name: site-scanner-consumer
-  disk_quota: (( consumer_disk ))
-  services:
-    - scanner-postgres
-    - scanner-message-queue
-  memory: (( consumer_memory ))
-  buildpacks:
-    - https://github.com/cloudfoundry/apt-buildpack/
-    - https://github.com/cloudfoundry/nodejs-buildpack/
-  instances: (( consumer_instances ))
-  no-route: true
-  command: npm run start:(( space )):scan-engine
-  health-check-type: process
-  env:
-    OPTIMIZE_MEMORY: true
+  - name: site-scanner-consumer
+    disk_quota: (( consumer_disk ))
+    services:
+      - scanner-postgres
+      - scanner-message-queue
+    memory: (( consumer_memory ))
+    buildpacks:
+      - https://github.com/cloudfoundry/apt-buildpack/
+      - https://github.com/cloudfoundry/nodejs-buildpack/
+    instances: (( consumer_instances ))
+    no-route: true
+    command: npm run start:(( space )):scan-engine
+    health-check-type: process
+    env:
+      OPTIMIZE_MEMORY: true
