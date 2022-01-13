@@ -1,4 +1,3 @@
-import { LoggerModule } from '@app/logger';
 import { INestApplication } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -10,7 +9,7 @@ describe('AppController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule, LoggerModule, ConfigModule],
+      imports: [AppModule, ConfigModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();

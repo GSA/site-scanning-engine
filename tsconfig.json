@@ -23,8 +23,6 @@
       "@app/datetime/*": ["libs/datetime/src/*"],
       "@app/ingest": ["libs/ingest/src"],
       "@app/ingest/*": ["libs/ingest/src/*"],
-      "@app/logger": ["libs/logger/src"],
-      "@app/logger/*": ["libs/logger/src/*"],
       "@app/message-queue": ["libs/message-queue/src"],
       "@app/message-queue/*": ["libs/message-queue/src/*"],
       "@app/queue": ["libs/queue/src"],

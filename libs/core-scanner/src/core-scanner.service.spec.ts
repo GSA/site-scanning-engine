@@ -5,7 +5,6 @@ import { HttpModule, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { BROWSER_TOKEN } from '@app/browser';
-import { LoggerService } from '@app/logger';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
@@ -19,7 +18,6 @@ describe('CoreScannerService', () => {
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
   let mockResponse: MockProxy<Response>;
-  let mockLogger: MockProxy<LoggerService>;
   let mockRequest: MockProxy<Request>;
   let redirectRequest: MockProxy<Request>;
   let mockHttpService: MockProxy<HttpService>;
@@ -29,7 +27,6 @@ describe('CoreScannerService', () => {
     mockBrowser = mock<Browser>();
     mockPage = mock<Page>();
     mockResponse = mock<Response>();
-    mockLogger = mock<LoggerService>();
     mockRequest = mock<Request>();
     redirectRequest = mock<Request>();
     mockHttpService = mock<HttpService>();

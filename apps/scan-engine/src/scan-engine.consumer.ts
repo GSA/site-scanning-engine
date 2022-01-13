@@ -15,7 +15,6 @@ import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
-import { LoggerService } from '@app/logger';
 import { QueueService } from '@app/queue';
 import { SolutionsScannerService } from 'libs/solutions-scanner/src';
 

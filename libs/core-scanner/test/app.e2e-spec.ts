@@ -1,7 +1,6 @@
 import { BROWSER_TOKEN } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';

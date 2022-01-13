@@ -125,8 +125,6 @@
       "@app/message-queue": "<rootDir>/libs/message-queue/src",
       "@app/database/(.*)": "<rootDir>/libs/database/src/$1",
       "@app/database": "<rootDir>/libs/database/src",
-      "@app/logger/(.*)": "<rootDir>/libs/logger/src/$1",
-      "@app/logger": "<rootDir>/libs/logger/src",
       "@app/browser/(.*)": "<rootDir>/libs/browser/src/$1",
       "@app/browser": "<rootDir>/libs/browser/src",
       "@app/core-scanner/(.*)": "<rootDir>/libs/core-scanner/src/$1",
