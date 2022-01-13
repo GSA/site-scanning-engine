@@ -136,5 +136,6 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
     exit 1
   fi
 
+  # use the environment / space-specific vars file
   cf push -f "${manifest_filename}" --vars-file "${vars_filename}"
 fi
