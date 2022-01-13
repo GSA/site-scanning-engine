@@ -8,12 +8,12 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   OnModuleDestroy,
 } from '@nestjs/common';
 
 import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { LoggerService } from '@app/logger';
 import { Scanner } from 'libs/scanner.interface';
 
 import { CoreResult } from 'entities/core-result.entity';
@@ -25,13 +25,12 @@ import { ScanStatus } from './scan-status';
 export class CoreScannerService
   implements Scanner<CoreInputDto, CoreResult>, OnModuleDestroy
 {
+  private logger = new Logger(CoreScannerService.name);
+
   constructor(
     @Inject(BROWSER_TOKEN) private browser: Browser,
-    private logger: LoggerService,
     private httpService: HttpService,
-  ) {
-    this.logger.setContext(CoreScannerService.name);
-  }
+  ) {}
 
   async scan(input: CoreInputDto) {
     const url = this.getHttpsUrl(input.url);
@@ -48,7 +47,10 @@ export class CoreScannerService
       await page.setCacheEnabled(false);
 
       // load the url
-      this.logger.debug(this.logObj(`loading ${url}`, logData));
+      this.logger.debug({
+        msg: `loading ${url}`,
+        ...logData,
+      });
       const response = await page.goto(url, {
         waitUntil: 'networkidle2',
       });
@@ -66,19 +68,17 @@ export class CoreScannerService
 
       // log if the error is unknown
       if (result.status == ScanStatus.UnknownError) {
-        this.logger.warn(
-          this.logObj(
-            `Unknown Error calling ${input.url}: ${err.message}`,
-            this.logObj,
-          ),
-        );
+        this.logger.warn({
+          msg: `Unknown Error calling ${input.url}: ${err.message}`,
+          ...logData,
+        });
       }
     } finally {
       await page.close();
-      this.logger.debug(this.logObj('closed puppeteer page', logData));
+      this.logger.debug({ msg: 'closed puppeteer page', ...logData });
     }
 
-    this.logger.log(this.logObj('core scan results', { ...logData, result }));
+    this.logger.log({ msg: 'core scan results', ...logData });
     return result;
   }
 
@@ -194,10 +194,6 @@ export class CoreScannerService
       .toPromise();
 
     return resp.status == HttpStatus.NOT_FOUND;
-  }
-
-  private logObj(message: string, logData: any) {
-    return JSON.stringify({ ...logData, message });
   }
 
   async onModuleDestroy() {

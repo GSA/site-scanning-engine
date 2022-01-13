@@ -58,10 +58,6 @@ describe('ScanEngineConsumer', () => {
           useValue: mockSolutionsResultService,
         },
         {
-          provide: LoggerService,
-          useValue: mockLogger,
-        },
-        {
           provide: QueueService,
           useValue: mockQueueService,
         },

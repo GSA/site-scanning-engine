@@ -10,7 +10,6 @@ import { Browser } from 'puppeteer';
 
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;
-  let logger: LoggerService;
   let moduleFixture: TestingModule;
   let browser: Browser;
 
@@ -20,10 +19,7 @@ describe('CoreScanner (e2e)', () => {
     }).compile();
 
     service = moduleFixture.get<CoreScannerService>(CoreScannerService);
-    logger = moduleFixture.get<LoggerService>(LoggerService);
     browser = moduleFixture.get<Browser>(BROWSER_TOKEN);
-
-    jest.spyOn(logger, 'debug').mockImplementation(noop);
   });
 
   afterAll(async () => {

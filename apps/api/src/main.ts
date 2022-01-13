@@ -1,15 +1,16 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Logger } from 'nestjs-pino';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger:
-      process.env.NODE_ENV === 'dev'
-        ? ['log', 'error', 'warn', 'debug', 'verbose']
-        : ['error', 'warn'],
+    bufferLogs: true,
   });
+  app.useLogger(app.get(Logger));
+  app.flushLogs();
 
   app.useGlobalPipes(
     new ValidationPipe({

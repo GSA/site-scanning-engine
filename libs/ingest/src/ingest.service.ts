@@ -1,20 +1,20 @@
-import { WebsiteService } from '@app/database/websites/websites.service';
-import { HttpService, Injectable } from '@nestjs/common';
-import { map } from 'rxjs/operators';
 import { parse } from '@fast-csv/parse';
+import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { map } from 'rxjs/operators';
+
 import { CreateWebsiteDto } from '@app/database/websites/dto/create-website.dto';
-import { LoggerService } from '@app/logger';
+import { WebsiteService } from '@app/database/websites/websites.service';
+
 import { SubdomainRow } from './subdomain-row.interface';
 
 @Injectable()
 export class IngestService {
+  private logger = new Logger(IngestService.name);
+
   constructor(
     private httpService: HttpService,
     private websiteService: WebsiteService,
-    private logger: LoggerService,
-  ) {
-    this.logger.setContext(IngestService.name);
-  }
+  ) {}
 
   private currentFederalSubdomains =
     'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv';

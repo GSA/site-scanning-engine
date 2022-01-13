@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { noop } from 'lodash';
 
-import { LoggerService } from '@app/logger';
 import { ScanStatus } from '@app/core-scanner/scan-status';
 import {
   SolutionsScannerModule,
@@ -15,7 +14,6 @@ import { Website } from 'entities/website.entity';
 describe('SolutionsScanner (e2e)', () => {
   let service: SolutionsScannerService;
   let moduleFixture: TestingModule;
-  let logger: LoggerService;
 
   beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({
@@ -25,9 +23,6 @@ describe('SolutionsScanner (e2e)', () => {
     service = moduleFixture.get<SolutionsScannerService>(
       SolutionsScannerService,
     );
-    logger = moduleFixture.get<LoggerService>(LoggerService);
-
-    jest.spyOn(logger, 'debug').mockImplementation(noop);
   });
 
   afterAll(async () => {

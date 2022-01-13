@@ -8,6 +8,7 @@ import {
   Process,
   Processor,
 } from '@nestjs/bull';
+import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 
 import { CoreScannerService } from '@app/core-scanner';
@@ -37,16 +38,15 @@ import { SolutionsScannerService } from 'libs/solutions-scanner/src';
  */
 @Processor(SCANNER_QUEUE_NAME)
 export class ScanEngineConsumer {
+  private logger = new Logger(ScanEngineConsumer.name);
+
   constructor(
     private coreScanner: CoreScannerService,
     private coreResultService: CoreResultService,
     private queueService: QueueService,
     private solutionsScanner: SolutionsScannerService,
     private solutionsResultService: SolutionsResultService,
-    private logger: LoggerService,
-  ) {
-    //this.logger.setContext(ScanEngineConsumer.name);
-  }
+  ) {}
 
   /**
    * processCore processes the CoreScanner jobs from the queue.
@@ -58,23 +58,30 @@ export class ScanEngineConsumer {
     concurrency: 3,
   })
   async processCore(job: Job<CoreInputDto>) {
-    this.logger.debug(`scanning ${job.data.url} ${job.id}`);
+    this.logger.debug({
+      msg: `scanning ${job.data.url} ${job.id}`,
+      job,
+    });
 
     try {
       // add core result
       const coreResult = await this.coreScanner.scan(job.data);
       await this.coreResultService.create(coreResult);
-      this.logger.log(`wrote core result for ${job.data.url}`);
+      this.logger.log({
+        msg: `wrote core result for ${job.data.url}`,
+        job,
+      });
 
       // add solutions result
       const solutionsResult = await this.solutionsScanner.scan(job.data);
       await this.solutionsResultService.create(solutionsResult);
-      this.logger.log(`wrote solutions result for ${job.data.url}`);
+      this.logger.log({
+        msg: `wrote solutions result for ${job.data.url}`,
+        job,
+      });
 
       const queueStatus = await this.queueService.getQueueStatus();
-      this.logger.log(
-        JSON.stringify({ message: 'queue status', queue: queueStatus }),
-      );
+      this.logger.log({ msg: 'queue status', queue: queueStatus });
     } catch (e) {
       const err = e as Error;
       this.logger.error(err.message, err.stack);
@@ -83,39 +90,38 @@ export class ScanEngineConsumer {
 
   @OnQueueActive()
   onActive(job: Job<CoreInputDto>) {
-    this.logger.log(
-      `Processing job ${job.id} of type ${job.name} with data ${JSON.stringify(
-        job.data,
-      )}...`,
-    );
+    this.logger.log({
+      msg: `Processing job ${job.id} of type ${job.name}`,
+      job,
+    });
   }
 
   @OnQueueStalled()
   onStalled(job: Job<CoreInputDto>) {
-    this.logger.warn(
-      `Queue stalled while processing job ${job.id} of type ${job.name} with data ${job.data}...`,
-    );
+    this.logger.warn({
+      msg: `Queue stalled while processing job ${job.id} of type ${job.name}`,
+      job,
+    });
   }
 
   @OnQueueDrained()
   onDrained() {
-    this.logger.log(`Queue successfully drained.`);
+    this.logger.log('Queue successfully drained.');
   }
 
   @OnQueueError()
   onError(error: Error) {
-    this.logger.error(
-      `Queue Error "${error.name}" detected: ${error.message}`,
-      error.stack,
-    );
+    this.logger.error({
+      msg: `Queue Error "${error.name}" detected: ${error.message}`,
+      error,
+    });
   }
 
   @OnQueueCompleted()
   onCompleted(job: Job<CoreInputDto>, _: any) {
-    this.logger.log(
-      `Processed job ${job.id} of type ${job.name} with data ${JSON.stringify(
-        job.data,
-      )}`,
-    );
+    this.logger.log({
+      msg: 'Processed job',
+      job,
+    });
   }
 }

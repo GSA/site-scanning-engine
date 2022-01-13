@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { of } from 'rxjs';
@@ -24,7 +23,6 @@ describe('CoreScannerService', () => {
   let mockRequest: MockProxy<Request>;
   let redirectRequest: MockProxy<Request>;
   let mockHttpService: MockProxy<HttpService>;
-  let httpService: HttpService;
   const finalUrl = 'https://18f.gsa.gov';
 
   beforeEach(async () => {
@@ -56,10 +54,6 @@ describe('CoreScannerService', () => {
           useValue: mockBrowser,
         },
         {
-          provide: LoggerService,
-          useValue: mockLogger,
-        },
-        {
           provide: HttpService,
           useValue: mockHttpService,
         },
@@ -67,7 +61,6 @@ describe('CoreScannerService', () => {
     }).compile();
 
     service = module.get<CoreScannerService>(CoreScannerService);
-    httpService = module.get<HttpService>(HttpService);
   });
 
   it('should be defined', () => {
