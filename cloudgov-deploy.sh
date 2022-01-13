@@ -5,8 +5,8 @@ IFS=$'\n\t'
 #/ Usage: bash deploy-cloudgov.sh
 #/ Description: This script creates the services (if necessary) to deploy to cloud.gov.
 #/ Then it runs any deploy scripts.
-#/ Examples:    
-#/ Options:     
+#/ Examples:
+#/ Options:
 #/   --help: Display this help message
 usage() { grep '^#/' "$0" | cut -c4- ; exit 0 ; }
 expr "$*" : ".*--help" > /dev/null && usage
@@ -53,7 +53,7 @@ wait_until_created()
   done
 }
 
-# Service Names 
+# Service Names
 SCANNER_POSTGRES_NAME="scanner-postgres"
 SCANNER_POSTGRES_PLAN="micro-psql"
 SCANNER_MESSAGE_QUEUE_NAME="scanner-message-queue"
@@ -76,10 +76,10 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
     info "Create an API_KEY for use with API Umbrella."
     cf cups $SCANNER_USER_PROVIDED_API_KEY -p "API_KEY"
   fi
-    
+
   if service_exists "$SCANNER_POSTGRES_NAME" ; then
     already_exists "$SCANNER_POSTGRES_NAME"
-  else 
+  else
     cf create-service aws-rds $SCANNER_POSTGRES_PLAN $SCANNER_POSTGRES_NAME
     wait_until_created $SCANNER_POSTGRES_NAME
   fi
@@ -100,6 +100,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
 
   # next, compile the typescript for all of the apps
   npm run build:all
+
 
   # next, build the cli
   npm run build cli
