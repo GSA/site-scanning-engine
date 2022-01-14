@@ -1,21 +1,21 @@
-import { WebsiteService } from '@app/database/websites/websites.service';
-import { LoggerService } from '@app/logger';
-import { StorageService } from '@app/storage';
-import { Injectable } from '@nestjs/common';
-import { DatetimeService } from 'libs/datetime/src';
+import { Injectable, Logger } from '@nestjs/common';
 import { Parser, transforms } from 'json2csv';
+
+import { WebsiteService } from '@app/database/websites/websites.service';
+import { StorageService } from '@app/storage';
+
 import { Website } from 'entities/website.entity';
+import { DatetimeService } from 'libs/datetime/src';
 
 @Injectable()
 export class SnapshotService {
+  private logger = new Logger(SnapshotService.name);
+
   constructor(
     private storageService: StorageService,
-    private logger: LoggerService,
     private websiteService: WebsiteService,
     private datetimeService: DatetimeService,
-  ) {
-    this.logger.setContext(SnapshotService.name);
-  }
+  ) {}
 
   /**
    * weeklySnapshot is meant to be called weekly (likely through a CRON job).

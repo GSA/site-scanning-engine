@@ -1,5 +1,4 @@
 import { WebsiteService } from '@app/database/websites/websites.service';
-import { LoggerService } from '@app/logger';
 import { StorageService } from '@app/storage';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreResult } from 'entities/core-result.entity';
@@ -12,13 +11,11 @@ import { SnapshotService } from './snapshot.service';
 describe('SnapshotService', () => {
   let service: SnapshotService;
   let module: TestingModule;
-  let mockLogger: MockProxy<LoggerService>;
   let mockStorageService: MockProxy<StorageService>;
   let mockWebsiteService: MockProxy<WebsiteService>;
   let mockDatetimeService: MockProxy<DatetimeService>;
 
   beforeEach(async () => {
-    mockLogger = mock<LoggerService>();
     mockStorageService = mock<StorageService>();
     mockWebsiteService = mock<WebsiteService>();
     mockDatetimeService = mock<DatetimeService>();
@@ -28,10 +25,6 @@ describe('SnapshotService', () => {
         {
           provide: StorageService,
           useValue: mockStorageService,
-        },
-        {
-          provide: LoggerService,
-          useValue: mockLogger,
         },
         {
           provide: WebsiteService,

@@ -1,6 +1,5 @@
 import { BROWSER_TOKEN } from '@app/browser';
 import { ScanStatus } from '@app/core-scanner/scan-status';
-import { LoggerService } from '@app/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
@@ -16,7 +15,6 @@ describe('SolutionsScannerService', () => {
   let mockPage: MockProxy<Page>;
   let mockRobotsPage: MockProxy<Page>;
   let mockSitemapPage: MockProxy<Page>;
-  let mockLogger: MockProxy<LoggerService>;
   let mockResponse: MockProxy<Response>;
   let mockRobotsResponse: MockProxy<Response>;
   let mockSitemapResponse: MockProxy<Response>;
@@ -33,7 +31,6 @@ describe('SolutionsScannerService', () => {
     mockBrowser.newPage.mockResolvedValueOnce(mockPage);
     mockBrowser.newPage.mockResolvedValueOnce(mockRobotsPage);
     mockBrowser.newPage.mockResolvedValueOnce(mockSitemapPage);
-    mockLogger = mock<LoggerService>();
     redirectRequest = mock<Request>();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -42,10 +39,6 @@ describe('SolutionsScannerService', () => {
         {
           provide: BROWSER_TOKEN,
           useValue: mockBrowser,
-        },
-        {
-          provide: LoggerService,
-          useValue: mockLogger,
         },
       ],
     }).compile();

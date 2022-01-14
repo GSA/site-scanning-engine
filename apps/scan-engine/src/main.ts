@@ -1,13 +1,14 @@
 import { NestFactory } from '@nestjs/core';
+import { Logger } from 'nestjs-pino';
+
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule, {
-    logger:
-      process.env.NODE_ENV === 'dev'
-        ? ['log', 'error', 'warn', 'debug', 'verbose']
-        : ['error', 'warn', 'log'],
+    bufferLogs: true,
   });
+  app.useLogger(app.get(Logger));
+  app.flushLogs();
   app.init();
 }
 bootstrap();

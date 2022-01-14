@@ -1,17 +1,17 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 import * as cuid from 'cuid';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
-import { LoggerService } from '@app/logger';
 import { QueueService } from '@app/queue/queue.service';
 
 @Controller()
 export class QueueController {
+  private readonly logger = new Logger(QueueController.name);
+
   constructor(
     private queueService: QueueService,
     private websiteService: WebsiteService,
-    private logger: LoggerService,
   ) {}
 
   async queueScans() {
@@ -30,9 +30,7 @@ export class QueueController {
       }
 
       const queueStatus = await this.queueService.getQueueStatus();
-      this.logger.log(
-        JSON.stringify({ message: 'successfully added to queue', queueStatus }),
-      );
+      this.logger.log({ msg: 'successfully added to queue', queueStatus });
     } catch (error) {
       const err = error as Error;
       this.logger.error(err.message, err.stack);

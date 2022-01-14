@@ -1,17 +1,14 @@
-import { LoggerService } from '@app/logger';
-import * as AWS from 'aws-sdk';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as AWS from 'aws-sdk';
 
 @Injectable()
 export class StorageService {
   private s3: AWS.S3;
   private bucket: string;
+  private logger = new Logger(StorageService.name);
 
-  constructor(
-    private configService: ConfigService,
-    private logger: LoggerService,
-  ) {
+  constructor(private configService: ConfigService) {
     this.s3 = new AWS.S3({
       endpoint: this.configService.get<string>('s3.endpoint'),
       accessKeyId: this.configService.get<string>('s3.accessKeyId'),
@@ -21,7 +18,6 @@ export class StorageService {
     });
 
     this.bucket = this.configService.get<string>('s3.bucketName');
-    this.logger.setContext(StorageService.name);
   }
 
   async upload(fileName: string, body: string) {

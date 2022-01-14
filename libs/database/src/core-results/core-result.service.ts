@@ -1,17 +1,16 @@
-import { LoggerService } from '@app/logger';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CoreResult } from 'entities/core-result.entity';
 import { Repository } from 'typeorm';
+
+import { CoreResult } from 'entities/core-result.entity';
 
 @Injectable()
 export class CoreResultService {
+  private logger = new Logger(CoreResultService.name);
+
   constructor(
     @InjectRepository(CoreResult) private coreResult: Repository<CoreResult>,
-    private logger: LoggerService,
-  ) {
-    this.logger.setContext(CoreResultService.name);
-  }
+  ) {}
 
   async findAll(): Promise<CoreResult[]> {
     const results = await this.coreResult.find();

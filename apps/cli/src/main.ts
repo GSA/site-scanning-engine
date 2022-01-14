@@ -1,6 +1,7 @@
+import { NestFactory } from '@nestjs/core';
 import { Command } from 'commander';
 import { parseInt } from 'lodash';
-import { NestFactory } from '@nestjs/core';
+import { Logger } from 'nestjs-pino';
 
 import { AppModule } from './app.module';
 import { IngestController } from './ingest.controller';
@@ -9,11 +10,10 @@ import { SnapshotController } from './snapshot.controller';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule, {
-    logger:
-      process.env.NODE_ENV === 'dev'
-        ? ['log', 'error', 'warn', 'debug', 'verbose']
-        : ['log', 'error', 'warn'],
+    bufferLogs: true,
   });
+  app.useLogger(app.get(Logger));
+  app.flushLogs();
   return app;
 }
 

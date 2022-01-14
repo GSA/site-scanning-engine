@@ -1,7 +1,9 @@
-import { DatabaseModule } from '@app/database';
-import { LoggerModule } from '@app/logger';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerModule } from 'nestjs-pino';
+
+import { DatabaseModule } from '@app/database';
+
 import apiConfig from './website/config/api.config';
 import { WebsiteController } from './website/website.controller';
 
@@ -11,7 +13,7 @@ import { WebsiteController } from './website/website.controller';
       load: [apiConfig],
     }),
     DatabaseModule,
-    LoggerModule,
+    LoggerModule.forRoot(),
   ],
   controllers: [WebsiteController],
 })

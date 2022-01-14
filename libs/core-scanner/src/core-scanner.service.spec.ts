@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page, Response, Request } from 'puppeteer';
 import { of } from 'rxjs';
@@ -6,7 +5,6 @@ import { HttpModule, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { BROWSER_TOKEN } from '@app/browser';
-import { LoggerService } from '@app/logger';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
@@ -20,18 +18,15 @@ describe('CoreScannerService', () => {
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
   let mockResponse: MockProxy<Response>;
-  let mockLogger: MockProxy<LoggerService>;
   let mockRequest: MockProxy<Request>;
   let redirectRequest: MockProxy<Request>;
   let mockHttpService: MockProxy<HttpService>;
-  let httpService: HttpService;
   const finalUrl = 'https://18f.gsa.gov';
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
     mockPage = mock<Page>();
     mockResponse = mock<Response>();
-    mockLogger = mock<LoggerService>();
     mockRequest = mock<Request>();
     redirectRequest = mock<Request>();
     mockHttpService = mock<HttpService>();
@@ -56,10 +51,6 @@ describe('CoreScannerService', () => {
           useValue: mockBrowser,
         },
         {
-          provide: LoggerService,
-          useValue: mockLogger,
-        },
-        {
           provide: HttpService,
           useValue: mockHttpService,
         },
@@ -67,7 +58,6 @@ describe('CoreScannerService', () => {
     }).compile();
 
     service = module.get<CoreScannerService>(CoreScannerService);
-    httpService = module.get<HttpService>(HttpService);
   });
 
   it('should be defined', () => {

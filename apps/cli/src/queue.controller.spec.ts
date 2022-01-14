@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MockProxy, mock } from 'jest-mock-extended';
 
 import { WebsiteService } from '@app/database/websites/websites.service';
-import { LoggerService } from '@app/logger';
 import { QueueService } from '@app/queue';
 
 import { QueueController } from './queue.controller';
@@ -12,12 +11,10 @@ describe('QueueController', () => {
   let queueController: QueueController;
   let mockQueueService: MockProxy<QueueService>;
   let mockWebsiteService: MockProxy<WebsiteService>;
-  let mockLogger: MockProxy<LoggerService>;
 
   beforeEach(async () => {
     mockQueueService = mock<QueueService>();
     mockWebsiteService = mock<WebsiteService>();
-    mockLogger = mock<LoggerService>();
     const app: TestingModule = await Test.createTestingModule({
       controllers: [QueueController],
       providers: [
@@ -28,10 +25,6 @@ describe('QueueController', () => {
         {
           provide: WebsiteService,
           useValue: mockWebsiteService,
-        },
-        {
-          provide: LoggerService,
-          useValue: mockLogger,
         },
       ],
     }).compile();

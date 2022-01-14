@@ -1,26 +1,23 @@
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import { sum, uniq } from 'lodash';
 import { Browser, Page, Request, Response } from 'puppeteer';
 
-import { SolutionsResult } from 'entities/solutions-result.entity';
-import { Website } from 'entities/website.entity';
-import { SolutionsInputDto } from './solutions.input.dto';
-
 import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
 import { ScanStatus } from '@app/core-scanner/scan-status';
-import { LoggerService } from '@app/logger';
+
+import { SolutionsResult } from 'entities/solutions-result.entity';
+import { Website } from 'entities/website.entity';
 import { Scanner } from 'libs/scanner.interface';
+
+import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
 export class SolutionsScannerService
   implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy
 {
-  constructor(
-    @Inject(BROWSER_TOKEN) private browser: Browser,
-    private logger: LoggerService,
-  ) {
-    this.logger.setContext(SolutionsScannerService.name);
-  }
+  private logger = new Logger(SolutionsScannerService.name);
+
+  constructor(@Inject(BROWSER_TOKEN) private browser: Browser) {}
 
   async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
     const url = this.getHttpsUrls(input.url);
@@ -78,7 +75,7 @@ export class SolutionsScannerService
 
       // build the result
       result = await this.buildResult(
-        input,
+        logData,
         response,
         input.websiteId,
         cssPages,
@@ -95,26 +92,22 @@ export class SolutionsScannerService
       // build error result
       result = this.buildErrorResult(input.websiteId, error);
       if (result.status === ScanStatus.UnknownError) {
-        this.logger.warn(
-          this.logObj(
-            `Unknown Error calling ${input.url}: ${error.message}`,
-            input,
-          ),
-        );
+        this.logger.warn({
+          msg: `Unknown Error calling ${input.url}: ${error.message}`,
+          ...input,
+        });
         console.log(error);
       }
     } finally {
       await page.close();
-      this.logger.debug(this.logObj('closing page', logData));
+      this.logger.debug({ msg: 'closing page', ...logData });
       await robotsPage.close();
-      this.logger.debug(this.logObj('closing robots page', logData));
+      this.logger.debug({ msg: 'closing robots page', ...logData });
       await sitemapPage.close();
-      this.logger.debug(this.logObj('closing sitemap page', logData));
+      this.logger.debug({ msg: 'closing sitemap page', ...logData });
     }
 
-    this.logger.log(
-      this.logObj('solutions scan results', { ...logData, result }),
-    );
+    this.logger.log({ msg: 'solutions scan results', ...logData, result });
     return result;
   }
 
@@ -293,9 +286,10 @@ export class SolutionsScannerService
   private uswdsInHtml(logData: any, htmlText: string) {
     const re = /uswds/g;
     const occurrenceCount = [...htmlText.matchAll(re)].length;
-    this.logger.debug(
-      this.logObj(`uswds occurs ${occurrenceCount} times`, logData),
-    );
+    this.logger.debug({
+      msg: `uswds occurs ${occurrenceCount} times`,
+      ...logData,
+    });
     return occurrenceCount;
   }
 
@@ -433,12 +427,10 @@ export class SolutionsScannerService
     if (versions) {
       const uniqueVersions = uniq(versions);
       if (uniqueVersions.length > 1) {
-        this.logger.debug(
-          this.logObj(
-            `found multiple USWDS versions ${uniqueVersions}`,
-            logData,
-          ),
-        );
+        this.logger.debug({
+          msg: `found multiple USWDS versions ${uniqueVersions}`,
+          ...logData,
+        });
       }
       return uniqueVersions[0];
     } else {
@@ -517,12 +509,10 @@ export class SolutionsScannerService
         return date;
       } catch (e) {
         const err = e as Error;
-        this.logger.warn(
-          this.logObj(
-            `Could not parse date ${targetDate}: ${err.message}`,
-            logData,
-          ),
-        );
+        this.logger.warn({
+          msg: `Could not parse date ${targetDate}: ${err.message}`,
+          ...logData,
+        });
         return null;
       }
     }
@@ -548,12 +538,10 @@ export class SolutionsScannerService
           crawlDelay = parseInt(directive.split(' ')[1]);
         } catch (e) {
           const err = e as Error;
-          this.logger.warn(
-            this.logObj(
-              `Could not parse this crawl delay: ${directive}. ${err.message}`,
-              logData,
-            ),
-          );
+          this.logger.warn({
+            msg: `Could not parse this crawl delay: ${directive}. ${err.message}`,
+            ...logData,
+          });
         }
       }
     }
@@ -572,12 +560,10 @@ export class SolutionsScannerService
           sitemapLocations.push(sitemapLocation);
         } catch (e) {
           const err = e as Error;
-          this.logger.warn(
-            this.logObj(
-              `Could not parse this sitemap: ${directive}. ${err.message}`,
-              logData,
-            ),
-          );
+          this.logger.warn({
+            msg: `Could not parse this sitemap: ${directive}. ${err.message}`,
+            ...logData,
+          });
         }
       }
     }
@@ -632,10 +618,6 @@ export class SolutionsScannerService
       domains: deduped.join(','),
       count: deduped.length,
     };
-  }
-
-  private logObj(message: string, logData: any) {
-    return JSON.stringify({ ...logData, message });
   }
 
   async onModuleDestroy() {

@@ -6,7 +6,6 @@ import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
-import { LoggerService } from '@app/logger';
 import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
@@ -27,7 +26,6 @@ describe('ScanEngineConsumer', () => {
   >;
   let mockSolutionsResultService: MockProxy<SolutionsResultService>;
   let mockCoreJob: MockProxy<Job<CoreInputDto>>;
-  let mockLogger: MockProxy<LoggerService>;
   let mockQueueService: MockProxy<QueueService>;
 
   beforeEach(async () => {
@@ -36,7 +34,6 @@ describe('ScanEngineConsumer', () => {
     mockSolutionsScanner = mock<Scanner<SolutionsInputDto, SolutionsResult>>();
     mockSolutionsResultService = mock<SolutionsResultService>();
     mockCoreJob = mock<Job<CoreInputDto>>();
-    mockLogger = mock<LoggerService>();
     mockQueueService = mock<QueueService>();
     module = await Test.createTestingModule({
       providers: [
@@ -56,10 +53,6 @@ describe('ScanEngineConsumer', () => {
         {
           provide: SolutionsResultService,
           useValue: mockSolutionsResultService,
-        },
-        {
-          provide: LoggerService,
-          useValue: mockLogger,
         },
         {
           provide: QueueService,
