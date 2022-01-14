@@ -5,8 +5,8 @@ IFS=$'\n\t'
 #/ Usage: bash deploy-cloudgov.sh
 #/ Description: This script creates the services (if necessary) to deploy to cloud.gov.
 #/ Then it runs any deploy scripts.
-#/ Examples:
-#/ Options:
+#/ Examples:    
+#/ Options:     
 #/   --help: Display this help message
 usage() { grep '^#/' "$0" | cut -c4- ; exit 0 ; }
 expr "$*" : ".*--help" > /dev/null && usage
@@ -53,7 +53,7 @@ wait_until_created()
   done
 }
 
-# Service Names
+# Service Names 
 SCANNER_POSTGRES_NAME="scanner-postgres"
 SCANNER_POSTGRES_PLAN="micro-psql"
 SCANNER_MESSAGE_QUEUE_NAME="scanner-message-queue"
@@ -76,10 +76,10 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
     info "Create an API_KEY for use with API Umbrella."
     cf cups $SCANNER_USER_PROVIDED_API_KEY -p "API_KEY"
   fi
-
+    
   if service_exists "$SCANNER_POSTGRES_NAME" ; then
     already_exists "$SCANNER_POSTGRES_NAME"
-  else
+  else 
     cf create-service aws-rds $SCANNER_POSTGRES_PLAN $SCANNER_POSTGRES_NAME
     wait_until_created $SCANNER_POSTGRES_NAME
   fi
@@ -101,5 +101,38 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   # next, compile the typescript for all of the apps
   npm run build:all
 
-  cf push -f "${1-manifest.yml}"
+  # capture the manifest's filename from ARGV
+  manifest_filename="${1:-manifest.yml}"
+
+  # if there's no manifest file, quit
+  if [ ! -e "${manifest_filename}" ] ; then
+    logger -s "  manifest file '${manifest_filename}' is missing."
+    exit 1
+  fi
+
+  # grab the space (environment) from `cf target`; this assumes that
+  # there are only alphanumeric characters in the space's name; so
+  # 'prod2' and 'dev' work file, but 'staging-testing' will not.
+  cf_space="$(cf target site-scanner-api \
+  | sed -nEe 's/^[[:space:]]*space[[:space:]]*:[[:space:]]*([[:alnum:]])/\1/p')"
+
+  # if we can't determine the space, quit
+  if [ -z "${cf_space}" ] ; then
+    logger -s "Could not determine the target space from 'cf target'"
+    exit 1
+  fi
+
+  # take the manifest filename and mangle it to create a vars
+  # filename in the same location as the manifest filename
+  vars_filename="$(echo "${manifest_filename}" \
+  | sed -Ee "s/manifest[^.]*/vars-${cf_space}/g")"
+
+  # if there is no vars file, quit
+  if [ ! -e "${vars_filename}" ] ; then
+    logger -s "  vars file '${vars_filename}' is missing."
+    exit 1
+  fi
+
+  # use the environment / space-specific vars file
+  cf push -f "${manifest_filename}" --vars-file "${vars_filename}"
 fi
