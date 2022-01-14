@@ -101,9 +101,6 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   # next, compile the typescript for all of the apps
   npm run build:all
 
-  # next, build the cli
-  npm run build cli
-
   # capture the manifest's filename from ARGV
   manifest_filename="${1:-manifest.yml}"
 
