@@ -9,7 +9,7 @@ applications:
     memory: ((api_memory))
     instances: ((api_instances))
     random-route: true
-    command: npm run start:((space)):api
+    command: npm run start:prod:api
 
 
   - name: site-scanner-producer
@@ -21,7 +21,7 @@ applications:
     memory: ((producer_memory))
     instances: ((producer_instances))
     no-route: true
-    command: npm run start:((space)):producer
+    command: npm run start:prod:producer
     health-check-type: process
     env:
       CORE_SCAN_SCHEDULE: ((scan_schedule))
@@ -39,7 +39,7 @@ applications:
       - https://github.com/cloudfoundry/nodejs-buildpack/
     instances: ((consumer_instances))
     no-route: true
-    command: npm run start:((space)):scan-engine
+    command: npm run start:prod:scan-engine
     health-check-type: process
     env:
       OPTIMIZE_MEMORY: true
