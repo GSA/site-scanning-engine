@@ -11,23 +11,6 @@ applications:
     random-route: true
     command: npm run start:prod:api
 
-
-  - name: site-scanner-producer
-    disk_quota: ((producer_disk))
-    services:
-      - scanner-postgres
-      - scanner-message-queue
-      - scanner-public-storage
-    memory: ((producer_memory))
-    instances: ((producer_instances))
-    no-route: true
-    command: npm run start:prod:producer
-    health-check-type: process
-    env:
-      CORE_SCAN_SCHEDULE: ((scan_schedule))
-      SNAPSHOT_SCHEDULE: ((snapshot_schedule))
-
-
   - name: site-scanner-consumer
     disk_quota: ((consumer_disk))
     services:
