@@ -28,11 +28,11 @@
     },
     "producer": {
       "type": "application",
-      "root": "apps/producer",
+      "root": "apps/queue",
       "entryFile": "main",
-      "sourceRoot": "apps/producer/src",
+      "sourceRoot": "apps/queue/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/producer/tsconfig.app.json"
+        "tsConfigPath": "apps/queue/tsconfig.app.json"
       }
     },
     "message-queue": {

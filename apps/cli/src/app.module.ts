@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { DatabaseModule } from '@app/database';
 import { IngestModule } from '@app/ingest';
 import { LoggerModule } from '@app/logger';
-import { ProducerModule } from '@app/producer';
+import { QueueModule } from '@app/queue';
 
 import { IngestController } from './ingest.controller';
 import { QueueController } from './queue.controller';
@@ -15,7 +15,7 @@ import { SnapshotModule } from '@app/snapshot';
     DatabaseModule,
     IngestModule,
     LoggerModule,
-    ProducerModule,
+    QueueModule,
     SnapshotModule,
   ],
   controllers: [IngestController, QueueController, SnapshotController],

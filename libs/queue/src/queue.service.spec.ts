@@ -4,10 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Queue, Job } from 'bull';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
-import { ProducerService } from './producer.service';
+import { QueueService } from './queue.service';
 
-describe('ProducerService', () => {
-  let service: ProducerService;
+describe('QueueService', () => {
+  let service: QueueService;
   let mockQueue: MockProxy<Queue>;
   let mockJob: MockProxy<Job<CoreInputDto>>;
 
@@ -16,7 +16,7 @@ describe('ProducerService', () => {
     mockJob = mock<Job<CoreInputDto>>();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        ProducerService,
+        QueueService,
         {
           provide: getQueueToken(SCANNER_QUEUE_NAME),
           useValue: mockQueue,
@@ -24,7 +24,7 @@ describe('ProducerService', () => {
       ],
     }).compile();
 
-    service = module.get<ProducerService>(ProducerService);
+    service = module.get<QueueService>(QueueService);
   });
 
   afterEach(async () => {

@@ -14,7 +14,7 @@ with Diagram("Site Scanner", show=False, filename=filename):
 
     with Cluster("API"):
         api_data_gov = Firewall("api.data.gov") # not really a firewall
-        router = Switch("Cloud.gov router") 
+        router = Switch("Cloud.gov router")
 
         with Cluster("API Logic"):
             node_api_app = NodeJS("API Logic")
@@ -54,7 +54,7 @@ with Diagram("Site Scanner", show=False, filename=filename):
 
     # Scanning
     cron >> Edge(label="triggers") >> producer_node >> Edge(label="adds to") >> queue
-    queue << Edge(label="consume") << node_consumer_apps 
+    queue << Edge(label="consume") << node_consumer_apps
     node_consumer_apps >> Edge(label="write to") >> postgres
 
 
@@ -70,5 +70,5 @@ os.rename(file_path.joinpath(filename_with_extension), file_path.joinpath("image
 
 
 
-    
-    
+
+
