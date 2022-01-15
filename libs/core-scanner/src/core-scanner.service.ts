@@ -1,34 +1,24 @@
 import { Agent } from 'https';
 import { join, split, takeRight } from 'lodash';
-import { Browser, Page, Response, Request } from 'puppeteer';
+import { Page, Response, Request } from 'puppeteer';
 import { URL } from 'url';
 import { v4 } from 'uuid';
-import {
-  HttpService,
-  HttpStatus,
-  Inject,
-  Injectable,
-  Logger,
-  OnModuleDestroy,
-} from '@nestjs/common';
+import { HttpService, HttpStatus, Injectable, Logger } from '@nestjs/common';
 
-import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
+import { BrowserService } from '@app/browser';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Scanner } from 'libs/scanner.interface';
-
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 
-import { ScanStatus } from './scan-status';
+import { parseBrowserError, ScanStatus } from './scan-status';
 
 @Injectable()
-export class CoreScannerService
-  implements Scanner<CoreInputDto, CoreResult>, OnModuleDestroy
-{
+export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
   private logger = new Logger(CoreScannerService.name);
 
   constructor(
-    @Inject(BROWSER_TOKEN) private browser: Browser,
+    private browserService: BrowserService,
     private httpService: HttpService,
   ) {}
 
@@ -38,45 +28,37 @@ export class CoreScannerService
       ...input,
     };
 
-    let result: CoreResult;
-    let page: Page;
+    const result = await this.browserService.processPage<CoreResult>(
+      async (page) => {
+        try {
+          // load the url
+          this.logger.debug({ msg: `loading ${url}`, ...logData });
+          const response = await page.goto(url, {
+            waitUntil: 'networkidle2',
+          });
 
-    try {
-      // load a page
-      page = await this.browser.newPage();
-      await page.setCacheEnabled(false);
+          // do the redirect test
+          const notFoundTest = await this.notFoundTest(url);
 
-      // load the url
-      this.logger.debug({
-        msg: `loading ${url}`,
-        ...logData,
-      });
-      const response = await page.goto(url, {
-        waitUntil: 'networkidle2',
-      });
+          // construct the CoreResult
+          return this.buildResult(input, notFoundTest, page, response);
+        } catch (error) {
+          const err = error as Error;
 
-      // do the redirect test
-      const notFoundTest = await this.notFoundTest(url);
+          // build error result on error
+          const result = this.buildErrorResult(input, err);
 
-      // construct the CoreResult
-      result = this.buildResult(input, notFoundTest, page, response);
-    } catch (error) {
-      const err = error as Error;
-
-      // build error result on error
-      result = this.buildErrorResult(input, err);
-
-      // log if the error is unknown
-      if (result.status == ScanStatus.UnknownError) {
-        this.logger.warn({
-          msg: `Unknown Error calling ${input.url}: ${err.message}`,
-          ...logData,
-        });
-      }
-    } finally {
-      await page.close();
-      this.logger.debug({ msg: 'closed puppeteer page', ...logData });
-    }
+          // log if the error is unknown
+          if (result.status == ScanStatus.UnknownError) {
+            this.logger.warn({
+              msg: `Unknown Error calling ${input.url}: ${err.message}`,
+              ...logData,
+            });
+          }
+          return result;
+        }
+      },
+    );
 
     this.logger.log({ msg: 'core scan results', ...logData });
     return result;
@@ -194,9 +176,5 @@ export class CoreScannerService
       .toPromise();
 
     return resp.status == HttpStatus.NOT_FOUND;
-  }
-
-  async onModuleDestroy() {
-    await this.browser.close();
   }
 }

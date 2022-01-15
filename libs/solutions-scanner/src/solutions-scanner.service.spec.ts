@@ -1,17 +1,19 @@
-import { BROWSER_TOKEN } from '@app/browser';
-import { ScanStatus } from '@app/core-scanner/scan-status';
 import { Test, TestingModule } from '@nestjs/testing';
+import { mock, MockProxy } from 'jest-mock-extended';
+import { Page, Response, Request } from 'puppeteer';
+
+import { ScanStatus } from '@app/core-scanner/scan-status';
+import { BrowserService } from '@app/browser';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
-import { mock, MockProxy } from 'jest-mock-extended';
-import { Browser, Page, Response, Request } from 'puppeteer';
+
 import { SolutionsScannerService } from './solutions-scanner.service';
 import { SolutionsInputDto } from './solutions.input.dto';
 import { source, testRobotsTxt, testSitemapXml } from './testPageSource';
 
 describe('SolutionsScannerService', () => {
   let service: SolutionsScannerService;
-  let mockBrowser: MockProxy<Browser>;
+  let mockBrowserService: MockProxy<BrowserService>;
   let mockPage: MockProxy<Page>;
   let mockRobotsPage: MockProxy<Page>;
   let mockSitemapPage: MockProxy<Page>;
@@ -21,24 +23,24 @@ describe('SolutionsScannerService', () => {
   let redirectRequest: MockProxy<Request>;
 
   beforeEach(async () => {
-    mockBrowser = mock<Browser>();
+    mockBrowserService = mock<BrowserService>();
     mockPage = mock<Page>();
     mockRobotsPage = mock<Page>();
     mockSitemapPage = mock<Page>();
     mockResponse = mock<Response>();
     mockRobotsResponse = mock<Response>();
     mockSitemapResponse = mock<Response>();
-    mockBrowser.newPage.mockResolvedValueOnce(mockPage);
-    mockBrowser.newPage.mockResolvedValueOnce(mockRobotsPage);
-    mockBrowser.newPage.mockResolvedValueOnce(mockSitemapPage);
+    mockBrowserService.processPage.mockResolvedValueOnce(mockPage);
+    mockBrowserService.processPage.mockResolvedValueOnce(mockRobotsPage);
+    mockBrowserService.processPage.mockResolvedValueOnce(mockSitemapPage);
     redirectRequest = mock<Request>();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SolutionsScannerService,
         {
-          provide: BROWSER_TOKEN,
-          useValue: mockBrowser,
+          provide: BrowserService,
+          useValue: mockBrowserService,
         },
       ],
     }).compile();

@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { HttpModule, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { BROWSER_TOKEN } from '@app/browser';
+import { BrowserService } from '@app/browser';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
@@ -47,7 +47,7 @@ describe('CoreScannerService', () => {
       providers: [
         CoreScannerService,
         {
-          provide: BROWSER_TOKEN,
+          provide: BrowserService,
           useValue: mockBrowser,
         },
         {
@@ -100,22 +100,5 @@ describe('CoreScannerService', () => {
     expected.targetUrl404Test = true;
 
     expect(result).toStrictEqual(expected);
-  });
-
-  it('should close the page after scanning', async () => {
-    const coreInputDto: CoreInputDto = {
-      websiteId: 1,
-      url: 'https://18f.gov',
-      scanId: '123',
-    };
-    mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
-    await service.scan(coreInputDto);
-
-    expect(mockPage.close).toHaveBeenCalled();
-  });
-
-  it('closes the browser onModuleDestroy lifecycle event', async () => {
-    await service.onModuleDestroy();
-    expect(mockBrowser.close).toHaveBeenCalled();
   });
 });

@@ -1,9 +1,9 @@
-import { Inject, Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { sum, uniq } from 'lodash';
-import { Browser, Page, Request, Response } from 'puppeteer';
+import { Page, Request, Response } from 'puppeteer';
 
-import { BROWSER_TOKEN, parseBrowserError } from '@app/browser';
-import { ScanStatus } from '@app/core-scanner/scan-status';
+import { BrowserService } from '@app/browser';
+import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
 
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
@@ -13,11 +13,11 @@ import { SolutionsInputDto } from './solutions.input.dto';
 
 @Injectable()
 export class SolutionsScannerService
-  implements Scanner<SolutionsInputDto, SolutionsResult>, OnModuleDestroy
+  implements Scanner<SolutionsInputDto, SolutionsResult>
 {
   private logger = new Logger(SolutionsScannerService.name);
 
-  constructor(@Inject(BROWSER_TOKEN) private browser: Browser) {}
+  constructor(private browserService: BrowserService) {}
 
   async scan(input: SolutionsInputDto): Promise<SolutionsResult> {
     const url = this.getHttpsUrls(input.url);
@@ -25,20 +25,8 @@ export class SolutionsScannerService
       ...input,
     };
 
-    let result: SolutionsResult;
-    let page: Page;
-    let robotsPage: Page;
-    let sitemapPage: Page;
-
-    try {
-      // load the pages
-      page = await this.browser.newPage();
-      robotsPage = await this.browser.newPage();
-      sitemapPage = await this.browser.newPage();
-      await page.setCacheEnabled(false);
-      await robotsPage.setCacheEnabled(false);
-      await sitemapPage.setCacheEnabled(false);
-
+    this.logger.log('Processing main page...');
+    const pageResult = await this.browserService.processPage(async (page) => {
       // attach listeners
       const cssPages = [];
       page.on('response', async (response) => {
@@ -58,55 +46,75 @@ export class SolutionsScannerService
         waitUntil: 'networkidle2',
       });
 
-      // go to the robots page from the target url
-      const robotsUrl = new URL(url);
-      robotsUrl.pathname = 'robots.txt';
-      const robotsResponse = await robotsPage.goto(robotsUrl.toString());
-
-      // go to the sitemap page from the targeet url
-      const sitemapUrl = new URL(url);
-      sitemapUrl.pathname = 'sitemap.xml';
-      const sitemapResponse = await sitemapPage.goto(sitemapUrl.toString());
-
       // extract the html page source
       const htmlText = await response.text();
-      const robotsText = await robotsResponse.text();
-      const sitemapText = await sitemapResponse.text();
 
-      // build the result
-      result = await this.buildResult(
-        logData,
-        response,
-        input.websiteId,
-        cssPages,
-        htmlText,
-        page,
-        outboundRequests,
-        robotsResponse,
-        robotsText,
-        sitemapResponse,
-        sitemapText,
-        sitemapPage,
-      );
-    } catch (error) {
-      // build error result
-      result = this.buildErrorResult(input.websiteId, error);
-      if (result.status === ScanStatus.UnknownError) {
-        this.logger.warn({
-          msg: `Unknown Error calling ${input.url}: ${error.message}`,
-          ...input,
-        });
-        console.log(error);
+      try {
+        // build the result
+        return await this.buildResult(
+          logData,
+          response,
+          input.websiteId,
+          cssPages,
+          htmlText,
+          page,
+          outboundRequests,
+        );
+      } catch (error) {
+        // build error result
+        return this.buildErrorResult(input.websiteId, error, input, error);
       }
-    } finally {
-      await page.close();
-      this.logger.debug({ msg: 'closing page', ...logData });
-      await robotsPage.close();
-      this.logger.debug({ msg: 'closing robots page', ...logData });
-      await sitemapPage.close();
-      this.logger.debug({ msg: 'closing sitemap page', ...logData });
-    }
+    });
 
+    this.logger.log('Processing robots.txt...');
+    const robotsTxtResult = await this.browserService.processPage(
+      async (robotsPage) => {
+        // go to the robots page from the target url
+        const robotsUrl = new URL(url);
+        robotsUrl.pathname = 'robots.txt';
+        const robotsResponse = await robotsPage.goto(robotsUrl.toString());
+        // extract the html page source
+        const robotsText = await robotsResponse.text();
+        try {
+          return this.syncBuildRobotTxtResult(
+            robotsPage,
+            robotsResponse,
+            robotsText,
+          );
+        } catch (error) {
+          // build error result
+          return this.buildErrorResult(input.websiteId, error, input, error);
+        }
+      },
+    );
+
+    this.logger.log('Processing sitemap.xml...');
+    const sitemapResult = await this.browserService.processPage(
+      async (sitemapPage) => {
+        // go to the sitemap page from the targeet url
+        const sitemapUrl = new URL(url);
+        sitemapUrl.pathname = 'sitemap.xml';
+        this.logger.log('Going to sitemap.xml...');
+        const sitemapResponse = await sitemapPage.goto(sitemapUrl.toString());
+        this.logger.log('Got sitemap.xml!');
+        // extract the html page source
+        const sitemapText = await sitemapResponse.text();
+        this.logger.log('Got sitemap.xml text!');
+
+        try {
+          return this.buildSitemapResult(
+            sitemapResponse,
+            sitemapText,
+            sitemapPage,
+          );
+        } catch (error) {
+          // build error result
+          return this.buildErrorResult(input.websiteId, error, input, error);
+        }
+      },
+    );
+
+    const result = { ...sitemapResult, ...robotsTxtResult, ...pageResult };
     this.logger.log({ msg: 'solutions scan results', ...logData, result });
     return result;
   }
@@ -119,7 +127,12 @@ export class SolutionsScannerService
     }
   }
 
-  private buildErrorResult(websiteId: number, err: Error) {
+  private buildErrorResult(
+    websiteId: number,
+    err: Error,
+    input: SolutionsInputDto,
+    error: Error,
+  ) {
     const errorType = parseBrowserError(err);
     const result = new SolutionsResult();
     const website = new Website();
@@ -127,7 +140,77 @@ export class SolutionsScannerService
     result.website = website;
     result.status = errorType;
 
+    if (result.status === ScanStatus.UnknownError) {
+      this.logger.warn({
+        msg: `Unknown Error calling ${input.url}: ${error.message}`,
+        ...input,
+      });
+    }
+
     return result;
+  }
+
+  private async buildSitemapResult(
+    sitemapResponse: Response,
+    sitemapText: string,
+    sitemapPage: Page,
+  ) {
+    const sitemapUrl = new URL(sitemapResponse.url());
+    const sitemapStatus = sitemapResponse.status();
+    const sitemapLive = sitemapStatus / 100 === 2;
+
+    const sitemapXmlDetected =
+      sitemapUrl.pathname === '/sitemap.xml' && sitemapLive;
+
+    return {
+      sitemapXmlFinalUrl: sitemapUrl.toString(),
+      sitemapXmlFinalUrlLive: sitemapLive,
+      sitemapTargetUrlRedirects:
+        sitemapResponse.request().redirectChain().length > 0,
+      sitemapXmlFinalUrlMimeType: this.getMIMEType(sitemapResponse),
+      sitemapXmlStatusCode: sitemapStatus,
+
+      sitemapXmlDetected,
+      ...(sitemapXmlDetected
+        ? {
+            sitemapXmlFinalUrlFilesize: Buffer.byteLength(sitemapText, 'utf-8'),
+            sitemapXmlCount: await this.getUrlCount(sitemapPage),
+            sitemapXmlPdfCount: this.getPdfCount(sitemapText),
+          }
+        : {}),
+    };
+  }
+
+  private syncBuildRobotTxtResult(
+    logData: any,
+    robotsResponse: Response,
+    robotsText: string,
+  ) {
+    const robotsUrl = new URL(robotsResponse.url());
+    const robotsStatus = robotsResponse.status();
+    const robotsLive = robotsStatus / 100 === 2;
+    const robotsTxtDetected =
+      robotsUrl.pathname === '/robots.txt' && robotsLive;
+    return {
+      robotsTxtFinalUrl: robotsResponse.url(),
+      robotsTxtFinalUrlLive: robotsLive,
+      robotsTxtTargetUrlRedirects:
+        robotsResponse.request().redirectChain().length > 0,
+      robotsTxtFinalUrlMimeType: this.getMIMEType(robotsResponse),
+      robotsTxtStatusCode: robotsStatus,
+
+      robotsTxtDetected,
+      ...(robotsTxtDetected
+        ? {
+            robotsTxtFinalUrlSize: Buffer.byteLength(robotsText, 'utf-8'),
+            robotsTxtCrawlDelay: this.findRobotsCrawlDelay(logData, robotsText),
+            robotsTxtSitemapLocations: this.findRobotsSitemapLocations(
+              logData,
+              robotsText,
+            ),
+          }
+        : {}),
+    };
   }
 
   private async buildResult(
@@ -138,11 +221,6 @@ export class SolutionsScannerService
     htmlText: string,
     page: Page,
     outboundRequests: Request[],
-    robotsResponse: Response,
-    robotsText: string,
-    sitemapResponse: Response,
-    sitemapText: string,
-    sitemapPage: Page,
   ): Promise<SolutionsResult> {
     const result = new SolutionsResult();
     const website = new Website();
@@ -186,58 +264,6 @@ export class SolutionsScannerService
     );
 
     result.mainElementFinalUrl = await this.findMainElement(page);
-
-    // robots.txt
-    const robotsUrl = new URL(robotsResponse.url());
-    const robotsStatus = robotsResponse.status();
-    const robotsLive = robotsStatus / 100 === 2;
-
-    result.robotsTxtFinalUrl = robotsResponse.url();
-    result.robotsTxtFinalUrlLive = robotsLive;
-    result.robotsTxtTargetUrlRedirects =
-      robotsResponse.request().redirectChain().length > 0;
-    result.robotsTxtFinalUrlMimeType = this.getMIMEType(robotsResponse);
-    result.robotsTxtStatusCode = robotsStatus;
-
-    if (robotsUrl.pathname === '/robots.txt' && robotsLive) {
-      result.robotsTxtDetected = true;
-      result.robotsTxtFinalUrlSize = Buffer.byteLength(robotsText, 'utf-8');
-      result.robotsTxtCrawlDelay = this.findRobotsCrawlDelay(
-        logData,
-        robotsText,
-      );
-      result.robotsTxtSitemapLocations = this.findRobotsSitemapLocations(
-        logData,
-        robotsText,
-      );
-    } else {
-      result.robotsTxtDetected = false;
-    }
-
-    // sitemap.xml
-    const sitemapUrl = new URL(sitemapResponse.url());
-    const sitemapStatus = sitemapResponse.status();
-    const sitemapLive = sitemapStatus / 100 === 2;
-
-    result.sitemapXmlFinalUrl = sitemapUrl.toString();
-    result.sitemapXmlFinalUrlLive = sitemapLive;
-    result.sitemapTargetUrlRedirects =
-      sitemapResponse.request().redirectChain().length > 0;
-    result.sitemapXmlFinalUrlMimeType = this.getMIMEType(sitemapResponse);
-    result.sitemapXmlStatusCode = sitemapStatus;
-
-    // conditional fields depending on whether it's a real sitemap
-    if (sitemapUrl.pathname === '/sitemap.xml' && sitemapLive) {
-      result.sitemapXmlDetected = true;
-      result.sitemapXmlFinalUrlFilesize = Buffer.byteLength(
-        sitemapText,
-        'utf-8',
-      );
-      result.sitemapXmlCount = await this.getUrlCount(sitemapPage);
-      result.sitemapXmlPdfCount = this.getPdfCount(sitemapText);
-    } else {
-      result.sitemapXmlDetected = false;
-    }
 
     // third party services
     const thirdPartyResult = this.thirdPartyServices(
@@ -618,10 +644,6 @@ export class SolutionsScannerService
       domains: deduped.join(','),
       count: deduped.length,
     };
-  }
-
-  async onModuleDestroy() {
-    await this.browser.close();
   }
 }
 
