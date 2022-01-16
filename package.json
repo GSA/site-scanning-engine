@@ -140,7 +140,9 @@
       "@app/datetime/(.*)": "<rootDir>/libs/datetime/src/$1",
       "@app/datetime": "<rootDir>/libs/datetime/src",
       "@app/queue": "<rootDir>/libs/queue/src",
-      "@app/queue/(.*)": "<rootDir>/libs/queue/src/$1"
+      "@app/queue/(.*)": "<rootDir>/libs/queue/src/$1",
+      "@app/page-scanners": "<rootDir>/libs/page-scanners/src",
+      "@app/page-scanners/(.*)": "<rootDir>/libs/page-scanners/src/$1"
     }
   }
 }
