@@ -2,13 +2,13 @@ import { Logger } from '@nestjs/common';
 import { Response } from 'puppeteer';
 
 import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
-import { getHttpsUrls, getMIMEType } from './helpers';
+import { getHttpsUrl, getMIMEType } from './helpers';
 
 export const createRobotsTxtScanner = (
   logger: Logger,
   input: SolutionsInputDto,
 ) => {
-  const url = getHttpsUrls(input.url);
+  const url = getHttpsUrl(input.url);
   return async (robotsPage) => {
     // go to the robots page from the target url
     const robotsUrl = new URL(url);

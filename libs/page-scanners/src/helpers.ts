@@ -11,7 +11,7 @@ export const getMIMEType = (res: Response) => {
   }
 };
 
-export const getHttpsUrls = (url: string) => {
+export const getHttpsUrl = (url: string) => {
   if (!url.startsWith('https://')) {
     return `https://${url.toLowerCase()}`;
   } else {

@@ -6,53 +6,53 @@ import { ScanStatus } from '@app/core-scanner/scan-status';
 import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
-import { getHttpsUrls } from './helpers';
 
-export const createHomePageScanner = (
+import { getHttpsUrl } from '../helpers';
+
+export const solutionsScan = async (
   logger: Logger,
   input: SolutionsInputDto,
+  page: Page,
 ) => {
-  const url = getHttpsUrls(input.url);
+  const url = getHttpsUrl(input.url);
   const logData = {
     ...input,
   };
 
   logger.log('Processing main page...');
-  return async (page) => {
-    // attach listeners
-    const cssPages = [];
-    page.on('response', async (response) => {
-      if (response.request().resourceType() == 'stylesheet') {
-        const cssPage = await response.text();
-        cssPages.push(cssPage);
-      }
-    });
+  // attach listeners
+  const cssPages = [];
+  page.on('response', async (response) => {
+    if (response.request().resourceType() == 'stylesheet') {
+      const cssPage = await response.text();
+      cssPages.push(cssPage);
+    }
+  });
 
-    const outboundRequests: Request[] = [];
-    page.on('request', (request) => {
-      outboundRequests.push(request);
-    });
+  const outboundRequests: Request[] = [];
+  page.on('request', (request) => {
+    outboundRequests.push(request);
+  });
 
-    // goto url and wait until there are only 2 idle requests
-    const response = await page.goto(url, {
-      waitUntil: 'networkidle2',
-    });
+  // goto url and wait until there are only 2 idle requests
+  const response = await page.goto(url, {
+    waitUntil: 'networkidle2',
+  });
 
-    // extract the html page source
-    const htmlText = await response.text();
+  // extract the html page source
+  const htmlText = await response.text();
 
-    // build the result
-    return await buildResult(
-      logger,
-      logData,
-      response,
-      input.websiteId,
-      cssPages,
-      htmlText,
-      page,
-      outboundRequests,
-    );
-  };
+  // build the result
+  return await buildResult(
+    logger,
+    logData,
+    response,
+    input.websiteId,
+    cssPages,
+    htmlText,
+    page,
+    outboundRequests,
+  );
 };
 
 const buildResult = async (

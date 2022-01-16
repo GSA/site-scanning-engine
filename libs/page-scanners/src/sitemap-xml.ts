@@ -2,13 +2,13 @@ import { Logger } from '@nestjs/common';
 import { Page, Response } from 'puppeteer';
 
 import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
-import { getHttpsUrls, getMIMEType } from './helpers';
+import { getHttpsUrl, getMIMEType } from './helpers';
 
 export const createSitemapXmlScanner = (
   logger: Logger,
   input: SolutionsInputDto,
 ) => {
-  const url = getHttpsUrls(input.url);
+  const url = getHttpsUrl(input.url);
   return async (sitemapPage) => {
     // go to the sitemap page from the targeet url
     const sitemapUrl = new URL(url);
