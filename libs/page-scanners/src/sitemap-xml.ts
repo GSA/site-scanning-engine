@@ -9,7 +9,7 @@ export const createSitemapXmlScanner = (
   input: SolutionsInputDto,
 ) => {
   const url = getHttpsUrl(input.url);
-  return async (sitemapPage) => {
+  return async (sitemapPage: Page) => {
     // go to the sitemap page from the targeet url
     const sitemapUrl = new URL(url);
     sitemapUrl.pathname = 'sitemap.xml';

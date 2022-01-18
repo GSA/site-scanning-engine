@@ -4,6 +4,7 @@ import { Page, Response } from 'puppeteer';
 import { BrowserService } from '@app/browser';
 import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
 import * as pageScanners from '@app/page-scanners';
+import { solutionsScan } from '@app/page-scanners/home-page/solutions-scan';
 
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
@@ -23,9 +24,9 @@ export class SolutionsScannerService
     try {
       const [pageResult, robotsTxtResult, sitemapXmlResult] = await Promise.all(
         [
-          this.browserService.processPage(
-            pageScanners.createHomePageScanner(this.logger, input),
-          ),
+          this.browserService.processPage((page) => {
+            return solutionsScan(this.logger, input, page),
+          }),
           this.browserService.processPage(
             pageScanners.createRobotsTxtScanner(this.logger, input),
           ),
