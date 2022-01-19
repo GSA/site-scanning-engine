@@ -35,3 +35,7 @@ Dockerfile
 # Docs
 /docs
 README.md
+
+# don't include in commits files created by Mega-Linter
+report/
+mega-linter.log
