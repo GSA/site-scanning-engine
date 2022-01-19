@@ -4,16 +4,31 @@
 name: MegaLinter
 
 on:
-  # Trigger mega-linter at every push. Action will also be visible from Pull Requests to main
-  push: # Comment this line to trigger action only on pull-requests (not recommended if you don't pay for GH Actions)
+  # Trigger mega-linter at every push. Action will also be visible from
+  # Comment this line to trigger action only on pull-requests (noit
+  # recommended if you don't pay for GH Actions)
+  push:
+  # Pull Requests to main
   pull_request:
     branches: [master, main]
 
-env: # Comment env block if you do not want to apply fixes
+
+# Comment env block if you do not want to apply fixes
+env:
+
   # Apply linter fixes configuration
-  APPLY_FIXES: all # When active, APPLY_FIXES must also be defined as environment variable (in github/workflows/mega-linter.yml or other CI tool)
-  APPLY_FIXES_EVENT: pull_request # Decide which event triggers application of fixes in a commit or a PR (pull_request, push, all)
-  APPLY_FIXES_MODE: commit # If APPLY_FIXES is used, defines if the fixes are directly committed (commit) or posted in a PR (pull_request)
+
+  # Decide which event triggers application of fixes in a commit or a
+  # PR (pull_request, push, all)
+  APPLY_FIXES_EVENT: pull_request
+
+  # When active, APPLY_FIXES must also be defined as environment
+  # variable (in github/workflows/mega-linter.yml or other CI tool)
+  APPLY_FIXES: all
+
+  # If APPLY_FIXES is used, defines if the fixes are directly committed
+  # (commit) or posted in a PR (pull_request)
+  APPLY_FIXES_MODE: commit
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -40,10 +55,20 @@ jobs:
         env:
           # All available variables are described in documentation
           # https://megalinter.github.io/configuration/
-          VALIDATE_ALL_CODEBASE: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }} # Validates all source when push on main, else just the git diff with main. Override with true if you always want to lint all sources
+
+          # Validates all source when push on main, else just the git diff
+          # with main. Override with true if you always want to lint all
+          # sources
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # ADD YOUR CUSTOM ENV VARIABLES HERE OR DEFINE THEM IN A FILE .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
-          # DISABLE: COPYPASTE,SPELL # Uncomment to disable copy-paste and spell checks
+
+          # ADD YOUR CUSTOM ENV VARIABLES HERE OR DEFINE THEM IN A FILE
+          # .mega-linter.yml AT THE ROOT OF YOUR REPOSITORY
+
+          # DISABLE: COPYPASTE,SPELL # Uncomment to disable copy-paste
+          # and spell checks
+          VALIDATE_ALL_CODEBASE: |
+            ${{ github.event_name == 'push'
+            && github.ref == 'refs/heads/main' }}
 
       # Upload MegaLinter artifacts
       - name: Archive production artifacts
@@ -55,10 +80,18 @@ jobs:
             report
             mega-linter.log
 
-      # Create pull request if applicable (for now works only on PR from same repository, not from forks)
+      # Create pull request if applicable (for now works only on PR from
+      # same repository, not from forks)
       - name: Create Pull Request with applied fixes
         id: cpr
-        if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'pull_request' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: |
+          steps.ml.outputs.has_updated_sources == 1
+          && (env.APPLY_FIXES_EVENT == 'all'
+          || env.APPLY_FIXES_EVENT == github.event_name)
+          && env.APPLY_FIXES_MODE == 'pull_request'
+          && (github.event_name == 'push'
+          || github.event.pull_request.head.repo.full_name == github.repository)
+
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
@@ -66,18 +99,46 @@ jobs:
           title: "[MegaLinter] Apply linters automatic fixes"
           labels: bot
       - name: Create PR output
-        if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'pull_request' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
-        run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+        if: |
+          steps.ml.outputs.has_updated_sources == 1
+          && (env.APPLY_FIXES_EVENT == 'all'
+          || env.APPLY_FIXES_EVENT == github.event_name)
+          && env.APPLY_FIXES_MODE == 'pull_request'
+          && (github.event_name == 'push'
+          || github.event.pull_request.head.repo.full_name == github.repository)
 
-      # Push new commit if applicable (for now works only on PR from same repository, not from forks)
+        run: |
+          echo "PR Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "PR URL - ${{ steps.cpr.outputs.pull-request-url }}"
+
+      # Push new commit if applicable (for now works only on PR from same
+      # repository, not from forks)
       - name: Prepare commit
-        if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: |
+          steps.ml.outputs.has_updated_sources == 1
+          && (env.APPLY_FIXES_EVENT == 'all'
+          || env.APPLY_FIXES_EVENT == github.event_name)
+          && env.APPLY_FIXES_MODE == 'commit'
+          && github.ref != 'refs/heads/main'
+          && (github.event_name == 'push'
+          || github.event.pull_request.head.repo.full_name == github.repository)
+
         run: sudo chown -Rc $UID .git/
       - name: Commit and push applied linter fixes
-        if: steps.ml.outputs.has_updated_sources == 1 && (env.APPLY_FIXES_EVENT == 'all' || env.APPLY_FIXES_EVENT == github.event_name) && env.APPLY_FIXES_MODE == 'commit' && github.ref != 'refs/heads/main' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
+        if: |
+          steps.ml.outputs.has_updated_sources == 1
+          && (env.APPLY_FIXES_EVENT == 'all'
+          || env.APPLY_FIXES_EVENT == github.event_name)
+          && env.APPLY_FIXES_MODE == 'commit'
+          && github.ref != 'refs/heads/main'
+          && (github.event_name == 'push'
+          || github.event.pull_request.head.repo.full_name == github.repository)
+
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          branch: ${{ github.event.pull_request.head.ref || github.head_ref || github.ref }}
+          branch: |
+            ${{ github.event.pull_request.head.ref
+            || github.head_ref
+            || github.ref }}
+
           commit_message: "[MegaLinter] Apply linters fixes"
