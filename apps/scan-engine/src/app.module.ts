@@ -7,7 +7,6 @@ import { MessageQueueModule } from '@app/message-queue';
 import { QueueModule } from '@app/queue';
 
 import { SolutionsScannerModule } from 'libs/solutions-scanner/src';
-import { CoreScannerModule } from 'libs/core-scanner/src';
 import { ScanEngineConsumer } from './scan-engine.consumer';
 
 const logger = pino(
@@ -28,7 +27,6 @@ setInterval(function () {
   imports: [
     MessageQueueModule,
     DatabaseModule,
-    CoreScannerModule,
     SolutionsScannerModule,
     LoggerModule.forRoot(),
     QueueModule,

@@ -11,7 +11,6 @@ import {
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 
-import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
@@ -40,7 +39,6 @@ export class ScanEngineConsumer {
   private logger = new Logger(ScanEngineConsumer.name);
 
   constructor(
-    private coreScanner: CoreScannerService,
     private coreResultService: CoreResultService,
     private queueService: QueueService,
     private solutionsScanner: SolutionsScannerService,
@@ -63,19 +61,18 @@ export class ScanEngineConsumer {
     });
 
     try {
-      // add core result
-      const coreResult = await this.coreScanner.scan(job.data);
-      await this.coreResultService.create(coreResult);
-      this.logger.log({
-        msg: `wrote core result for ${job.data.url}`,
-        job,
-      });
-
-      // add solutions result
-      const solutionsResult = await this.solutionsScanner.scan(job.data);
+      // scan core and solutions results
+      const { coreResult, solutionsResult } = await this.solutionsScanner.scan(
+        job.data,
+      );
       await this.solutionsResultService.create(solutionsResult);
       this.logger.log({
         msg: `wrote solutions result for ${job.data.url}`,
+        job,
+      });
+      await this.coreResultService.create(coreResult);
+      this.logger.log({
+        msg: `wrote core result for ${job.data.url}`,
         job,
       });
 

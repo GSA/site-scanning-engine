@@ -1,9 +1,10 @@
+import { HttpModule, Module } from '@nestjs/common';
+
 import { BrowserModule } from '@app/browser';
-import { Module } from '@nestjs/common';
 import { SolutionsScannerService } from './solutions-scanner.service';
 
 @Module({
-  imports: [BrowserModule],
+  imports: [BrowserModule, HttpModule],
   providers: [SolutionsScannerService],
   exports: [SolutionsScannerService],
 })
