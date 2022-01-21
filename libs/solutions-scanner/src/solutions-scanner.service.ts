@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Page, Response } from 'puppeteer';
 
 import { BrowserService } from '@app/browser';
 import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
@@ -25,7 +24,7 @@ export class SolutionsScannerService
       const [pageResult, robotsTxtResult, sitemapXmlResult] = await Promise.all(
         [
           this.browserService.processPage((page) => {
-            return solutionsScan(this.logger, input, page),
+            return solutionsScan(this.logger, input, page);
           }),
           this.browserService.processPage(
             pageScanners.createRobotsTxtScanner(this.logger, input),

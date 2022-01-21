@@ -1,10 +1,11 @@
 import { mock, MockProxy } from 'jest-mock-extended';
-import { Browser, Page, Response, Request } from 'puppeteer';
+import { Page, Response, Request, Browser } from 'puppeteer';
 import { of } from 'rxjs';
 import { HttpModule, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { BrowserService } from '@app/browser';
+import { BrowserModule } from '@app/browser';
+import { PUPPETEER_TOKEN } from '@app/browser/puppeteer.service';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
@@ -43,11 +44,11 @@ describe('CoreScannerService', () => {
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [HttpModule],
+      imports: [HttpModule, BrowserModule],
       providers: [
         CoreScannerService,
         {
-          provide: BrowserService,
+          provide: PUPPETEER_TOKEN,
           useValue: mockBrowser,
         },
         {
