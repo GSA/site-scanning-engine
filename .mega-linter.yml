@@ -1,6 +1,9 @@
 # don't use Mega-Linter to test the reports Mega-Linter created
 ADDITIONAL_EXCLUDED_DIRECTORIES: report
 
+# don't scan files listed in .gitignore (e.g., node_modules)
+IGNORE_GITIGNORED_FILES: true
+
 # when possible, apply fixes when PRs are created by adding a commit to the PR with the fixes
 APPLY_FIXES: true
 APPLY_FIXES_EVENT: pull_request
@@ -11,6 +14,9 @@ DISABLE_LINTERS: SPELL_MISSPELL, COPYPASTE_JSCPD, SPELL_CSPELL
 
 # only scan new / updated files, not everything
 VALIDATE_ALL_CODEBASE: false
+
+# don't print the alpaca -- it's cute, but we don't need it in the logs
+PRINT_ALPACA: false
 
 # don't fail on finding (yet)
 DISABLE_ERRORS: true
