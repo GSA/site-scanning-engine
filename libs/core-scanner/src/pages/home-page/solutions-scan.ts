@@ -1,19 +1,18 @@
 import { Logger } from '@nestjs/common';
 import { Page, Request } from 'puppeteer';
-import { DeepPartial } from 'typeorm';
 
-import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 
 import { getHttpsUrl } from '../helpers';
-import { buildDapResult } from '../scans/dap';
-import { buildUswdsResult } from '../scans/uswds';
-import { buildThirdPartyResult } from '../scans/third-party';
+import { buildDapResult } from '../../scans/dap';
+import { buildUswdsResult } from '../../scans/uswds';
+import { buildThirdPartyResult } from '../../scans/third-party';
 
 export const solutionsScan = async (
   logger: Logger,
-  input: SolutionsInputDto,
+  input: CoreInputDto,
   page: Page,
 ) => {
   const url = getHttpsUrl(input.url);

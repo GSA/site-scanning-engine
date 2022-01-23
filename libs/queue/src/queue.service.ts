@@ -3,12 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import {
-  CORE_SCAN_JOB_NAME,
-  SCANNER_QUEUE_NAME,
-  SOLUTIONS_SCAN_JOB_NAME,
-} from '@app/message-queue';
-import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
+import { CORE_SCAN_JOB_NAME, SCANNER_QUEUE_NAME } from '@app/message-queue';
 
 /**
  * QueueService writes jobs to the message queue.
@@ -32,19 +27,6 @@ export class QueueService {
       removeOnComplete: true,
       attempts: 3,
     });
-    return job;
-  }
-
-  async addSolutionsJob(solutionsInput: SolutionsInputDto) {
-    const job = await this.scannerQueue.add(
-      SOLUTIONS_SCAN_JOB_NAME,
-      solutionsInput,
-      {
-        removeOnComplete: true,
-        attempts: 3,
-      },
-    );
-
     return job;
   }
 

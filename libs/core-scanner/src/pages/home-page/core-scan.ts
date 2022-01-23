@@ -1,16 +1,16 @@
 import { HttpService, Logger } from '@nestjs/common';
 import { Page } from 'puppeteer';
 
-import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 import { getHttpsUrl } from '../helpers';
-import { notFoundTest } from '../scans/not-found';
-import { buildCoreResult } from '../scans/core';
+import { notFoundTest } from '../../scans/not-found';
+import { buildCoreResult } from '../../scans/core';
 
 export const coreScan = async (
   httpService: HttpService,
   logger: Logger,
-  input: SolutionsInputDto,
+  input: CoreInputDto,
   page: Page,
 ) => {
   const url = getHttpsUrl(input.url);

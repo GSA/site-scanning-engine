@@ -6,7 +6,7 @@ import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 
-import { getHttpsUrl, getMIMEType } from '../helpers';
+import { getHttpsUrl, getMIMEType } from '../pages/helpers';
 
 export const buildCoreResult = (
   input: CoreInputDto,

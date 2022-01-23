@@ -11,11 +11,11 @@ import {
 import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 
+import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
 import { QueueService } from '@app/queue';
-import { SolutionsScannerService } from 'libs/solutions-scanner/src';
 
 /**
  * ScanEngineConsumer is a consumer of the Scanner message queue.
@@ -41,7 +41,7 @@ export class ScanEngineConsumer {
   constructor(
     private coreResultService: CoreResultService,
     private queueService: QueueService,
-    private solutionsScanner: SolutionsScannerService,
+    private coreScanner: CoreScannerService,
     private solutionsResultService: SolutionsResultService,
   ) {}
 
@@ -62,7 +62,7 @@ export class ScanEngineConsumer {
 
     try {
       // scan core and solutions results
-      const { coreResult, solutionsResult } = await this.solutionsScanner.scan(
+      const { coreResult, solutionsResult } = await this.coreScanner.scan(
         job.data,
       );
       await this.solutionsResultService.create(solutionsResult);

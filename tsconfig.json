@@ -29,12 +29,8 @@
       "@app/queue/*": ["libs/queue/src/*"],
       "@app/snapshot": ["libs/snapshot/src"],
       "@app/snapshot/*": ["libs/snapshot/src/*"],
-      "@app/solutions-scanner": ["libs/solutions-scanner/src"],
-      "@app/solutions-scanner/*": ["libs/solutions-scanner/src/*"],
       "@app/storage": ["libs/storage/src"],
-      "@app/storage/*": ["libs/storage/src/*"],
-      "@app/page-scanners": ["libs/page-scanners/src"],
-      "@app/page-scanners/*": ["libs/page-scanners/src/*"]
+      "@app/storage/*": ["libs/storage/src/*"]
     }
   }
 }

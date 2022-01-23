@@ -5,12 +5,11 @@ import { Job } from 'bull';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
-import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
 import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Scanner } from 'libs/scanner.interface';
-import { SolutionsScannerService } from 'libs/solutions-scanner/src';
+import { CoreScannerService } from 'libs/core-scanner/src';
 
 import { ScanEngineConsumer } from './scan-engine.consumer';
 import { QueueService } from '@app/queue';
@@ -19,16 +18,14 @@ describe('ScanEngineConsumer', () => {
   let consumer: ScanEngineConsumer;
   let module: TestingModule;
   let mockCoreResultService: MockProxy<CoreResultService>;
-  let mockSolutionsScanner: MockProxy<
-    Scanner<SolutionsInputDto, SolutionsResult>
-  >;
+  let mockCoreScanner: MockProxy<Scanner<CoreInputDto, SolutionsResult>>;
   let mockSolutionsResultService: MockProxy<SolutionsResultService>;
   let mockCoreJob: MockProxy<Job<CoreInputDto>>;
   let mockQueueService: MockProxy<QueueService>;
 
   beforeEach(async () => {
     mockCoreResultService = mock<CoreResultService>();
-    mockSolutionsScanner = mock<Scanner<SolutionsInputDto, SolutionsResult>>();
+    mockCoreScanner = mock<Scanner<CoreInputDto, SolutionsResult>>();
     mockSolutionsResultService = mock<SolutionsResultService>();
     mockCoreJob = mock<Job<CoreInputDto>>();
     mockQueueService = mock<QueueService>();
@@ -40,8 +37,8 @@ describe('ScanEngineConsumer', () => {
           useValue: mockCoreResultService,
         },
         {
-          provide: SolutionsScannerService,
-          useValue: mockSolutionsScanner,
+          provide: CoreScannerService,
+          useValue: mockCoreScanner,
         },
         {
           provide: SolutionsResultService,

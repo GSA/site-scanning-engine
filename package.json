@@ -131,8 +131,6 @@
       "@app/core-scanner": "<rootDir>/libs/core-scanner/src",
       "@app/ingest/(.*)": "<rootDir>/libs/ingest/src/$1",
       "@app/ingest": "<rootDir>/libs/ingest/src",
-      "@app/solutions-scanner/(.*)": "<rootDir>/libs/solutions-scanner/src/$1",
-      "@app/solutions-scanner": "<rootDir>/libs/solutions-scanner/src",
       "@app/storage/(.*)": "<rootDir>/libs/storage/src/$1",
       "@app/storage": "<rootDir>/libs/storage/src",
       "@app/snapshot/(.*)": "<rootDir>/libs/snapshot/src/$1",
@@ -140,9 +138,7 @@
       "@app/datetime/(.*)": "<rootDir>/libs/datetime/src/$1",
       "@app/datetime": "<rootDir>/libs/datetime/src",
       "@app/queue": "<rootDir>/libs/queue/src",
-      "@app/queue/(.*)": "<rootDir>/libs/queue/src/$1",
-      "@app/page-scanners": "<rootDir>/libs/page-scanners/src",
-      "@app/page-scanners/(.*)": "<rootDir>/libs/page-scanners/src/$1"
+      "@app/queue/(.*)": "<rootDir>/libs/queue/src/$1"
     }
   }
 }

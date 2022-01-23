@@ -1,13 +1,10 @@
 import { Logger } from '@nestjs/common';
 import { Response } from 'puppeteer';
 
-import { SolutionsInputDto } from '@app/solutions-scanner/solutions.input.dto';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { getHttpsUrl, getMIMEType } from './helpers';
 
-export const createRobotsTxtScanner = (
-  logger: Logger,
-  input: SolutionsInputDto,
-) => {
+export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   const url = getHttpsUrl(input.url);
   return async (robotsPage) => {
     // go to the robots page from the target url
