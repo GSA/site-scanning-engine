@@ -4,15 +4,17 @@ import { of } from 'rxjs';
 import { HttpModule, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { BrowserModule } from '@app/browser';
+import { BrowserModule, BrowserService } from '@app/browser';
 import { PUPPETEER_TOKEN } from '@app/browser/puppeteer.service';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
+import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 
 import { CoreScannerService } from './core-scanner.service';
 import { ScanStatus } from './scan-status';
+import { source, testRobotsTxt, testSitemapXml } from './test-page-source';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
@@ -88,7 +90,7 @@ describe('CoreScannerService', () => {
     const result = await service.scan(coreInputDto);
     const expected = new CoreResult();
     expected.status = ScanStatus.Completed;
-    expected.finalUrl = 'https://18f.gsa.gov';
+    expected.finalUrl = 'https://18f.gsa.gov/';
     expected.finalUrlBaseDomain = 'gsa.gov';
     expected.finalUrlIsLive = true;
     expected.finalUrlMIMEType = 'text/html';
@@ -100,6 +102,153 @@ describe('CoreScannerService', () => {
     expected.website = website;
     expected.targetUrl404Test = true;
 
-    expect(result).toStrictEqual(expected);
+    expect(result.coreResult).toStrictEqual(expected);
+    //expect(result.solutionsResult).toStrictEqual({});
+  });
+});
+
+describe('SolutionsScannerService', () => {
+  let service: CoreScannerService;
+  let mockBrowser: MockProxy<Browser>;
+  let mockPage: MockProxy<Page>;
+  let mockRobotsPage: MockProxy<Page>;
+  let mockSitemapPage: MockProxy<Page>;
+  let mockResponse: MockProxy<Response>;
+  let mockRobotsResponse: MockProxy<Response>;
+  let mockSitemapResponse: MockProxy<Response>;
+  let redirectRequest: MockProxy<Request>;
+  let mockHttpService: MockProxy<HttpService>;
+
+  beforeEach(async () => {
+    mockBrowser = mock<Browser>();
+    mockPage = mock<Page>();
+    mockRobotsPage = mock<Page>();
+    mockSitemapPage = mock<Page>();
+    mockResponse = mock<Response>();
+    mockRobotsResponse = mock<Response>();
+    mockSitemapResponse = mock<Response>();
+    mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
+    mockBrowser.newPage.calledWith().mockResolvedValue(mockRobotsPage);
+    mockBrowser.newPage.calledWith().mockResolvedValue(mockSitemapPage);
+    redirectRequest = mock<Request>();
+    mockHttpService = mock<HttpService>();
+
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CoreScannerService,
+        BrowserService,
+        {
+          provide: PUPPETEER_TOKEN,
+          useValue: mockBrowser,
+        },
+        {
+          provide: HttpService,
+          useValue: mockHttpService,
+        },
+      ],
+    }).compile();
+
+    service = module.get<CoreScannerService>(CoreScannerService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
+  it('should return the correct response', async () => {
+    const input: CoreInputDto = {
+      websiteId: 1,
+      url: '18f.gov',
+      scanId: '123',
+    };
+
+    const time = new Date('2018-09-15T15:53:00');
+
+    const website = new Website();
+    website.id = input.websiteId;
+
+    mockPage.evaluate.mockResolvedValueOnce(4);
+    mockPage.evaluate.mockResolvedValueOnce('Page Title');
+    mockPage.evaluate.mockResolvedValueOnce('Page Description');
+    mockPage.evaluate.mockResolvedValueOnce(time.toString());
+    mockPage.evaluate.mockResolvedValueOnce(time.toString());
+    mockPage.evaluate.mockResolvedValueOnce(true);
+
+    mockResponse.text.mockResolvedValue(source);
+    mockResponse.url.mockReturnValue('https://18f.gsa.gov');
+    mockPage.goto.mockResolvedValue(mockResponse);
+    redirectRequest.redirectChain.mockReturnValue([]);
+
+    // Robots setup
+    mockRobotsResponse.url.mockReturnValue('https://18f.gsa.gov/robots.txt');
+    mockRobotsResponse.status.mockReturnValue(200);
+    mockRobotsResponse.request.mockReturnValue(redirectRequest);
+    mockRobotsResponse.text.mockResolvedValue(testRobotsTxt);
+    mockRobotsResponse.headers.calledWith().mockReturnValue({
+      'Content-Type': 'text/plain; charset=utf-8',
+    });
+    mockRobotsPage.goto.mockResolvedValue(mockRobotsResponse);
+
+    // sitemap setup
+    mockSitemapResponse.url.mockReturnValue('https://18f.gsa.gov/sitemap.xml');
+    mockSitemapResponse.status.mockReturnValue(200);
+    mockSitemapResponse.request.mockReturnValue(redirectRequest);
+    mockSitemapResponse.text.mockResolvedValue(testSitemapXml);
+    mockSitemapResponse.headers.calledWith().mockReturnValue({
+      'Content-Type': 'application/xml; charset=utf-8',
+    });
+    mockSitemapPage.goto.mockResolvedValue(mockSitemapResponse);
+    mockSitemapPage.evaluate.mockResolvedValueOnce(200);
+
+    const result = await service.scan(input);
+    const expected = new SolutionsResult();
+
+    expected.website = website;
+    expected.usaClasses = 4;
+    expected.uswdsString = 1;
+    expected.uswdsTables = 0;
+    expected.uswdsInlineCss = 0;
+    expected.uswdsUsFlag = 20;
+    expected.uswdsStringInCss = 0; // :TODO mock this
+    expected.uswdsUsFlagInCss = 0; // :TODO mock this
+    expected.uswdsMerriweatherFont = 0; // :TODO mock this
+    expected.uswdsPublicSansFont = 0; // :TODO mock this
+    expected.uswdsSourceSansFont = 0; // :TODO mock this
+    expected.uswdsCount = 25;
+    expected.uswdsSemanticVersion = undefined;
+    expected.uswdsVersion = 0;
+    expected.dapDetected = false;
+    expected.dapParameters = undefined;
+    expected.ogTitleFinalUrl = 'Page Title';
+    expected.ogDescriptionFinalUrl = 'Page Description';
+    expected.ogArticlePublishedFinalUrl = time;
+    expected.ogArticleModifiedFinalUrl = time;
+    expected.mainElementFinalUrl = true;
+    expected.robotsTxtDetected = true;
+    expected.robotsTxtFinalUrl = 'https://18f.gsa.gov/robots.txt';
+    expected.robotsTxtStatusCode = 200;
+    expected.robotsTxtFinalUrlLive = true;
+    expected.robotsTxtFinalUrlMimeType = 'text/plain';
+    expected.robotsTxtTargetUrlRedirects = false;
+    expected.robotsTxtFinalUrlSize = 125;
+    expected.robotsTxtCrawlDelay = 10;
+    expected.robotsTxtSitemapLocations =
+      'https://18f.gsa.gov/sitemap1.xml,https://18f.gsa.gov/sitemap2.xml';
+    expected.sitemapXmlFinalUrl = 'https://18f.gsa.gov/sitemap.xml';
+    expected.sitemapXmlStatusCode = 200;
+    expected.sitemapXmlDetected = true;
+    expected.sitemapXmlFinalUrlLive = true;
+    expected.sitemapTargetUrlRedirects = false;
+    expected.sitemapXmlFinalUrlFilesize = 95060;
+    expected.sitemapXmlFinalUrlMimeType = 'application/xml';
+    expected.sitemapXmlCount = 200;
+    expected.sitemapXmlPdfCount = 0;
+    expected.thirdPartyServiceDomains = '';
+    expected.thirdPartyServiceCount = 0;
+
+    expected.status = ScanStatus.Completed;
+
+    //expect(result.coreResult).toStrictEqual({});
+    expect(result.solutionsResult).toStrictEqual(expected);
   });
 });
