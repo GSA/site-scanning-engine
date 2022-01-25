@@ -24,7 +24,7 @@ env:
 
   # When active, APPLY_FIXES must also be defined as environment
   # variable (in github/workflows/mega-linter.yml or other CI tool)
-  APPLY_FIXES: all
+  APPLY_FIXES: none
 
   # If APPLY_FIXES is used, defines if the fixes are directly committed
   # (commit) or posted in a PR (pull_request)
