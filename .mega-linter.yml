@@ -14,7 +14,7 @@ DISABLE_LINTERS: SPELL_MISSPELL, COPYPASTE_JSCPD, SPELL_CSPELL
 
 # only scan new / updated files, not everything
 #VALIDATE_ALL_CODEBASE: false
-# experiment
+# experiment: make sure `DISABLE_ERRORS` works properly
 VALIDATE_ALL_CODEBASE: true
 
 # don't print the alpaca -- it's cute, but we don't need it in the logs
