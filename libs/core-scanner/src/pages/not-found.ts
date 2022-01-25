@@ -2,10 +2,10 @@ import { HttpService, HttpStatus } from '@nestjs/common';
 import { Agent } from 'https';
 import { v4 } from 'uuid';
 
-export const notFoundTest = async (
+export const createNotFoundScanner = async (
   httpService: HttpService,
   url: string,
-): Promise<boolean> => {
+) => {
   const randomUrl = new URL(url);
   randomUrl.pathname = `not-found-test${v4()}`;
 

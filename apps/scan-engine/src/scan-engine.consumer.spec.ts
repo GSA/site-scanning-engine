@@ -18,14 +18,25 @@ describe('ScanEngineConsumer', () => {
   let consumer: ScanEngineConsumer;
   let module: TestingModule;
   let mockCoreResultService: MockProxy<CoreResultService>;
-  let mockCoreScanner: MockProxy<Scanner<CoreInputDto, SolutionsResult>>;
+  let mockCoreScanner: MockProxy<
+    Scanner<
+      CoreInputDto,
+      { solutionsResult: SolutionsResult; coreResult: CoreResult }
+    >
+  >;
   let mockSolutionsResultService: MockProxy<SolutionsResultService>;
   let mockCoreJob: MockProxy<Job<CoreInputDto>>;
   let mockQueueService: MockProxy<QueueService>;
 
   beforeEach(async () => {
     mockCoreResultService = mock<CoreResultService>();
-    mockCoreScanner = mock<Scanner<CoreInputDto, SolutionsResult>>();
+    mockCoreScanner =
+      mock<
+        Scanner<
+          CoreInputDto,
+          { solutionsResult: SolutionsResult; coreResult: CoreResult }
+        >
+      >();
     mockSolutionsResultService = mock<SolutionsResultService>();
     mockCoreJob = mock<Job<CoreInputDto>>();
     mockQueueService = mock<QueueService>();

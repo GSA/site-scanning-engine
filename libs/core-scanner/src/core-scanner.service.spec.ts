@@ -14,7 +14,11 @@ import { Website } from 'entities/website.entity';
 
 import { CoreScannerService } from './core-scanner.service';
 import { ScanStatus } from './scan-status';
-import { source, testRobotsTxt, testSitemapXml } from './test-page-source';
+import {
+  source,
+  testRobotsTxt,
+  testSitemapXml,
+} from './pages/test-page-source';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
@@ -102,7 +106,7 @@ describe('CoreScannerService', () => {
     expected.website = website;
     expected.targetUrl404Test = true;
 
-    expect(result.coreResult).toStrictEqual(expected);
+    expect(result.coreResult).toEqual(expected);
     //expect(result.solutionsResult).toStrictEqual({});
   });
 });
@@ -248,7 +252,7 @@ describe('SolutionsScannerService', () => {
 
     expected.status = ScanStatus.Completed;
 
-    //expect(result.coreResult).toStrictEqual({});
-    expect(result.solutionsResult).toStrictEqual(expected);
+    //expect(result.coreResult).toEqual({});
+    expect(result.solutionsResult).toEqual(expected);
   });
 });

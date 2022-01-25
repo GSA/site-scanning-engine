@@ -10,8 +10,6 @@ import { Scanner } from 'libs/scanner.interface';
 
 import { CoreInputDto } from './core.input.dto';
 import * as pages from './pages';
-import { coreScan } from './pages/home-page/core-scan';
-import { solutionsScan } from './pages/home-page/solutions-scan';
 import { buildCoreErrorResult } from './scans/core';
 
 @Injectable()
@@ -33,28 +31,24 @@ export class CoreScannerService
     input: CoreInputDto,
   ): Promise<{ solutionsResult: SolutionsResult; coreResult: CoreResult }> {
     try {
-      const [pageResult, robotsTxtResult, sitemapXmlResult] = await Promise.all(
-        [
-          this.browserService.processPage(async (page) => {
-            const [coreResults, solutionsResults] = await Promise.all([
-              coreScan(this.httpService, this.logger, input, page),
-              solutionsScan(this.logger, input, page),
-            ]);
-            return {
-              coreResults,
-              solutionsResults,
-            };
-          }),
+      const [notFoundTest, pageResult, robotsTxtResult, sitemapXmlResult] =
+        await Promise.all([
+          pages.createNotFoundScanner(this.httpService, input.url),
+          this.browserService.processPage(
+            pages.createHomePageScanner(this.logger, input),
+          ),
           this.browserService.processPage(
             pages.createRobotsTxtScanner(this.logger, input),
           ),
           this.browserService.processPage(
             pages.createSitemapXmlScanner(this.logger, input),
           ),
-        ],
-      );
+        ]);
       const result = {
-        coreResult: pageResult.coreResults,
+        coreResult: {
+          targetUrl404Test: notFoundTest,
+          ...pageResult.coreResults,
+        },
         solutionsResult: {
           ...sitemapXmlResult,
           ...robotsTxtResult,

@@ -10,7 +10,6 @@ import { getHttpsUrl, getMIMEType } from '../pages/helpers';
 
 export const buildCoreResult = (
   input: CoreInputDto,
-  notFoundTest: boolean,
   page: Page,
   response: Response,
 ) => {
@@ -36,7 +35,6 @@ export const buildCoreResult = (
     getBaseDomain(url) == getBaseDomain(finalUrl);
   result.finalUrlStatusCode = response.status();
   result.status = ScanStatus.Completed;
-  result.targetUrl404Test = notFoundTest;
 
   return result;
 };
