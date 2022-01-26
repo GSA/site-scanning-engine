@@ -5,6 +5,7 @@ export enum ScanStatus {
   UnknownError = 'unknown_error',
   InvalidSSLCert = 'invalid_ssl_cert',
   ConnectionRefused = 'connection_refused',
+  ConnectionReset = 'connection_reset',
 }
 
 export const parseBrowserError = (err: Error) => {
@@ -18,6 +19,8 @@ export const parseBrowserError = (err: Error) => {
 
   if (
     err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID') ||
+    err.message.startsWith('net::ERR_CERT_DATE_INVALID') ||
+    err.message.startsWith('net::ERR_BAD_SSL_CLIENT_AUTH_CERT') ||
     err.message.startsWith('unable to verify the first certificate')
   ) {
     return ScanStatus.InvalidSSLCert;
@@ -25,6 +28,10 @@ export const parseBrowserError = (err: Error) => {
 
   if (err.message.startsWith('net::ERR_CONNECTION_REFUSED')) {
     return ScanStatus.ConnectionRefused;
+  }
+
+  if (err.message.startsWith('net::ERR_CONNECTION_RESET')) {
+    return ScanStatus.ConnectionReset;
   }
 
   return ScanStatus.UnknownError;
