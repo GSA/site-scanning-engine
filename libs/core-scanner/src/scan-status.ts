@@ -33,6 +33,6 @@ export const parseBrowserError = (err: Error) => {
   if (err.message.startsWith('net::ERR_CONNECTION_RESET')) {
     return ScanStatus.ConnectionReset;
   }
-  return err.message;
+
   return ScanStatus.UnknownError;
 };
