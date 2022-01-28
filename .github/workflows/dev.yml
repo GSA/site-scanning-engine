@@ -1,5 +1,11 @@
-name: Deploy
+name: Dev deployment
+
 on:
+  # Triggers workflow on pull request events for the main branch
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -15,26 +21,26 @@ jobs:
       - name: install
         run: npm install
 
-      - name: build
-        run: npm run build:all
+      - name: build 
+        run: npm run build:all 
 
-      - name: deploy api
+      - name: deploy api to dev
         uses: 18f/cg-deploy-action@main
         with:
           cf_username: ${{ secrets.CF_USERNAME }}
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
-          cf_space: prod
-          push_arguments: "-f manifest.yml --vars-file vars.yml site-scanner-api"
+          cf_space: dev
+          push_arguments: "--vars-file vars-dev.yml site-scanner-api"
 
-      - name: deploy consumer
+      - name: deploy consumer to dev
         uses: 18f/cg-deploy-action@main
         with:
           cf_username: ${{ secrets.CF_USERNAME }}
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
-          cf_space: prod
-          push_arguments: "-f manifest.yml --vars-file vars.yml site-scanner-consumer"
+          cf_space: dev
+          push_arguments: "--vars-file vars-dev.yml site-scanner-consumer"
 
 
       - name: scale consumer
@@ -44,6 +50,7 @@ jobs:
           cf_username: ${{ secrets.CF_USERNAME }}
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
-          cf_space: prod
-          cf_command: 'scale site-scanner-consumer -i 4 -k 4G -m 2G -f'
-          # scale to four instances with 2G memory each and force deploy
+          cf_space: dev
+          cf_command: "scale site-scanner-consumer -i 1 -k 4G -m 512M -f"
+          # scale to two instances with 4G scratch disk and 2G memory each and force deploy
+

@@ -63,7 +63,7 @@
     "puppeteer": "^5.5.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.4.0",
-    "swagger-ui-express": "^4.1.6",
+    "swagger-ui-express": "^4.3.0",
     "typeorm": "^0.2.32",
     "uuid": "^8.3.2",
     "webpack": "^5.65.0"
