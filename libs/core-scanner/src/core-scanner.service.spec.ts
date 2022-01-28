@@ -143,7 +143,10 @@ describe('SolutionsScannerService', () => {
         BrowserService,
         {
           provide: PUPPETEER_TOKEN,
-          useValue: mockBrowser,
+          //useValue: mockBrowser,
+          useValue: {
+            use: (handler) => handler(mockBrowser),
+          },
         },
         {
           provide: HttpService,

@@ -1,9 +1,9 @@
-import * as puppeteer from 'puppeteer';
+import { createPuppeteerPool } from './puppeteer-pool';
 
 /**
  * PUPPETEER_TOKEN provides a lookup token to Nest's DI container.
  */
-const PUPPETEER_TOKEN = 'BROWSER';
+export const PUPPETEER_TOKEN = 'BROWSER';
 
 /**
  * PuppeteerService is an async provider that returns a puppeteer.Browser.
@@ -11,7 +11,7 @@ const PUPPETEER_TOKEN = 'BROWSER';
  * @remarks This object should only be used by a Nest.js DI container.
  *
  */
-const PuppeteerService = {
+export const PuppeteerService = {
   provide: PUPPETEER_TOKEN,
 
   /**
@@ -20,12 +20,30 @@ const PuppeteerService = {
    * @returns a headless puppeteer.Browser instance.
    */
   useFactory: async () => {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox'], // :TODO mustfix!
+    return createPuppeteerPool({
+      min: 1,
+      max: 3,
+
+      // How long a resource can stay idle in pool before being removed
+      idleTimeoutMillis: 60000,
+
+      // Maximum number of times an individual resource can be reused before being
+      // destroyed; set to 0 to disable
+      maxUses: 100,
+
+      // Function to validate an instance prior to use;
+      // see https://github.com/coopernurse/node-pool#createpool
+      validator: () => Promise.resolve(true),
+
+      // Validate resource before borrowing; required for `maxUses and `validator`
+      testOnBorrow: true,
+
+      // Arguments to pass on to Puppeteer
+      puppeteerArgs: {
+        args: ['--no-sandbox'],
+      },
     });
-    return browser;
   },
 };
 
-export { PUPPETEER_TOKEN, PuppeteerService };
+export type PuppeteerPool = ReturnType<typeof createPuppeteerPool>;

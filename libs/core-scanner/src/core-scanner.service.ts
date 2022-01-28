@@ -30,45 +30,50 @@ export class CoreScannerService
   async scan(
     input: CoreInputDto,
   ): Promise<{ solutionsResult: SolutionsResult; coreResult: CoreResult }> {
-    try {
-      const [notFoundTest, pageResult, robotsTxtResult, sitemapXmlResult] =
-        await Promise.all([
-          pages.createNotFoundScanner(this.httpService, input.url),
-          this.browserService.processPage(
-            pages.createHomePageScanner(this.logger, input),
+    return this.browserService.useBrowser(async (browser) => {
+      try {
+        const [notFoundTest, pageResult, robotsTxtResult, sitemapXmlResult] =
+          await Promise.all([
+            pages.createNotFoundScanner(this.httpService, input.url),
+            this.browserService.processPage(
+              browser,
+              pages.createHomePageScanner(this.logger, input),
+            ),
+            this.browserService.processPage(
+              browser,
+              pages.createRobotsTxtScanner(this.logger, input),
+            ),
+            this.browserService.processPage(
+              browser,
+              pages.createSitemapXmlScanner(this.logger, input),
+            ),
+          ]);
+        const result = {
+          coreResult: {
+            targetUrl404Test: notFoundTest,
+            ...pageResult.coreResults,
+          },
+          solutionsResult: {
+            ...sitemapXmlResult,
+            ...robotsTxtResult,
+            ...pageResult.solutionsResults,
+          },
+        };
+        this.logger.log({ msg: 'solutions scan results', ...input, result });
+        return result;
+      } catch (error) {
+        return {
+          solutionsResult: buildErrorResult(
+            this.logger,
+            input.websiteId,
+            error,
+            input,
+            error,
           ),
-          this.browserService.processPage(
-            pages.createRobotsTxtScanner(this.logger, input),
-          ),
-          this.browserService.processPage(
-            pages.createSitemapXmlScanner(this.logger, input),
-          ),
-        ]);
-      const result = {
-        coreResult: {
-          targetUrl404Test: notFoundTest,
-          ...pageResult.coreResults,
-        },
-        solutionsResult: {
-          ...sitemapXmlResult,
-          ...robotsTxtResult,
-          ...pageResult.solutionsResults,
-        },
-      };
-      this.logger.log({ msg: 'solutions scan results', ...input, result });
-      return result;
-    } catch (error) {
-      return {
-        solutionsResult: buildErrorResult(
-          this.logger,
-          input.websiteId,
-          error,
-          input,
-          error,
-        ),
-        coreResult: buildCoreErrorResult(input, error),
-      };
-    }
+          coreResult: buildCoreErrorResult(input, error),
+        };
+      }
+    });
   }
 }
 
