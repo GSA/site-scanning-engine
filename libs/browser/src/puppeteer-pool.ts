@@ -8,6 +8,16 @@
 import * as puppeteer from 'puppeteer';
 import * as genericPool from 'generic-pool';
 
+const createValidator = (browser: puppeteer.Browser) => {
+  let disconnected = false;
+  browser.on('disconnected', () => {
+    disconnected = true;
+  });
+  return () => {
+    return !disconnected && browser.process() != null;
+  };
+};
+
 type Options = {
   max: number;
   min: number;
@@ -15,10 +25,10 @@ type Options = {
   maxUses: number;
   testOnBorrow: boolean;
   puppeteerArgs: puppeteer.LaunchOptions;
-  validator: (browser: puppeteer.Browser) => Promise<boolean>;
 };
 
 export const createPuppeteerPool = (userOptions: Partial<Options> = {}) => {
+  // Combine `userOptions` with default values.
   const options = {
     max: 10,
     // optional. if you set this, make sure to drain() (see step 3)
@@ -35,30 +45,47 @@ export const createPuppeteerPool = (userOptions: Partial<Options> = {}) => {
     validator: () => Promise.resolve(true),
     ...userOptions,
   };
+
+  // `useCounts` keeps track of how many times a given browser instance has been
+  // used, so we can destroy it after `maxUses`.
   const useCounts = new WeakMap<puppeteer.Browser, number>();
-  const factory = {
-    create: () => {
-      return puppeteer.launch(options.puppeteerArgs).then((browser) => {
-        useCounts.set(browser, 0);
-        return browser;
-      });
+
+  // Map of health check validators for each browser.
+  const validators = new WeakMap<puppeteer.Browser, () => boolean>();
+
+  // Create a generic pool instance.
+  const pool = genericPool.createPool<puppeteer.Browser>(
+    {
+      create: () => {
+        return puppeteer.launch(options.puppeteerArgs).then((browser) => {
+          useCounts.set(browser, 0);
+          validators.set(browser, createValidator(browser));
+          return browser;
+        });
+      },
+      destroy: async (browser) => {
+        await browser.close();
+        // Fallback - force-kill the process. Should we do this?
+        if (browser.process() != null) {
+          browser.process().kill('SIGINT');
+        }
+      },
+      validate: async (browser) => {
+        const valid = validators.get(browser)();
+        const useCount = useCounts.get(browser);
+        return valid && (options.maxUses <= 0 || useCount < options.maxUses);
+      },
     },
-    destroy: async (browser) => {
-      browser.close();
+    {
+      max: options.max,
+      min: options.min,
+      idleTimeoutMillis: options.idleTimeoutMillis,
+      testOnBorrow: options.testOnBorrow,
     },
-    validate: async (browser) => {
-      const valid = options.validator(browser);
-      const useCount = useCounts.get(browser);
-      return valid && (options.maxUses <= 0 || useCount < options.maxUses);
-    },
-  };
-  const config: genericPool.Options = {
-    max: options.max,
-    min: options.min,
-    idleTimeoutMillis: options.idleTimeoutMillis,
-    testOnBorrow: options.testOnBorrow,
-  };
-  const pool = genericPool.createPool<puppeteer.Browser>(factory, config);
+  );
+
+  // Wrap generic-pool's acquire function with one that keeps track of the use
+  // count of each browser.
   const genericAcquire = pool.acquire.bind(pool);
   pool.acquire = () => {
     return genericAcquire().then((browser: puppeteer.Browser) => {
@@ -67,6 +94,9 @@ export const createPuppeteerPool = (userOptions: Partial<Options> = {}) => {
       return browser;
     });
   };
+
+  // Create a `use` function that provides a callback/handler interface over
+  // `pool.aquire()` and `pool.release()`.
   pool.use = (fn) => {
     let resource;
     return pool

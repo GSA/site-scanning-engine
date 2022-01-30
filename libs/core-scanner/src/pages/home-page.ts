@@ -32,7 +32,7 @@ export const solutionsScan = async (
 ) => {
   const url = getHttpsUrl(input.url);
 
-  logger.log('Processing main page...');
+  logger.log({ msg: 'Processing main page...', ...input });
   // attach listeners
   const cssPages = [];
   page.on('response', async (response) => {

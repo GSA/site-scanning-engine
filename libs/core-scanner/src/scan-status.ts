@@ -34,5 +34,8 @@ export const parseBrowserError = (err: Error) => {
     return ScanStatus.ConnectionReset;
   }
 
-  return ScanStatus.UnknownError;
+  // TODO: revisit this. for now, return the error message so we can accumulate
+  // actual error messages in the database status column.
+  return err.message;
+  //return ScanStatus.UnknownError;
 };

@@ -21,8 +21,8 @@ export const PuppeteerService = {
    */
   useFactory: async () => {
     return createPuppeteerPool({
-      min: 1,
-      max: 3,
+      min: 0,
+      max: 5,
 
       // How long a resource can stay idle in pool before being removed
       idleTimeoutMillis: 60000,
@@ -30,10 +30,6 @@ export const PuppeteerService = {
       // Maximum number of times an individual resource can be reused before being
       // destroyed; set to 0 to disable
       maxUses: 100,
-
-      // Function to validate an instance prior to use;
-      // see https://github.com/coopernurse/node-pool#createpool
-      validator: () => Promise.resolve(true),
 
       // Validate resource before borrowing; required for `maxUses and `validator`
       testOnBorrow: true,

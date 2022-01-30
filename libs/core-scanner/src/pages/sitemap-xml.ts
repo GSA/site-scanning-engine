@@ -13,12 +13,12 @@ export const createSitemapXmlScanner = (
     // go to the sitemap page from the targeet url
     const sitemapUrl = new URL(url);
     sitemapUrl.pathname = 'sitemap.xml';
-    logger.log('Going to sitemap.xml...');
+    logger.log({ msg: 'Going to sitemap.xml...', ...input });
     const sitemapResponse = await sitemapPage.goto(sitemapUrl.toString());
-    logger.log('Got sitemap.xml!');
+    logger.log({ msg: 'Got sitemap.xml!', ...input });
     // extract the html page source
     const sitemapText = await sitemapResponse.text();
-    logger.log('Got sitemap.xml text!');
+    logger.log({ msg: 'Got sitemap.xml text!', ...input });
 
     return buildSitemapResult(sitemapResponse, sitemapText, sitemapPage);
   };
