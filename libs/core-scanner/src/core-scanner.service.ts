@@ -51,12 +51,12 @@ export class CoreScannerService
         const result = {
           coreResult: {
             targetUrl404Test: notFoundTest,
-            ...pageResult.coreResults,
+            ...pageResult.coreResult,
           },
           solutionsResult: {
             ...sitemapXmlResult,
             ...robotsTxtResult,
-            ...pageResult.solutionsResults,
+            ...pageResult.solutionsResult,
           },
         };
         this.logger.log({ msg: 'solutions scan results', ...input, result });

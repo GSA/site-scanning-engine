@@ -63,7 +63,7 @@ describe('home page scanner', () => {
     const result = await scanner(mockPage);
 
     expect(result).toEqual({
-      coreResults: {
+      coreResult: {
         finalUrl: 'https://18f.gsa.gov',
         finalUrlBaseDomain: 'gsa.gov',
         finalUrlIsLive: true,
@@ -78,7 +78,7 @@ describe('home page scanner', () => {
           id: 1,
         },
       },
-      solutionsResults: {
+      solutionsResult: {
         website: website,
         usaClasses: 4,
         uswdsString: 1,
