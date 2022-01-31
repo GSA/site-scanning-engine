@@ -1,9 +1,9 @@
 import { uniq } from 'lodash';
-import { Request, Response } from 'puppeteer';
+import { HTTPRequest, HTTPResponse } from 'puppeteer';
 
 export const buildThirdPartyResult = async (
-  mainResponse: Response,
-  outboundRequests: Request[],
+  mainResponse: HTTPResponse,
+  outboundRequests: HTTPRequest[],
 ) => {
   const thirdPartyResult = thirdPartyServices(
     outboundRequests,
@@ -16,7 +16,7 @@ export const buildThirdPartyResult = async (
 };
 
 const thirdPartyServices = (
-  outboundRequests: Request[],
+  outboundRequests: HTTPRequest[],
   finalUrl: string,
 ): ThirdPartyServicesResult => {
   const parsedUrl = new URL(finalUrl);

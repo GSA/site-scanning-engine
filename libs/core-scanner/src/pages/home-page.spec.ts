@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { Page, Request, Response } from 'puppeteer';
+import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
 import { Website } from 'entities/website.entity';
 
@@ -11,17 +11,17 @@ import { source } from './test-page-source';
 
 describe('home page scanner', () => {
   let mockPage: MockProxy<Page>;
-  let mockRequest: MockProxy<Request>;
-  let redirectRequest: MockProxy<Request>;
-  let mockResponse: MockProxy<Response>;
+  let mockRequest: MockProxy<HTTPRequest>;
+  let redirectRequest: MockProxy<HTTPRequest>;
+  let mockResponse: MockProxy<HTTPResponse>;
   let mockLogger: MockProxy<Logger>;
   const finalUrl = 'https://18f.gsa.gov';
 
   beforeEach(async () => {
     mockPage = mock<Page>();
-    mockResponse = mock<Response>();
-    mockRequest = mock<Request>();
-    redirectRequest = mock<Request>();
+    mockResponse = mock<HTTPResponse>();
+    mockRequest = mock<HTTPRequest>();
+    redirectRequest = mock<HTTPRequest>();
     mockLogger = mock<Logger>();
 
     redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');

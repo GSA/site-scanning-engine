@@ -1,6 +1,6 @@
-import { Response } from 'puppeteer';
+import { HTTPResponse } from 'puppeteer';
 
-export const getMIMEType = (res: Response) => {
+export const getMIMEType = (res: HTTPResponse) => {
   const headers = res.headers();
   if (headers['Content-Type'] || headers['content-type']) {
     const contentType = headers['Content-Type'] || headers['content-type'];

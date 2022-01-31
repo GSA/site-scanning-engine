@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Page, Request } from 'puppeteer';
+import { Page, HTTPRequest } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { buildCoreResult } from '@app/core-scanner/scans/core';
@@ -42,7 +42,7 @@ export const solutionsScan = async (
     }
   });
 
-  const outboundRequests: Request[] = [];
+  const outboundRequests: HTTPRequest[] = [];
   page.on('request', (request) => {
     outboundRequests.push(request);
   });

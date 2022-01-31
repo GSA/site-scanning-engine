@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { Response } from 'puppeteer';
+import { HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { getHttpsUrl, getMIMEType } from './helpers';
@@ -26,7 +26,7 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
 const syncBuildRobotTxtResult = (
   logger: Logger,
   logData: any,
-  robotsResponse: Response,
+  robotsResponse: HTTPResponse,
   robotsText: string,
 ) => {
   const robotsUrl = new URL(robotsResponse.url());

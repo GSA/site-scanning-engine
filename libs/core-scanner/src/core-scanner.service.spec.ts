@@ -1,5 +1,5 @@
 import { mock, MockProxy } from 'jest-mock-extended';
-import { Page, Response, Request, Browser } from 'puppeteer';
+import { Page, HTTPResponse, HTTPRequest, Browser } from 'puppeteer';
 import { of } from 'rxjs';
 import { HttpModule, HttpService } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -24,18 +24,18 @@ describe('CoreScannerService', () => {
   let service: CoreScannerService;
   let mockBrowser: MockProxy<Browser>;
   let mockPage: MockProxy<Page>;
-  let mockResponse: MockProxy<Response>;
-  let mockRequest: MockProxy<Request>;
-  let redirectRequest: MockProxy<Request>;
+  let mockResponse: MockProxy<HTTPResponse>;
+  let mockRequest: MockProxy<HTTPRequest>;
+  let redirectRequest: MockProxy<HTTPRequest>;
   let mockHttpService: MockProxy<HttpService>;
   const finalUrl = 'https://18f.gsa.gov';
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
     mockPage = mock<Page>();
-    mockResponse = mock<Response>();
-    mockRequest = mock<Request>();
-    redirectRequest = mock<Request>();
+    mockResponse = mock<HTTPResponse>();
+    mockRequest = mock<HTTPRequest>();
+    redirectRequest = mock<HTTPRequest>();
     mockHttpService = mock<HttpService>();
 
     redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
@@ -117,10 +117,10 @@ describe('SolutionsScannerService', () => {
   let mockPage: MockProxy<Page>;
   let mockRobotsPage: MockProxy<Page>;
   let mockSitemapPage: MockProxy<Page>;
-  let mockResponse: MockProxy<Response>;
-  let mockRobotsResponse: MockProxy<Response>;
-  let mockSitemapResponse: MockProxy<Response>;
-  let redirectRequest: MockProxy<Request>;
+  let mockResponse: MockProxy<HTTPResponse>;
+  let mockRobotsResponse: MockProxy<HTTPResponse>;
+  let mockSitemapResponse: MockProxy<HTTPResponse>;
+  let redirectRequest: MockProxy<HTTPRequest>;
   let mockHttpService: MockProxy<HttpService>;
 
   beforeEach(async () => {
@@ -128,13 +128,13 @@ describe('SolutionsScannerService', () => {
     mockPage = mock<Page>();
     mockRobotsPage = mock<Page>();
     mockSitemapPage = mock<Page>();
-    mockResponse = mock<Response>();
-    mockRobotsResponse = mock<Response>();
-    mockSitemapResponse = mock<Response>();
+    mockResponse = mock<HTTPResponse>();
+    mockRobotsResponse = mock<HTTPResponse>();
+    mockSitemapResponse = mock<HTTPResponse>();
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
     mockBrowser.newPage.calledWith().mockResolvedValue(mockRobotsPage);
     mockBrowser.newPage.calledWith().mockResolvedValue(mockSitemapPage);
-    redirectRequest = mock<Request>();
+    redirectRequest = mock<HTTPRequest>();
     mockHttpService = mock<HttpService>();
 
     const module: TestingModule = await Test.createTestingModule({

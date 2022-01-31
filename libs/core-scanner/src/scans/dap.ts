@@ -1,6 +1,6 @@
-import { Request } from 'puppeteer';
+import { HTTPRequest } from 'puppeteer';
 
-export const buildDapResult = async (outboundRequests: Request[]) => {
+export const buildDapResult = async (outboundRequests: HTTPRequest[]) => {
   return {
     dapDetected: dapDetected(outboundRequests),
     dapParameters: dapParameters(outboundRequests),
@@ -13,7 +13,7 @@ export const buildDapResult = async (outboundRequests: Request[]) => {
  * It works by looking for the Google Analytics UA Identifier in either the URL or Post Data.
  * @param outboundRequests
  */
-const dapDetected = (outboundRequests: Request[]) => {
+const dapDetected = (outboundRequests: HTTPRequest[]) => {
   const dapUaId = 'UA-33523145-1';
   let detected = false;
 
@@ -36,7 +36,7 @@ const dapDetected = (outboundRequests: Request[]) => {
   return detected;
 };
 
-const dapParameters = (outboundRequests: Request[]) => {
+const dapParameters = (outboundRequests: HTTPRequest[]) => {
   const dapUrl =
     'dap.digitalgov.gov/Unibufferversal-Federated-Analytics-Min.js';
 

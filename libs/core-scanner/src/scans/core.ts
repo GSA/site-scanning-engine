@@ -1,5 +1,5 @@
 import { join, split, takeRight } from 'lodash';
-import { Page, Request, Response } from 'puppeteer';
+import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
@@ -11,7 +11,7 @@ import { getHttpsUrl, getMIMEType } from '../pages/helpers';
 export const buildCoreResult = (
   input: CoreInputDto,
   page: Page,
-  response: Response,
+  response: HTTPResponse,
 ) => {
   const url = getHttpsUrl(input.url);
 
@@ -61,7 +61,7 @@ const getBaseDomain = (url: string) => {
   return join(baseDomain, '.');
 };
 
-const redirects = (requests: Request[]): boolean => {
+const redirects = (requests: HTTPRequest[]): boolean => {
   return requests.length > 0;
 };
 
@@ -75,7 +75,7 @@ const getPathname = (url: string) => {
   return parsed.pathname;
 };
 
-const isLive = (res: Response) => {
+const isLive = (res: HTTPResponse) => {
   const isLive = res.status() / 100 === 2; // 2xx family
   return isLive;
 };

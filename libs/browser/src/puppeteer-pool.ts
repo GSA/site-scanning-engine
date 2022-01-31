@@ -24,7 +24,9 @@ type Options = {
   idleTimeoutMillis: number;
   maxUses: number;
   testOnBorrow: boolean;
-  puppeteerArgs: puppeteer.LaunchOptions;
+  puppeteerArgs: puppeteer.LaunchOptions &
+    puppeteer.BrowserLaunchArgumentOptions &
+    puppeteer.BrowserConnectOptions;
 };
 
 export const createPuppeteerPool = (userOptions: Partial<Options> = {}) => {

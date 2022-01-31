@@ -2,8 +2,6 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Browser, Page } from 'puppeteer';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-
 import { BrowserService } from './browser.service';
 import { PUPPETEER_TOKEN } from './puppeteer.service';
 
