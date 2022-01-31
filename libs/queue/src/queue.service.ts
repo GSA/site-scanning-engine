@@ -46,13 +46,19 @@ export class QueueService {
   }
 
   async getQueueStatus() {
-    const [activeCount, count] = await Promise.all([
+    const [
+      activeCount,
+      count,
+      //jobCounts,
+    ] = await Promise.all([
       this.scannerQueue.getActiveCount(),
       this.scannerQueue.count(),
+      //this.scannerQueue.getJobCounts(),
     ]);
     return {
       count,
       activeCount,
+      //jobCounts,
     };
   }
 }

@@ -33,6 +33,7 @@ const syncBuildRobotTxtResult = (
   const robotsStatus = robotsResponse.status();
   const robotsLive = robotsStatus / 100 === 2;
   const robotsTxtDetected = robotsUrl.pathname === '/robots.txt' && robotsLive;
+
   return {
     robotsTxtFinalUrl: robotsResponse.url(),
     robotsTxtFinalUrlLive: robotsLive,

@@ -22,7 +22,7 @@ export const PuppeteerService = {
   useFactory: async () => {
     return createPuppeteerPool({
       min: 0,
-      max: 5,
+      max: 4,
 
       // How long a resource can stay idle in pool before being removed
       idleTimeoutMillis: 60000,
