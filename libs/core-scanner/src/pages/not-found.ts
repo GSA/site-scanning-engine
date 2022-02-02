@@ -13,7 +13,7 @@ export const createNotFoundScanner = async (
   randomUrl.pathname = `not-found-test${v4()}`;
 
   const agent = new Agent({
-    rejectUnauthorized: false,
+    rejectUnauthorized: false, // lgtm[js/disabling-certificate-validation]
   });
 
   const resp = await httpService

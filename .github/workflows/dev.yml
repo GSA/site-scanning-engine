@@ -3,7 +3,7 @@ name: Dev deployment
 on:
   # Triggers workflow on pull request events for the main branch
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -13,16 +13,18 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    # Steps represent a sequence of tasks that will be executed
+    # as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out your repository under $GITHUB_WORKSPACE,
+      # so your job can access it
       - uses: actions/checkout@v2
 
       - name: install
         run: npm install
 
-      - name: build 
-        run: npm run build:all 
+      - name: build
+        run: npm run build:all
 
       - name: deploy api to dev
         uses: 18f/cg-deploy-action@main
@@ -52,5 +54,5 @@ jobs:
           cf_org: gsatts-sitescan
           cf_space: dev
           cf_command: "scale site-scanner-consumer -i 1 -k 4G -m 512M -f"
-          # scale to two instances with 4G scratch disk and 2G memory each and force deploy
-
+          # scale to two instances with 4G scratch disk and 2G
+          # memory each and force deploy
