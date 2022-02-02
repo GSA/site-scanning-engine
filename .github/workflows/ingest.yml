@@ -1,4 +1,6 @@
+---
 name: Ingest website list
+# yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
     inputs:
@@ -6,10 +8,11 @@ on:
         description: deployed cloud.gov space
         required: true
         default: prod
-      # federalSubdomainsUrl:
-      #   description: CSV with domain list
-      #   required: true
-      #   default: 'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv'
+#        federalSubdomainsUrl:
+#          description: CSV with domain list
+#          required: true
+# yamllint disable-line rule:line-length
+#          default: 'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv'
 
 jobs:
   ingest:
@@ -24,4 +27,8 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: ${{ github.event.inputs.cf_space }}
-          cf_command: 'run-task site-scanner-consumer --command "node dist/apps/cli/main.js ingest" -k 2G -m 4G --name github-action-ingest-${{ github.run_id }}'
+          cf_command: |
+            run-task site-scanner-consumer
+            --command "node dist/apps/cli/main.js ingest"
+            -k 2G -m 4G
+            --name github-action-ingest-${{ github.run_id }}
