@@ -8,9 +8,9 @@ api_disk: 4G
 producer_instances: 1
 producer_memory: 4G
 producer_disk: 4G
-scan_schedule: "0 0 * * *"
-snapshot_schedule: "0 8 * * Sun"
+scan_schedule: '0 0 * * *'
+snapshot_schedule: '0 8 * * Sun'
 
-consumer_instances: 4
-consumer_memory: 2G
+consumer_instances: 12
+consumer_memory: 650MB
 consumer_disk: 4G

@@ -5,7 +5,6 @@ import mqConfig from './config/mq.config';
 
 const SCANNER_QUEUE_NAME = 'ScannerQueue';
 const CORE_SCAN_JOB_NAME = 'core';
-const SOLUTIONS_SCAN_JOB_NAME = 'solutions';
 
 const ScannerQueue = BullModule.registerQueueAsync({
   name: SCANNER_QUEUE_NAME,
@@ -31,4 +30,4 @@ const ScannerQueue = BullModule.registerQueueAsync({
 })
 export class MessageQueueModule {}
 
-export { SCANNER_QUEUE_NAME, CORE_SCAN_JOB_NAME, SOLUTIONS_SCAN_JOB_NAME };
+export { SCANNER_QUEUE_NAME, CORE_SCAN_JOB_NAME };

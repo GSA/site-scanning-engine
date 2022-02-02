@@ -19,6 +19,8 @@ For more detailed documentation about the Site Scanning program, including **who
     - [Docker](#docker)
     - [Build and Start all apps](#build-and-start-all-apps)
     - [Ingest Website List](#ingest-website-list)
+    - [Enqueue scans](#enqueue-scans)
+    - [Run individual Scans](#run-individual-scans)
   - [Test](#test)
   - [Deploy](#deploy)
 
@@ -163,6 +165,24 @@ npm run ingest -- --limit 200
 ```
 
 The limit parameter is optional, but it can be useful to use a smaller subset of the total list for local development.
+
+### Enqueue scans
+
+To enqueue for scan all sites in the website table:
+
+```bash
+npx nest start cli -- enqueue-scans
+```
+
+### Run individual Scans
+
+To scan a single site, which must be in the website table, run commands like:
+
+```bash
+npx nest start cli -- scan-site --url 18f.gov
+```
+
+NOTE: This is intended for testing scan behavior, and doesn't currently write results to the database.
 
 ## Test
 From the project root run:
