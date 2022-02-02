@@ -1,3 +1,4 @@
+---
 # don't use Mega-Linter to test the reports Mega-Linter created
 ADDITIONAL_EXCLUDED_DIRECTORIES: report
 
