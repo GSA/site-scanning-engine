@@ -1,24 +1,18 @@
-import { Logger } from '@nestjs/common';
+import { Logger } from 'pino';
 import { Page } from 'puppeteer';
 
-export const buildSeoResult = async (
-  logger: Logger,
-  logData: any,
-  page: Page,
-) => {
+export const buildSeoResult = async (logger: Logger, page: Page) => {
   // seo
   return {
     ogTitleFinalUrl: await findOpenGraphTag(page, 'og:title'),
     ogDescriptionFinalUrl: await findOpenGraphTag(page, 'og:description'),
     ogArticlePublishedFinalUrl: await findOpenGraphDates(
       logger,
-      logData,
       page,
       'article:published_date',
     ),
     ogArticleModifiedFinalUrl: await findOpenGraphDates(
       logger,
-      logData,
       page,
       'article:modified_date',
     ),
@@ -44,7 +38,6 @@ const findOpenGraphTag = async (page: Page, target: string) => {
 
 const findOpenGraphDates = async (
   logger: Logger,
-  logData: any,
   page: Page,
   target: string,
 ) => {
@@ -56,10 +49,7 @@ const findOpenGraphDates = async (
       return date;
     } catch (e) {
       const err = e as Error;
-      logger.warn({
-        msg: `Could not parse date ${targetDate}: ${err.message}`,
-        ...logData,
-      });
+      logger.warn(`Could not parse date ${targetDate}: ${err.message}`);
       return null;
     }
   }

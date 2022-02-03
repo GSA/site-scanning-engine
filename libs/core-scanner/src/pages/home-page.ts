@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger } from 'pino';
 import { Page } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
@@ -9,7 +9,7 @@ import { Website } from 'entities/website.entity';
 import { buildDapResult } from '../scans/dap';
 import { buildSeoResult } from '../scans/seo';
 import { buildThirdPartyResult } from '../scans/third-party';
-import { buildUswdsResult } from '../scans/uswds';
+import { createUswdsScanner } from '../scans/uswds';
 
 import {
   createCSSRequestsExtractor,
@@ -30,7 +30,7 @@ const homePageScan = async (
 ) => {
   const url = getHttpsUrl(input.url);
 
-  logger.log({ msg: 'Processing main page...', ...input });
+  logger.info('Processing main page...');
 
   const getCSSRequests = createCSSRequestsExtractor(page);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
@@ -40,15 +40,12 @@ const homePageScan = async (
     waitUntil: 'networkidle2',
   });
 
-  // extract the html page source
-  const htmlText = await response.text();
-
   const [dapResult, thirdPartyResult, seoResult, uswdsResult] =
     await Promise.all([
       await buildDapResult(getOutboundRequests()),
       await buildThirdPartyResult(response, getOutboundRequests()),
-      await buildSeoResult(logger, input, page),
-      await buildUswdsResult(logger, input, getCSSRequests(), htmlText, page),
+      await buildSeoResult(logger, page),
+      await createUswdsScanner({ logger, getCSSRequests }, page)(response),
     ]);
   const coreResult = buildCoreResult(input, page, response);
 
