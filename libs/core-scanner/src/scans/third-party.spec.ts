@@ -1,17 +1,9 @@
 import { mock } from 'jest-mock-extended';
-import { Logger } from 'pino';
-import { HTTPRequest, HTTPResponse, Page } from 'puppeteer';
+import { HTTPRequest, HTTPResponse } from 'puppeteer';
 
-import { newTestPage } from '../test-helper';
 import { buildThirdPartyResult } from './third-party';
 
 describe('third-party scan', () => {
-  let page: Page;
-  let response: HTTPResponse;
-  beforeAll(async () => {
-    ({ page, response } = await newTestPage());
-  });
-
   it('non-navigation different domains treated as third-parties', async () => {
     expect(
       await buildThirdPartyResult(
