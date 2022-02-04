@@ -34,8 +34,9 @@ export const newTestPage = async (
 ) => {
   const page = await newPage();
   const path = join(PROJECT_ROOT, 'libs/core-scanner/src/', dumpFileName);
-  const response = await page.goto(`file://${path}`, {
+  const sourceUrl = `file://${path}`;
+  const response = await page.goto(sourceUrl, {
     waitUntil: 'networkidle2',
   });
-  return { page, response };
+  return { page, response, sourceUrl };
 };
