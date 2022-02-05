@@ -10,7 +10,7 @@ export const createSitemapXmlScanner = (
 ) => {
   const url = getHttpsUrl(input.url);
   return async (sitemapPage: Page) => {
-    // go to the sitemap page from the targeet url
+    // go to the sitemap page from the target url
     const sitemapUrl = new URL(url);
     sitemapUrl.pathname = 'sitemap.xml';
     logger.info('Going to sitemap.xml...');
