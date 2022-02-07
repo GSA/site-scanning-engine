@@ -1,4 +1,6 @@
 import { Pool } from 'generic-pool';
+import { mock } from 'jest-mock-extended';
+import { Logger } from 'nestjs-pino';
 import { Browser } from 'puppeteer';
 
 import { createPuppeteerPool, PuppeteerPool } from './puppeteer-pool';
@@ -11,7 +13,7 @@ describe('Puppeteer pool', () => {
   };
 
   beforeEach(() => {
-    pool = createPuppeteerPool({
+    pool = createPuppeteerPool(mock<Logger>(), {
       min: 0,
       max: 2,
     });

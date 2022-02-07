@@ -1,3 +1,4 @@
+import { PinoLogger } from 'nestjs-pino';
 import { createPuppeteerPool } from './puppeteer-pool';
 
 /**
@@ -14,31 +15,36 @@ export const PUPPETEER_TOKEN = 'BROWSER';
 export const PuppeteerService = {
   provide: PUPPETEER_TOKEN,
 
+  inject: [PinoLogger],
+
   /**
    * useFactory is an async function that instantiates a headless puppeteer browser.
    *
    * @returns a headless puppeteer.Browser instance.
    */
-  useFactory: async () => {
-    return createPuppeteerPool({
-      min: 0,
-      max: 4,
+  useFactory: async (logger: PinoLogger) => {
+    return createPuppeteerPool(
+      logger.logger.child({ context: 'puppeteer-pool' }),
+      {
+        min: 0,
+        max: 1,
 
-      // How long a resource can stay idle in pool before being removed
-      idleTimeoutMillis: 60000,
+        // How long a resource can stay idle in pool before being removed
+        idleTimeoutMillis: 60000,
 
-      // Maximum number of times an individual resource can be reused before being
-      // destroyed; set to 0 to disable
-      maxUses: 100,
+        // Maximum number of times an individual resource can be reused before being
+        // destroyed; set to 0 to disable
+        maxUses: 100,
 
-      // Validate resource before borrowing; required for `maxUses and `validator`
-      testOnBorrow: true,
+        // Validate resource before borrowing; required for `maxUses and `validator`
+        testOnBorrow: true,
 
-      // Arguments to pass on to Puppeteer
-      puppeteerArgs: {
-        args: ['--no-sandbox'],
+        // Arguments to pass on to Puppeteer
+        puppeteerArgs: {
+          args: ['--no-sandbox'],
+        },
       },
-    });
+    );
   },
 };
 
