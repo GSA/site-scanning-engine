@@ -6,7 +6,7 @@ components can be thought of as either "applications" or "libraries".
 ## Applications
 
 "Applications" have a `main.js` and are meant to be executables.
-These are found in the [apps](./apps) directory.
+These are found in the [apps](../apps) directory.
 
 The current applications are:
 
@@ -44,8 +44,6 @@ The libraries are:
 * [Database](../libs/database) which is responsible for all data access.
 * [Message Queue](../libs/message-queue) which is responsible for handling
   the message queue.
-* [Logger](../libs/logger) which is responsible for handling application
-  logging.
 * [Ingest](../libs/ingest) which is responsible for ingesting data into
   the system. Currently, it handles target urls.
 
