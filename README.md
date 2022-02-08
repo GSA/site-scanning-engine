@@ -36,19 +36,13 @@ please visit
 
 Development Requirements:
 
-`git`
-
-`nodejs`
-
-`nvm` (see [.nvmrc](./.nvmrc) for current `node` version.
-
-`docker`
-
-`docker-compose`
-
-Cloud Foundry CLI (aka `cf`)
-
-`redis-cli` (optional)
+* `git`
+* `nodejs`
+* `nvm` (see [.nvmrc](./.nvmrc) for current `node` version.
+* `docker`
+* `docker-compose`
+* Cloud Foundry CLI (aka `cf`)
+* `redis-cli` (optional)
 
 ### Installation
 
@@ -84,7 +78,7 @@ that are at least 8 characters long.
 
 **Note: this is only for local development and has no impact on the Cloud.gov configuration**_
 
-```
+```env
 # postgres configuration
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
@@ -117,7 +111,7 @@ NODE_ENV=dev
 
 From the project root run:
 
-```
+```bash
 docker-compose up --build -d
 ```
 
