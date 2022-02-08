@@ -19,3 +19,7 @@ PRINT_ALPACA: false
 
 # don't fail on finding (yet)
 DISABLE_ERRORS: true
+
+# this approximates current conventions; two-space indents, allow
+# binary ops (&&, ||) to start lines, and indent switch cases.
+BASH_SHFMT_ARGUMENTS: -i 2 -bn -ci
