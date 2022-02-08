@@ -32,19 +32,19 @@ services:
             - postgres
 
 
-    scanner:
+    cli:
         build:
             context: "."
-            dockerfile: "./apps/scanner/Dockerfile"
+            dockerfile: "./apps/scan-engine/Dockerfile"
             target: development
         volumes:
             - .:/usr/src/app
             - /usr/src/app/node_modules
-        command: npm run start:dev scanner
+        command: bash
         environment:
             - QUEUE_HOST=redis
         security_opt:
-            - "seccomp=./apps/scanner/chrome.json"
+            - "seccomp=./apps/scan-engine/chrome.json"
         networks:
             - webnet
         depends_on:
