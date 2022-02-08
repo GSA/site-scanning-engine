@@ -3,10 +3,9 @@
 This directory contains the source and documentation for the
 `Scanner` component of the Site-Scanning application.
 
-The `Scanner` component is composed of the
-[Scan Engine](./src/scan-engine)
-and the
-[Scanners](./src/scanners).
+Also see the `Core Scanner` component:
+[Core-Scaner](../../libs/core-scanner)
+.
 
 ## Scan Engine
 
