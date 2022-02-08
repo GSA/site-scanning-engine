@@ -32,7 +32,6 @@ export class CoreScannerService
   async scan(
     input: CoreInputDto,
   ): Promise<{ solutionsResult: SolutionsResult; coreResult: CoreResult }> {
-    console.log('ZZZZZZZ');
     const scanLogger = this.logger.logger.child(input);
     return this.browserService.useBrowser(async (browser) => {
       try {

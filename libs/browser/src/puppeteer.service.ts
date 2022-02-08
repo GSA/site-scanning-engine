@@ -27,7 +27,7 @@ export const PuppeteerService = {
       logger.logger.child({ context: 'puppeteer-pool' }),
       {
         min: 0,
-        max: 1,
+        max: 4,
 
         // How long a resource can stay idle in pool before being removed
         idleTimeoutMillis: 60000,
