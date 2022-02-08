@@ -1,6 +1,6 @@
 ---
 # don't use Mega-Linter to test the reports Mega-Linter created
-ADDITIONAL_EXCLUDED_DIRECTORIES: report
+ADDITIONAL_EXCLUDED_DIRECTORIES: [report]
 
 # don't scan files listed in .gitignore (e.g., node_modules)
 IGNORE_GITIGNORED_FILES: true
@@ -9,10 +9,13 @@ IGNORE_GITIGNORED_FILES: true
 APPLY_FIXES: none
 
 # please don't spell check everything...
-DISABLE_LINTERS: SPELL_MISSPELL, COPYPASTE_JSCPD, SPELL_CSPELL
+DISABLE: [SPELL, COPYPASTE]
+
+DISABLE_LINTERS:
+  - YAML_PRETTIER
 
 # only scan new / updated files, not everything
-VALIDATE_ALL_CODEBASE: false
+#VALIDATE_ALL_CODEBASE: false
 
 # don't print the alpaca -- it's cute, but we don't need it in the logs
 PRINT_ALPACA: false
@@ -20,6 +23,7 @@ PRINT_ALPACA: false
 # don't fail on finding (yet)
 DISABLE_ERRORS: true
 
-# this approximates current conventions; two-space indents, allow
-# binary ops (&&, ||) to start lines, and indent switch cases.
-BASH_SHFMT_ARGUMENTS: -i 2 -bn -ci
+# let actionlint deal with workflows (SchemaStore isn't very
+# accurate at picking up the schemae based on arbitrary
+# filenames like, "deploy.yml"
+YAML_V8R_FILTER_REGEX_EXCLUDE: "[.]github/workflows/"

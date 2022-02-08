@@ -2,11 +2,11 @@ import os
 import pathlib
 
 from diagrams import Cluster, Diagram, Edge
-from diagrams.generic.network import Firewall, Switch
 from diagrams.aws.storage import S3
-from diagrams.programming.language import NodeJS
+from diagrams.generic.network import Firewall, Switch
 from diagrams.onprem.database import PostgreSQL
 from diagrams.onprem.inmemory import Redis
+from diagrams.programming.language import NodeJS
 
 filename = "architecture-cloud-gov"
 
