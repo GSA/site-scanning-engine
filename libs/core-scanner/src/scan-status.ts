@@ -5,4 +5,37 @@ export enum ScanStatus {
   UnknownError = 'unknown_error',
   InvalidSSLCert = 'invalid_ssl_cert',
   ConnectionRefused = 'connection_refused',
+  ConnectionReset = 'connection_reset',
 }
+
+export const parseBrowserError = (err: Error) => {
+  if (err.name === 'TimeoutError') {
+    return ScanStatus.Timeout;
+  }
+
+  if (err.message.startsWith('net::ERR_NAME_NOT_RESOLVED')) {
+    return ScanStatus.DNSResolutionError;
+  }
+
+  if (
+    err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID') ||
+    err.message.startsWith('net::ERR_CERT_DATE_INVALID') ||
+    err.message.startsWith('net::ERR_BAD_SSL_CLIENT_AUTH_CERT') ||
+    err.message.startsWith('unable to verify the first certificate')
+  ) {
+    return ScanStatus.InvalidSSLCert;
+  }
+
+  if (err.message.startsWith('net::ERR_CONNECTION_REFUSED')) {
+    return ScanStatus.ConnectionRefused;
+  }
+
+  if (err.message.startsWith('net::ERR_CONNECTION_RESET')) {
+    return ScanStatus.ConnectionReset;
+  }
+
+  // TODO: revisit this. for now, return the error message so we can accumulate
+  // actual error messages in the database status column.
+  return err.message;
+  //return ScanStatus.UnknownError;
+};

@@ -1,16 +1,12 @@
-import { BROWSER_TOKEN } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
-import { noop } from 'lodash';
-import { Browser } from 'puppeteer';
 
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;
   let moduleFixture: TestingModule;
-  let browser: Browser;
 
   beforeEach(async () => {
     moduleFixture = await Test.createTestingModule({
@@ -18,11 +14,9 @@ describe('CoreScanner (e2e)', () => {
     }).compile();
 
     service = moduleFixture.get<CoreScannerService>(CoreScannerService);
-    browser = moduleFixture.get<Browser>(BROWSER_TOKEN);
   });
 
   afterAll(async () => {
-    await browser.close();
     await moduleFixture.close();
   });
 
@@ -50,7 +44,8 @@ describe('CoreScanner (e2e)', () => {
     expected.website = website;
 
     const result = await service.scan(input);
-    expect(result).toStrictEqual(expected);
+    expect(result.coreResult).toStrictEqual(expected);
+    //expect(result.solutionsResult).toStrictEqual({});
   });
 
   it('returns results for poolsafety.gov', async () => {
@@ -71,12 +66,13 @@ describe('CoreScanner (e2e)', () => {
     expected.finalUrlSameWebsite = false;
     expected.finalUrlStatusCode = 200;
     expected.status = 'completed';
-    expected.targetUrl404Test = false;
+    expected.targetUrl404Test = true;
     expected.targetUrlBaseDomain = 'poolsafety.gov';
     expected.targetUrlRedirects = true;
     expected.website = website;
 
     const result = await service.scan(input);
-    expect(result).toStrictEqual(expected);
+    expect(result.coreResult).toStrictEqual(expected);
+    //expect(result.solutionsResult).toStrictEqual({});
   });
 });

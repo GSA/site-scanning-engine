@@ -6,6 +6,7 @@ import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { IngestController } from './ingest.controller';
 import { QueueController } from './queue.controller';
+import { ScanController } from './scan.controller';
 import { SnapshotController } from './snapshot.controller';
 
 async function bootstrap() {
@@ -70,6 +71,16 @@ async function createSnapshot() {
   await nestApp.close();
 }
 
+async function scanSite(cmdObj) {
+  const nestApp = await bootstrap();
+  const controller = nestApp.get(ScanController);
+  console.log(`scanning site: ${cmdObj.url}`);
+
+  await controller.scanSite(cmdObj.url);
+  printMemoryUsage();
+  await nestApp.close();
+}
+
 async function main() {
   const program = new Command();
   program.version('0.0.1');
@@ -109,6 +120,15 @@ async function main() {
       'create-snapshot writes a CSV and JSON of the current scans to S3',
     )
     .action(createSnapshot);
+
+  // scan-site
+  program
+    .command('scan-site')
+    .description(
+      'scan-site scans a given URL, which is expected to exist in the website table',
+    )
+    .option('--url <string>', 'URL to scan')
+    .action(scanSite);
 
   await program.parseAsync(process.argv);
 }

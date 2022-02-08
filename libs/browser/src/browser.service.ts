@@ -1,55 +1,51 @@
-import { ScanStatus } from '@app/core-scanner/scan-status';
-import * as puppeteer from 'puppeteer';
-
 /**
- * BROWSER_TOKEN provides a lookup token to Nest's DI container.
+ * BrowserService is a Puppeteer manager. It manages the lifecycle of Puppeteer
+ * instances so as to avoid Chromium memory leaks, crashes, etc.
  */
-const BROWSER_TOKEN = 'BROWSER';
+import { Browser, Page } from 'puppeteer';
+import { Inject, Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 
-/**
- * BrowserService is an async provider that returns a puppeteer.Browser.
- *
- * @remarks This object should only be used by a Nest.js DI container.
- *
- */
-const BrowserService = {
-  provide: BROWSER_TOKEN,
+import { PuppeteerPool, PUPPETEER_TOKEN } from './puppeteer.service';
 
-  /**
-   * useFactory is an async function that instantiates a headless puppeteer browser.
-   *
-   * @returns a headless puppeteer.Browser instance.
-   */
-  useFactory: async () => {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox'], // :TODO mustfix!
+@Injectable()
+export class BrowserService implements OnModuleDestroy {
+  private logger = new Logger(BrowserService.name);
+
+  constructor(@Inject(PUPPETEER_TOKEN) private puppeteerPool: PuppeteerPool) {}
+
+  async useBrowser<Result>(handler: (browser: Browser) => Promise<Result>) {
+    this.logger.debug('Requesting browser from Puppeteer pool...');
+    const browser = await this.puppeteerPool.use(async (resource) => {
+      this.logger.log({
+        msg: `Using browser`,
+        version: await resource.version(),
+        userAgent: await resource.userAgent(),
+        poolSize: this.puppeteerPool.size,
+        poolAvailable: this.puppeteerPool.available,
+      });
+      return await handler(resource);
     });
     return browser;
-  },
-};
-
-function parseBrowserError(err: Error) {
-  if (err.name === 'TimeoutError') {
-    return ScanStatus.Timeout;
   }
 
-  if (err.message.startsWith('net::ERR_NAME_NOT_RESOLVED')) {
-    return ScanStatus.DNSResolutionError;
-  }
-
-  if (
-    err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID') ||
-    err.message.startsWith('unable to verify the first certificate')
+  async processPage<Result>(
+    browser: Browser,
+    handler: (page: Page) => Promise<Result>,
   ) {
-    return ScanStatus.InvalidSSLCert;
+    this.logger.debug('Creating Puppeteer page...');
+    const page = await browser.newPage();
+    await page.setCacheEnabled(false);
+    let result: Result;
+    try {
+      result = await handler(page);
+    } finally {
+      await page.close();
+    }
+    return result;
   }
 
-  if (err.message.startsWith('net::ERR_CONNECTION_REFUSED')) {
-    return ScanStatus.ConnectionRefused;
+  async onModuleDestroy() {
+    this.logger.log('Draining and clearing Puppeteer pool...');
+    this.puppeteerPool.drain().then(() => this.puppeteerPool.clear());
   }
-
-  return ScanStatus.UnknownError;
 }
-
-export { BROWSER_TOKEN, BrowserService, parseBrowserError };

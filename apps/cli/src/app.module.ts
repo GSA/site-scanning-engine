@@ -1,17 +1,20 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 
+import { CoreScannerModule } from '@app/core-scanner';
 import { DatabaseModule } from '@app/database';
 import { IngestModule } from '@app/ingest';
 import { QueueModule } from '@app/queue';
+import { SnapshotModule } from '@app/snapshot';
 
 import { IngestController } from './ingest.controller';
 import { QueueController } from './queue.controller';
+import { ScanController } from './scan.controller';
 import { SnapshotController } from './snapshot.controller';
-import { SnapshotModule } from '@app/snapshot';
 
 @Module({
   imports: [
+    CoreScannerModule,
     DatabaseModule,
     IngestModule,
     LoggerModule.forRoot({
@@ -23,6 +26,11 @@ import { SnapshotModule } from '@app/snapshot';
     QueueModule,
     SnapshotModule,
   ],
-  controllers: [IngestController, QueueController, SnapshotController],
+  controllers: [
+    IngestController,
+    QueueController,
+    ScanController,
+    SnapshotController,
+  ],
 })
 export class AppModule {}
