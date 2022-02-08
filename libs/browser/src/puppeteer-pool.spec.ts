@@ -1,6 +1,6 @@
 import { Pool } from 'generic-pool';
 import { mock } from 'jest-mock-extended';
-import { Logger } from 'nestjs-pino';
+import { Logger } from 'pino';
 import { Browser } from 'puppeteer';
 
 import { createPuppeteerPool, PuppeteerPool } from './puppeteer-pool';
