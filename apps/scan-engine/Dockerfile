@@ -4,7 +4,7 @@
 # In theory, one should be able to adapt it to run in in the cloud and
 # that is
 # But one should note the weirdness involved in getting Chrome running in Docker.
-# See the scanner/README.md for more info.
+# See the scan-engine/README.md for more info.
 #
 # Another Note:
 # This file is using multi-stage builds for performance.
@@ -17,12 +17,25 @@ WORKDIR /usr/src/app
 
 # install puppeteer dependencies
 RUN apt-get update && \
-  apt-get -y install xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 \
-  libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 \
-  libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
-  libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 \
-  libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get -y --no-install-recommends install \
+  xvfb=2:1.19.2-1+deb9u9 \
+  gconf-service=3.2.6-4+b1 \
+  libasound2=1.1.3-5 \
+  libcups2=2.2.1-8+deb9u7 \
+  libexpat1=2.2.0-2+deb9u4 \
+  libgbm1=13.0.6-1+b2 \
+  libgconf-2-4=3.2.6-4+b1 \
+  libglib2.0-0=2.50.3-2+deb9u2 \
+  libgtk-3-0=3.22.11-1 \
+  libnspr4=2:4.12-6 \
+  libx11-6=2:1.6.4-3+deb9u4 \
+  ca-certificates=20200601~deb9u2 \
+  fonts-liberation=1:1.07.4-2 \
+  libappindicator1=0.4.92-4 \
+  libnss3=2:3.26.2-1.1+deb9u5 \
+  lsb-release=9.20161125 \
+  xdg-utils=1.1.1-1+deb9u2 \
+  && rm -rf /var/lib/apt/lists/*
 
 
 # Add user so we don't need --no-sandbox.
@@ -48,12 +61,25 @@ WORKDIR /usr/src/app
 
 # install puppeteer dependencies
 RUN apt-get update && \
-  apt-get -y install xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 \
-  libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 \
-  libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
-  libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 \
-  libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget && \
-  rm -rf /var/lib/apt/lists/*
+  apt-get -y --no-install-recommends install \
+  xvfb=2:1.19.2-1+deb9u9 \
+  gconf-service=3.2.6-4+b1 \
+  libasound2=1.1.3-5 \
+  libcups2=2.2.1-8+deb9u7 \
+  libexpat1=2.2.0-2+deb9u4 \
+  libgbm1=13.0.6-1+b2 \
+  libgconf-2-4=3.2.6-4+b1 \
+  libglib2.0-0=2.50.3-2+deb9u2 \
+  libgtk-3-0=3.22.11-1 \
+  libnspr4=2:4.12-6 \
+  libx11-6=2:1.6.4-3+deb9u4 \
+  ca-certificates=20200601~deb9u2 \
+  fonts-liberation=1:1.07.4-2 \
+  libappindicator1=0.4.92-4 \
+  libnss3=2:3.26.2-1.1+deb9u5 \
+  lsb-release=9.20161125 \
+  xdg-utils=1.1.1-1+deb9u2 \
+  && rm -rf /var/lib/apt/lists/*
 
 # Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
@@ -69,7 +95,7 @@ ENV NODE_ENV=${NODE_ENV}
 # this should skip installing the devDependencies.
 RUN npm ci
 
-COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/dist ./dist
 
 # Run everything after as non-privileged user.
 USER pptruser

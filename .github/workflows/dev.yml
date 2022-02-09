@@ -1,5 +1,7 @@
+---
 name: Dev deployment
 
+# yamllint disable-line rule:truthy
 on:
   # Triggers workflow on pull request events for the main branch
   pull_request:
