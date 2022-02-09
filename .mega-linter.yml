@@ -13,6 +13,7 @@ DISABLE: [SPELL, COPYPASTE]
 
 DISABLE_LINTERS:
   - YAML_PRETTIER
+  - JAVASCRIPT_STANDARD
 
 # only scan new / updated files, not everything
 VALIDATE_ALL_CODEBASE: false
@@ -27,3 +28,6 @@ DISABLE_ERRORS: true
 # accurate at picking up the schemae based on arbitrary
 # filenames like, "deploy.yml"
 YAML_V8R_FILTER_REGEX_EXCLUDE: '[.]github/workflows/'
+
+# Use Prettier rather than Standard for Javascript/Typescript formatting.
+JAVASCRIPT_DEFAULT_STYLE: 'prettier'

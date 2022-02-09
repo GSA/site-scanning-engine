@@ -18,7 +18,7 @@ describe('BrowserService', () => {
     mockPage = mock<Page>();
     mockPuppeteerPool = mock<PuppeteerPool>({
       clear: jest.fn(),
-      drain: jest.fn(async () => {}),
+      drain: jest.fn(async () => {}), // eslint-disable-line  @typescript-eslint/no-empty-function
     });
 
     mockPage.url.calledWith().mockReturnValue(finalUrl);
@@ -43,7 +43,7 @@ describe('BrowserService', () => {
 
   it('should close the page after scanning', async () => {
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
-    await service.processPage(mockBrowser, async () => {});
+    await service.processPage(mockBrowser, async () => {}); // eslint-disable-line  @typescript-eslint/no-empty-function
     expect(mockPage.close).toHaveBeenCalled();
   });
 
