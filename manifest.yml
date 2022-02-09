@@ -2,7 +2,7 @@
 applications:
   - name: site-scanner-api
     disk_quota: ((api_disk))
-    timeout: 10  # seconds
+    timeout: 10 # seconds
     services:
       - scanner-postgres
       - user-provided-api-key

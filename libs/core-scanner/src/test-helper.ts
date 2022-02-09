@@ -29,9 +29,7 @@ const newPage = async () => {
   return page;
 };
 
-export const newTestPage = async (
-  dumpFileName = '18f_gov_dump.mht',
-) => {
+export const newTestPage = async (dumpFileName = '18f_gov_dump.mht') => {
   const page = await newPage();
   const path = join(PROJECT_ROOT, 'libs/core-scanner/src/', dumpFileName);
   const sourceUrl = `file://${path}`;
