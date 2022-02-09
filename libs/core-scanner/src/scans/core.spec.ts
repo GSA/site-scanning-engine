@@ -1,4 +1,3 @@
-import { mock } from 'jest-mock-extended';
 import { HTTPResponse, Page } from 'puppeteer';
 
 import { newTestPage } from '../test-helper';
@@ -20,11 +19,11 @@ describe('core scan', () => {
     ).toEqual({
       finalUrl: sourceUrl,
       finalUrlBaseDomain: '',
-      finalUrlIsLive: false, // status code is "0" (instead of 2xx) when loading local files
-      finalUrlMIMEType: 'unknown',
+      finalUrlIsLive: true,
+      finalUrlMIMEType: 'multipart/related',
       finalUrlSameDomain: false,
       finalUrlSameWebsite: false,
-      finalUrlStatusCode: 0,
+      finalUrlStatusCode: 200,
       status: 'completed',
       targetUrlBaseDomain: '18f.gov',
       targetUrlRedirects: false,

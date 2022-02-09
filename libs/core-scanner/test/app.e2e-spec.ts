@@ -4,11 +4,6 @@ import { getLoggerToken, PinoLogger } from 'nestjs-pino';
 
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { ScanStatus } from '@app/core-scanner/scan-status';
-
-import { CoreResult } from 'entities/core-result.entity';
-import { SolutionsResult } from 'entities/solutions-result.entity';
-import { Website } from 'entities/website.entity';
 
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;

@@ -16,6 +16,7 @@ import {
   createOutboundRequestsExtractor,
 } from './extractors';
 import { getHttpsUrl } from './helpers';
+import { ScanStatus } from '../scan-status';
 
 export const createHomePageScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
@@ -52,6 +53,7 @@ const homePageScan = async (
   return {
     coreResult,
     solutionsResult: {
+      status: ScanStatus.Completed,
       ...buildResultObject(input.websiteId),
       ...dapResult,
       ...seoResult,
