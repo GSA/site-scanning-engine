@@ -131,3 +131,5 @@ In the following example, the following variables are used:
 curl -H "X-Secret-Api-Access-Token: $key" "https://${route}${endpoint}"
 ```
 
+Alternatively, one may use the provided `site_scanner_endpoint_test.bash`
+script to automate the fetching of the application's route, API key, etc.
