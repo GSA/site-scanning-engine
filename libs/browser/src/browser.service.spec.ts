@@ -43,7 +43,7 @@ describe('BrowserService', () => {
 
   it('should close the page after scanning', async () => {
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
-    await service.processPage(mockBrowser, async (page) => {});
+    await service.processPage(mockBrowser, async () => {});
     expect(mockPage.close).toHaveBeenCalled();
   });
 

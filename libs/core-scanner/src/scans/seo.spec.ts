@@ -1,6 +1,6 @@
 import { mock } from 'jest-mock-extended';
 import { Logger } from 'pino';
-import { HTTPResponse, Page } from 'puppeteer';
+import { Page } from 'puppeteer';
 
 import { newTestPage } from '../test-helper';
 import { buildSeoResult } from './seo';

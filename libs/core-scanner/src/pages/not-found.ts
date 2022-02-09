@@ -18,7 +18,7 @@ export const createNotFoundScanner = async (
 
   const resp = await httpService
     .get(randomUrl.toString(), {
-      validateStatus: (_) => {
+      validateStatus: () => {
         return true;
       },
       httpsAgent: agent,

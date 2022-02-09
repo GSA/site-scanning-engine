@@ -30,7 +30,7 @@ const newPage = async () => {
 };
 
 export const newTestPage = async (
-  dumpFileName: string = '18f_gov_dump.mht',
+  dumpFileName = '18f_gov_dump.mht',
 ) => {
   const page = await newPage();
   const path = join(PROJECT_ROOT, 'libs/core-scanner/src/', dumpFileName);

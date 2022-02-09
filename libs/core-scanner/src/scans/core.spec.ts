@@ -1,14 +1,9 @@
-import { HTTPResponse, Page } from 'puppeteer';
-
 import { newTestPage } from '../test-helper';
 import { buildCoreResult } from './core';
 
 describe('core scan', () => {
   it('works', async () => {
-    let page: Page;
-    let response: HTTPResponse;
-    let sourceUrl: string;
-    ({ page, response, sourceUrl } = await newTestPage());
+    const { page, response, sourceUrl } = await newTestPage();
 
     expect(
       buildCoreResult(
