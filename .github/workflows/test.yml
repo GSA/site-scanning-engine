@@ -1,8 +1,10 @@
+---
 # This is a basic workflow to help you get started with Actions
 
 name: CI
 
 # Controls when the action will run.
+# yamllint disable-line rule:truthy
 on:
   # Triggers the workflow on push and
   push:

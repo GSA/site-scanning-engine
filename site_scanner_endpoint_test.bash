@@ -37,33 +37,33 @@ set -e
 ## show_help ; exit 0
 ## @endcode
 show_help() {
-  sed --zero-terminated \
-    --regexp-extended \
-    --expression='s/.*@[Ff]ile *(.*)@[Aa]uthor *([^\n]*).*/Usage: \1Author: \2\n\n/' \
-    --regexp-extended \
-    --expression='s/\B@[a-z]* *//g' \
-    --expression 's/## *//g' \
-    "$0"
+	sed --zero-terminated \
+		--regexp-extended \
+		--expression='s/.*@[Ff]ile *(.*)@[Aa]uthor *([^\n]*).*/Usage: \1Author: \2\n\n/' \
+		--regexp-extended \
+		--expression='s/\B@[a-z]* *//g' \
+		--expression 's/## *//g' \
+		"$0"
 
-  echo "Usage:"
+	echo "Usage:"
 
- sed \
-   --quiet \
-   --regexp-extended \
-   --expression='s/^ *([A-Z]) * \).*#{2}- */    -\1 : /ip' \
-   "$0" \
-   | sort --ignore-case
+	sed \
+		--quiet \
+		--regexp-extended \
+		--expression='s/^ *([A-Z]) * \).*#{2}- */    -\1 : /ip' \
+		"$0" |
+		sort --ignore-case
 
-  echo
-  echo "Defaults:"
-  echo "    app = '$DEFAULT_APP'"
-  echo "    endpoint = '$DEFAULT_ENDPOINT'"
-  echo "    key = (retrieved from Cloud Foundry)"
-  echo "    org = (retrieved from Cloud Foundry)"
-  echo "    protocol = '$DEFAULT_PROTOCOL'"
-  echo "    route = (retried from Cloud Foundry)"
-  echo "    space = (retried from Cloud Foundry)"
-  echo
+	echo
+	echo "Defaults:"
+	echo "    app = '$DEFAULT_APP'"
+	echo "    endpoint = '$DEFAULT_ENDPOINT'"
+	echo "    key = (retrieved from Cloud Foundry)"
+	echo "    org = (retrieved from Cloud Foundry)"
+	echo "    protocol = '$DEFAULT_PROTOCOL'"
+	echo "    route = (retried from Cloud Foundry)"
+	echo "    space = (retried from Cloud Foundry)"
+	echo
 }
 
 ## @var DEFAULT_APP default Cloud Foundry app to query
@@ -87,7 +87,6 @@ DEFAULT_ROUTE=""
 ## @var DEFAULT_SPACE default CF space to use (retrieved)
 DEFAULT_SPACE=""
 
-
 app="$DEFAULT_APP"
 endpoint="$DEFAULT_ENDPOINT"
 key="$DEFAULT_KEY"
@@ -96,19 +95,25 @@ protocol="$DEFAULT_PROTOCOL"
 route="$DEFAULT_ROUTE"
 space="$DEFAULT_SPACE"
 
-
-while getopts "a:e:hk:o:p:r:s:" option ; do
-  case "$option" in
-    a ) app="$OPTARG" ;; ##- specify the app to query
-    e ) endpoint="$OPTARG" ;; ##- specify the API endpoint to query
-    h ) show_help ; exit 0 ;; ##- show help text
-    k ) key="$OPTARG" ;; ##- specify the key to use with the API
-    o ) org="$OPTARG" ;; ##- specify the Cloud Foundry organization
-    p ) protocol="$OPTARG" ;; ##- the protocol to use to query the API
-    r ) route="$OPTARG" ;; ##- specify the route to query
-    s ) space="$OPTARG" ;; ##- specify the Cloud Foundry space
-    * ) echo "Invalid option '$option'" 1>&2 ; show_help 1>&2 ; exit 1 ;;
-  esac
+while getopts "a:e:hk:o:p:r:s:" option; do
+	case "$option" in
+	a) app="$OPTARG" ;;      ##- specify the app to query
+	e) endpoint="$OPTARG" ;; ##- specify the API endpoint to query
+	h)
+		show_help
+		exit 0
+		;;                      ##- show help text
+	k) key="$OPTARG" ;;      ##- specify the key to use with the API
+	o) org="$OPTARG" ;;      ##- specify the Cloud Foundry organization
+	p) protocol="$OPTARG" ;; ##- the protocol to use to query the API
+	r) route="$OPTARG" ;;    ##- specify the route to query
+	s) space="$OPTARG" ;;    ##- specify the Cloud Foundry space
+	*)
+		echo "Invalid option '$option'" 1>&2
+		show_help 1>&2
+		exit 1
+		;;
+	esac
 done
 
 shift $((OPTIND - 1))
@@ -124,7 +129,7 @@ key="${key:-$(cf env "$app" | sed -nE -e "s/^[[:space:]]*(['\"])*API_KEY\\1*[[:s
 
 scheme="${scheme:-https://}"
 route="${route:-$(cf app "$app" | sed -nE -e 's/^routes[[:space:]]*:[[:space:]]*(.*)$/\1/p')}"
-url="${protocol}${url:-$(echo "${route}${endpoint}"| sed -Ee 's|//+|/|g')}"
+url="${protocol}${url:-$(echo "${route}${endpoint}" | sed -Ee 's|//+|/|g')}"
 
 echo "Fetching '$url'" 1>&2
 curl -sH "X-Secret-Api-Access-Token: $key" "$url"

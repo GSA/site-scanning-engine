@@ -1,3 +1,4 @@
+---
 version: '3.8'
 services:
   postgres:
@@ -37,7 +38,9 @@ services:
       - .env
     entrypoint: >
       /bin/sh -c "
-      until (/usr/bin/mc config host add myminio http://storage:9000 \$MINIO_ACCESS_KEY \$MINIO_SECRET_KEY) do echo '...waiting...' && sleep 1; done;
+      until (/usr/bin/mc config host add myminio http://storage:9000 \
+      \$MINIO_ACCESS_KEY \$MINIO_SECRET_KEY) do echo '...waiting...' \
+      && sleep 1; done;
       /usr/bin/mc mb myminio/site-scanning-snapshot;
       /usr/bin/mc policy set download myminio/site-scanning-snapshot;
       exit 0;

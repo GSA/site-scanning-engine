@@ -1,4 +1,7 @@
+---
 name: Clear scan queue
+
+# yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
     inputs:
@@ -19,4 +22,8 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: ${{ github.event.inputs.cf_space }}
-          cf_command: 'run-task site-scanner-consumer -c "node dist/apps/cli/main.js clear-queue" -k 2G -m 4G --name github-action-clear-queue-${{ github.run_id }}'
+          cf_command: |
+            run-task site-scanner-consumer
+            -c "node dist/apps/cli/main.js clear-queue"
+            -k 2G -m 4G
+            --name github-action-clear-queue-${{ github.run_id }}
