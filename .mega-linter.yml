@@ -13,7 +13,6 @@ DISABLE: [SPELL, COPYPASTE]
 
 DISABLE_LINTERS:
   - YAML_PRETTIER
-  - JAVASCRIPT_STANDARD
 
 # only scan new / updated files, not everything
 VALIDATE_ALL_CODEBASE: false
