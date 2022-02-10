@@ -27,3 +27,8 @@ DISABLE_ERRORS: true
 # accurate at picking up the schemae based on arbitrary
 # filenames like, "deploy.yml"
 YAML_V8R_FILTER_REGEX_EXCLUDE: "[.]github/workflows/"
+
+PRE_COMMANDS:
+  - continue_if_failed: false
+    command: npm install
+    cwd: workspace
