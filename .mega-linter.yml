@@ -32,3 +32,11 @@ PRE_COMMANDS:
   - continue_if_failed: false
     command: npm install
     cwd: workspace
+
+  - continue_if_failed: true
+    command: if [ -d report ] ; then rm -rf report ; fi
+    cwd: workspace
+
+POST_COMMANDS:
+  - command: if [ -n "$USERNAME" ] ; then chown -R "${USERNAME}" . ; else true ; fi
+    cwd: workspace
