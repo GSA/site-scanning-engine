@@ -15,7 +15,7 @@ DISABLE_LINTERS:
   - YAML_PRETTIER
 
 # only scan new / updated files, not everything
-VALIDATE_ALL_CODEBASE: false
+VALIDATE_ALL_CODEBASE: true
 
 # don't print the alpaca -- it's cute, but we don't need it in the logs
 PRINT_ALPACA: false
@@ -27,6 +27,9 @@ DISABLE_ERRORS: true
 # accurate at picking up the schemae based on arbitrary
 # filenames like, "deploy.yml"
 YAML_V8R_FILTER_REGEX_EXCLUDE: "[.]github/workflows/"
+
+# only run the JavaScript linter on JavaScript files
+JAVASCRIPT_ES_FILE_EXTENSIONS: ["*.js"]
 
 PRE_COMMANDS:
   - continue_if_failed: false
