@@ -31,7 +31,7 @@ const newPage = async () => {
 
 export const newTestPage = async (dumpFileName = '18f_gov_dump.mht') => {
   const page = await newPage();
-  const path = join(PROJECT_ROOT, 'libs/core-scanner/src/', dumpFileName);
+  const path = join(PROJECT_ROOT, 'libs/core-scanner/src/test', dumpFileName);
   const sourceUrl = `file://${path}`;
   const response = await page.goto(sourceUrl, {
     waitUntil: 'networkidle2',
