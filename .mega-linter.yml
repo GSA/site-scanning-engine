@@ -14,7 +14,7 @@ DISABLE: [SPELL, COPYPASTE]
 DISABLE_LINTERS:
   - YAML_PRETTIER
 
-# only scan new / updated files, not everything
+# scan all files, not just new / updated ones
 VALIDATE_ALL_CODEBASE: true
 
 # don't print the alpaca -- it's cute, but we don't need it in the logs
