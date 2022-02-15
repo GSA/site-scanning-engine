@@ -1,4 +1,6 @@
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { HttpService, Injectable } from '@nestjs/common';
+import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
+import { Logger } from 'pino';
 
 import { BrowserService } from '@app/browser';
 import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
@@ -20,16 +22,17 @@ export class CoreScannerService
       { solutionsResult: SolutionsResult; coreResult: CoreResult }
     >
 {
-  private logger = new Logger(CoreScannerService.name);
-
   constructor(
     private browserService: BrowserService,
     private httpService: HttpService,
+    @InjectPinoLogger(CoreScannerService.name)
+    private readonly logger: PinoLogger,
   ) {}
 
   async scan(
     input: CoreInputDto,
   ): Promise<{ solutionsResult: SolutionsResult; coreResult: CoreResult }> {
+    const scanLogger = this.logger.logger.child(input);
     return this.browserService.useBrowser(async (browser) => {
       try {
         const [notFoundTest, pageResult, robotsTxtResult, sitemapXmlResult] =
@@ -37,15 +40,24 @@ export class CoreScannerService
             pages.createNotFoundScanner(this.httpService, input.url),
             this.browserService.processPage(
               browser,
-              pages.createHomePageScanner(this.logger, input),
+              pages.createHomePageScanner(
+                scanLogger.child({ page: 'home' }),
+                input,
+              ),
             ),
             this.browserService.processPage(
               browser,
-              pages.createRobotsTxtScanner(this.logger, input),
+              pages.createRobotsTxtScanner(
+                scanLogger.child({ page: 'robots.txt' }),
+                input,
+              ),
             ),
             this.browserService.processPage(
               browser,
-              pages.createSitemapXmlScanner(this.logger, input),
+              pages.createSitemapXmlScanner(
+                scanLogger.child({ page: 'sitemap.xml' }),
+                input,
+              ),
             ),
           ]);
         const result = {
@@ -59,12 +71,12 @@ export class CoreScannerService
             ...pageResult.solutionsResult,
           },
         };
-        this.logger.log({ msg: 'solutions scan results', ...input, result });
+        scanLogger.info({ result }, 'solutions scan results');
         return result;
       } catch (error) {
         return {
           solutionsResult: buildErrorResult(
-            this.logger,
+            scanLogger,
             input.websiteId,
             error,
             input,
@@ -92,10 +104,7 @@ const buildErrorResult = (
   result.status = errorType;
 
   if (result.status === ScanStatus.UnknownError) {
-    logger.warn({
-      msg: `Unknown Error calling ${input.url}: ${error.message}`,
-      ...input,
-    });
+    logger.warn(`Unknown Error calling ${input.url}: ${error.message}`);
   }
 
   return result;

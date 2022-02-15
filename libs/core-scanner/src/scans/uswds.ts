@@ -1,21 +1,34 @@
-import { Logger } from '@nestjs/common';
+import { Logger } from 'pino';
 import { sum, uniq } from 'lodash';
-import { Page } from 'puppeteer';
+import { Page, HTTPResponse } from 'puppeteer';
 
-import { ScanStatus } from '@app/core-scanner/scan-status';
+export const createUswdsScanner = (
+  {
+    logger,
+    getCSSRequests,
+  }: { logger: Logger; getCSSRequests: () => string[] },
+  page: Page,
+) => {
+  return async (response: HTTPResponse) => {
+    return buildUswdsResult(
+      logger,
+      getCSSRequests(),
+      await response.text(),
+      page,
+    );
+  };
+};
 
 export const buildUswdsResult = async (
   logger: Logger,
-  logData: any,
   cssPages: string[],
   htmlText: string,
   page: Page,
 ) => {
-  const uswdsSemanticVersion = uswdsSemVer(logger, logData, cssPages);
+  const uswdsSemanticVersion = uswdsSemVer(logger, cssPages);
   const result = {
-    status: ScanStatus.Completed,
     usaClasses: await usaClassesCount(page),
-    uswdsString: uswdsInHtml(logger, logData, htmlText),
+    uswdsString: uswdsInHtml(logger, htmlText),
     uswdsTables: tableCount(htmlText),
     uswdsInlineCss: inlineUsaCssCount(htmlText),
     uswdsUsFlag: uswdsFlagDetected(htmlText),
@@ -60,13 +73,10 @@ const usaClassesCount = async (page: Page) => {
   return usaClassesCount;
 };
 
-const uswdsInHtml = (logger: Logger, logData: any, htmlText: string) => {
+const uswdsInHtml = (logger: Logger, htmlText: string) => {
   const re = /uswds/g;
   const occurrenceCount = [...htmlText.matchAll(re)].length;
-  logger.debug({
-    msg: `uswds occurs ${occurrenceCount} times`,
-    ...logData,
-  });
+  logger.debug(`uswds occurs ${occurrenceCount} times`);
   return occurrenceCount;
 };
 
@@ -187,11 +197,7 @@ const uswdsSourceSansFont = (cssPages: string[]) => {
   return score;
 };
 
-const uswdsSemVer = (
-  logger: Logger,
-  logData: any,
-  cssPages: string[],
-): string | null => {
+const uswdsSemVer = (logger: Logger, cssPages: string[]): string | null => {
   const re = /uswds v?[0-9.]*/i;
 
   const versions: string[] = [];
@@ -208,10 +214,7 @@ const uswdsSemVer = (
   if (versions) {
     const uniqueVersions = uniq(versions);
     if (uniqueVersions.length > 1) {
-      logger.debug({
-        msg: `found multiple USWDS versions ${uniqueVersions}`,
-        ...logData,
-      });
+      logger.debug(`found multiple USWDS versions ${uniqueVersions}`);
     }
     return uniqueVersions[0];
   } else {

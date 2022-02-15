@@ -4,6 +4,8 @@ services:
   postgres:
     container_name: postgres
     image: postgres:13
+    volumes:
+      - /var/lib/postgresql/data
     env_file:
       - .env
     ports:
@@ -45,6 +47,26 @@ services:
       /usr/bin/mc policy set download myminio/site-scanning-snapshot;
       exit 0;
       "
+
+  # cli:
+  #   build:
+  #       context: "."
+  #       dockerfile: "./apps/scan-engine/Dockerfile"
+  #       target: development
+  #   #profiles: ["cli"]
+  #   volumes:
+  #       - .:/usr/src/app
+  #       - /usr/src/app/node_modules
+  #   command: bash
+  #   environment:
+  #       - QUEUE_HOST=redis
+  #   security_opt:
+  #       - "seccomp=./apps/scan-engine/chrome.json"
+  #   networks:
+  #       - webnet
+  #   depends_on:
+  #       - redis
+  #       - postgres
 
 networks:
   webnet:
