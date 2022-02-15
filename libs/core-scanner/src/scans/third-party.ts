@@ -28,7 +28,7 @@ const thirdPartyServices = (
       thirdPartyDomains.push(url.hostname);
     }
   }
-  const deduped = uniq(thirdPartyDomains).filter(Boolean);
+  const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
   return {
     domains: deduped.join(','),
     count: deduped.length,

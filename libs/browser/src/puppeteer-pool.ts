@@ -5,16 +5,26 @@
  * https://github.com/usgs/wdfn-graph-server/blob/master/src/renderer/puppeteer-pool.js
  */
 
-import * as puppeteer from 'puppeteer';
 import * as genericPool from 'generic-pool';
+import { Logger } from 'pino';
+import * as puppeteer from 'puppeteer';
 
-const createValidator = (browser: puppeteer.Browser) => {
+const createValidator = (browser: puppeteer.Browser, logger: Logger) => {
   let disconnected = false;
   browser.on('disconnected', () => {
+    logger.info({ msg: 'Browser disconnected' });
     disconnected = true;
   });
   return () => {
-    return !disconnected && browser.process() != null;
+    const browserProcess = browser.process();
+    const valid = !disconnected && browserProcess != null;
+    logger.info({
+      msg: 'Checked browser health',
+      valid,
+      disconnected,
+      processId: browserProcess?.pid,
+    });
+    return valid;
   };
 };
 
@@ -27,7 +37,10 @@ type Options = {
   puppeteerArgs: Parameters<typeof puppeteer.launch>[0];
 };
 
-export const createPuppeteerPool = (userOptions: Partial<Options> = {}) => {
+export const createPuppeteerPool = (
+  logger: Logger,
+  userOptions: Partial<Options> = {},
+) => {
   // Combine `userOptions` with default values.
   const options = {
     max: 10,
@@ -57,23 +70,29 @@ export const createPuppeteerPool = (userOptions: Partial<Options> = {}) => {
   const pool = genericPool.createPool<puppeteer.Browser>(
     {
       create: () => {
+        logger.info({ msg: 'Creating browser...' });
         return puppeteer.launch(options.puppeteerArgs).then((browser) => {
           useCounts.set(browser, 0);
-          validators.set(browser, createValidator(browser));
+          validators.set(browser, createValidator(browser, logger));
           return browser;
         });
       },
       destroy: async (browser) => {
+        logger.info({ msg: 'Destroying browser...' });
         await browser.close();
         // Fallback - force-kill the process. Should we do this?
         if (browser.process() != null) {
+          logger.info({ msg: 'Force killing browser...' });
           browser.process().kill('SIGINT');
         }
       },
       validate: async (browser) => {
         const valid = validators.get(browser)();
         const useCount = useCounts.get(browser);
-        return valid && (options.maxUses <= 0 || useCount < options.maxUses);
+        const result =
+          valid && (options.maxUses <= 0 || useCount < options.maxUses);
+        logger.info({ msg: 'Validating browser...', valid, useCount, result });
+        return result;
       },
     },
     {
@@ -88,9 +107,11 @@ export const createPuppeteerPool = (userOptions: Partial<Options> = {}) => {
   // count of each browser.
   const genericAcquire = pool.acquire.bind(pool);
   pool.acquire = () => {
+    logger.info({ msg: 'Acquiring browser...' });
     return genericAcquire().then((browser: puppeteer.Browser) => {
       const newCount = useCounts.get(browser) + 1;
       useCounts.set(browser, newCount);
+      logger.info({ msg: 'Acquired browser...', useCount: newCount });
       return browser;
     });
   };

@@ -35,13 +35,17 @@ export class BrowserService implements OnModuleDestroy {
     this.logger.debug('Creating Puppeteer page...');
     const page = await browser.newPage();
     await page.setCacheEnabled(false);
-    let result: Result;
-    try {
-      result = await handler(page);
-    } finally {
-      await page.close();
-    }
-    return result;
+
+    // Process page with a 60 second timeout.
+    return new Promise<Result>((resolve, reject) => {
+      setTimeout(() => {
+        reject('Processing timed out');
+      }, 60000);
+      handler(page)
+        .then(resolve)
+        .catch(reject)
+        .finally(() => page.close());
+    });
   }
 
   async onModuleDestroy() {

@@ -114,7 +114,7 @@ export class ScanEngineConsumer {
   }
 
   @OnQueueCompleted()
-  onCompleted(job: Job<CoreInputDto>, _: any) {
+  onCompleted(job: Job<CoreInputDto>) {
     this.logger.log({
       msg: 'Processed job',
       job,
