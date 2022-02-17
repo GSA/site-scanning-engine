@@ -15,26 +15,38 @@ const initBrowser = async () => {
 
 let browser: puppeteer.Browser;
 
-export const useBrowser = async () => {
+export const useBrowser = async (
+  handler: (browser: puppeteer.Browser) => Promise<void>,
+) => {
   if (!browser) {
     browser = await initBrowser();
   }
-  return browser;
+  return await handler(browser);
 };
 
-const newPage = async () => {
-  const browser = await useBrowser();
-  const page = await browser.newPage();
-  await page.setCacheEnabled(false);
-  return page;
-};
-
-export const newTestPage = async (dumpFileName = '18f_gov_dump.mht') => {
-  const page = await newPage();
-  const path = join(PROJECT_ROOT, 'libs/core-scanner/test', dumpFileName);
-  const sourceUrl = `file://${path}`;
-  const response = await page.goto(sourceUrl, {
-    waitUntil: 'networkidle2',
+const newPage = async (handler: (page: puppeteer.Page) => Promise<void>) => {
+  return await useBrowser(async (browser) => {
+    const page = await browser.newPage();
+    await page.setCacheEnabled(false);
+    await handler(page);
+    await browser.close();
   });
-  return { page, response, sourceUrl };
+};
+
+export const newTestPage = async (
+  handler: (ctx: {
+    page: puppeteer.Page;
+    response: puppeteer.HTTPResponse;
+    sourceUrl: string;
+  }) => Promise<void>,
+  dumpFileName = '18f_gov_dump.mht',
+) => {
+  await newPage(async (page) => {
+    const path = join(PROJECT_ROOT, 'libs/core-scanner/test', dumpFileName);
+    const sourceUrl = `file://${path}`;
+    const response = await page.goto(sourceUrl, {
+      waitUntil: 'networkidle2',
+    });
+    await handler({ page, response, sourceUrl });
+  });
 };
