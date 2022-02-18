@@ -19,7 +19,10 @@ describe('core scan', () => {
         finalUrlSameDomain: false,
         finalUrlSameWebsite: false,
         finalUrlStatusCode: 200,
-        status: 'completed',
+        homeScanStatus: 'completed',
+        notFoundScanStatus: 'completed',
+        robotsTxtScanStatus: 'completed',
+        sitemapXmlScanStatus: 'completed',
         targetUrlBaseDomain: '18f.gov',
         targetUrlRedirects: false,
         website: {

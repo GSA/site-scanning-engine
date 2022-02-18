@@ -3,7 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { mock, MockProxy, mockReset } from 'jest-mock-extended';
 import { WebsiteController } from './website.controller';
 import { CoreResult } from 'entities/core-result.entity';
-import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { ConfigService } from '@nestjs/config';
@@ -36,10 +35,8 @@ describe('WebsiteController', () => {
 
     const coreResult = new CoreResult();
     coreResult.id = 1;
-    const solutionsResult = new SolutionsResult();
     website = new Website();
     website.coreResult = coreResult;
-    website.solutionsResult = solutionsResult;
     paginated = new Pagination([website], {
       itemCount: 10,
       currentPage: 1,

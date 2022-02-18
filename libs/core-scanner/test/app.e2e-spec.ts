@@ -38,7 +38,14 @@ describe('CoreScanner (e2e)', () => {
 
     const result = await service.scan(input);
 
-    expect(result.coreResult).toEqual({
+    expect(result).toEqual({
+      website: {
+        id: 1,
+      },
+      notFoundScanStatus: 'completed',
+      homeScanStatus: 'completed',
+      robotsTxtScanStatus: 'completed',
+      sitemapXmlScanStatus: 'completed',
       finalUrl: 'https://18f.gsa.gov/',
       finalUrlBaseDomain: 'gsa.gov',
       finalUrlIsLive: true,
@@ -46,15 +53,9 @@ describe('CoreScanner (e2e)', () => {
       finalUrlSameDomain: false,
       finalUrlSameWebsite: false,
       finalUrlStatusCode: 200,
-      status: 'completed',
       targetUrl404Test: true,
       targetUrlBaseDomain: '18f.gov',
       targetUrlRedirects: true,
-      website: {
-        id: 1,
-      },
-    });
-    expect(result.solutionsResult).toEqual({
       dapDetected: true,
       dapParameters: undefined,
       mainElementFinalUrl: true,
@@ -72,11 +73,10 @@ describe('CoreScanner (e2e)', () => {
       robotsTxtStatusCode: 200,
       robotsTxtTargetUrlRedirects: true,
       sitemapTargetUrlRedirects: true,
-      sitemapXmlCount: result.solutionsResult.sitemapXmlCount, // // This changes often, so ignore non-matches
+      sitemapXmlCount: result.sitemapXmlCount, // // This changes often, so ignore non-matches
       sitemapXmlDetected: true,
       sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
-      sitemapXmlFinalUrlFilesize:
-        result.solutionsResult.sitemapXmlFinalUrlFilesize, // This changes often, so ignore non-matches
+      sitemapXmlFinalUrlFilesize: result.sitemapXmlFinalUrlFilesize, // This changes often, so ignore non-matches
       sitemapXmlFinalUrlLive: true,
       sitemapXmlFinalUrlMimeType: 'application/xml',
       sitemapXmlPdfCount: 0,
@@ -97,9 +97,6 @@ describe('CoreScanner (e2e)', () => {
       uswdsUsFlag: 20,
       uswdsUsFlagInCss: 0,
       uswdsVersion: 20,
-      website: {
-        id: 1,
-      },
     });
   });
 
@@ -111,7 +108,14 @@ describe('CoreScanner (e2e)', () => {
     };
 
     const result = await service.scan(input);
-    expect(result.coreResult).toEqual({
+    expect(result).toEqual({
+      website: {
+        id: 1,
+      },
+      homeScanStatus: 'completed',
+      notFoundScanStatus: 'completed',
+      robotsTxtScanStatus: 'completed',
+      sitemapXmlScanStatus: 'completed',
       finalUrl: 'https://www.poolsafely.gov/',
       finalUrlBaseDomain: 'poolsafely.gov',
       finalUrlIsLive: true,
@@ -119,15 +123,9 @@ describe('CoreScanner (e2e)', () => {
       finalUrlSameDomain: false,
       finalUrlSameWebsite: false,
       finalUrlStatusCode: 200,
-      status: 'completed',
       targetUrl404Test: true,
       targetUrlBaseDomain: 'poolsafety.gov',
       targetUrlRedirects: true,
-      website: {
-        id: 1,
-      },
-    });
-    expect(result.solutionsResult).toEqual({
       dapDetected: true,
       dapParameters: undefined,
       mainElementFinalUrl: false,
@@ -154,8 +152,8 @@ describe('CoreScanner (e2e)', () => {
       sitemapXmlPdfCount: 0,
       sitemapXmlStatusCode: 200,
       // These two are sensitive to load times - so ignore for e2e purposes
-      thirdPartyServiceCount: result.solutionsResult.thirdPartyServiceCount,
-      thirdPartyServiceDomains: result.solutionsResult.thirdPartyServiceDomains,
+      thirdPartyServiceCount: result.thirdPartyServiceCount,
+      thirdPartyServiceDomains: result.thirdPartyServiceDomains,
       usaClasses: 0,
       uswdsCount: 0,
       uswdsInlineCss: 0,
@@ -169,9 +167,6 @@ describe('CoreScanner (e2e)', () => {
       uswdsUsFlag: 0,
       uswdsUsFlagInCss: 0,
       uswdsVersion: 0,
-      website: {
-        id: 1,
-      },
     });
   });
 });

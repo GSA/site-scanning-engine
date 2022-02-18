@@ -8,7 +8,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { CoreResult } from './core-result.entity';
-import { SolutionsResult } from './solutions-result.entity';
 
 @Entity()
 export class Website {
@@ -27,10 +26,6 @@ export class Website {
   @OneToOne(() => CoreResult, (coreResult) => coreResult.website)
   @Exclude({ toPlainOnly: true })
   coreResult: CoreResult;
-
-  @OneToOne(() => SolutionsResult, (solutionsResult) => solutionsResult.website)
-  @Exclude({ toPlainOnly: true })
-  solutionsResult: SolutionsResult;
 
   @Column()
   @Expose({ name: 'target_url' })
@@ -63,11 +58,9 @@ export class Website {
   serialized() {
     const serializedWebsite = classToPlain(this);
     const serializedCoreResult = classToPlain(this.coreResult);
-    const serializedSolutionsResult = classToPlain(this.solutionsResult);
 
     const aggregate = {
       ...serializedCoreResult,
-      ...serializedSolutionsResult,
       ...serializedWebsite,
     };
 

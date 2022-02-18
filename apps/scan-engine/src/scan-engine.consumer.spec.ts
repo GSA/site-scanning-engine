@@ -4,10 +4,8 @@ import { Job } from 'bull';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
-import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
 
 import { CoreResult } from 'entities/core-result.entity';
-import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Scanner } from 'libs/scanner.interface';
 import { CoreScannerService } from 'libs/core-scanner/src';
 
@@ -18,32 +16,17 @@ describe('ScanEngineConsumer', () => {
   let consumer: ScanEngineConsumer;
   let module: TestingModule;
   let mockCoreResultService: MockProxy<CoreResultService>;
-  let mockCoreScanner: MockProxy<
-    Scanner<
-      CoreInputDto,
-      { solutionsResult: SolutionsResult; coreResult: CoreResult }
-    >
-  >;
-  let mockSolutionsResultService: MockProxy<SolutionsResultService>;
+  let mockCoreScanner: MockProxy<Scanner<CoreInputDto, CoreResult>>;
   let mockCoreJob: MockProxy<Job<CoreInputDto>>;
   let mockQueueService: MockProxy<QueueService>;
 
   beforeEach(async () => {
     mockCoreResultService = mock<CoreResultService>();
-    mockCoreScanner = mock<
-      Scanner<
-        CoreInputDto,
-        { solutionsResult: SolutionsResult; coreResult: CoreResult }
-      >
-    >({
+    mockCoreScanner = mock<Scanner<CoreInputDto, CoreResult>>({
       scan: async (input) => {
-        return {
-          solutionsResult: { id: input.websiteId } as SolutionsResult,
-          coreResult: { id: input.websiteId } as CoreResult,
-        };
+        return { id: input.websiteId } as CoreResult;
       },
     });
-    mockSolutionsResultService = mock<SolutionsResultService>();
     mockCoreJob = mock<Job<CoreInputDto>>();
     mockQueueService = mock<QueueService>();
     module = await Test.createTestingModule({
@@ -60,10 +43,6 @@ describe('ScanEngineConsumer', () => {
         {
           provide: CoreScannerService,
           useValue: mockCoreScanner,
-        },
-        {
-          provide: SolutionsResultService,
-          useValue: mockSolutionsResultService,
         },
       ],
     }).compile();

@@ -10,7 +10,6 @@ import { PUPPETEER_TOKEN } from '@app/browser/puppeteer.service';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
-import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 
 import { CoreScannerService } from './core-scanner.service';
@@ -101,7 +100,10 @@ xdescribe('CoreScannerService', () => {
 
     const result = await service.scan(coreInputDto);
     const expected = new CoreResult();
-    expected.status = ScanStatus.Completed;
+    expected.notFoundScanStatus = ScanStatus.Completed;
+    expected.homeScanStatus = ScanStatus.Completed;
+    expected.robotsTxtScanStatus = ScanStatus.Completed;
+    expected.sitemapXmlScanStatus = ScanStatus.Completed;
     expected.finalUrl = 'https://18f.gsa.gov/';
     expected.finalUrlBaseDomain = 'gsa.gov';
     expected.finalUrlIsLive = true;
@@ -114,8 +116,7 @@ xdescribe('CoreScannerService', () => {
     expected.website = website;
     expected.targetUrl404Test = true;
 
-    expect(result.coreResult).toEqual(expected);
-    //expect(result.solutionsResult).toStrictEqual({});
+    expect(result).toEqual(expected);
   });
 });
 
@@ -215,7 +216,7 @@ xdescribe('SolutionsScannerService', () => {
     mockSitemapPage.evaluate.mockResolvedValueOnce(200);
 
     const result = await service.scan(input);
-    const expected = new SolutionsResult();
+    const expected = new CoreResult();
 
     expected.website = website;
     expected.usaClasses = 4;
@@ -260,9 +261,11 @@ xdescribe('SolutionsScannerService', () => {
     expected.thirdPartyServiceDomains = '';
     expected.thirdPartyServiceCount = 0;
 
-    expected.status = ScanStatus.Completed;
+    expected.notFoundScanStatus = ScanStatus.Completed;
+    expected.homeScanStatus = ScanStatus.Completed;
+    expected.robotsTxtScanStatus = ScanStatus.Completed;
+    expected.sitemapXmlScanStatus = ScanStatus.Completed;
 
-    //expect(result.coreResult).toEqual({});
-    expect(result.solutionsResult).toEqual(expected);
+    expect(result).toEqual(expected);
   });
 });

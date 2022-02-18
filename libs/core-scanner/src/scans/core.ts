@@ -2,11 +2,12 @@ import { join, split, takeRight } from 'lodash';
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
+import { ScanStatus } from '@app/core-scanner/scan-status';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 
 import { getHttpsUrl, getMIMEType } from '../pages/helpers';
+import { getBaseDomain } from '../test-helper';
 
 export const buildCoreResult = (
   input: CoreInputDto,
@@ -34,31 +35,14 @@ export const buildCoreResult = (
     getPathname(url) == getPathname(finalUrl) &&
     getBaseDomain(url) == getBaseDomain(finalUrl);
   result.finalUrlStatusCode = response.status();
-  result.status = ScanStatus.Completed;
+
+  // TODO - avoid setting these all here
+  result.notFoundScanStatus = ScanStatus.Completed;
+  result.homeScanStatus = ScanStatus.Completed;
+  result.robotsTxtScanStatus = ScanStatus.Completed;
+  result.sitemapXmlScanStatus = ScanStatus.Completed;
 
   return result;
-};
-
-export const buildCoreErrorResult = (input: CoreInputDto, err: Error) => {
-  const url = getHttpsUrl(input.url);
-  const errorType = parseBrowserError(err);
-
-  const website = new Website();
-  website.id = input.websiteId;
-
-  const result = new CoreResult();
-  result.website = website;
-  result.targetUrlBaseDomain = getBaseDomain(url);
-  result.status = errorType;
-
-  return result;
-};
-
-// 18f.gsa.gov -> gsa.gov
-const getBaseDomain = (url: string) => {
-  const parsedUrl = new URL(url);
-  const baseDomain = takeRight(split(parsedUrl.hostname, '.'), 2);
-  return join(baseDomain, '.');
 };
 
 const redirects = (requests: HTTPRequest[]): boolean => {

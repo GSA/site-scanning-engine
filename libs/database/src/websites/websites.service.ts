@@ -20,7 +20,6 @@ export class WebsiteService {
     const websites = this.website
       .createQueryBuilder('website')
       .leftJoinAndSelect('website.coreResult', 'coreResult')
-      .leftJoinAndSelect('website.solutionsResult', 'solutionsResult')
       .getMany();
 
     return websites;
@@ -37,8 +36,7 @@ export class WebsiteService {
   ): Promise<Pagination<Website>> {
     const query = this.website
       .createQueryBuilder('website')
-      .leftJoinAndSelect('website.coreResult', 'coreResult')
-      .leftJoinAndSelect('website.solutionsResult', 'solutionsResult');
+      .leftJoinAndSelect('website.coreResult', 'coreResult');
 
     if (dto.target_url_domain) {
       query.andWhere('coreResult.targetUrlBaseDomain = :baseDomain', {
@@ -83,7 +81,7 @@ export class WebsiteService {
     }
 
     if (typeof dto.dap_detected_final_url != 'undefined') {
-      query.andWhere('solutionsResult.dapDetected = :dapDetected', {
+      query.andWhere('coreResult.dapDetected = :dapDetected', {
         dapDetected: dto.dap_detected_final_url,
       });
     }
@@ -101,7 +99,7 @@ export class WebsiteService {
   async findByUrl(url: string): Promise<Website> {
     url = url.toLowerCase();
     const result = await this.website.findOne({
-      relations: ['coreResult', 'solutionsResult'],
+      relations: ['coreResult'],
       where: {
         url: url,
       },

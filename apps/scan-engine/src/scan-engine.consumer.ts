@@ -14,7 +14,6 @@ import { Job } from 'bull';
 import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
-import { SolutionsResultService } from '@app/database/solutions-results/solutions-result.service';
 import { QueueService } from '@app/queue';
 
 /**
@@ -42,7 +41,6 @@ export class ScanEngineConsumer {
     private coreResultService: CoreResultService,
     private queueService: QueueService,
     private coreScanner: CoreScannerService,
-    private solutionsResultService: SolutionsResultService,
   ) {}
 
   /**
@@ -62,14 +60,7 @@ export class ScanEngineConsumer {
 
     try {
       // scan core and solutions results
-      const { coreResult, solutionsResult } = await this.coreScanner.scan(
-        job.data,
-      );
-      await this.solutionsResultService.create(solutionsResult);
-      this.logger.log({
-        msg: `wrote solutions result for ${job.data.url}`,
-        job,
-      });
+      const coreResult = await this.coreScanner.scan(job.data);
       await this.coreResultService.create(coreResult);
       this.logger.log({
         msg: `wrote core result for ${job.data.url}`,

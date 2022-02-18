@@ -6,8 +6,6 @@ import { WebsiteModule } from './websites/website.module';
 import dbconfig from './config/db.config';
 import { Website } from 'entities/website.entity';
 import { CoreResult } from 'entities/core-result.entity';
-import { SolutionsResult } from 'entities/solutions-result.entity';
-import { SolutionsResultModule } from './solutions-results/solutions-result.module';
 
 const ScannerDatabase = TypeOrmModule.forRootAsync({
   imports: [
@@ -19,7 +17,7 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
     return {
       type: 'postgres',
       url: configService.get<string>('database.url'),
-      entities: [Website, CoreResult, SolutionsResult],
+      entities: [Website, CoreResult],
       synchronize: true,
       ssl: configService.get<boolean>('database.ssl')
         ? {
@@ -32,18 +30,8 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
 });
 
 @Module({
-  imports: [
-    ScannerDatabase,
-    WebsiteModule,
-    CoreResultModule,
-    SolutionsResultModule,
-  ],
+  imports: [ScannerDatabase, WebsiteModule, CoreResultModule],
   providers: [],
-  exports: [
-    ScannerDatabase,
-    WebsiteModule,
-    CoreResultModule,
-    SolutionsResultModule,
-  ],
+  exports: [ScannerDatabase, WebsiteModule, CoreResultModule],
 })
 export class DatabaseModule {}

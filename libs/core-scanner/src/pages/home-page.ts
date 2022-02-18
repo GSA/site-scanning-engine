@@ -3,8 +3,6 @@ import { Page } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { buildCoreResult } from '@app/core-scanner/scans/core';
-import { SolutionsResult } from 'entities/solutions-result.entity';
-import { Website } from 'entities/website.entity';
 
 import { buildDapResult } from '../scans/dap';
 import { buildSeoResult } from '../scans/seo';
@@ -51,22 +49,11 @@ const homePageScan = async (
   const coreResult = buildCoreResult(input, page, response);
 
   return {
-    coreResult,
-    solutionsResult: {
-      status: ScanStatus.Completed,
-      ...buildResultObject(input.websiteId),
-      ...dapResult,
-      ...seoResult,
-      ...thirdPartyResult,
-      ...uswdsResult,
-    },
+    homeScanStatus: ScanStatus.Completed,
+    ...coreResult,
+    ...dapResult,
+    ...seoResult,
+    ...thirdPartyResult,
+    ...uswdsResult,
   };
-};
-
-const buildResultObject = (websiteId: number): SolutionsResult => {
-  const result = new SolutionsResult();
-  const website = new Website();
-  website.id = websiteId;
-  result.website = website;
-  return result;
 };

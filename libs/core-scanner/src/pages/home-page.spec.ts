@@ -5,7 +5,6 @@ import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 import { Website } from 'entities/website.entity';
 
 import { CoreInputDto } from '../core.input.dto';
-import { ScanStatus } from '../scan-status';
 import { createHomePageScanner } from './home-page';
 import { source } from './test-page-source';
 
@@ -63,47 +62,44 @@ describe('home page scanner', () => {
     const result = await scanner(mockPage);
 
     expect(result).toEqual({
-      coreResult: {
-        finalUrl: 'https://18f.gsa.gov',
-        finalUrlBaseDomain: 'gsa.gov',
-        finalUrlIsLive: true,
-        finalUrlMIMEType: 'text/html',
-        finalUrlSameDomain: false,
-        finalUrlSameWebsite: false,
-        finalUrlStatusCode: 200,
-        status: 'completed',
-        targetUrlBaseDomain: '18f.gov',
-        targetUrlRedirects: true,
-        website: {
-          id: 1,
-        },
+      homeScanStatus: 'completed',
+      notFoundScanStatus: 'completed',
+      robotsTxtScanStatus: 'completed',
+      sitemapXmlScanStatus: 'completed',
+      website: {
+        id: 1,
       },
-      solutionsResult: {
-        website: website,
-        usaClasses: 4,
-        uswdsString: 1,
-        uswdsTables: 0,
-        uswdsInlineCss: 0,
-        uswdsUsFlag: 20,
-        uswdsStringInCss: 0,
-        uswdsUsFlagInCss: 0,
-        uswdsMerriweatherFont: 0,
-        uswdsPublicSansFont: 0,
-        uswdsSourceSansFont: 0,
-        uswdsCount: 25,
-        uswdsSemanticVersion: undefined,
-        uswdsVersion: 0,
-        dapDetected: false,
-        dapParameters: undefined,
-        ogTitleFinalUrl: 'Page Title',
-        ogDescriptionFinalUrl: 'Page Description',
-        ogArticlePublishedFinalUrl: time,
-        ogArticleModifiedFinalUrl: time,
-        mainElementFinalUrl: true,
-        thirdPartyServiceDomains: '',
-        thirdPartyServiceCount: 0,
-        status: ScanStatus.Completed,
-      },
+      finalUrl: 'https://18f.gsa.gov',
+      finalUrlBaseDomain: 'gsa.gov',
+      finalUrlIsLive: true,
+      finalUrlMIMEType: 'text/html',
+      finalUrlSameDomain: false,
+      finalUrlSameWebsite: false,
+      finalUrlStatusCode: 200,
+      targetUrlBaseDomain: '18f.gov',
+      targetUrlRedirects: true,
+      usaClasses: 4,
+      uswdsString: 1,
+      uswdsTables: 0,
+      uswdsInlineCss: 0,
+      uswdsUsFlag: 20,
+      uswdsStringInCss: 0,
+      uswdsUsFlagInCss: 0,
+      uswdsMerriweatherFont: 0,
+      uswdsPublicSansFont: 0,
+      uswdsSourceSansFont: 0,
+      uswdsCount: 25,
+      uswdsSemanticVersion: undefined,
+      uswdsVersion: 0,
+      dapDetected: false,
+      dapParameters: undefined,
+      ogTitleFinalUrl: 'Page Title',
+      ogDescriptionFinalUrl: 'Page Description',
+      ogArticlePublishedFinalUrl: time,
+      ogArticleModifiedFinalUrl: time,
+      mainElementFinalUrl: true,
+      thirdPartyServiceDomains: '',
+      thirdPartyServiceCount: 0,
     });
   });
 });
