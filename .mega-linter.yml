@@ -26,7 +26,24 @@ DISABLE_ERRORS: true
 # let actionlint deal with workflows (SchemaStore isn't very
 # accurate at picking up the schemae based on arbitrary
 # filenames like, "deploy.yml"
-YAML_V8R_FILTER_REGEX_EXCLUDE: '[.]github/workflows/'
+
+YAML_V8R_FILTER_REGEX_EXCLUDE: "[.]github/workflows/"
+
+# only run the JavaScript linter on JavaScript files
+JAVASCRIPT_ES_FILE_EXTENSIONS: ["*.js"]
 
 # Use Prettier rather than Standard for Javascript/Typescript formatting.
 JAVASCRIPT_DEFAULT_STYLE: 'prettier'
+
+PRE_COMMANDS:
+  - continue_if_failed: false
+    command: npm install
+    cwd: workspace
+
+  - continue_if_failed: true
+    command: if [ -d report ] ; then rm -rf report ; fi
+    cwd: workspace
+
+POST_COMMANDS:
+  - command: if [ -n "$USERNAME" ] ; then chown -R "${USERNAME}" . ; else true ; fi
+    cwd: workspace
