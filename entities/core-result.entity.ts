@@ -10,8 +10,61 @@ import {
 } from 'typeorm';
 import { Website } from './website.entity';
 
+export interface HomePageCoreResult {
+  targetUrlRedirects: boolean;
+  targetUrlBaseDomain: string;
+  finalUrl: string;
+  finalUrlMIMEType: string;
+  finalUrlIsLive: boolean;
+  finalUrlBaseDomain: string;
+  finalUrlSameDomain: boolean;
+  finalUrlSameWebsite: boolean;
+  finalUrlStatusCode: number;
+}
+
+export interface DapResult {
+  dapDetected: boolean;
+  dapParameters: string;
+}
+
+export interface SeoResult {
+  ogTitleFinalUrl: string;
+  ogDescriptionFinalUrl: string;
+  ogArticlePublishedFinalUrl: Date;
+  ogArticleModifiedFinalUrl: Date;
+  mainElementFinalUrl: boolean;
+}
+
+export interface ThirdPartyResult {
+  thirdPartyServiceDomains: string;
+  thirdPartyServiceCount: number;
+}
+
+export interface UswdsResult {
+  usaClasses: number;
+  uswdsString: number;
+  uswdsTables: number;
+  uswdsInlineCss: number;
+  uswdsUsFlag: number;
+  uswdsUsFlagInCss: number;
+  uswdsStringInCss: number;
+  uswdsMerriweatherFont: number;
+  uswdsPublicSansFont: number;
+  uswdsSourceSansFont: number;
+  uswdsSemanticVersion: string;
+  uswdsVersion: number;
+  uswdsCount: number;
+}
+
+interface HomePageResult
+  extends HomePageCoreResult,
+    DapResult,
+    SeoResult,
+    ThirdPartyResult,
+    UswdsResult {}
+
 @Entity()
-export class CoreResult {
+export class CoreResult implements Partial<HomePageResult> {
   @PrimaryGeneratedColumn()
   @Exclude({ toPlainOnly: true })
   id: number;

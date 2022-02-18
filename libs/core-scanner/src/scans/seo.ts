@@ -1,7 +1,9 @@
 import { Logger } from 'pino';
 import { Page } from 'puppeteer';
 
-export const buildSeoResult = async (logger: Logger, page: Page) => {
+import { SeoResult } from 'entities/core-result.entity';
+
+export const buildSeoResult = async (logger: Logger, page: Page): SeoResult => {
   // seo
   return {
     ogTitleFinalUrl: await findOpenGraphTag(page, 'og:title'),

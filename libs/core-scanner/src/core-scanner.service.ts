@@ -27,34 +27,67 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
     const scanLogger = this.logger.logger.child(input);
     return this.browserService.useBrowser(async (browser) => {
       try {
-        const [notFoundTest, pageResult, robotsTxtResult, sitemapXmlResult] =
+        const [notFoundTest, homeResult, robotsTxtResult, sitemapXmlResult] =
           await Promise.all([
-            pages.createNotFoundScanner(this.httpService, input.url),
-            this.browserService.processPage(
-              browser,
-              pages.createHomePageScanner(
-                scanLogger.child({ page: 'home' }),
-                input,
-              ),
+            pages.createNotFoundScanner(this.httpService, input.url).then(
+              (targetUrl404Test: boolean) => ({
+                notFoundScanStatus: ScanStatus.Completed,
+                targetUrl404Test,
+              }),
+              (error) => ({ notFoundScanStatus: parseBrowserError(error) }),
             ),
-            this.browserService.processPage(
-              browser,
-              pages.createRobotsTxtScanner(
-                scanLogger.child({ page: 'robots.txt' }),
-                input,
+            this.browserService
+              .processPage(
+                browser,
+                pages.createHomePageScanner(
+                  scanLogger.child({ page: 'home' }),
+                  input,
+                ),
+              )
+              .then(
+                (result) => ({
+                  homeScanStatus: ScanStatus.Completed,
+                  ...result,
+                }),
+                (error) => ({ homeScanStatus: parseBrowserError(error) }),
               ),
-            ),
-            this.browserService.processPage(
-              browser,
-              pages.createSitemapXmlScanner(
-                scanLogger.child({ page: 'sitemap.xml' }),
-                input,
+            this.browserService
+              .processPage(
+                browser,
+                pages.createRobotsTxtScanner(
+                  scanLogger.child({ page: 'robots.txt' }),
+                  input,
+                ),
+              )
+              .then(
+                (result) => ({
+                  robotsTxtScanStatus: ScanStatus.Completed,
+                  ...result,
+                }),
+                (error) => ({ robotsTxtScanStatus: parseBrowserError(error) }),
               ),
-            ),
+            this.browserService
+              .processPage(
+                browser,
+                pages.createSitemapXmlScanner(
+                  scanLogger.child({ page: 'sitemap.xml' }),
+                  input,
+                ),
+              )
+              .then(
+                (result) => ({
+                  sitemapXmlScanStatus: ScanStatus.Completed,
+                  ...result,
+                }),
+                (error) => ({ sitemapXmlScanStatus: parseBrowserError(error) }),
+              ),
           ]);
         const result = {
-          targetUrl404Test: notFoundTest,
-          ...pageResult,
+          website: {
+            id: input.websiteId,
+          },
+          ...notFoundTest,
+          ...homeResult,
           ...sitemapXmlResult,
           ...robotsTxtResult,
         };

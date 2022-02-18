@@ -14,16 +14,11 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
     // extract the html page source
     const robotsText = await robotsResponse.text();
 
-    return syncBuildRobotTxtResult(
-      logger,
-      robotsPage,
-      robotsResponse,
-      robotsText,
-    );
+    return buildRobotTxtResult(logger, robotsPage, robotsResponse, robotsText);
   };
 };
 
-const syncBuildRobotTxtResult = (
+const buildRobotTxtResult = (
   logger: Logger,
   logData: any,
   robotsResponse: HTTPResponse,

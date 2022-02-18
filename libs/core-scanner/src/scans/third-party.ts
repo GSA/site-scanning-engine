@@ -1,10 +1,12 @@
 import { uniq } from 'lodash';
 import { HTTPRequest, HTTPResponse } from 'puppeteer';
 
+import { ThirdPartyResult } from 'entities/core-result.entity';
+
 export const buildThirdPartyResult = async (
   mainResponse: HTTPResponse,
   outboundRequests: HTTPRequest[],
-) => {
+): Promise<ThirdPartyResult> => {
   const thirdPartyResult = thirdPartyServices(
     outboundRequests,
     mainResponse.url(),

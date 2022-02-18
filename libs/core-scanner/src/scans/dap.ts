@@ -1,6 +1,10 @@
 import { HTTPRequest } from 'puppeteer';
 
-export const buildDapResult = async (outboundRequests: HTTPRequest[]) => {
+import { DapResult } from 'entities/core-result.entity';
+
+export const buildDapResult = async (
+  outboundRequests: HTTPRequest[],
+): Promise<DapResult> => {
   return {
     dapDetected: dapDetected(outboundRequests),
     dapParameters: dapParameters(outboundRequests),
