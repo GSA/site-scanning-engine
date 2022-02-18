@@ -14,7 +14,7 @@ on:
         default: prod
 
 jobs:
-  enqueue:
+  restart:
     runs-on: ubuntu-latest
 
     steps:
