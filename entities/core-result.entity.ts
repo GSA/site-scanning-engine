@@ -63,8 +63,37 @@ interface HomePageResult
     ThirdPartyResult,
     UswdsResult {}
 
+export interface RobotsTxtResult {
+  robotsTxtFinalUrlSize?: number;
+  robotsTxtCrawlDelay?: number;
+  robotsTxtSitemapLocations?: string;
+  robotsTxtFinalUrl: string;
+  robotsTxtFinalUrlLive: boolean;
+  robotsTxtTargetUrlRedirects: boolean;
+  robotsTxtFinalUrlMimeType: string;
+  robotsTxtStatusCode: number;
+  robotsTxtDetected: boolean;
+}
+
+export interface SitemapXmlResult {
+  sitemapXmlFinalUrlFilesize?: number;
+  sitemapXmlCount?: number;
+  sitemapXmlPdfCount?: number;
+  sitemapXmlFinalUrl: string;
+  sitemapXmlFinalUrlLive: boolean;
+  sitemapTargetUrlRedirects: boolean;
+  sitemapXmlFinalUrlMimeType: string;
+  sitemapXmlStatusCode: number;
+  sitemapXmlDetected: boolean;
+}
+
 @Entity()
-export class CoreResult implements Partial<HomePageResult> {
+export class CoreResult
+  implements
+    Partial<HomePageResult>,
+    Partial<RobotsTxtResult>,
+    Partial<SitemapXmlResult>
+{
   @PrimaryGeneratedColumn()
   @Exclude({ toPlainOnly: true })
   id: number;

@@ -2,6 +2,7 @@ import { Logger } from 'pino';
 import { Page, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+import { SitemapXmlResult } from 'entities/core-result.entity';
 import { getHttpsUrl, getMIMEType } from './helpers';
 
 export const createSitemapXmlScanner = (
@@ -28,7 +29,7 @@ const buildSitemapResult = async (
   sitemapResponse: HTTPResponse,
   sitemapText: string,
   sitemapPage: Page,
-) => {
+): Promise<SitemapXmlResult> => {
   const sitemapUrl = new URL(sitemapResponse.url());
   const sitemapStatus = sitemapResponse.status();
   const sitemapLive = sitemapStatus / 100 === 2;

@@ -2,6 +2,7 @@ import { Logger } from 'pino';
 import { HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+import { RobotsTxtResult } from 'entities/core-result.entity';
 import { getHttpsUrl, getMIMEType } from './helpers';
 
 export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
@@ -23,7 +24,7 @@ const buildRobotTxtResult = (
   logData: any,
   robotsResponse: HTTPResponse,
   robotsText: string,
-) => {
+): RobotsTxtResult => {
   const robotsUrl = new URL(robotsResponse.url());
   const robotsStatus = robotsResponse.status();
   const robotsLive = robotsStatus / 100 === 2;
