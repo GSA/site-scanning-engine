@@ -24,7 +24,7 @@ First, a configuration file, `.env` must be created in the project's
 root directory.  This file includes parameters needed to start the
 required services and for the Scan Engine to interact with them.
 
-A sample configuration file is available in [../sample.env](sample.env)
+A sample configuration file is available in [sample.env](../sample.env)
 with serveral `<add_a_key_here>` indicators.  These need to be
 replaced with actual keys.  The file should be copied to `.env` (e.g.,
 `cp sample.env .env`), not moved or updated in-place.
@@ -45,6 +45,7 @@ services:
 ```bash
 ( cd "$(git rev-parse --show-toplevel" \
   && docker-compose up \
+    --build \
     --detach
 )
 ```
@@ -73,10 +74,62 @@ docker run \
   scan-engine
 ```
 
-- **Note**: we'll need to have the required services (Postgres, Redis, Minio)
+- **Note**: the required services (Postgres, Redis, Minio) must be
   configured and running in order for the Scan Engine to start and
   function properly.
 
-## Deploy to Development Environment
+## Deploy to Cloud.gov (development, production, etc.)
 
-## Deploy to Production Environment
+Deploying to the development environment (and production) is different
+because development (and production) is (are) hosted remotely on
+cloud.gov infrastructure.
+
+The first step is to login to the cloud.gov infrastructure with a
+valid session token:
+
+```bash
+cf login --sso
+```
+
+Be sure to target the correct organization and space (environment)
+so that updates are pushed to the correct service.
+
+Then, use the `cloudgov-deploy.sh` script to push the changes to the
+desired space (environment):
+
+```bash
+( cd "$(git rev-parse --show-toplevel)" \
+  && ./cloudgov-deploy.sh
+)
+```
+
+The `cloudgov-deploy.sh` is a wrapper around running `cf push`
+that will push the code on the filesystem -- regardless of any
+git branches, Pull Requests (PRs), commits, etc. -- out to the
+cloud.gov infrastructure.  Also, the script has functionality
+to verify that the required services are setup and running
+on the cloud.gov infrastructure, such as an S3 bucket,
+Redis queue, Postgres database, API key, etc..
+
+The file used to configure and deploy the application is an
+environment-specific YAML file, typically named of the form
+`manifest-(environment).yml` (replace '`(environment)`' with the name
+of the actual environment.
+
+When `cloudgov-deploy.sh` is run in a new environment, it
+will prompt the operator for an API key.  This API key is stored on
+cloud.gov as an environment variable that can be used by applications.
+As a result, one doesn't need to retain the API key or store it
+anywhere.
+
+- **Note:** the process of standing up a new environment takes
+   about 20 minutes to complete.  This is normal.
+
+## Resources
+
+Additional documentation is also available:
+
+- [Environment Provisioning](environment_provisioning.md)
+- [Development](development.md)
+- [Project Layout](layout.md)
+- [Architectural Diagrams](architecture/diagrams/images/architecture-cloud-gov.png)

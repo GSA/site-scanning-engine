@@ -35,6 +35,10 @@ lerna-debug.log*
 
 # Dev docker-compose minio volume
 storage/
+
 # don't include in commits files created by Mega-Linter
 report/
 mega-linter.log
+
+# don't include Python virtual environment
+venv/
