@@ -9,10 +9,8 @@ on:
   pull_request:
     branches: [master, main]
 
-
 # Comment env block if you do not want to apply fixes
 env:
-
   # Apply linter fixes configuration
 
   # Decide which event triggers application of fixes in a commit or a
@@ -26,7 +24,6 @@ env:
   # If APPLY_FIXES is used, defines if the fixes are directly committed
   # (commit) or posted in a PR (pull_request)
   APPLY_FIXES_MODE: commit
-
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -93,8 +90,8 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          commit-message: "[MegaLinter] Apply linters automatic fixes"
-          title: "[MegaLinter] Apply linters automatic fixes"
+          commit-message: '[MegaLinter] Apply linters automatic fixes'
+          title: '[MegaLinter] Apply linters automatic fixes'
           labels: bot
       - name: Create PR output
         if: |
@@ -139,4 +136,4 @@ jobs:
             || github.head_ref
             || github.ref }}
 
-          commit_message: "[MegaLinter] Apply linters fixes"
+          commit_message: '[MegaLinter] Apply linters fixes'

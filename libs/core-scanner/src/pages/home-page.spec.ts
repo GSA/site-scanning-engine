@@ -1,5 +1,5 @@
-import { Logger } from '@nestjs/common';
 import { mock, MockProxy } from 'jest-mock-extended';
+import { Logger } from 'pino';
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
 import { Website } from 'entities/website.entity';

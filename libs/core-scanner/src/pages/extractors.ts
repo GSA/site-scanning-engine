@@ -11,10 +11,9 @@ export const createOutboundRequestsExtractor = (page: Page) => {
 };
 
 export const createCSSRequestsExtractor = (page: Page) => {
-  // attach listeners
   const cssPages = [];
   page.on('response', async (response) => {
-    if (response.request().resourceType() == 'stylesheet') {
+    if (response.ok() && response.request().resourceType() == 'stylesheet') {
       const cssPage = await response.text();
       cssPages.push(cssPage);
     }

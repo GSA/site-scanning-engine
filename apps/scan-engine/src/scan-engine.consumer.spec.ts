@@ -30,13 +30,19 @@ describe('ScanEngineConsumer', () => {
 
   beforeEach(async () => {
     mockCoreResultService = mock<CoreResultService>();
-    mockCoreScanner =
-      mock<
-        Scanner<
-          CoreInputDto,
-          { solutionsResult: SolutionsResult; coreResult: CoreResult }
-        >
-      >();
+    mockCoreScanner = mock<
+      Scanner<
+        CoreInputDto,
+        { solutionsResult: SolutionsResult; coreResult: CoreResult }
+      >
+    >({
+      scan: async (input) => {
+        return {
+          solutionsResult: { id: input.websiteId } as SolutionsResult,
+          coreResult: { id: input.websiteId } as CoreResult,
+        };
+      },
+    });
     mockSolutionsResultService = mock<SolutionsResultService>();
     mockCoreJob = mock<Job<CoreInputDto>>();
     mockQueueService = mock<QueueService>();
@@ -48,16 +54,16 @@ describe('ScanEngineConsumer', () => {
           useValue: mockCoreResultService,
         },
         {
+          provide: QueueService,
+          useValue: mockQueueService,
+        },
+        {
           provide: CoreScannerService,
           useValue: mockCoreScanner,
         },
         {
           provide: SolutionsResultService,
           useValue: mockSolutionsResultService,
-        },
-        {
-          provide: QueueService,
-          useValue: mockQueueService,
         },
       ],
     }).compile();

@@ -10,8 +10,9 @@
 # the `language` matrix defined below to confirm you have the correct set of
 # supported CodeQL languages.
 #
-name: "CodeQL"
+name: 'CodeQL'
 
+# yamllint disable-line rule:truthy
 on:
   workflow_dispatch:
   push:

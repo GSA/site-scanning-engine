@@ -38,13 +38,13 @@ please visit
 
 Development Requirements:
 
-* `git`
-* `nodejs`
-* `nvm` (see [.nvmrc](./.nvmrc) for current `node` version.
-* `docker`
-* `docker-compose`
-* Cloud Foundry CLI (aka `cf`)
-* `redis-cli` (optional)
+- `git`
+- `nodejs`
+- `nvm` (see [.nvmrc](./.nvmrc) for current `node` version.
+- `docker`
+- `docker-compose`
+- Cloud Foundry CLI (aka `cf`)
+- `redis-cli` (optional)
 
 ### Installation
 
@@ -153,7 +153,7 @@ npm run build:all
 
 This command will build the apps, which compiles from Typescript
 to Javascript, doing any minification and optimization in the
-process. All of the app artifacts end up in [/dist](dist).
+process. All of the app artifacts end up in the `/dist` directory.
 This is ultimately what gets pushed to Cloud Foundry.
 
 Note that you can also build apps seperately:
@@ -212,7 +212,8 @@ To scan a single site, which must be in the website table, run commands like:
 npx nest start cli -- scan-site --url 18f.gov
 ```
 
-NOTE: This is intended for testing scan behavior, and doesn't currently write results to the database.
+NOTE: This is intended for testing scan behavior, and doesn't currently
+write results to the database.
 
 ## Test
 

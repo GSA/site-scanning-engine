@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger } from 'pino';
 import { Page, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
@@ -10,15 +10,15 @@ export const createSitemapXmlScanner = (
 ) => {
   const url = getHttpsUrl(input.url);
   return async (sitemapPage: Page) => {
-    // go to the sitemap page from the targeet url
+    // go to the sitemap page from the target url
     const sitemapUrl = new URL(url);
     sitemapUrl.pathname = 'sitemap.xml';
-    logger.log({ msg: 'Going to sitemap.xml...', ...input });
+    logger.info('Going to sitemap.xml...');
     const sitemapResponse = await sitemapPage.goto(sitemapUrl.toString());
-    logger.log({ msg: 'Got sitemap.xml!', ...input });
+    logger.info('Got sitemap.xml!');
     // extract the html page source
     const sitemapText = await sitemapResponse.text();
-    logger.log({ msg: 'Got sitemap.xml text!', ...input });
+    logger.info('Got sitemap.xml text!');
 
     return buildSitemapResult(sitemapResponse, sitemapText, sitemapPage);
   };

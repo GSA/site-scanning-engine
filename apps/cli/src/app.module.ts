@@ -19,7 +19,7 @@ import { SnapshotController } from './snapshot.controller';
     IngestModule,
     LoggerModule.forRoot({
       pinoHttp: {
-        name: 'add some name to every JSON line',
+        name: 'cli',
         level: process.env.NODE_ENV !== 'production' ? 'debug' : 'info',
       },
     }),

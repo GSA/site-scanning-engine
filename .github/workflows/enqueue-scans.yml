@@ -4,7 +4,7 @@ name: Enqueue scans
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '10 0 * * *'
 
   workflow_dispatch:
     inputs:
@@ -26,8 +26,7 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: ${{ github.event.inputs.cf_space || 'prod' }}
-          cf_command:
-            run-task site-scanner-consumer
+          cf_command: run-task site-scanner-consumer
             -c "node dist/apps/cli/main.js enqueue-scans"
             -k 2G -m 4G
             --name github-action-enqueue-scans-${{ github.run_id }}
