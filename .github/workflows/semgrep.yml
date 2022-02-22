@@ -15,6 +15,7 @@ on:
   # Note that * is a special character in YAML so you have to quote this string
   # schedule:
   #   - cron: '30 0 1,15 * *'
+  workflow_dispatch:
 jobs:
   semgrep:
     name: Scan

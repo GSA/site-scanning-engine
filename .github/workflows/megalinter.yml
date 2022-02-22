@@ -8,7 +8,7 @@ on:
   # Pull Requests to main
   pull_request:
     branches: [master, main]
-
+  workflow_dispatch:
 # Comment env block if you do not want to apply fixes
 env:
   # Apply linter fixes configuration
