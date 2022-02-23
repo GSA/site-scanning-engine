@@ -1,12 +1,12 @@
 import { Browser } from 'puppeteer';
 import { newTestPage } from '../test-helper';
-import { buildCoreResult } from './core';
+import { buildUrlScanResult } from './url-scan';
 
 describe('core scan', () => {
   it('works', async () => {
     await newTestPage(async ({ page, response, sourceUrl }) => {
       expect(
-        buildCoreResult(
+        buildUrlScanResult(
           { websiteId: 123, scanId: 'asdf', url: 'https://www.18f.gov' },
           page,
           response,

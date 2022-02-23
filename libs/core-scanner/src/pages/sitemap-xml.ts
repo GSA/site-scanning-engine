@@ -2,7 +2,9 @@ import { Logger } from 'pino';
 import { Page, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { SitemapXmlResult } from 'entities/core-result.entity';
+import { SitemapXmlScan } from 'entities/scan-data.entity';
+import { SitemapXmlPageScans } from 'entities/scan-page.entity';
+
 import { getHttpsUrl, getMIMEType } from './helpers';
 
 export const createSitemapXmlScanner = (
@@ -10,7 +12,7 @@ export const createSitemapXmlScanner = (
   input: CoreInputDto,
 ) => {
   const url = getHttpsUrl(input.url);
-  return async (sitemapPage: Page) => {
+  return async (sitemapPage: Page): Promise<SitemapXmlPageScans> => {
     // go to the sitemap page from the target url
     const sitemapUrl = new URL(url);
     sitemapUrl.pathname = 'sitemap.xml';
@@ -21,7 +23,13 @@ export const createSitemapXmlScanner = (
     const sitemapText = await sitemapResponse.text();
     logger.info('Got sitemap.xml text!');
 
-    return buildSitemapResult(sitemapResponse, sitemapText, sitemapPage);
+    return {
+      sitemapXmlScan: await buildSitemapResult(
+        sitemapResponse,
+        sitemapText,
+        sitemapPage,
+      ),
+    };
   };
 };
 
@@ -29,7 +37,7 @@ const buildSitemapResult = async (
   sitemapResponse: HTTPResponse,
   sitemapText: string,
   sitemapPage: Page,
-): Promise<SitemapXmlResult> => {
+): Promise<SitemapXmlScan> => {
   const sitemapUrl = new URL(sitemapResponse.url());
   const sitemapStatus = sitemapResponse.status();
   const sitemapLive = sitemapStatus / 100 === 2;

@@ -2,12 +2,14 @@ import { Logger } from 'pino';
 import { HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { RobotsTxtResult } from 'entities/core-result.entity';
+import { RobotsTxtScan } from 'entities/scan-data.entity';
+import { RobotsTxtPageScans } from 'entities/scan-page.entity';
+
 import { getHttpsUrl, getMIMEType } from './helpers';
 
 export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   const url = getHttpsUrl(input.url);
-  return async (robotsPage) => {
+  return async (robotsPage): Promise<RobotsTxtPageScans> => {
     // go to the robots page from the target url
     const robotsUrl = new URL(url);
     robotsUrl.pathname = 'robots.txt';
@@ -15,7 +17,14 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
     // extract the html page source
     const robotsText = await robotsResponse.text();
 
-    return buildRobotTxtResult(logger, robotsPage, robotsResponse, robotsText);
+    return {
+      robotsTxtScan: buildRobotTxtResult(
+        logger,
+        robotsPage,
+        robotsResponse,
+        robotsText,
+      ),
+    };
   };
 };
 
@@ -24,7 +33,7 @@ const buildRobotTxtResult = (
   logData: any,
   robotsResponse: HTTPResponse,
   robotsText: string,
-): RobotsTxtResult => {
+): RobotsTxtScan => {
   const robotsUrl = new URL(robotsResponse.url());
   const robotsStatus = robotsResponse.status();
   const robotsLive = robotsStatus / 100 === 2;

@@ -1,16 +1,16 @@
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { HomePageCoreResult } from 'entities/core-result.entity';
+import { UrlScan } from 'entities/scan-data.entity';
 
 import { getHttpsUrl, getMIMEType } from '../pages/helpers';
 import { getBaseDomain } from '../test-helper';
 
-export const buildCoreResult = (
+export const buildUrlScanResult = (
   input: CoreInputDto,
   page: Page,
   response: HTTPResponse,
-): HomePageCoreResult => {
+): UrlScan => {
   const url = getHttpsUrl(input.url);
   const redirectChain = response.request().redirectChain();
   const finalUrl = getFinalUrl(page);
