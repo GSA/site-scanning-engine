@@ -6,13 +6,10 @@ import { BrowserService } from '@app/browser';
 import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
 
 import { CoreResult } from 'entities/core-result.entity';
-import { Website } from 'entities/website.entity';
 import { Scanner } from 'libs/scanner.interface';
 
 import { CoreInputDto } from './core.input.dto';
 import * as pages from './pages';
-import { getHttpsUrl } from './pages/helpers';
-import { getBaseDomain } from './test-helper';
 
 @Injectable()
 export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
@@ -38,7 +35,10 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
             },
           }),
           (error) => {
-            return { status: parseBrowserError(error), result: null };
+            return {
+              status: this.getScanStatus(error, input.url, scanLogger),
+              result: null,
+            };
           },
         ),
         this.browserService
@@ -54,7 +54,10 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
               status: ScanStatus.Completed,
               result,
             }),
-            (error) => ({ status: parseBrowserError(error), result: null }),
+            (error) => ({
+              status: this.getScanStatus(error, input.url, scanLogger),
+              result: null,
+            }),
           ),
         this.browserService
           .processPage(
@@ -70,7 +73,10 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
               result,
             }),
             (error) => {
-              return { status: parseBrowserError(error), result: null };
+              return {
+                status: this.getScanStatus(error, input.url, scanLogger),
+                result: null,
+              };
             },
           ),
         this.browserService
@@ -86,7 +92,10 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
               status: ScanStatus.Completed,
               result,
             }),
-            (error) => ({ status: parseBrowserError(error), result: null }),
+            (error) => ({
+              status: this.getScanStatus(error, input.url, scanLogger),
+              result: null,
+            }),
           ),
       ]);
       const result = {
@@ -100,35 +109,12 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
     });
     return CoreResult.fromScanData(input.websiteId, scanData);
   }
-}
 
-const buildErrorResult = (
-  logger: Logger,
-  websiteId: number,
-  err: Error,
-  input: CoreInputDto,
-  error: Error,
-) => {
-  const url = getHttpsUrl(input.url);
-  const errorType = parseBrowserError(err);
-
-  const website = new Website();
-  website.id = websiteId;
-
-  const result = new CoreResult();
-  result.website = website;
-
-  // TODO - avoid having global error result
-  result.notFoundScanStatus = errorType;
-  result.homeScanStatus = errorType;
-  result.robotsTxtScanStatus = errorType;
-  result.sitemapXmlScanStatus = errorType;
-
-  result.targetUrlBaseDomain = getBaseDomain(url);
-
-  if (errorType === ScanStatus.UnknownError) {
-    logger.warn(`Unknown Error calling ${input.url}: ${error.message}`);
+  getScanStatus(error: Error, url: string, logger: Logger) {
+    const scanStatus = parseBrowserError(error);
+    if (scanStatus === ScanStatus.UnknownError) {
+      logger.warn(`Unknown Error calling ${url}: ${error.message}`);
+    }
+    return scanStatus;
   }
-
-  return result;
-};
+}

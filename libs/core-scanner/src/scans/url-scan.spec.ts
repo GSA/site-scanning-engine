@@ -19,15 +19,8 @@ describe('core scan', () => {
         finalUrlSameDomain: false,
         finalUrlSameWebsite: false,
         finalUrlStatusCode: 200,
-        homeScanStatus: 'completed',
-        notFoundScanStatus: 'completed',
-        robotsTxtScanStatus: 'completed',
-        sitemapXmlScanStatus: 'completed',
         targetUrlBaseDomain: '18f.gov',
         targetUrlRedirects: false,
-        website: {
-          id: 123,
-        },
       });
     });
   });

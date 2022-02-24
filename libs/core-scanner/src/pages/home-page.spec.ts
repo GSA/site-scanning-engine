@@ -46,12 +46,27 @@ describe('home page scanner', () => {
     const website = new Website();
     website.id = input.websiteId;
 
-    mockPage.evaluate.mockResolvedValueOnce('Page Title');
-    mockPage.evaluate.mockResolvedValueOnce('Page Description');
-    mockPage.evaluate.mockResolvedValueOnce(time.toString());
-    mockPage.evaluate.mockResolvedValueOnce(time.toString());
-    mockPage.evaluate.mockResolvedValueOnce(true);
-    mockPage.evaluate.mockResolvedValueOnce(4);
+    mockPage.evaluate.mockImplementation(async (_, target: string) => {
+      console.log(target);
+      const value = {
+        'og:title': 'Page Title',
+        'og:description': 'Page Description',
+        'article:published_date': time.toString(),
+        'article:modified_date': time.toString(),
+        undefined: time.toString(),
+      }[target];
+      if (!value) {
+        throw new Error(`Unexpected 'evaluate' target: ${target}`);
+      }
+      return value;
+    });
+
+    mockPage.evaluate.mockResolvedValueOnce('Page Title'); // 1. og:title
+    mockPage.evaluate.mockResolvedValueOnce(4); // 2. undefined
+    mockPage.evaluate.mockResolvedValueOnce('Page Description'); // 3. og:description
+    mockPage.evaluate.mockResolvedValueOnce(time.toString()); // 4. article:published_date
+    mockPage.evaluate.mockResolvedValueOnce(time.toString()); // 5. article:modified_date
+    mockPage.evaluate.mockResolvedValueOnce(true); // 6. undefined
 
     mockResponse.text.mockResolvedValue(source);
     mockResponse.url.mockReturnValue('https://18f.gsa.gov');
@@ -62,44 +77,47 @@ describe('home page scanner', () => {
     const result = await scanner(mockPage);
 
     expect(result).toEqual({
-      homeScanStatus: 'completed',
-      notFoundScanStatus: 'completed',
-      robotsTxtScanStatus: 'completed',
-      sitemapXmlScanStatus: 'completed',
-      website: {
-        id: 1,
+      dapScan: {
+        dapDetected: false,
+        dapParameters: undefined,
       },
-      finalUrl: 'https://18f.gsa.gov',
-      finalUrlBaseDomain: 'gsa.gov',
-      finalUrlIsLive: true,
-      finalUrlMIMEType: 'text/html',
-      finalUrlSameDomain: false,
-      finalUrlSameWebsite: false,
-      finalUrlStatusCode: 200,
-      targetUrlBaseDomain: '18f.gov',
-      targetUrlRedirects: true,
-      usaClasses: 4,
-      uswdsString: 1,
-      uswdsTables: 0,
-      uswdsInlineCss: 0,
-      uswdsUsFlag: 20,
-      uswdsStringInCss: 0,
-      uswdsUsFlagInCss: 0,
-      uswdsMerriweatherFont: 0,
-      uswdsPublicSansFont: 0,
-      uswdsSourceSansFont: 0,
-      uswdsCount: 25,
-      uswdsSemanticVersion: undefined,
-      uswdsVersion: 0,
-      dapDetected: false,
-      dapParameters: undefined,
-      ogTitleFinalUrl: 'Page Title',
-      ogDescriptionFinalUrl: 'Page Description',
-      ogArticlePublishedFinalUrl: time,
-      ogArticleModifiedFinalUrl: time,
-      mainElementFinalUrl: true,
-      thirdPartyServiceDomains: '',
-      thirdPartyServiceCount: 0,
+      seoScan: {
+        mainElementFinalUrl: true,
+        ogArticleModifiedFinalUrl: time,
+        ogArticlePublishedFinalUrl: time,
+        ogDescriptionFinalUrl: 'Page Description',
+        ogTitleFinalUrl: 'Page Title',
+      },
+      thirdPartyScan: {
+        thirdPartyServiceCount: 0,
+        thirdPartyServiceDomains: '',
+      },
+      urlScan: {
+        finalUrl: 'https://18f.gsa.gov',
+        finalUrlBaseDomain: 'gsa.gov',
+        finalUrlIsLive: true,
+        finalUrlMIMEType: 'text/html',
+        finalUrlSameDomain: false,
+        finalUrlSameWebsite: false,
+        finalUrlStatusCode: 200,
+        targetUrlBaseDomain: '18f.gov',
+        targetUrlRedirects: true,
+      },
+      uswdsScan: {
+        usaClasses: 4,
+        uswdsCount: 25,
+        uswdsInlineCss: 0,
+        uswdsMerriweatherFont: 0,
+        uswdsPublicSansFont: 0,
+        uswdsSemanticVersion: undefined,
+        uswdsSourceSansFont: 0,
+        uswdsString: 1,
+        uswdsStringInCss: 0,
+        uswdsTables: 0,
+        uswdsUsFlag: 20,
+        uswdsUsFlagInCss: 0,
+        uswdsVersion: 0,
+      },
     });
   });
 });
