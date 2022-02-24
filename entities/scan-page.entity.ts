@@ -9,6 +9,7 @@ type PageScan<T> =
     }
   | {
       status: Exclude<ScanStatus, ScanStatus.Completed>;
+      error: string;
     };
 
 export type HomePageScans = {

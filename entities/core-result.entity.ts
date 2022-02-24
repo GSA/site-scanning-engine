@@ -32,7 +32,9 @@ export class CoreResult {
 
     // Home page data
     coreResult.homeScanStatus = pages.home.status;
-    if (pages.home.status === ScanStatus.Completed) {
+    if (pages.home.status !== ScanStatus.Completed) {
+      coreResult.homeScanStatusDetails = pages.home.error;
+    } else {
       const result = pages.home.result;
       // DAP scan
       coreResult.dapDetected = result.dapScan.dapDetected;
@@ -80,13 +82,17 @@ export class CoreResult {
     }
 
     coreResult.notFoundScanStatus = pages.notFound.status;
-    if (pages.notFound.status === ScanStatus.Completed) {
+    if (pages.notFound.status !== ScanStatus.Completed) {
+      coreResult.notFoundScanStatusDetails = pages.notFound.error;
+    } else {
       coreResult.targetUrl404Test =
         pages.notFound.result.notFoundScan.targetUrl404Test;
     }
 
     coreResult.robotsTxtScanStatus = pages.robotsTxt.status;
-    if (pages.robotsTxt.status === ScanStatus.Completed) {
+    if (pages.robotsTxt.status !== ScanStatus.Completed) {
+      coreResult.robotsTxtScanStatusDetails = pages.robotsTxt.error;
+    } else {
       const robotsTxt = pages.robotsTxt.result.robotsTxtScan;
       coreResult.robotsTxtFinalUrlSize = robotsTxt.robotsTxtFinalUrlSize;
       coreResult.robotsTxtCrawlDelay = robotsTxt.robotsTxtCrawlDelay;
@@ -103,7 +109,9 @@ export class CoreResult {
     }
 
     coreResult.sitemapXmlScanStatus = pages.sitemapXml.status;
-    if (pages.sitemapXml.status === ScanStatus.Completed) {
+    if (pages.sitemapXml.status !== ScanStatus.Completed) {
+      coreResult.sitemapXmlScanStatusDetails = pages.sitemapXml.error;
+    } else {
       const sitemap = pages.sitemapXml.result.sitemapXmlScan;
       coreResult.sitemapXmlFinalUrlFilesize =
         sitemap.sitemapXmlFinalUrlFilesize;
@@ -153,6 +161,22 @@ export class CoreResult {
   @Column()
   @Expose({ name: 'sitemap_xml_scan_status' })
   sitemapXmlScanStatus: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'not_found_scan_status_unknown_details' })
+  notFoundScanStatusDetails?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'home_scan_status_unknown_details' })
+  homeScanStatusDetails?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'robots_txt_scan_status_unknown_details' })
+  robotsTxtScanStatusDetails?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'sitemap_xml_scan_status_unknown_details' })
+  sitemapXmlScanStatusDetails?: string;
 
   @Column()
   @Expose({ name: 'target_url_domain' })

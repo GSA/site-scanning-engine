@@ -33,11 +33,13 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
                 targetUrl404Test,
               },
             },
+            error: null,
           }),
           (error) => {
             return {
               status: this.getScanStatus(error, input.url, scanLogger),
               result: null,
+              error,
             };
           },
         ),
@@ -53,10 +55,12 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
             (result) => ({
               status: ScanStatus.Completed,
               result,
+              error: null,
             }),
             (error) => ({
               status: this.getScanStatus(error, input.url, scanLogger),
               result: null,
+              error,
             }),
           ),
         this.browserService
@@ -71,11 +75,13 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
             (result) => ({
               status: ScanStatus.Completed,
               result,
+              error: null,
             }),
             (error) => {
               return {
                 status: this.getScanStatus(error, input.url, scanLogger),
                 result: null,
+                error,
               };
             },
           ),
@@ -91,10 +97,12 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
             (result) => ({
               status: ScanStatus.Completed,
               result,
+              error: null,
             }),
             (error) => ({
               status: this.getScanStatus(error, input.url, scanLogger),
               result: null,
+              error,
             }),
           ),
       ]);
