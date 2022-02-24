@@ -10,6 +10,8 @@ import { Scanner } from 'libs/scanner.interface';
 
 import { CoreInputDto } from './core.input.dto';
 import * as pages from './pages';
+import { getBaseDomain } from './test-helper';
+import { getHttpsUrl } from './pages/helpers';
 
 @Injectable()
 export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
@@ -107,6 +109,9 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
           ),
       ]);
       const result = {
+        base: {
+          targetUrlBaseDomain: getBaseDomain(getHttpsUrl(input.url)),
+        },
         notFound,
         home,
         robotsTxt,

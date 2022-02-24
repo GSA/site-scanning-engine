@@ -16,7 +16,6 @@ export const buildUrlScanResult = (
   const finalUrl = getFinalUrl(page);
   return {
     targetUrlRedirects: redirects(redirectChain),
-    targetUrlBaseDomain: getBaseDomain(url),
     finalUrl: finalUrl,
     finalUrlMIMEType: getMIMEType(response),
     finalUrlIsLive: isLive(response),

@@ -11,10 +11,12 @@ import {
 
 import * as ScanPage from 'entities/scan-page.entity';
 import { ScanStatus } from 'entities/scan-status';
+import { BaseScan } from './scan-data.entity';
 import { Website } from './website.entity';
 
 // The CoreResult table includes all scan data. Create a type that represents this.
 type CoreResultPages = {
+  base: BaseScan;
   notFound: ScanPage.NotFoundPageScan;
   home: ScanPage.HomePageScan;
   robotsTxt: ScanPage.RobotsTxtPageScan;
@@ -29,6 +31,9 @@ export class CoreResult {
     const website = new Website();
     website.id = websiteId;
     coreResult.website = website;
+
+    // Base scan data
+    coreResult.targetUrlBaseDomain = pages.base.targetUrlBaseDomain;
 
     // Home page data
     coreResult.homeScanStatus = pages.home.status;
@@ -63,7 +68,6 @@ export class CoreResult {
       coreResult.finalUrlSameDomain = result.urlScan.finalUrlSameDomain;
       coreResult.finalUrlSameWebsite = result.urlScan.finalUrlSameWebsite;
       coreResult.finalUrlStatusCode = result.urlScan.finalUrlStatusCode;
-      coreResult.targetUrlBaseDomain = result.urlScan.targetUrlBaseDomain;
       coreResult.targetUrlRedirects = result.urlScan.targetUrlRedirects;
 
       coreResult.usaClasses = result.uswdsScan.usaClasses;
