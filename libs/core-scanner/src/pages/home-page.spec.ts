@@ -46,21 +46,6 @@ describe('home page scanner', () => {
     const website = new Website();
     website.id = input.websiteId;
 
-    mockPage.evaluate.mockImplementation(async (_, target: string) => {
-      console.log(target);
-      const value = {
-        'og:title': 'Page Title',
-        'og:description': 'Page Description',
-        'article:published_date': time.toString(),
-        'article:modified_date': time.toString(),
-        undefined: time.toString(),
-      }[target];
-      if (!value) {
-        throw new Error(`Unexpected 'evaluate' target: ${target}`);
-      }
-      return value;
-    });
-
     mockPage.evaluate.mockResolvedValueOnce('Page Title'); // 1. og:title
     mockPage.evaluate.mockResolvedValueOnce(4); // 2. undefined
     mockPage.evaluate.mockResolvedValueOnce('Page Description'); // 3. og:description
