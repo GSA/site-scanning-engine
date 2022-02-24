@@ -8,7 +8,7 @@ export enum ScanStatus {
   ConnectionReset = 'connection_reset',
 }
 
-export const parseBrowserError = (err: Error) => {
+export const parseBrowserError = (err: Error): ScanStatus => {
   if (err.name === 'TimeoutError') {
     return ScanStatus.Timeout;
   }

@@ -10,8 +10,8 @@ import {
 } from 'typeorm';
 
 import * as ScanPage from 'entities/scan-page.entity';
+import { ScanStatus } from 'entities/scan-status';
 import { Website } from './website.entity';
-import { ScanStatus } from '@app/core-scanner/scan-status';
 
 // The CoreResult table includes all scan data. Create a type that represents this.
 type CoreResultPages = {

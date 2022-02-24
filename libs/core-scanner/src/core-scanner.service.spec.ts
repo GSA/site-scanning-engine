@@ -10,10 +10,10 @@ import { PUPPETEER_TOKEN } from '@app/browser/puppeteer.service';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 
 import { CoreResult } from 'entities/core-result.entity';
+import { ScanStatus } from 'entities/scan-status';
 import { Website } from 'entities/website.entity';
 
 import { CoreScannerService } from './core-scanner.service';
-import { ScanStatus } from './scan-status';
 import {
   source,
   testRobotsTxt,

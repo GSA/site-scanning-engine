@@ -1,4 +1,4 @@
-import { ScanStatus } from '@app/core-scanner/scan-status';
+import { ScanStatus } from 'entities/scan-status';
 import * as ScanData from './scan-data.entity';
 
 // A page scan includes scan data and a status of "completed", or a non-completed status.

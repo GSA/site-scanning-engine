@@ -3,9 +3,9 @@ import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 import { Logger } from 'pino';
 
 import { BrowserService } from '@app/browser';
-import { parseBrowserError, ScanStatus } from '@app/core-scanner/scan-status';
 
 import { CoreResult } from 'entities/core-result.entity';
+import { parseBrowserError, ScanStatus } from 'entities/scan-status';
 import { Scanner } from 'libs/scanner.interface';
 
 import { CoreInputDto } from './core.input.dto';
