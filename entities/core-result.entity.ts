@@ -167,19 +167,19 @@ export class CoreResult {
   sitemapXmlScanStatus: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'not_found_scan_status_unknown_details' })
+  @Expose({ name: 'not_found_scan_status_details' })
   notFoundScanStatusDetails?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'home_scan_status_unknown_details' })
+  @Expose({ name: 'home_scan_status_details' })
   homeScanStatusDetails?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_scan_status_unknown_details' })
+  @Expose({ name: 'robots_txt_scan_status_details' })
   robotsTxtScanStatusDetails?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_scan_status_unknown_details' })
+  @Expose({ name: 'sitemap_xml_scan_status_details' })
   sitemapXmlScanStatusDetails?: string;
 
   @Column()
@@ -199,7 +199,7 @@ export class CoreResult {
   finalUrlBaseDomain?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_MIMEType' })
+  @Expose({ name: 'final_url_mimetype' })
   finalUrlMIMEType?: string;
 
   @Column({ nullable: true })
@@ -334,7 +334,7 @@ export class CoreResult {
   robotsTxtDetected?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url_MIMETYPE' })
+  @Expose({ name: 'robots_txt_final_url_mimetype' })
   robotsTxtFinalUrlMimeType?: string;
 
   @Column({ nullable: true })
@@ -342,7 +342,7 @@ export class CoreResult {
   robotsTxtTargetUrlRedirects?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url_size_in_bytes' })
+  @Expose({ name: 'robots_txt_final_url_filesize_in_bytes' })
   robotsTxtFinalUrlSize?: number;
 
   @Column({ nullable: true })
@@ -385,7 +385,7 @@ export class CoreResult {
   sitemapXmlFinalUrlFilesize?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url_MIMETYPE' })
+  @Expose({ name: 'sitemap_xml_final_url_mimetype' })
   sitemapXmlFinalUrlMimeType?: string;
 
   @Column({ nullable: true })

@@ -15,7 +15,7 @@ export const createCsv = (
       );
       const extra = Array.from(providedHeaders).filter((x) => !headers.has(x));
       throw new Error(
-        `Can't create CSV with missing nor extra fields. <Missing: ${JSON.stringify(
+        `Can't create CSV with missing or extra fields. <Missing: ${JSON.stringify(
           missing,
         )} Extra: ${JSON.stringify(extra)}`,
       );

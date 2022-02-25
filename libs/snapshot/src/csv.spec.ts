@@ -15,14 +15,14 @@ describe('csv creator', () => {
 
   it('errors on missing columns', () => {
     expect(() => csv.createCsv(MOCK_DATA, ['field1', 'field2'])).toThrow(
-      /missing nor extra fields/,
+      /missing or extra fields/,
     );
   });
 
   it('errors on extra columns', () => {
     expect(() =>
       csv.createCsv(MOCK_DATA, ['field1', 'field2', 'field3', 'field4']),
-    ).toThrow(/missing nor extra fields/);
+    ).toThrow(/missing or extra fields/);
   });
 });
 

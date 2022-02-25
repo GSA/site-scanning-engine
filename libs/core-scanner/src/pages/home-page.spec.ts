@@ -85,7 +85,6 @@ describe('home page scanner', () => {
         finalUrlSameDomain: false,
         finalUrlSameWebsite: false,
         finalUrlStatusCode: 200,
-        targetUrlBaseDomain: '18f.gov',
         targetUrlRedirects: true,
       },
       uswdsScan: {

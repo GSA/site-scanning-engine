@@ -5,7 +5,7 @@ import { newTestPage } from '../test-helper';
 import { buildSeoResult } from './seo';
 
 describe('seo scan', () => {
-  it('non-navigation different domains treated as third-parties', async () => {
+  it('works', async () => {
     await newTestPage(async ({ page }) => {
       const result = await buildSeoResult(mock<Logger>(), page);
       expect(result).toEqual({
