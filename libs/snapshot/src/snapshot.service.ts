@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Parser, transforms } from 'json2csv';
 
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { StorageService } from '@app/storage';
 
 import { Website } from 'entities/website.entity';
 import { DatetimeService } from 'libs/datetime/src';
+import { createCsv } from './csv';
 
 @Injectable()
 export class SnapshotService {
@@ -65,17 +65,7 @@ export class SnapshotService {
     const serializedResults = results.map((website) => {
       return website.serialized();
     });
-    const parser = new Parser({
-      transforms: [
-        transforms.flatten({
-          objects: true,
-          arrays: false,
-          separator: '_',
-        }),
-      ],
-    });
-    const csv = parser.parse(serializedResults);
-    return csv;
+    return createCsv(serializedResults, CSV_COLUMN_ORDER);
   }
 
   private async save(fileName: string, data: string) {
@@ -86,3 +76,74 @@ export class SnapshotService {
     await this.storageService.copy(fileName, newName);
   }
 }
+
+/*
+  Column order for snapshot CSV.
+  NOTE: If new columns are added to the database, they *must* also be added
+  here. This requirement exists to guarantee that CSV column order is
+  never implicitly determined, as there are users who depend on the CSV order
+  never changing.
+*/
+const CSV_COLUMN_ORDER = [
+  'target_url',
+  'target_url_domain',
+  'final_url',
+  'final_url_domain',
+  'final_url_MIMEType',
+  'final_url_live',
+  'target_url_redirects',
+  'final_url_same_domain',
+  'final_url_same_website',
+  'target_url_agency_owner',
+  'target_url_bureau_owner',
+  'final_url_status_code',
+  'target_url_404_test',
+  'target_url_agency_code',
+  'target_url_bureau_code',
+  'scan_date',
+  'scan_status',
+  'solutions_scan_date',
+  'solutions_scan_status',
+  'robots_txt_scan_date',
+  'robots_txt_scan_status',
+  'sitemap_xml_scan_date',
+  'sitemap_xml_scan_status',
+  'uswds_favicon',
+  'uswds_favicon_in_css',
+  'uswds_merriweather_font_in_css',
+  'uswds_public_sans_font_in_css',
+  'uswds_source_sans_font_in_css',
+  'uswds_tables',
+  'uswds_count',
+  'uswds_usa_classes',
+  'uswds_inline_css',
+  'uswds_string',
+  'uswds_string_in_css',
+  'uswds_semantic_version',
+  'uswds_version',
+  'dap_detected_final_url',
+  'dap_parameters_final_url',
+  'og_article_published_time_final_url',
+  'og_article_modified_time_final_url',
+  'og_title_final_url',
+  'og_description_final_url',
+  'main_element_final_url',
+  'robots_txt_final_url',
+  'robots_txt_final_url_live',
+  'robots_txt_target_url_redirects',
+  'robots_txt_final_url_filesize',
+  'robots_txt_crawl_delay',
+  'robots_txt_sitemap_locations',
+  'robots_txt_detected',
+  'robots_txt_final_url_MIMETYPE',
+  'sitemap_xml_final_url',
+  'sitemap_xml_final_url_live',
+  'sitemap_xml_target_url_redirects',
+  'sitemap_xml_final_url_filesize',
+  'sitemap_xml_final_url_MIMETYPE',
+  'sitemap_xml_count',
+  'sitemap_xml_pdf_count',
+  'sitemap_xml_detected',
+  'third_party_service_domains',
+  'third_party_count',
+];
