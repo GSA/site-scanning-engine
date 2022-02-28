@@ -1,6 +1,6 @@
 # How to Deploy Site-Scanner
 
-Site-Scanner uses different deployment techniques dased on where it will
+Site-Scanner uses different deployment techniques, depending on where it will
 be deployed.  For deployments to the cloud.gov environment, several
 buildpacks are used (nodejs, apt); for local deployments, Docker (for
 the application) and Docker-Compose (for required services) are used.
@@ -25,7 +25,7 @@ root directory.  This file includes parameters needed to start the
 required services and for the Scan Engine to interact with them.
 
 A sample configuration file is available in [sample.env](../sample.env)
-with serveral `<add_a_key_here>` indicators.  These need to be
+with several `<add_a_key_here>` indicators.  These need to be
 replaced with actual keys.  The file should be copied to `.env` (e.g.,
 `cp sample.env .env`), not moved or updated in-place.
 
@@ -92,7 +92,29 @@ cf login --sso
 ```
 
 Be sure to target the correct organization and space (environment)
-so that updates are pushed to the correct service.
+so that updates are pushed to the correct service:
+
+```bash
+ORGANIZATION=the_organization \
+SPACE=the_space \
+cf target -o "$ORGANIZATION" -s "$SPACE"
+```
+
+Here, `$ORGANIZATION` and `$SPACE` are the orgnization and space,
+respectively.  To list the organizations one may access, use:
+
+```bash
+cf orgs
+```
+
+...and to list spaces, use:
+
+```bash
+cf spaces
+```
+
+(note: you'll need to be authenticated in order for `cf orgs` or
+`cf spaces` to work)
 
 Then, use the `cloudgov-deploy.sh` script to push the changes to the
 desired space (environment):
