@@ -1,6 +1,6 @@
 ---
 # don't use Mega-Linter to test the reports Mega-Linter created
-ADDITIONAL_EXCLUDED_DIRECTORIES: [report]
+ADDITIONAL_EXCLUDED_DIRECTORIES: [report, venv]
 
 # don't scan files listed in .gitignore (e.g., node_modules)
 IGNORE_GITIGNORED_FILES: true
