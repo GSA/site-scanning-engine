@@ -1,6 +1,6 @@
 # How to Deploy Site-Scanner
 
-Site-Scanner uses different deployment techniques dased on where it will
+Site-Scanner uses different deployment techniques, depending on where it will
 be deployed.  For deployments to the cloud.gov environment, several
 buildpacks are used (nodejs, apt); for local deployments, Docker (for
 the application) and Docker-Compose (for required services) are used.
