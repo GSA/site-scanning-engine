@@ -25,7 +25,7 @@ root directory.  This file includes parameters needed to start the
 required services and for the Scan Engine to interact with them.
 
 A sample configuration file is available in [sample.env](../sample.env)
-with serveral `<add_a_key_here>` indicators.  These need to be
+with several `<add_a_key_here>` indicators.  These need to be
 replaced with actual keys.  The file should be copied to `.env` (e.g.,
 `cp sample.env .env`), not moved or updated in-place.
 
