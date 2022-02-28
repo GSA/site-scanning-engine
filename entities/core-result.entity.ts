@@ -1,4 +1,5 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { classToPlain, Exclude, Expose, Transform } from 'class-transformer';
+
 import {
   Column,
   CreateDateColumn,
@@ -410,4 +411,9 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'third_party_service_count' })
   thirdPartyServiceCount?: number;
+
+  static getColumnNames(): string[] {
+    // return class-transformer version of column names
+    return Object.keys(classToPlain(new CoreResult()));
+  }
 }

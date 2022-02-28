@@ -1,27 +1,26 @@
 import * as _ from 'lodash';
 import { Parser, transforms } from 'json2csv';
 
+// Raise an exception if `orderedFields` is missing or has more fields than `allFields`.
+export const ensureAllFields = (
+  headers: Set<string>,
+  providedHeaders: Set<string>,
+) => {
+  if (!_.isEqual(headers, providedHeaders)) {
+    const missing = Array.from(headers).filter((x) => !providedHeaders.has(x));
+    const extra = Array.from(providedHeaders).filter((x) => !headers.has(x));
+    throw new Error(
+      `Can't create CSV with missing or extra fields. <Missing: ${JSON.stringify(
+        missing,
+      )} Extra: ${JSON.stringify(extra)}`,
+    );
+  }
+};
+
 export const createCsv = (
   rows: { [x: string]: any }[],
   fieldOrder: string[],
 ) => {
-  // Don't allow creating a CSV with columns missing from `fieldOrder` nor extra fields..
-  if (rows.length > 0) {
-    const headers = new Set(Object.keys(rows[0]));
-    const providedHeaders = new Set(fieldOrder);
-    if (!_.isEqual(headers, providedHeaders)) {
-      const missing = Array.from(headers).filter(
-        (x) => !providedHeaders.has(x),
-      );
-      const extra = Array.from(providedHeaders).filter((x) => !headers.has(x));
-      throw new Error(
-        `Can't create CSV with missing or extra fields. <Missing: ${JSON.stringify(
-          missing,
-        )} Extra: ${JSON.stringify(extra)}`,
-      );
-    }
-  }
-
   const parser = new Parser({
     fields: fieldOrder,
     transforms: [

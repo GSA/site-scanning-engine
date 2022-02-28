@@ -5,7 +5,8 @@ import { StorageService } from '@app/storage';
 
 import { Website } from 'entities/website.entity';
 import { DatetimeService } from 'libs/datetime/src';
-import { createCsv } from './csv';
+import * as csv from './csv';
+import { CoreResult } from 'entities/core-result.entity';
 
 @Injectable()
 export class SnapshotService {
@@ -62,10 +63,16 @@ export class SnapshotService {
   }
 
   private serializeToCsv(results: Website[]) {
+    // Throw an exception if there's a mismatch between CSV_COLUMN_ORDER and the CoreResult entity.
+    csv.ensureAllFields(
+      new Set([...CoreResult.getColumnNames(), ...Website.getColumnNames()]),
+      new Set(CSV_COLUMN_ORDER),
+    );
+
     const serializedResults = results.map((website) => {
       return website.serialized();
     });
-    return createCsv(serializedResults, CSV_COLUMN_ORDER);
+    return csv.createCsv(serializedResults, CSV_COLUMN_ORDER);
   }
 
   private async save(fileName: string, data: string) {
