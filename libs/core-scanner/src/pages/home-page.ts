@@ -1,22 +1,22 @@
+import * as _ from 'lodash';
 import { Logger } from 'pino';
 import { Page } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { buildCoreResult } from '@app/core-scanner/scans/core';
-import { SolutionsResult } from 'entities/solutions-result.entity';
-import { Website } from 'entities/website.entity';
+import { buildUrlScanResult } from '@app/core-scanner/scans/url-scan';
+import { HomePageScans } from 'entities/scan-page.entity';
 
 import { buildDapResult } from '../scans/dap';
 import { buildSeoResult } from '../scans/seo';
 import { buildThirdPartyResult } from '../scans/third-party';
 import { createUswdsScanner } from '../scans/uswds';
+import { promiseAll } from '../util';
 
 import {
   createCSSRequestsExtractor,
   createOutboundRequestsExtractor,
 } from './extractors';
 import { getHttpsUrl } from './helpers';
-import { ScanStatus } from '../scan-status';
 
 export const createHomePageScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
@@ -28,7 +28,7 @@ const homePageScan = async (
   logger: Logger,
   input: CoreInputDto,
   page: Page,
-) => {
+): Promise<HomePageScans> => {
   const url = getHttpsUrl(input.url);
 
   logger.info('Processing main page...');
@@ -41,32 +41,19 @@ const homePageScan = async (
     waitUntil: 'networkidle2',
   });
 
-  const [dapResult, thirdPartyResult, seoResult, uswdsResult] =
-    await Promise.all([
-      await buildDapResult(getOutboundRequests()),
-      await buildThirdPartyResult(response, getOutboundRequests()),
-      await buildSeoResult(logger, page),
-      await createUswdsScanner({ logger, getCSSRequests }, page)(response),
-    ]);
-  const coreResult = buildCoreResult(input, page, response);
+  const [dapScan, thirdPartyScan, seoScan, uswdsScan] = await promiseAll([
+    buildDapResult(getOutboundRequests()),
+    buildThirdPartyResult(response, getOutboundRequests()),
+    buildSeoResult(logger, page),
+    createUswdsScanner({ logger, getCSSRequests }, page)(response),
+  ]);
+  const urlScan = buildUrlScanResult(input, page, response);
 
   return {
-    coreResult,
-    solutionsResult: {
-      status: ScanStatus.Completed,
-      ...buildResultObject(input.websiteId),
-      ...dapResult,
-      ...seoResult,
-      ...thirdPartyResult,
-      ...uswdsResult,
-    },
+    urlScan,
+    dapScan,
+    seoScan,
+    thirdPartyScan,
+    uswdsScan,
   };
-};
-
-const buildResultObject = (websiteId: number): SolutionsResult => {
-  const result = new SolutionsResult();
-  const website = new Website();
-  website.id = websiteId;
-  result.website = website;
-  return result;
 };

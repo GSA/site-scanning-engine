@@ -1,7 +1,12 @@
 import { Logger } from 'pino';
 import { Page } from 'puppeteer';
 
-export const buildSeoResult = async (logger: Logger, page: Page) => {
+import { SeoScan } from 'entities/scan-data.entity';
+
+export const buildSeoResult = async (
+  logger: Logger,
+  page: Page,
+): Promise<SeoScan> => {
   // seo
   return {
     ogTitleFinalUrl: await findOpenGraphTag(page, 'og:title'),

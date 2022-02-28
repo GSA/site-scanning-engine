@@ -1,6 +1,8 @@
-import { Logger } from 'pino';
 import { sum, uniq } from 'lodash';
+import { Logger } from 'pino';
 import { Page, HTTPResponse } from 'puppeteer';
+
+import { UswdsScan } from 'entities/scan-data.entity';
 
 export const createUswdsScanner = (
   {
@@ -24,7 +26,7 @@ export const buildUswdsResult = async (
   cssPages: string[],
   htmlText: string,
   page: Page,
-) => {
+): Promise<UswdsScan> => {
   const uswdsSemanticVersion = uswdsSemVer(logger, cssPages);
   const result = {
     usaClasses: await usaClassesCount(page),

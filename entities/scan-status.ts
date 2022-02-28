@@ -8,7 +8,7 @@ export enum ScanStatus {
   ConnectionReset = 'connection_reset',
 }
 
-export const parseBrowserError = (err: Error) => {
+export const parseBrowserError = (err: Error): ScanStatus => {
   if (err.name === 'TimeoutError') {
     return ScanStatus.Timeout;
   }
@@ -34,8 +34,5 @@ export const parseBrowserError = (err: Error) => {
     return ScanStatus.ConnectionReset;
   }
 
-  // TODO: revisit this. for now, return the error message so we can accumulate
-  // actual error messages in the database status column.
-  return err.message;
-  //return ScanStatus.UnknownError;
+  return ScanStatus.UnknownError;
 };

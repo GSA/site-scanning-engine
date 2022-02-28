@@ -7,7 +7,7 @@ import { getHttpsUrl } from './helpers';
 export const createNotFoundScanner = async (
   httpService: HttpService,
   url: string,
-) => {
+): Promise<boolean> => {
   const httpsUrl = getHttpsUrl(url);
   const randomUrl = new URL(httpsUrl);
   randomUrl.pathname = `not-found-test${v4()}`;

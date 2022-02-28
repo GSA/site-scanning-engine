@@ -2,7 +2,6 @@ import { WebsiteService } from '@app/database/websites/websites.service';
 import { StorageService } from '@app/storage';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoreResult } from 'entities/core-result.entity';
-import { SolutionsResult } from 'entities/solutions-result.entity';
 import { Website } from 'entities/website.entity';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { DatetimeService } from 'libs/datetime/src';
@@ -51,15 +50,15 @@ describe('SnapshotService', () => {
   it('should serialize the database results to JSON and save in Storage', async () => {
     const website = new Website();
     const coreResult = new CoreResult();
-    const solutionsResult = new SolutionsResult();
     const date = new Date();
     const copyDate = new Date(date);
     mockDatetimeService.now.mockReturnValue(date);
 
-    coreResult.status = 'completed';
-    solutionsResult.status = 'completed';
+    coreResult.notFoundScanStatus = 'completed';
+    coreResult.homeScanStatus = 'completed';
+    coreResult.robotsTxtScanStatus = 'completed';
+    coreResult.sitemapXmlScanStatus = 'completed';
 
-    website.solutionsResult = solutionsResult;
     website.coreResult = coreResult;
     website.url = '18f.gov';
 
