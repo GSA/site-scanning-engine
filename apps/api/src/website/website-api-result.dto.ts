@@ -1,4 +1,4 @@
-import { ScanStatus } from '@app/core-scanner/scan-status';
+import { ScanStatus } from 'entities/scan-status';
 
 export class WebsiteApiResultDto {
   /**

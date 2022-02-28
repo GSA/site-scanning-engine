@@ -1,12 +1,12 @@
 import { Browser } from 'puppeteer';
 import { newTestPage } from '../test-helper';
-import { buildCoreResult } from './core';
+import { buildUrlScanResult } from './url-scan';
 
 describe('core scan', () => {
   it('works', async () => {
     await newTestPage(async ({ page, response, sourceUrl }) => {
       expect(
-        buildCoreResult(
+        buildUrlScanResult(
           { websiteId: 123, scanId: 'asdf', url: 'https://www.18f.gov' },
           page,
           response,
@@ -19,12 +19,8 @@ describe('core scan', () => {
         finalUrlSameDomain: false,
         finalUrlSameWebsite: false,
         finalUrlStatusCode: 200,
-        status: 'completed',
         targetUrlBaseDomain: '18f.gov',
         targetUrlRedirects: false,
-        website: {
-          id: 123,
-        },
       });
     });
   });

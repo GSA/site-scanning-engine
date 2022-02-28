@@ -1,5 +1,5 @@
+import * as _ from 'lodash';
 import { join } from 'path';
-
 import * as puppeteer from 'puppeteer';
 
 // This should map to the directory containing the package.json.
@@ -49,4 +49,11 @@ export const newTestPage = async (
     });
     await handler({ page, response, sourceUrl });
   });
+};
+
+// 18f.gsa.gov -> gsa.gov
+export const getBaseDomain = (url: string) => {
+  const parsedUrl = new URL(url);
+  const baseDomain = _.takeRight(_.split(parsedUrl.hostname, '.'), 2);
+  return _.join(baseDomain, '.');
 };
