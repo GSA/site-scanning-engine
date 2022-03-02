@@ -26,7 +26,7 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
     const scanLogger = this.logger.logger.child(input);
 
     const scanData = await this.browserService.useBrowser(async (browser) => {
-      const [notFound, home, robotsTxt, sitemapXml] = await Promise.all([
+      const [notFound, home, robotsTxt, sitemapXml, dns] = await Promise.all([
         pages.createNotFoundScanner(this.httpService, input.url).then(
           (targetUrl404Test) => ({
             status: ScanStatus.Completed,
@@ -107,6 +107,24 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
               error,
             }),
           ),
+        pages.dnsScan(scanLogger, input.url).then(
+          (ipv6) => ({
+            status: ScanStatus.Completed,
+            result: {
+              dnsScan: {
+                ipv6,
+              },
+            },
+            error: null,
+          }),
+          (error) => {
+            return {
+              status: this.getScanStatus(error, input.url, scanLogger),
+              result: null,
+              error,
+            };
+          },
+        ),
       ]);
       const result = {
         base: {
@@ -116,6 +134,7 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
         home,
         robotsTxt,
         sitemapXml,
+        dns,
       };
       scanLogger.info({ result }, 'solutions scan results');
       return result;

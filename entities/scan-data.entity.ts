@@ -74,3 +74,7 @@ export type SitemapXmlScan = {
 export type NotFoundScan = {
   targetUrl404Test: boolean;
 };
+
+export type DnsScan = {
+  ipv6: boolean;
+};
