@@ -35,3 +35,8 @@ export type NotFoundPageScans = {
   notFoundScan: ScanData.NotFoundScan;
 };
 export type NotFoundPageScan = PageScan<NotFoundPageScans>;
+
+export type DnsScans = {
+  dnsScan: ScanData.DnsScan;
+};
+export type DnsPageScan = PageScan<DnsScans>;

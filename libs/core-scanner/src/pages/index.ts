@@ -1,3 +1,4 @@
+export * from './dns';
 export * from './home-page';
 export * from './not-found';
 export * from './robots-txt';
