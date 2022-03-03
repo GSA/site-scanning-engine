@@ -1,5 +1,11 @@
 # Site Scanning Engine
 
+[![CodeQL](https://github.com/GSA/site-scanning-engine/actions/workflows/codeql.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/codeql.yml)
+[![Semgrep](https://github.com/GSA/site-scanning-engine/actions/workflows/semgrep.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/semgrep.yml)
+[![Snyk Scan](https://github.com/GSA/site-scanning-engine/actions/workflows/snyk.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/snyk.yml)
+[![MegaLinter](https://github.com/GSA/site-scanning-engine/actions/workflows/megalinter.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/megalinter.yml)
+[![woke](https://github.com/GSA/site-scanning-engine/actions/workflows/woke.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/woke.yml)
+
 ## Description
 
 _Note: The project is a work in progress and APIs are unstable._

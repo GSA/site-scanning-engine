@@ -22,6 +22,7 @@ type CoreResultPages = {
   home: ScanPage.HomePageScan;
   robotsTxt: ScanPage.RobotsTxtPageScan;
   sitemapXml: ScanPage.SitemapXmlPageScan;
+  dns: ScanPage.DnsPageScan;
 };
 
 @Entity()
@@ -131,6 +132,13 @@ export class CoreResult {
       coreResult.sitemapXmlDetected = sitemap.sitemapXmlDetected;
     }
 
+    coreResult.dnsScanStatus = pages.dns.status;
+    if (pages.dns.status !== ScanStatus.Completed) {
+      coreResult.dnsScanStatus = pages.dns.error;
+    } else {
+      coreResult.dnsIpv6 = pages.dns.result.dnsScan.ipv6;
+    }
+
     return coreResult;
   }
 
@@ -182,6 +190,10 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'sitemap_xml_scan_status_details' })
   sitemapXmlScanStatusDetails?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'dns_scan_status' })
+  dnsScanStatus?: string;
 
   @Column()
   @Expose({ name: 'target_url_domain' })
@@ -411,6 +423,10 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'third_party_service_count' })
   thirdPartyServiceCount?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'dns_ipv6' })
+  dnsIpv6?: boolean;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names
