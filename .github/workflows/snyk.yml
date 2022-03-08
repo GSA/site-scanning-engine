@@ -17,16 +17,7 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          json: true
-
-      - name: convert Snyk JSON output to SARIF file
-        uses: garethr/snyk-to-sarif@master
-
-      - name: upload SARIF artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: SARIF
-          path: snyk.sarif
+          args: --sarif-file-output=snyk.sarif
 
       - name: Upload the SARIF file
         uses: github/codeql-action/upload-sarif@v1
