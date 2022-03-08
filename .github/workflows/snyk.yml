@@ -1,11 +1,34 @@
+---
+
 name: Snyk Scan
+
+# yamllint disable-line rule:truthy
 on: push
 jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - name: checkout code
+        uses: actions/checkout@master
+
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          json: true
+
+      - name: convert Snyk JSON output to SARIF file
+        uses: garethr/snyk-to-sarif@master
+
+      - name: upload SARIF artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SARIF
+          path: snyk.sarif
+
+      - name: Upload the SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: snyk.sarif
