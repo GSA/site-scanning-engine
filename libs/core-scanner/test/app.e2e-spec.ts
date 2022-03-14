@@ -1,25 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { mock } from 'jest-mock-extended';
-import { getLoggerToken, PinoLogger } from 'nestjs-pino';
+import { LoggerModule } from 'nestjs-pino';
 
+import { BrowserModule } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+import { CoreResult } from 'entities/core-result.entity';
 
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;
   let moduleFixture: TestingModule;
-  let mockLogger: PinoLogger;
 
   beforeEach(async () => {
-    mockLogger = mock<PinoLogger>();
     moduleFixture = await Test.createTestingModule({
-      imports: [CoreScannerModule],
-      providers: [
-        {
-          provide: getLoggerToken(CoreScannerService.name),
-          useValue: mockLogger,
-        },
-      ],
+      imports: [BrowserModule, CoreScannerModule, LoggerModule.forRoot()],
     }).compile();
 
     service = moduleFixture.get<CoreScannerService>(CoreScannerService);
@@ -61,8 +54,9 @@ describe('CoreScanner (e2e)', () => {
       mainElementFinalUrl: true,
       ogArticleModifiedFinalUrl: undefined,
       ogArticlePublishedFinalUrl: undefined,
-      ogDescriptionFinalUrl: null,
-      ogTitleFinalUrl: null,
+      ogDescriptionFinalUrl:
+        '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
+      ogTitleFinalUrl: '18F: Digital service delivery | Home',
       robotsTxtCrawlDelay: undefined,
       robotsTxtDetected: true,
       robotsTxtFinalUrl: 'https://18f.gsa.gov/robots.txt',

@@ -66,4 +66,9 @@ export class Website {
 
     return aggregate;
   }
+
+  static getColumnNames(): string[] {
+    // return class-transformer version of column names
+    return Object.keys(classToPlain(new Website()));
+  }
 }

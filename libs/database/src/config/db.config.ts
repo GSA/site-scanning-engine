@@ -20,7 +20,7 @@ export default () => {
     return {
       database: {
         url: `postgresql://${pgUser}:${pgPassword}@${dbHost}:${dbPort}`,
-        ssl: process.env.NODE_ENV !== 'dev',
+        ssl: process.env.NODE_ENV !== 'dev' && process.env.NODE_ENV !== 'test',
       },
     };
   }

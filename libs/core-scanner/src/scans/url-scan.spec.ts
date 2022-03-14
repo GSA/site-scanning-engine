@@ -19,7 +19,6 @@ describe('core scan', () => {
         finalUrlSameDomain: false,
         finalUrlSameWebsite: false,
         finalUrlStatusCode: 200,
-        targetUrlBaseDomain: '18f.gov',
         targetUrlRedirects: false,
       });
     });
