@@ -66,6 +66,8 @@ describe('ScanEngineConsumer', () => {
     const coreResult = new CoreResult();
     coreResult.id = 1;
     await consumer.processCore(mockCoreJob);
-    expect(mockCoreResultService.create).toHaveBeenCalledWith(coreResult);
+    expect(
+      mockCoreResultService.createFromCoreResultPages,
+    ).toHaveBeenCalledWith(input.websiteId, coreResult, consumer['logger']);
   });
 });
