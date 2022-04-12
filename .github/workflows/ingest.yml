@@ -20,7 +20,7 @@ jobs:
 
     steps:
       - name: run ingest cli job in chosen space
-        uses: danielnaab/cg-cli-tools@no-exec
+        uses: cloud-gov/cg-cli-tools
         with:
           cf_api: https://api.fr.cloud.gov
           cf_username: ${{ secrets.CF_USERNAME }}
