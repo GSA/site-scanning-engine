@@ -42,7 +42,7 @@ jobs:
           push_arguments: '--vars-file vars.yml site-scanner-consumer'
 
       - name: scale consumer
-        uses: cloud-gov/cg-cli-tools@main@main
+        uses: cloud-gov/cg-cli-tools@main
         with:
           cf_api: https://api.fr.cloud.gov
           cf_username: ${{ secrets.CF_USERNAME }}
