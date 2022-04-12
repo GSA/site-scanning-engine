@@ -1,5 +1,5 @@
 import { classToPlain, Exclude, Expose, Transform } from 'class-transformer';
-
+import { Logger } from 'pino';
 import {
   Column,
   CreateDateColumn,
@@ -16,7 +16,7 @@ import { BaseScan } from './scan-data.entity';
 import { Website } from './website.entity';
 
 // The CoreResult table includes all scan data. Create a type that represents this.
-type CoreResultPages = {
+export type CoreResultPages = {
   base: BaseScan;
   notFound: ScanPage.NotFoundPageScan;
   home: ScanPage.HomePageScan;
@@ -27,120 +27,6 @@ type CoreResultPages = {
 
 @Entity()
 export class CoreResult {
-  static fromScanData(websiteId: number, pages: CoreResultPages) {
-    const coreResult = new CoreResult();
-
-    const website = new Website();
-    website.id = websiteId;
-    coreResult.website = website;
-
-    // Base scan data
-    coreResult.targetUrlBaseDomain = pages.base.targetUrlBaseDomain;
-
-    // Home page data
-    coreResult.homeScanStatus = pages.home.status;
-    if (pages.home.status !== ScanStatus.Completed) {
-      coreResult.homeScanStatusDetails = pages.home.error;
-    } else {
-      const result = pages.home.result;
-      // DAP scan
-      coreResult.dapDetected = result.dapScan.dapDetected;
-      coreResult.dapParameters = result.dapScan.dapParameters;
-
-      // SEO scan
-      coreResult.mainElementFinalUrl = result.seoScan.mainElementFinalUrl;
-      coreResult.ogArticleModifiedFinalUrl =
-        result.seoScan.ogArticleModifiedFinalUrl;
-      coreResult.ogArticlePublishedFinalUrl =
-        result.seoScan.ogArticlePublishedFinalUrl;
-      coreResult.ogDescriptionFinalUrl = result.seoScan.ogDescriptionFinalUrl;
-      coreResult.ogTitleFinalUrl = result.seoScan.ogTitleFinalUrl;
-
-      // Third-party scan
-      coreResult.thirdPartyServiceCount =
-        result.thirdPartyScan.thirdPartyServiceCount;
-      coreResult.thirdPartyServiceDomains =
-        result.thirdPartyScan.thirdPartyServiceDomains;
-
-      // Url scan
-      coreResult.finalUrl = result.urlScan.finalUrl;
-      coreResult.finalUrlBaseDomain = result.urlScan.finalUrlBaseDomain;
-      coreResult.finalUrlIsLive = result.urlScan.finalUrlIsLive;
-      coreResult.finalUrlMIMEType = result.urlScan.finalUrlMIMEType;
-      coreResult.finalUrlSameDomain = result.urlScan.finalUrlSameDomain;
-      coreResult.finalUrlSameWebsite = result.urlScan.finalUrlSameWebsite;
-      coreResult.finalUrlStatusCode = result.urlScan.finalUrlStatusCode;
-      coreResult.targetUrlRedirects = result.urlScan.targetUrlRedirects;
-
-      coreResult.usaClasses = result.uswdsScan.usaClasses;
-      coreResult.uswdsString = result.uswdsScan.uswdsString;
-      coreResult.uswdsTables = result.uswdsScan.uswdsTables;
-      coreResult.uswdsInlineCss = result.uswdsScan.uswdsInlineCss;
-      coreResult.uswdsUsFlag = result.uswdsScan.uswdsUsFlag;
-      coreResult.uswdsUsFlagInCss = result.uswdsScan.uswdsUsFlagInCss;
-      coreResult.uswdsStringInCss = result.uswdsScan.uswdsStringInCss;
-      coreResult.uswdsMerriweatherFont = result.uswdsScan.uswdsMerriweatherFont;
-      coreResult.uswdsPublicSansFont = result.uswdsScan.uswdsPublicSansFont;
-      coreResult.uswdsSourceSansFont = result.uswdsScan.uswdsSourceSansFont;
-      coreResult.uswdsSemanticVersion = result.uswdsScan.uswdsSemanticVersion;
-      coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
-      coreResult.uswdsCount = result.uswdsScan.uswdsCount;
-    }
-
-    coreResult.notFoundScanStatus = pages.notFound.status;
-    if (pages.notFound.status !== ScanStatus.Completed) {
-      coreResult.notFoundScanStatusDetails = pages.notFound.error;
-    } else {
-      coreResult.targetUrl404Test =
-        pages.notFound.result.notFoundScan.targetUrl404Test;
-    }
-
-    coreResult.robotsTxtScanStatus = pages.robotsTxt.status;
-    if (pages.robotsTxt.status !== ScanStatus.Completed) {
-      coreResult.robotsTxtScanStatusDetails = pages.robotsTxt.error;
-    } else {
-      const robotsTxt = pages.robotsTxt.result.robotsTxtScan;
-      coreResult.robotsTxtFinalUrlSize = robotsTxt.robotsTxtFinalUrlSize;
-      coreResult.robotsTxtCrawlDelay = robotsTxt.robotsTxtCrawlDelay;
-      coreResult.robotsTxtSitemapLocations =
-        robotsTxt.robotsTxtSitemapLocations;
-      coreResult.robotsTxtFinalUrl = robotsTxt.robotsTxtFinalUrl;
-      coreResult.robotsTxtFinalUrlLive = robotsTxt.robotsTxtFinalUrlLive;
-      coreResult.robotsTxtTargetUrlRedirects =
-        robotsTxt.robotsTxtTargetUrlRedirects;
-      coreResult.robotsTxtFinalUrlMimeType =
-        robotsTxt.robotsTxtFinalUrlMimeType;
-      coreResult.robotsTxtStatusCode = robotsTxt.robotsTxtStatusCode;
-      coreResult.robotsTxtDetected = robotsTxt.robotsTxtDetected;
-    }
-
-    coreResult.sitemapXmlScanStatus = pages.sitemapXml.status;
-    if (pages.sitemapXml.status !== ScanStatus.Completed) {
-      coreResult.sitemapXmlScanStatusDetails = pages.sitemapXml.error;
-    } else {
-      const sitemap = pages.sitemapXml.result.sitemapXmlScan;
-      coreResult.sitemapXmlFinalUrlFilesize =
-        sitemap.sitemapXmlFinalUrlFilesize;
-      coreResult.sitemapXmlCount = sitemap.sitemapXmlCount;
-      coreResult.sitemapXmlPdfCount = sitemap.sitemapXmlPdfCount;
-      coreResult.sitemapXmlFinalUrl = sitemap.sitemapXmlFinalUrl;
-      coreResult.sitemapXmlFinalUrlLive = sitemap.sitemapXmlFinalUrlLive;
-      coreResult.sitemapTargetUrlRedirects = sitemap.sitemapTargetUrlRedirects;
-      coreResult.sitemapXmlFinalUrlMimeType =
-        sitemap.sitemapXmlFinalUrlMimeType;
-      coreResult.sitemapXmlStatusCode = sitemap.sitemapXmlStatusCode;
-      coreResult.sitemapXmlDetected = sitemap.sitemapXmlDetected;
-    }
-
-    coreResult.dnsScanStatus = pages.dns.status;
-    if (pages.dns.status !== ScanStatus.Completed) {
-      coreResult.dnsScanStatus = pages.dns.error;
-    } else {
-      coreResult.dnsIpv6 = pages.dns.result.dnsScan.ipv6;
-    }
-
-    return coreResult;
-  }
 
   @PrimaryGeneratedColumn()
   @Exclude({ toPlainOnly: true })
@@ -174,22 +60,6 @@ export class CoreResult {
   @Column()
   @Expose({ name: 'sitemap_xml_scan_status' })
   sitemapXmlScanStatus: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'not_found_scan_status_details' })
-  notFoundScanStatusDetails?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'home_scan_status_details' })
-  homeScanStatusDetails?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_scan_status_details' })
-  robotsTxtScanStatusDetails?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_scan_status_details' })
-  sitemapXmlScanStatusDetails?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'dns_scan_status' })

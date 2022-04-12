@@ -12,9 +12,12 @@ import { CoreInputDto } from './core.input.dto';
 import * as pages from './pages';
 import { getBaseDomain } from './test-helper';
 import { getHttpsUrl } from './pages/helpers';
+import { CoreResultPages } from '@app/database/core-results/core-result.service';
 
 @Injectable()
-export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
+export class CoreScannerService
+  implements Scanner<CoreInputDto, CoreResultPages>
+{
   constructor(
     private browserService: BrowserService,
     private httpService: HttpService,
@@ -22,7 +25,7 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
     private readonly logger: PinoLogger,
   ) {}
 
-  async scan(input: CoreInputDto): Promise<CoreResult> {
+  async scan(input: CoreInputDto): Promise<CoreResultPages> {
     const scanLogger = this.logger.logger.child(input);
 
     const scanData = await this.browserService.useBrowser(async (browser) => {
@@ -139,7 +142,7 @@ export class CoreScannerService implements Scanner<CoreInputDto, CoreResult> {
       scanLogger.info({ result }, 'solutions scan results');
       return result;
     });
-    return CoreResult.fromScanData(input.websiteId, scanData);
+    return scanData;
   }
 
   getScanStatus(error: Error, url: string, logger: Logger) {
