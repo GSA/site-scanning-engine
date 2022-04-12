@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: restart scan worker
-        uses: cloud-gov/cg-cli-tools
+        uses: cloud-gov/cg-cli-tools@main
         with:
           cf_api: https://api.fr.cloud.gov
           cf_username: ${{ secrets.CF_USERNAME }}
