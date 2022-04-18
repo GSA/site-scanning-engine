@@ -5,6 +5,7 @@ import { BrowserModule } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResult } from 'entities/core-result.entity';
+import { ScanStatus } from 'entities/scan-status';
 
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;
@@ -30,7 +31,6 @@ describe('CoreScanner (e2e)', () => {
     };
 
     const result = await service.scan(input);
-
     expect(result).toEqual({
       website: {
         id: 1,
@@ -67,10 +67,10 @@ describe('CoreScanner (e2e)', () => {
       robotsTxtStatusCode: 200,
       robotsTxtTargetUrlRedirects: true,
       sitemapTargetUrlRedirects: true,
-      sitemapXmlCount: result.sitemapXmlCount, // // This changes often, so ignore non-matches
+      sitemapXmlCount: result.sitemapXml.status === ScanStatus.Completed ? result.sitemapXml.result.sitemapXmlScan.sitemapXmlCount : null, // // This changes often, so ignore non-matches
       sitemapXmlDetected: true,
       sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
-      sitemapXmlFinalUrlFilesize: result.sitemapXmlFinalUrlFilesize, // This changes often, so ignore non-matches
+      sitemapXmlFinalUrlFilesize: result.sitemapXml.status === ScanStatus.Completed ? result.sitemapXml.result.sitemapXmlScan.sitemapXmlFinalUrlFilesize : null, // This changes often, so ignore non-matches
       sitemapXmlFinalUrlLive: true,
       sitemapXmlFinalUrlMimeType: 'application/xml',
       sitemapXmlPdfCount: 0,
@@ -100,6 +100,7 @@ describe('CoreScanner (e2e)', () => {
       url: 'poolsafety.gov',
       scanId: '123',
     };
+    
 
     const result = await service.scan(input);
     expect(result).toEqual({
@@ -146,8 +147,8 @@ describe('CoreScanner (e2e)', () => {
       sitemapXmlPdfCount: 0,
       sitemapXmlStatusCode: 200,
       // These two are sensitive to load times - so ignore for e2e purposes
-      thirdPartyServiceCount: result.thirdPartyServiceCount,
-      thirdPartyServiceDomains: result.thirdPartyServiceDomains,
+      thirdPartyServiceCount: result.home.status === ScanStatus.Completed ? result.home.result.thirdPartyScan.thirdPartyServiceCount : null,
+      thirdPartyServiceDomains: result.home.status === ScanStatus.Completed ? result.home.result.thirdPartyScan.thirdPartyServiceDomains : null,
       usaClasses: 0,
       uswdsCount: 0,
       uswdsInlineCss: 0,
