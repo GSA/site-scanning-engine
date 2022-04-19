@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import { Parser, transforms } from 'json2csv';
 import { json2csv, json2csvAsync } from 'json-2-csv';
 import { CSV_COLUMN_ORDER } from './snapshot.service';
 
