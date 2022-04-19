@@ -60,8 +60,12 @@ export class ScanEngineConsumer {
 
     try {
       // scan core and solutions results
-      const coreResult = await this.coreScanner.scan(job.data);
-      await this.coreResultService.create(coreResult);
+      const coreResultPages = await this.coreScanner.scan(job.data);
+      await this.coreResultService.createFromCoreResultPages(
+        job.data.websiteId,
+        coreResultPages,
+        this.logger,
+      );
       this.logger.log({
         msg: `wrote core result for ${job.data.url}`,
         job,

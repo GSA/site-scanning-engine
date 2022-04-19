@@ -28,7 +28,7 @@ jobs:
 
       - uses: returntocorp/semgrep-action@v1
         with:
-          generateSarif: "1"
+          generateSarif: '1'
           config: >- # more at semgrep.dev/explore
             p/security-audit
             p/secrets

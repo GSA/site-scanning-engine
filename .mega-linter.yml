@@ -27,10 +27,10 @@ DISABLE_ERRORS: true
 # accurate at picking up the schemae based on arbitrary
 # filenames like, "deploy.yml"
 
-YAML_V8R_FILTER_REGEX_EXCLUDE: "[.]github/workflows/"
+YAML_V8R_FILTER_REGEX_EXCLUDE: '[.]github/workflows/'
 
 # only run the JavaScript linter on JavaScript files
-JAVASCRIPT_ES_FILE_EXTENSIONS: ["*.js"]
+JAVASCRIPT_ES_FILE_EXTENSIONS: ['*.js']
 
 # Use Prettier rather than Standard for Javascript/Typescript formatting.
 JAVASCRIPT_DEFAULT_STYLE: 'prettier'
