@@ -22,7 +22,7 @@ RUN apt-get update && \
   gconf-service=3.2.6-4+b1 \
   libasound2=1.1.3-5 \
   libcups2=2.2.1-8+deb9u7 \
-  libexpat1=2.2.0-2+deb9u4 \
+  libexpat1=2.2.0-2+deb9u5 \
   libgbm1=13.0.6-1+b2 \
   libgconf-2-4=3.2.6-4+b1 \
   libglib2.0-0=2.50.3-2+deb9u2 \
