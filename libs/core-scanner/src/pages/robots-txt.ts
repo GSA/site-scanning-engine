@@ -72,7 +72,7 @@ const findRobotsCrawlDelay = (
   robotsTxt: string,
 ) => {
   const directives = robotsTxt.split('\n');
-  let crawlDelay: number = -1;
+  let crawlDelay = -1;
 
   for (const directive of directives) {
     if (directive.toLowerCase().startsWith('crawl-delay:')) {
