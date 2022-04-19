@@ -72,7 +72,7 @@ const findRobotsCrawlDelay = (
   robotsTxt: string,
 ) => {
   const directives = robotsTxt.split('\n');
-  let crawlDelay: number;
+  let crawlDelay: number = -1;
 
   for (const directive of directives) {
     if (directive.toLowerCase().startsWith('crawl-delay:')) {
@@ -86,6 +86,9 @@ const findRobotsCrawlDelay = (
         });
       }
     }
+  }
+  if(isNaN(crawlDelay)){
+    crawlDelay = -1;
   }
 
   return crawlDelay;

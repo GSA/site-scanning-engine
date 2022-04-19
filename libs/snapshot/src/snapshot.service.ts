@@ -72,7 +72,6 @@ export class SnapshotService {
     const serializedResults = results.map((website) => {
       return website.serialized();
     });
-    console.log(serializedResults)
     return csv.createCsv(serializedResults, CSV_COLUMN_ORDER);
   }
 
