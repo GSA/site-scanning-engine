@@ -39,7 +39,7 @@ export class SnapshotService {
 
     const results = await this.getResults();
     const jsonData = this.serializeToJson(results);
-    const csvData = this.serializeToCsv(results);
+    const csvData = await this.serializeToCsv(results);
 
     this.logger.debug('saving any new files...');
     await Promise.all([
@@ -62,7 +62,7 @@ export class SnapshotService {
     return stringified;
   }
 
-  private serializeToCsv(results: Website[]) {
+  private async serializeToCsv(results: Website[]) {
     // Throw an exception if there's a mismatch between CSV_COLUMN_ORDER and the CoreResult entity.
     csv.ensureAllFields(
       new Set([...CoreResult.getColumnNames(), ...Website.getColumnNames()]),
@@ -72,6 +72,7 @@ export class SnapshotService {
     const serializedResults = results.map((website) => {
       return website.serialized();
     });
+    console.log(serializedResults)
     return csv.createCsv(serializedResults, CSV_COLUMN_ORDER);
   }
 
@@ -91,7 +92,7 @@ export class SnapshotService {
   never implicitly determined, as there are users who depend on the CSV order
   never changing.
 */
-const CSV_COLUMN_ORDER = [
+export const CSV_COLUMN_ORDER = [
   'target_url',
   'target_url_domain',
   'final_url',

@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 import { Parser, transforms } from 'json2csv';
+import { json2csv, json2csvAsync } from 'json-2-csv';
+import { CSV_COLUMN_ORDER } from './snapshot.service';
 
 // Raise an exception if `orderedFields` is missing or has more fields than `allFields`.
 export const ensureAllFields = (
@@ -17,19 +19,31 @@ export const ensureAllFields = (
   }
 };
 
-export const createCsv = (
+export const createCsv = async (
   rows: { [x: string]: any }[],
   fieldOrder: string[],
 ) => {
-  const parser = new Parser({
-    transforms: [
-      transforms.flatten({
-        objects: true,
-        arrays: false,
-        separator: '_',
-      }),
-    ],
-  });
 
-  return parser.parse(rows);
+  const sorter = (columnA, columnB) => {
+    if(columnA.indexOf('dap_') !== -1 || columnB.indexOf('dap_') !== -1) {
+      if(columnB.indexOf('dap_parameters') !== -1 || columnA.indexOf('dap_parameters') !== -1) {
+        if(columnA.indexOf('dap_parameters') !== -1) {
+          return columnA.indexOf('dap_parameters') === -1 ? -1 : 1;
+        }
+        return columnB.indexOf('dap_parameters') === -1 ? 1 : -1;
+      } else {
+        if(columnA.indexOf('dap_') !== -1) {
+          return columnA.indexOf('dap_') === -1 ? -1 : 1;
+        }
+        return columnB.indexOf('dap_') === -1 ? 1 : -1;
+      }
+    } else {
+      let indexOfA = fieldOrder.indexOf(columnA);
+      let indexOfB = fieldOrder.indexOf(columnB);
+      return indexOfA > indexOfB ? 1 : -1;
+    }
+  }
+
+  const csvString = await json2csvAsync(rows, { sortHeader: sorter});
+  return csvString
 };
