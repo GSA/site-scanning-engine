@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import { json2csv, json2csvAsync } from 'json-2-csv';
-import { CSV_COLUMN_ORDER } from './snapshot.service';
 
 // Raise an exception if `orderedFields` is missing or has more fields than `allFields`.
 export const ensureAllFields = (

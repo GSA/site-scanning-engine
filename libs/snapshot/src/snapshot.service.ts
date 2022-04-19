@@ -72,7 +72,6 @@ export class SnapshotService {
     const serializedResults = results.map((website) => {
       return website.serialized();
     });
-    console.log(serializedResults)
     return csv.createCsv(serializedResults, CSV_COLUMN_ORDER);
   }
 
@@ -92,7 +91,7 @@ export class SnapshotService {
   never implicitly determined, as there are users who depend on the CSV order
   never changing.
 */
-export const CSV_COLUMN_ORDER = [
+const CSV_COLUMN_ORDER = [
   'target_url',
   'target_url_domain',
   'final_url',
