@@ -113,7 +113,6 @@ const CSV_COLUMN_ORDER = [
   'not_found_scan_status',
   'robots_txt_scan_status',
   'sitemap_xml_scan_status',
-  'sitemap_xml_scan_status_details',
   'dns_scan_status',
   'dns_ipv6',
   'uswds_favicon',
