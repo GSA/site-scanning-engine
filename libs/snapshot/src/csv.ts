@@ -36,8 +36,8 @@ export const createCsv = async (
         return columnB.indexOf('dap_') === -1 ? 1 : -1;
       }
     } else {
-      let indexOfA = fieldOrder.indexOf(columnA);
-      let indexOfB = fieldOrder.indexOf(columnB);
+      const indexOfA = fieldOrder.indexOf(columnA);
+      const indexOfB = fieldOrder.indexOf(columnB);
       return indexOfA > indexOfB ? 1 : -1;
     }
   }
