@@ -117,6 +117,8 @@ const CSV_COLUMN_ORDER = [
   'robots_txt_scan_status_details',
   'sitemap_xml_scan_status',
   'sitemap_xml_scan_status_details',
+  'dns_scan_status',
+  'dns_ipv6',
   'uswds_favicon',
   'uswds_favicon_in_css',
   'uswds_merriweather_font',

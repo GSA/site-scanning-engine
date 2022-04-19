@@ -22,7 +22,6 @@ export const createCsv = (
   fieldOrder: string[],
 ) => {
   const parser = new Parser({
-    fields: fieldOrder,
     transforms: [
       transforms.flatten({
         objects: true,
