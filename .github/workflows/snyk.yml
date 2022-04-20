@@ -1,5 +1,10 @@
+---
 name: Snyk Scan
-on: push
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+  workflow_dispatch:
 jobs:
   security:
     runs-on: ubuntu-latest
@@ -9,3 +14,17 @@ jobs:
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --sarif-file-output=snyk.sarif
+
+      - name: Check to see if the SARIF a was generated
+        id: sarif_file_exists
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "snyk.sarif"
+
+      - name: Upload the SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        if: steps.sarif_file_exists.outputs.files_exists == 'true'
+        with:
+          sarif_file: snyk.sarif
