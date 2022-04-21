@@ -79,7 +79,7 @@ const findRobotsCrawlDelay = (
       try {
         crawlDelay = parseInt(directive.split(' ')[1]);
         if(isNaN(crawlDelay)){
-          crawlDelay = -1;
+          crawlDelay = null;
         }
       } catch (e) {
         const err = e as Error;
