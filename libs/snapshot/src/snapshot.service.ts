@@ -68,7 +68,7 @@ export class SnapshotService {
       new Set([...CoreResult.getColumnNames(), ...Website.getColumnNames()]),
       new Set(CSV_COLUMN_ORDER),
     );
-
+    
     const serializedResults = results.map((website) => {
       return website.serialized();
     });

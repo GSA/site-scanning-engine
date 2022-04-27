@@ -60,7 +60,7 @@ describe('SnapshotService', () => {
 
     const website = new Website();
     website.coreResult = coreResult;
-    website.url = '18f.gov';
+    website.url = 'supremecourt.gov';
 
     const fileName = 'weekly-snapshot.json';
     const body = JSON.stringify([website.serialized()]);

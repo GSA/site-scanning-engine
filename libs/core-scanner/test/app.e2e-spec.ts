@@ -5,6 +5,7 @@ import { BrowserModule } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResult } from 'entities/core-result.entity';
+import { ScanStatus } from 'entities/scan-status';
 
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;
@@ -30,67 +31,108 @@ describe('CoreScanner (e2e)', () => {
     };
 
     const result = await service.scan(input);
-
     expect(result).toEqual({
-      website: {
-        id: 1,
+      base: {
+        targetUrlBaseDomain: input.url,
       },
-      notFoundScanStatus: 'completed',
-      homeScanStatus: 'completed',
-      robotsTxtScanStatus: 'completed',
-      sitemapXmlScanStatus: 'completed',
-      finalUrl: 'https://18f.gsa.gov/',
-      finalUrlBaseDomain: 'gsa.gov',
-      finalUrlIsLive: true,
-      finalUrlMIMEType: 'text/html',
-      finalUrlSameDomain: false,
-      finalUrlSameWebsite: false,
-      finalUrlStatusCode: 200,
-      targetUrl404Test: true,
-      targetUrlBaseDomain: '18f.gov',
-      targetUrlRedirects: true,
-      dapDetected: true,
-      dapParameters: undefined,
-      mainElementFinalUrl: true,
-      ogArticleModifiedFinalUrl: undefined,
-      ogArticlePublishedFinalUrl: undefined,
-      ogDescriptionFinalUrl:
-        '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
-      ogTitleFinalUrl: '18F: Digital service delivery | Home',
-      robotsTxtCrawlDelay: undefined,
-      robotsTxtDetected: true,
-      robotsTxtFinalUrl: 'https://18f.gsa.gov/robots.txt',
-      robotsTxtFinalUrlLive: true,
-      robotsTxtFinalUrlMimeType: 'text/plain',
-      robotsTxtFinalUrlSize: 65,
-      robotsTxtSitemapLocations: 'https://18f.gsa.gov/sitemap.xml',
-      robotsTxtStatusCode: 200,
-      robotsTxtTargetUrlRedirects: true,
-      sitemapTargetUrlRedirects: true,
-      sitemapXmlCount: result.sitemapXmlCount, // // This changes often, so ignore non-matches
-      sitemapXmlDetected: true,
-      sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
-      sitemapXmlFinalUrlFilesize: result.sitemapXmlFinalUrlFilesize, // This changes often, so ignore non-matches
-      sitemapXmlFinalUrlLive: true,
-      sitemapXmlFinalUrlMimeType: 'application/xml',
-      sitemapXmlPdfCount: 0,
-      sitemapXmlStatusCode: 200,
-      thirdPartyServiceCount: 5,
-      thirdPartyServiceDomains:
-        'dap.digitalgov.gov,fonts.googleapis.com,search.usa.gov,www.google-analytics.com,www.googletagmanager.com',
-      usaClasses: 55,
-      uswdsCount: 153,
-      uswdsInlineCss: 0,
-      uswdsMerriweatherFont: 5,
-      uswdsPublicSansFont: 20,
-      uswdsSemanticVersion: '2.9.0',
-      uswdsSourceSansFont: 5,
-      uswdsString: 8,
-      uswdsStringInCss: 20,
-      uswdsTables: 0,
-      uswdsUsFlag: 20,
-      uswdsUsFlagInCss: 0,
-      uswdsVersion: 20,
+      home: {
+        error: null,
+        result: {
+          dapScan: {
+            dapDetected: true,
+            dapParameters: result.home.status === ScanStatus.Completed ? result.home.result.dapScan.dapParameters: undefined, // need to fix this eventually
+          },
+          seoScan: {
+            mainElementFinalUrl: true,
+            ogArticleModifiedFinalUrl: undefined,
+            ogArticlePublishedFinalUrl: undefined,
+            ogDescriptionFinalUrl: "18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.",
+            ogTitleFinalUrl: "18F: Digital service delivery | Home"
+          },
+          thirdPartyScan: {
+            thirdPartyServiceCount: 5,
+            thirdPartyServiceDomains: result.home.status === ScanStatus.Completed ? result.home.result.thirdPartyScan.thirdPartyServiceDomains: undefined, // need to fix this eventually
+          },
+          urlScan: {
+            finalUrl: "https://18f.gsa.gov/",
+            finalUrlBaseDomain: "gsa.gov",
+            finalUrlIsLive: true,
+            finalUrlMIMEType: "text/html",
+            finalUrlSameDomain: false,
+            finalUrlSameWebsite: false,
+            finalUrlStatusCode: 200,
+            targetUrlRedirects: true,
+          },
+          uswdsScan: {
+            usaClasses: 55,
+            uswdsCount: 153,
+            uswdsInlineCss: 0,
+            uswdsMerriweatherFont: 5,
+            uswdsPublicSansFont: 20,
+            uswdsSemanticVersion: "2.9.0",
+            uswdsSourceSansFont: 5,
+            uswdsString: 8,
+            uswdsStringInCss: 20,
+            uswdsTables: 0,
+            uswdsUsFlag: 20,
+            uswdsUsFlagInCss: 0,
+            uswdsVersion: 20,
+          },
+        },
+        status: ScanStatus.Completed,
+      },
+      dns: {
+        error: null,
+        result: {
+          dnsScan: {
+            ipv6: true
+          }
+        },
+        status: ScanStatus.Completed
+      },
+      notFound: {
+        error: null,
+        result: {
+          notFoundScan: {
+            targetUrl404Test: true
+          }
+        },
+        status: ScanStatus.Completed
+      },
+      robotsTxt: {
+        error: null,
+        result: {
+          robotsTxtScan: {
+            robotsTxtCrawlDelay: undefined,
+            robotsTxtDetected: true,
+            robotsTxtFinalUrl: "https://18f.gsa.gov/robots.txt",
+            robotsTxtFinalUrlLive: true,
+            robotsTxtFinalUrlMimeType: "text/plain",
+            robotsTxtFinalUrlSize: 65,
+            robotsTxtSitemapLocations: "https://18f.gsa.gov/sitemap.xml",
+            robotsTxtStatusCode: 200,
+            robotsTxtTargetUrlRedirects: true,
+          },
+        },
+        status: ScanStatus.Completed
+      },
+      sitemapXml: {
+        error: null,
+        result: {
+          sitemapXmlScan: {
+             sitemapTargetUrlRedirects: true,
+             sitemapXmlCount: 717,
+             sitemapXmlDetected: true,
+             sitemapXmlFinalUrl: "https://18f.gsa.gov/sitemap.xml",
+             sitemapXmlFinalUrlFilesize: 100058,
+             sitemapXmlFinalUrlLive: true,
+             sitemapXmlFinalUrlMimeType: "application/xml",
+             sitemapXmlPdfCount: 0,
+             sitemapXmlStatusCode: 200,
+          },
+        },
+        status: ScanStatus.Completed,
+      }            
     });
   });
 
@@ -100,67 +142,111 @@ describe('CoreScanner (e2e)', () => {
       url: 'poolsafety.gov',
       scanId: '123',
     };
+    
 
     const result = await service.scan(input);
     expect(result).toEqual({
-      website: {
-        id: 1,
+      base: {
+        targetUrlBaseDomain: input.url,
       },
-      homeScanStatus: 'completed',
-      notFoundScanStatus: 'completed',
-      robotsTxtScanStatus: 'completed',
-      sitemapXmlScanStatus: 'completed',
-      finalUrl: 'https://www.poolsafely.gov/',
-      finalUrlBaseDomain: 'poolsafely.gov',
-      finalUrlIsLive: true,
-      finalUrlMIMEType: 'text/html',
-      finalUrlSameDomain: false,
-      finalUrlSameWebsite: false,
-      finalUrlStatusCode: 200,
-      targetUrl404Test: true,
-      targetUrlBaseDomain: 'poolsafety.gov',
-      targetUrlRedirects: true,
-      dapDetected: true,
-      dapParameters: undefined,
-      mainElementFinalUrl: false,
-      ogArticleModifiedFinalUrl: undefined,
-      ogArticlePublishedFinalUrl: undefined,
-      ogDescriptionFinalUrl: null,
-      ogTitleFinalUrl: 'Pool Safely',
-      robotsTxtCrawlDelay: undefined,
-      robotsTxtDetected: true,
-      robotsTxtFinalUrl: 'https://www.poolsafely.gov/robots.txt',
-      robotsTxtFinalUrlLive: true,
-      robotsTxtFinalUrlMimeType: 'text/plain',
-      robotsTxtFinalUrlSize: 26,
-      robotsTxtSitemapLocations: '',
-      robotsTxtStatusCode: 200,
-      robotsTxtTargetUrlRedirects: true,
-      sitemapTargetUrlRedirects: true,
-      sitemapXmlCount: 0,
-      sitemapXmlDetected: true,
-      sitemapXmlFinalUrl: 'https://www.poolsafely.gov/sitemap.xml',
-      sitemapXmlFinalUrlFilesize: 26147,
-      sitemapXmlFinalUrlLive: true,
-      sitemapXmlFinalUrlMimeType: 'text/xml',
-      sitemapXmlPdfCount: 0,
-      sitemapXmlStatusCode: 200,
-      // These two are sensitive to load times - so ignore for e2e purposes
-      thirdPartyServiceCount: result.thirdPartyServiceCount,
-      thirdPartyServiceDomains: result.thirdPartyServiceDomains,
-      usaClasses: 0,
-      uswdsCount: 0,
-      uswdsInlineCss: 0,
-      uswdsMerriweatherFont: 0,
-      uswdsPublicSansFont: 0,
-      uswdsSemanticVersion: undefined,
-      uswdsSourceSansFont: 0,
-      uswdsString: 0,
-      uswdsStringInCss: 0,
-      uswdsTables: 0,
-      uswdsUsFlag: 0,
-      uswdsUsFlagInCss: 0,
-      uswdsVersion: 0,
+      "dns":  {
+        "error": null,
+        "result":  {
+          "dnsScan":  {
+            "ipv6": true,
+          },
+        },
+        "status": ScanStatus.Completed,
+      },
+      "home":  {
+        "error": null,
+        "result":  {
+          "dapScan":  {
+             "dapDetected": true,
+             "dapParameters": result.home.status === ScanStatus.Completed ? result.home.result.dapScan.dapParameters: undefined, // need to fix this eventually
+          },
+          "seoScan":  {
+            "mainElementFinalUrl": false,
+            "ogArticleModifiedFinalUrl": undefined,
+            "ogArticlePublishedFinalUrl": undefined,
+            "ogDescriptionFinalUrl": null,
+            "ogTitleFinalUrl": "Pool Safely",
+          },
+          "thirdPartyScan":  {
+            "thirdPartyServiceCount": 10,
+            "thirdPartyServiceDomains": result.home.status === ScanStatus.Completed ? result.home.result.thirdPartyScan.thirdPartyServiceDomains: undefined, // need to fix this eventually
+          },
+          "urlScan":  {
+             "finalUrl": "https://www.poolsafely.gov/",
+             "finalUrlBaseDomain": "poolsafely.gov",
+             "finalUrlIsLive": true,
+             "finalUrlMIMEType": "text/html",
+             "finalUrlSameDomain": false,
+             "finalUrlSameWebsite": false,
+             "finalUrlStatusCode": 200,
+            "targetUrlRedirects": true,
+          },
+          "uswdsScan":  {
+            "usaClasses": 0,
+            "uswdsCount": 0,
+            "uswdsInlineCss": 0,
+            "uswdsMerriweatherFont": 0,
+            "uswdsPublicSansFont": 0,
+            "uswdsSemanticVersion": undefined,
+            "uswdsSourceSansFont": 0,
+            "uswdsString": 0,
+            "uswdsStringInCss": 0,
+            "uswdsTables": 0,
+            "uswdsUsFlag": 0,
+            "uswdsUsFlagInCss": 0,
+            "uswdsVersion": 0,
+          },
+        },
+        "status": ScanStatus.Completed,
+      },
+      "notFound":  {
+        "error": null,
+        "result":  {
+          "notFoundScan":  {
+            "targetUrl404Test": true,
+          },
+        },
+        "status": ScanStatus.Completed,
+      },
+      "robotsTxt":  {
+        "error": null,
+        "result":  {
+          "robotsTxtScan":  {
+             "robotsTxtCrawlDelay": undefined,
+             "robotsTxtDetected": true,
+             "robotsTxtFinalUrl": "https://www.poolsafely.gov/robots.txt",
+             "robotsTxtFinalUrlLive": true,
+             "robotsTxtFinalUrlMimeType": "text/plain",
+             "robotsTxtFinalUrlSize": 26,
+             "robotsTxtSitemapLocations": "",
+             "robotsTxtStatusCode": 200,
+             "robotsTxtTargetUrlRedirects": true,
+          },
+        },
+        "status": ScanStatus.Completed,
+      },
+      "sitemapXml":  {
+        "error": null,
+        "result":  {
+          "sitemapXmlScan":  {
+             "sitemapTargetUrlRedirects": true,
+             "sitemapXmlCount": 0,
+             "sitemapXmlDetected": true,
+             "sitemapXmlFinalUrl": "https://www.poolsafely.gov/sitemap.xml",
+            "sitemapXmlFinalUrlFilesize": 26500,
+             "sitemapXmlFinalUrlLive": true,
+             "sitemapXmlFinalUrlMimeType": "text/xml",
+             "sitemapXmlPdfCount": 0,
+             "sitemapXmlStatusCode": 200,
+          },
+        },
+        "status": ScanStatus.Completed,
+       },
     });
   });
 });

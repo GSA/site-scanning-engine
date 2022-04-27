@@ -17,6 +17,7 @@
     "build:all": "concurrently \"npm run build:api\" \"npm run build scan-engine\" \"npm run build cli\"",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\" \"**/*.yml\" \"**/*.json\"",
     "ingest": "nest start cli -- ingest",
+    "snapshot": "nest start cli -- create-snapshot",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
