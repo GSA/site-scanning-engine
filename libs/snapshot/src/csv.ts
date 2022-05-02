@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
-import { Parser, transforms } from 'json2csv';
-import { ConsoleLogger } from '@nestjs/common';
+import { Parser } from 'json2csv';
 const flatten = require('flat');
 
 // Raise an exception if `orderedFields` is missing or has more fields than `allFields`.
@@ -22,7 +21,7 @@ export const ensureAllFields = (
 const flattenRows = (rows: { [x: string]: any }[]) => {
   const allHeaders = new Set<string>();
   const flattenedRows = rows.map((row) => {
-    const flattened: { [x: string]: any } = flatten(row);
+    const flattened: { [x: string]: any } = flatten(row, { safe: true });
     Object.keys(flattened).forEach((item) => allHeaders.add(item));
     return flattened;
   });
@@ -34,11 +33,13 @@ const sortOrder = (fieldOrder: string[], flattenedFields: string[]) => {
     const split = field.split('.');
     return fieldOrder.includes(split[0]);
   });
+
   return fields.sort((a, b) => {
     const aSplit = a.split('.');
     const bSplit = b.split('.');
-    const aIndex = fields.indexOf(aSplit[0]);
-    const bIndex = fields.indexOf(bSplit[0]);
+    const aIndex = fieldOrder.indexOf(aSplit[0]);
+    const bIndex = fieldOrder.indexOf(bSplit[0]);
+
     if (aIndex < bIndex) {
       return -1;
     } else if (aIndex > bIndex) {
