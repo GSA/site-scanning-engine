@@ -34,7 +34,7 @@ describe('dap scan', () => {
       await buildDapResult([
         mock<HTTPRequest>({
           url: () =>
-            'https://dap.digitalgov.gov/Unibufferversal-Federated-Analytics-Min.js?test1=1&test2=2',
+            'https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
         }),
       ]),
     ).toEqual({
