@@ -67,6 +67,10 @@ describe('ScanEngineConsumer', () => {
     await consumer.processCore(mockCoreJob);
     expect(
       mockCoreResultService.createFromCoreResultPages,
-    ).toHaveBeenCalledWith(input.websiteId, coreResultFromPages, consumer['logger']);
+    ).toHaveBeenCalledWith(
+      input.websiteId,
+      coreResultFromPages,
+      consumer['logger'],
+    );
   });
 });

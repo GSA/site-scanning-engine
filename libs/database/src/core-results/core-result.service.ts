@@ -53,7 +53,6 @@ export class CoreResultService {
         page: 'home',
       });
     } else {
-      
       const result = pages.home.result;
       // DAP scan
       coreResult.dapDetected = result.dapScan.dapDetected;
@@ -159,7 +158,7 @@ export class CoreResultService {
     } else {
       coreResult.dnsIpv6 = pages.dns.result.dnsScan.ipv6;
     }
-  
+
     return this.create(coreResult);
   }
 

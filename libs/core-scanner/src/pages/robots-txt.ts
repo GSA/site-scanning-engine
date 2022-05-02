@@ -78,7 +78,7 @@ const findRobotsCrawlDelay = (
     if (directive.toLowerCase().startsWith('crawl-delay:')) {
       try {
         crawlDelay = parseInt(directive.split(' ')[1]);
-        if(isNaN(crawlDelay)){
+        if (isNaN(crawlDelay)) {
           crawlDelay = null;
         }
       } catch (e) {
