@@ -46,10 +46,10 @@ const sortOrder = (fieldOrder: string[], flattenedFields: string[]) => {
       return 1;
     } else {
       // aIndex === bIndex
-      if (aSplit < bSplit) {
+      if (a < b) {
         return -1;
       }
-      if (aSplit > bSplit) {
+      if (a > b) {
         return 1;
       } else {
         return 0;
