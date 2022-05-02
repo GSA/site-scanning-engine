@@ -39,7 +39,7 @@ export class SnapshotService {
 
     const results = await this.getResults();
     const jsonData = this.serializeToJson(results);
-    const csvData = await this.serializeToCsv(results);
+    const csvData = this.serializeToCsv(results);
 
     this.logger.debug('saving any new files...');
     await Promise.all([
@@ -62,13 +62,13 @@ export class SnapshotService {
     return stringified;
   }
 
-  private async serializeToCsv(results: Website[]) {
+  private serializeToCsv(results: Website[]) {
     // Throw an exception if there's a mismatch between CSV_COLUMN_ORDER and the CoreResult entity.
     csv.ensureAllFields(
       new Set([...CoreResult.getColumnNames(), ...Website.getColumnNames()]),
       new Set(CSV_COLUMN_ORDER),
     );
-    
+
     const serializedResults = results.map((website) => {
       return website.serialized();
     });
