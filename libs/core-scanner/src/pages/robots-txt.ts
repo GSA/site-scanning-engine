@@ -70,14 +70,17 @@ const findRobotsCrawlDelay = (
   logger: Logger,
   logData: any,
   robotsTxt: string,
-) => {
+): number | null => {
   const directives = robotsTxt.split('\n');
-  let crawlDelay: number;
+  let crawlDelay: number = null;
 
   for (const directive of directives) {
     if (directive.toLowerCase().startsWith('crawl-delay:')) {
       try {
         crawlDelay = parseInt(directive.split(' ')[1]);
+        if(isNaN(crawlDelay)){
+          crawlDelay = null;
+        }
       } catch (e) {
         const err = e as Error;
         logger.warn({
