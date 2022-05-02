@@ -58,6 +58,9 @@ export class IngestService {
         'agencyCode',
         'bureau',
         'bureauCode',
+        'sourceListFederalDomains',
+        'sourceListDap',
+        'sourceListPulse',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
