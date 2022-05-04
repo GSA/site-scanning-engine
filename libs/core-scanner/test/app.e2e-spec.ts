@@ -110,7 +110,7 @@ describe('CoreScanner (e2e)', () => {
         error: null,
         result: {
           robotsTxtScan: {
-            robotsTxtCrawlDelay: undefined,
+            robotsTxtCrawlDelay: null,
             robotsTxtDetected: true,
             robotsTxtFinalUrl: 'https://18f.gsa.gov/robots.txt',
             robotsTxtFinalUrlLive: true,
@@ -128,10 +128,10 @@ describe('CoreScanner (e2e)', () => {
         result: {
           sitemapXmlScan: {
             sitemapTargetUrlRedirects: true,
-            sitemapXmlCount: 717,
+            sitemapXmlCount: 720,
             sitemapXmlDetected: true,
             sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
-            sitemapXmlFinalUrlFilesize: 100058,
+            sitemapXmlFinalUrlFilesize: 100394,
             sitemapXmlFinalUrlLive: true,
             sitemapXmlFinalUrlMimeType: 'application/xml',
             sitemapXmlPdfCount: 0,
@@ -182,7 +182,7 @@ describe('CoreScanner (e2e)', () => {
             ogTitleFinalUrl: 'Pool Safely',
           },
           thirdPartyScan: {
-            thirdPartyServiceCount: 10,
+            thirdPartyServiceCount: 12,
             thirdPartyServiceDomains:
               result.home.status === ScanStatus.Completed
                 ? result.home.result.thirdPartyScan.thirdPartyServiceDomains
@@ -229,12 +229,12 @@ describe('CoreScanner (e2e)', () => {
         error: null,
         result: {
           robotsTxtScan: {
-            robotsTxtCrawlDelay: undefined,
+            robotsTxtCrawlDelay: null,
             robotsTxtDetected: true,
             robotsTxtFinalUrl: 'https://www.poolsafely.gov/robots.txt',
             robotsTxtFinalUrlLive: true,
             robotsTxtFinalUrlMimeType: 'text/plain',
-            robotsTxtFinalUrlSize: 26,
+            robotsTxtFinalUrlSize: 170,
             robotsTxtSitemapLocations: '',
             robotsTxtStatusCode: 200,
             robotsTxtTargetUrlRedirects: true,
