@@ -99,10 +99,10 @@ const findRobotsSitemapLocations = (
   logData: any,
   robotsTxt: string,
 ) => {
-  const directives = robotsTxt.split('\n');
+  const directives = new Set(robotsTxt.split(/\r?\n/));
   const sitemapLocations: string[] = [];
 
-  for (const directive of directives) {
+  for (const directive of Array.from(directives).sort()) {
     if (directive.toLowerCase().startsWith('sitemap:')) {
       try {
         const sitemapLocation = directive.split(' ')[1];

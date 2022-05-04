@@ -235,7 +235,7 @@ describe('CoreScanner (e2e)', () => {
             robotsTxtFinalUrlLive: true,
             robotsTxtFinalUrlMimeType: 'text/plain',
             robotsTxtFinalUrlSize: 170,
-            robotsTxtSitemapLocations: '',
+            robotsTxtSitemapLocations: 'https://www.poolsafely.gov/sitemap.xml',
             robotsTxtStatusCode: 200,
             robotsTxtTargetUrlRedirects: true,
           },
