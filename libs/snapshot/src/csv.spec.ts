@@ -80,9 +80,3 @@ const MOCK_NESTED_DATA = [
   },
   { field1: '1b', field2: '2b', field3: '3b' },
 ];
-`
-"field1","field2","field2.subfield1","field2.subfield2.subsubfield1","field2.subfield2.subsubfield2","field2.subfield3","field3"
-"field1","field3","field2","field2.subfield1","field2.subfield2.subsubfielda","field2.subfield2.subsubfieldb","field2.subfield3"
-"1a","3a",,"2a1","2a2a","2a2b","2a3"
-"1b","3b","2b",,,,
-`;
