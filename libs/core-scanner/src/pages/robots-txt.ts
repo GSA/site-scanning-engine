@@ -78,7 +78,7 @@ const findRobotsCrawlDelay = (
     if (directive.toLowerCase().startsWith('crawl-delay:')) {
       try {
         crawlDelay = parseInt(directive.split(' ')[1]);
-        if(isNaN(crawlDelay)){
+        if (isNaN(crawlDelay)) {
           crawlDelay = null;
         }
       } catch (e) {
@@ -99,10 +99,10 @@ const findRobotsSitemapLocations = (
   logData: any,
   robotsTxt: string,
 ) => {
-  const directives = robotsTxt.split('\n');
+  const directives = new Set(robotsTxt.split(/\r?\n/));
   const sitemapLocations: string[] = [];
 
-  for (const directive of directives) {
+  for (const directive of Array.from(directives).sort()) {
     if (directive.toLowerCase().startsWith('sitemap:')) {
       try {
         const sitemapLocation = directive.split(' ')[1];

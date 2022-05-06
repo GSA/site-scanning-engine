@@ -21,7 +21,7 @@ jobs:
         id: sarif_file_exists
         uses: andstor/file-existence-action@v1
         with:
-          files: "snyk.sarif"
+          files: 'snyk.sarif'
 
       - name: Upload the SARIF file
         uses: github/codeql-action/upload-sarif@v1

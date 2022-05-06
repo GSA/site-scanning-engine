@@ -30,9 +30,8 @@ export class ScanController {
     await this.coreResultService.createFromCoreResultPages(
       website.id,
       results,
-      this.logger
-    )
+      this.logger,
+    );
     this.logger.log({ msg: 'Got results', results });
   }
 }
-    

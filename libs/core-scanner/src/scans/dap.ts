@@ -41,9 +41,7 @@ const dapDetected = (outboundRequests: HTTPRequest[]) => {
 };
 
 const dapParameters = (outboundRequests: HTTPRequest[]) => {
-  const dapUrl =
-    'dap.digitalgov.gov/Unibufferversal-Federated-Analytics-Min.js';
-
+  const dapUrl = 'dap.digitalgov.gov/Universal-Federated-Analytics-Min.js';
   let parameters: string;
   for (const request of outboundRequests) {
     const requestUrl = request.url();
