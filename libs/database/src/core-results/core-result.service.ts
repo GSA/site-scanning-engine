@@ -158,6 +158,7 @@ export class CoreResultService {
     } else {
       coreResult.dnsIpv6 = pages.dns.result.dnsScan.ipv6;
     }
+
     return this.create(coreResult);
   }
 

@@ -3,6 +3,7 @@ import * as cuid from 'cuid';
 
 import { CoreScannerService } from '@app/core-scanner';
 import { WebsiteService } from '@app/database/websites/websites.service';
+import { CoreResultService } from '@app/database/core-results/core-result.service';
 
 @Controller()
 export class ScanController {
@@ -10,6 +11,7 @@ export class ScanController {
 
   constructor(
     private readonly coreScannerService: CoreScannerService,
+    private readonly coreResultService: CoreResultService,
     private readonly websiteService: WebsiteService,
   ) {}
 
@@ -25,6 +27,11 @@ export class ScanController {
       url: website.url,
       scanId: cuid(),
     });
+    await this.coreResultService.createFromCoreResultPages(
+      website.id,
+      results,
+      this.logger,
+    );
     this.logger.log({ msg: 'Got results', results });
   }
 }
