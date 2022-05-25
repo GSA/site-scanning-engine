@@ -12,6 +12,7 @@ applications:
     command: npm run start:prod:api
 
   - name: site-scanner-consumer
+    timeout: 179 # seconds
     disk_quota: ((consumer_disk))
     services:
       - scanner-postgres
