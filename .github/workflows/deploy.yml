@@ -39,4 +39,4 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          push_arguments: 'manifest.yml --vars-file vars.yml site-scanner-consumer'
+          push_arguments: '--vars-file vars.yml site-scanner-consumer'
