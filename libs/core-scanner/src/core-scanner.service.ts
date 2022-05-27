@@ -10,8 +10,7 @@ import { Scanner } from 'libs/scanner.interface';
 
 import { CoreInputDto } from './core.input.dto';
 import * as pages from './pages';
-import { getBaseDomain } from './test-helper';
-import { getHttpsUrl } from './pages/helpers';
+import { getBaseDomain, getHttpsUrl } from './util';
 import { CoreResultPages } from '@app/database/core-results/core-result.service';
 
 @Injectable()

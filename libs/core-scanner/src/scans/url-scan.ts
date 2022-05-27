@@ -3,8 +3,7 @@ import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { UrlScan } from 'entities/scan-data.entity';
 
-import { getHttpsUrl, getMIMEType } from '../pages/helpers';
-import { getBaseDomain } from '../test-helper';
+import { getBaseDomain, getHttpsUrl, getMIMEType } from '../util';
 
 export const buildUrlScanResult = (
   input: CoreInputDto,

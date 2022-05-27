@@ -5,7 +5,7 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { RobotsTxtScan } from 'entities/scan-data.entity';
 import { RobotsTxtPageScans } from 'entities/scan-page.entity';
 
-import { getHttpsUrl, getMIMEType } from './helpers';
+import { getHttpsUrl, getMIMEType } from '../util';
 
 export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   const url = getHttpsUrl(input.url);

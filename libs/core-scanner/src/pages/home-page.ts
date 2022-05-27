@@ -10,13 +10,12 @@ import { buildDapResult } from '../scans/dap';
 import { buildSeoResult } from '../scans/seo';
 import { buildThirdPartyResult } from '../scans/third-party';
 import { createUswdsScanner } from '../scans/uswds';
-import { promiseAll } from '../util';
+import { promiseAll, getHttpsUrl } from '../util';
 
 import {
   createCSSRequestsExtractor,
   createOutboundRequestsExtractor,
 } from './extractors';
-import { getHttpsUrl } from './helpers';
 
 export const createHomePageScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
