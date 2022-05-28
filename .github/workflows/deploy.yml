@@ -23,11 +23,30 @@ jobs:
       - name: build
         run: npm run build:all
 
-      - name: deploy complete stack
-        uses: 18f/cg-deploy-action@main
+      # - name: deploy api
+      #   uses: 18f/cg-deploy-action@main
+      #   with:
+      #     cf_username: ${{ secrets.CF_USERNAME }}
+      #     cf_password: ${{ secrets.CF_PASSWORD }}
+      #     cf_org: gsatts-sitescan
+      #     cf_space: prod
+      #     push_arguments: '--vars-file vars.yml site-scanner-api'
+
+      # - name: deploy consumer
+      #   uses: 18f/cg-deploy-action@main
+      #   with:
+      #     cf_username: ${{ secrets.CF_USERNAME }}
+      #     cf_password: ${{ secrets.CF_PASSWORD }}
+      #     cf_org: gsatts-sitescan
+      #     cf_space: prod
+      #     push_arguments: '--vars-file vars.yml site-scanner-consumer'
+
+      - name: deploy api and consumer
+        uses: cloud-gov/cg-cli-tools@main
         with:
+          cf_api: https://api.fr.cloud.gov
           cf_username: ${{ secrets.CF_USERNAME }}
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          push_arguments: '--vars-file vars.yml'
+          cf_command: push -f manifest.yml --vars-file vars-prod.yml
