@@ -23,25 +23,25 @@ jobs:
       - name: build
         run: npm run build:all
 
-      - name: deploy api
-        uses: 18f/cg-deploy-action@main
-        with:
-          cf_username: ${{ secrets.CF_USERNAME }}
-          cf_password: ${{ secrets.CF_PASSWORD }}
-          cf_org: gsatts-sitescan
-          cf_space: prod
-          push_arguments: '--vars-file vars.yml site-scanner-api'
+      # - name: deploy api
+      #   uses: 18f/cg-deploy-action@main
+      #   with:
+      #     cf_username: ${{ secrets.CF_USERNAME }}
+      #     cf_password: ${{ secrets.CF_PASSWORD }}
+      #     cf_org: gsatts-sitescan
+      #     cf_space: prod
+      #     push_arguments: '--vars-file vars.yml site-scanner-api'
 
-      - name: deploy consumer
-        uses: 18f/cg-deploy-action@main
-        with:
-          cf_username: ${{ secrets.CF_USERNAME }}
-          cf_password: ${{ secrets.CF_PASSWORD }}
-          cf_org: gsatts-sitescan
-          cf_space: prod
-          push_arguments: '--vars-file vars.yml site-scanner-consumer'
+      # - name: deploy consumer
+      #   uses: 18f/cg-deploy-action@main
+      #   with:
+      #     cf_username: ${{ secrets.CF_USERNAME }}
+      #     cf_password: ${{ secrets.CF_PASSWORD }}
+      #     cf_org: gsatts-sitescan
+      #     cf_space: prod
+      #     push_arguments: '--vars-file vars.yml site-scanner-consumer'
 
-      - name: scale consumer
+      - name: deploy api and consumer
         uses: cloud-gov/cg-cli-tools@main
         with:
           cf_api: https://api.fr.cloud.gov
@@ -49,5 +49,4 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: prod
-          cf_command: 'scale site-scanner-consumer -i 4 -k 4G -m 2G -f'
-          # scale to four instances with 2G memory each and force deploy
+          cf_command: push -f manifest.yml --vars-file vars-prod.yml
