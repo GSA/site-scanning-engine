@@ -3,7 +3,12 @@ import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { UrlScan } from 'entities/scan-data.entity';
 
-import { getBaseDomain, getHttpsUrl, getMIMEType } from '../util';
+import {
+  getBaseDomain,
+  getFullDomain,
+  getHttpsUrl,
+  getMIMEType,
+} from '../util';
 
 export const buildUrlScanResult = (
   input: CoreInputDto,
@@ -20,9 +25,7 @@ export const buildUrlScanResult = (
     finalUrlIsLive: isLive(response),
     finalUrlBaseDomain: getBaseDomain(finalUrl),
     finalUrlSameDomain: getBaseDomain(url) === getBaseDomain(finalUrl),
-    finalUrlSameWebsite:
-      getPathname(url) == getPathname(finalUrl) &&
-      getBaseDomain(url) == getBaseDomain(finalUrl),
+    finalUrlSameWebsite: getFullDomain(url) === getFullDomain(finalUrl),
     finalUrlStatusCode: response.status(),
   };
 };
@@ -34,11 +37,6 @@ const redirects = (requests: HTTPRequest[]): boolean => {
 const getFinalUrl = (page: Page) => {
   const finalUrl = page.url();
   return finalUrl;
-};
-
-const getPathname = (url: string) => {
-  const parsed = new URL(url);
-  return parsed.pathname;
 };
 
 const isLive = (res: HTTPResponse) => {

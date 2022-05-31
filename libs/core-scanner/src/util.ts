@@ -18,6 +18,11 @@ export const getBaseDomain = (url: string): string => {
   return _.join(baseDomain, '.');
 };
 
+export const getFullDomain = (url: string): string => {
+  const parsedUrl = new URL(url);
+  return parsedUrl.hostname;
+};
+
 export const getHttpsUrl = (url: string): string => {
   if (!url.startsWith('https://') && !url.startsWith('http://')) {
     return `https://${url.toLowerCase()}`;
