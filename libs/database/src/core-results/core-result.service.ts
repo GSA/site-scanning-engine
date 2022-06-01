@@ -12,7 +12,7 @@ import { ScanStatus } from 'entities/scan-status';
 export type CoreResultPages = {
   base: BaseScan;
   notFound: ScanPage.NotFoundPageScan;
-  home: ScanPage.HomePageScan;
+  primary: ScanPage.PrimaryScan;
   robotsTxt: ScanPage.RobotsTxtPageScan;
   sitemapXml: ScanPage.SitemapXmlPageScan;
   dns: ScanPage.DnsPageScan;
@@ -46,14 +46,14 @@ export class CoreResultService {
     coreResult.targetUrlBaseDomain = pages.base.targetUrlBaseDomain;
 
     // Home page data
-    coreResult.finalUrlScanStatus = pages.home.status;
-    if (pages.home.status !== ScanStatus.Completed) {
+    coreResult.primaryScanStatus = pages.primary.status;
+    if (pages.primary.status !== ScanStatus.Completed) {
       logger.error({
-        msg: pages.home.error,
-        page: 'home',
+        msg: pages.primary.error,
+        page: 'primary',
       });
     } else {
-      const result = pages.home.result;
+      const result = pages.primary.result;
       // DAP scan
       coreResult.dapDetected = result.dapScan.dapDetected;
       coreResult.dapParameters = result.dapScan.dapParameters;

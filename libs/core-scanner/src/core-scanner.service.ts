@@ -29,57 +29,16 @@ export class CoreScannerService
     const scanLogger = this.logger.logger.child(input);
 
     const scanData = await this.browserService.useBrowser(async (browser) => {
-      const [notFound, home, robotsTxt, sitemapXml, dns] = await Promise.all([
-        pages.createNotFoundScanner(this.httpService, input.url).then(
-          (targetUrl404Test) => ({
-            status: ScanStatus.Completed,
-            result: {
-              notFoundScan: {
-                targetUrl404Test,
+      const [notFound, primary, robotsTxt, sitemapXml, dns] = await Promise.all(
+        [
+          pages.createNotFoundScanner(this.httpService, input.url).then(
+            (targetUrl404Test) => ({
+              status: ScanStatus.Completed,
+              result: {
+                notFoundScan: {
+                  targetUrl404Test,
+                },
               },
-            },
-            error: null,
-          }),
-          (error) => {
-            return {
-              status: this.getScanStatus(error, input.url, scanLogger),
-              result: null,
-              error,
-            };
-          },
-        ),
-        this.browserService
-          .processPage(
-            browser,
-            pages.createHomePageScanner(
-              scanLogger.child({ page: 'home' }),
-              input,
-            ),
-          )
-          .then(
-            (result) => ({
-              status: ScanStatus.Completed,
-              result,
-              error: null,
-            }),
-            (error) => ({
-              status: this.getScanStatus(error, input.url, scanLogger),
-              result: null,
-              error,
-            }),
-          ),
-        this.browserService
-          .processPage(
-            browser,
-            pages.createRobotsTxtScanner(
-              scanLogger.child({ page: 'robots.txt' }),
-              input,
-            ),
-          )
-          .then(
-            (result) => ({
-              status: ScanStatus.Completed,
-              result,
               error: null,
             }),
             (error) => {
@@ -90,51 +49,94 @@ export class CoreScannerService
               };
             },
           ),
-        this.browserService
-          .processPage(
-            browser,
-            pages.createSitemapXmlScanner(
-              scanLogger.child({ page: 'sitemap.xml' }),
-              input,
+          this.browserService
+            .processPage(
+              browser,
+              pages.createPrimaryScanner(
+                scanLogger.child({ page: 'primary' }),
+                input,
+              ),
+            )
+            .then(
+              (result) => ({
+                status: ScanStatus.Completed,
+                result,
+                error: null,
+              }),
+              (error) => ({
+                status: this.getScanStatus(error, input.url, scanLogger),
+                result: null,
+                error,
+              }),
             ),
-          )
-          .then(
-            (result) => ({
+          this.browserService
+            .processPage(
+              browser,
+              pages.createRobotsTxtScanner(
+                scanLogger.child({ page: 'robots.txt' }),
+                input,
+              ),
+            )
+            .then(
+              (result) => ({
+                status: ScanStatus.Completed,
+                result,
+                error: null,
+              }),
+              (error) => {
+                return {
+                  status: this.getScanStatus(error, input.url, scanLogger),
+                  result: null,
+                  error,
+                };
+              },
+            ),
+          this.browserService
+            .processPage(
+              browser,
+              pages.createSitemapXmlScanner(
+                scanLogger.child({ page: 'sitemap.xml' }),
+                input,
+              ),
+            )
+            .then(
+              (result) => ({
+                status: ScanStatus.Completed,
+                result,
+                error: null,
+              }),
+              (error) => ({
+                status: this.getScanStatus(error, input.url, scanLogger),
+                result: null,
+                error,
+              }),
+            ),
+          pages.dnsScan(scanLogger, input.url).then(
+            (ipv6) => ({
               status: ScanStatus.Completed,
-              result,
+              result: {
+                dnsScan: {
+                  ipv6,
+                },
+              },
               error: null,
             }),
-            (error) => ({
-              status: this.getScanStatus(error, input.url, scanLogger),
-              result: null,
-              error,
-            }),
-          ),
-        pages.dnsScan(scanLogger, input.url).then(
-          (ipv6) => ({
-            status: ScanStatus.Completed,
-            result: {
-              dnsScan: {
-                ipv6,
-              },
+            (error) => {
+              return {
+                status: this.getScanStatus(error, input.url, scanLogger),
+                result: null,
+                error,
+              };
             },
-            error: null,
-          }),
-          (error) => {
-            return {
-              status: this.getScanStatus(error, input.url, scanLogger),
-              result: null,
-              error,
-            };
-          },
-        ),
-      ]);
+          ),
+        ],
+      );
       const result = {
         base: {
           targetUrlBaseDomain: getBaseDomain(getHttpsUrl(input.url)),
         },
         notFound,
-        home,
+        primary,
         robotsTxt,
         sitemapXml,
         dns,

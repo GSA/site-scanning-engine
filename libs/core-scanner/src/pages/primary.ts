@@ -4,7 +4,7 @@ import { Page } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { buildUrlScanResult } from '@app/core-scanner/scans/url-scan';
-import { HomePageScans } from 'entities/scan-page.entity';
+import { PrimaryScans } from 'entities/scan-page.entity';
 
 import { buildDapResult } from '../scans/dap';
 import { buildSeoResult } from '../scans/seo';
@@ -18,17 +18,17 @@ import {
 } from './extractors';
 import { getHttpsUrl } from './helpers';
 
-export const createHomePageScanner = (logger: Logger, input: CoreInputDto) => {
+export const createPrimaryScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
-    return await homePageScan(logger, input, page);
+    return await primaryScan(logger, input, page);
   };
 };
 
-const homePageScan = async (
+const primaryScan = async (
   logger: Logger,
   input: CoreInputDto,
   page: Page,
-): Promise<HomePageScans> => {
+): Promise<PrimaryScans> => {
   const url = getHttpsUrl(input.url);
 
   logger.info('Processing main page...');

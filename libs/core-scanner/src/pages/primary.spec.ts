@@ -5,10 +5,10 @@ import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 import { Website } from 'entities/website.entity';
 
 import { CoreInputDto } from '../core.input.dto';
-import { createHomePageScanner } from './home-page';
+import { createPrimaryScanner } from './primary';
 import { source } from './test-page-source';
 
-describe('home page scanner', () => {
+describe('primary scanner', () => {
   let mockPage: MockProxy<Page>;
   let mockRequest: MockProxy<HTTPRequest>;
   let redirectRequest: MockProxy<HTTPRequest>;
@@ -58,7 +58,7 @@ describe('home page scanner', () => {
     mockPage.goto.mockResolvedValue(mockResponse);
     redirectRequest.redirectChain.mockReturnValue([]);
 
-    const scanner = createHomePageScanner(mockLogger, input);
+    const scanner = createPrimaryScanner(mockLogger, input);
     const result = await scanner(mockPage);
 
     expect(result).toEqual({

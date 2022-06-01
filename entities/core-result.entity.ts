@@ -19,7 +19,7 @@ import { Website } from './website.entity';
 export type CoreResultPages = {
   base: BaseScan;
   notFound: ScanPage.NotFoundPageScan;
-  home: ScanPage.HomePageScan;
+  primary: ScanPage.PrimaryScan;
   robotsTxt: ScanPage.RobotsTxtPageScan;
   sitemapXml: ScanPage.SitemapXmlPageScan;
   dns: ScanPage.DnsPageScan;
@@ -49,8 +49,8 @@ export class CoreResult {
   notFoundScanStatus: string;
 
   @Column()
-  @Expose({ name: 'final_url_scan_status' })
-  finalUrlScanStatus: string;
+  @Expose({ name: 'primary_scan_status' })
+  primaryScanStatus: string;
 
   @Column()
   @Expose({ name: 'robots_txt_scan_status' })

@@ -54,7 +54,7 @@ describe('SnapshotService', () => {
     mockDatetimeService.now.mockReturnValue(date);
 
     coreResult.notFoundScanStatus = 'completed';
-    coreResult.finalUrlScanStatus = 'completed';
+    coreResult.primaryScanStatus = 'completed';
     coreResult.robotsTxtScanStatus = 'completed';
     coreResult.sitemapXmlScanStatus = 'completed';
 
@@ -99,11 +99,11 @@ const MOCK_ROW = {
     created: '2022-02-25T03:21:34.662Z',
     updated: '2022-02-25T03:21:34.662Z',
     notFoundScanStatus: 'unknown_error',
-    finalUrlScanStatus: 'dns_resolution_error',
+    primaryScanStatus: 'dns_resolution_error',
     robotsTxtScanStatus: 'dns_resolution_error',
     sitemapXmlScanStatus: 'dns_resolution_error',
     notFoundScanStatusDetails: '',
-    finalUrlScanStatusDetails: '{}',
+    primaryScanStatusDetails: '{}',
     robotsTxtScanStatusDetails: '{}',
     sitemapXmlScanStatusDetails: '{}',
     targetUrlBaseDomain: 'df.gov',

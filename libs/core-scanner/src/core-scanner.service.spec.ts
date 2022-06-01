@@ -101,7 +101,7 @@ xdescribe('CoreScannerService', () => {
     const result = await service.scan(coreInputDto);
     const expected = new CoreResult();
     expected.notFoundScanStatus = ScanStatus.Completed;
-    expected.finalUrlScanStatus = ScanStatus.Completed;
+    expected.primaryScanStatus = ScanStatus.Completed;
     expected.robotsTxtScanStatus = ScanStatus.Completed;
     expected.sitemapXmlScanStatus = ScanStatus.Completed;
     expected.finalUrl = 'https://18f.gsa.gov/';
@@ -262,7 +262,7 @@ xdescribe('SolutionsScannerService', () => {
     expected.thirdPartyServiceCount = 0;
 
     expected.notFoundScanStatus = ScanStatus.Completed;
-    expected.finalUrlScanStatus = ScanStatus.Completed;
+    expected.primaryScanStatus = ScanStatus.Completed;
     expected.robotsTxtScanStatus = ScanStatus.Completed;
     expected.sitemapXmlScanStatus = ScanStatus.Completed;
 
