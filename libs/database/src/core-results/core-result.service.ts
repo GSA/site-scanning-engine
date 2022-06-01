@@ -46,7 +46,7 @@ export class CoreResultService {
     coreResult.targetUrlBaseDomain = pages.base.targetUrlBaseDomain;
 
     // Home page data
-    coreResult.homeScanStatus = pages.home.status;
+    coreResult.finalUrlScanStatus = pages.home.status;
     if (pages.home.status !== ScanStatus.Completed) {
       logger.error({
         msg: pages.home.error,

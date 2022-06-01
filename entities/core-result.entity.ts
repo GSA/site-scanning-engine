@@ -27,7 +27,6 @@ export type CoreResultPages = {
 
 @Entity()
 export class CoreResult {
-
   @PrimaryGeneratedColumn()
   @Exclude({ toPlainOnly: true })
   id: number;
@@ -50,8 +49,8 @@ export class CoreResult {
   notFoundScanStatus: string;
 
   @Column()
-  @Expose({ name: 'home_scan_status' })
-  homeScanStatus: string;
+  @Expose({ name: 'final_url_scan_status' })
+  finalUrlScanStatus: string;
 
   @Column()
   @Expose({ name: 'robots_txt_scan_status' })
