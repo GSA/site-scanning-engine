@@ -8,4 +8,7 @@ export class CreateWebsiteDto {
   agencyCode?: number;
   bureau: string;
   bureauCode?: number;
+  sourceListFedDomains: boolean;
+  sourceListDap: boolean;
+  sourceListPulse: boolean;
 }

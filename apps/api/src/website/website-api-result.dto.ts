@@ -417,4 +417,25 @@ export class WebsiteApiResultDto {
    * @example 10
    */
   target_url_bureau_code: number;
+
+  /**
+   * TK
+   *
+   * @example true
+   */
+  source_list_federal_domains: boolean;
+
+  /**
+   * TK
+   *
+   * @example true
+   */
+  source_list_dap: boolean;
+
+  /**
+   * TK
+   *
+   * @example true
+   */
+  source_list_pulse: boolean;
 }

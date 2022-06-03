@@ -156,4 +156,7 @@ const CSV_COLUMN_ORDER = [
   'third_party_service_count',
   'dap_detected_final_url',
   'dap_parameters_final_url',
+  'source_list_federal_domains',
+  'source_list_dap',
+  'source_list_pulse',
 ];

@@ -70,6 +70,9 @@ describe('WebsiteService', () => {
       bureau: 'GSA,FAS,Technology Transformation Service',
       agencyCode: 10,
       bureauCode: 10,
+      sourceListFedDomains: true,
+      sourceListDap: false,
+      sourceListPulse: false,
     };
 
     const website = new Website();
@@ -79,6 +82,9 @@ describe('WebsiteService', () => {
     website.bureau = createWebsiteDto.bureau;
     website.agencyCode = 10;
     website.bureauCode = 10;
+    website.sourceListFedDomains = true;
+    website.sourceListDap = false;
+    website.sourceListPulse = false;
 
     await service.create(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
