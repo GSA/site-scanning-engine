@@ -2,7 +2,7 @@ import { HttpService, HttpStatus } from '@nestjs/common';
 import { Agent } from 'https';
 import { v4 } from 'uuid';
 
-import { getHttpsUrl } from './helpers';
+import { getHttpsUrl } from '../util';
 
 export const createNotFoundScanner = async (
   httpService: HttpService,
