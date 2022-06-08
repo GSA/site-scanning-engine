@@ -35,14 +35,14 @@ describe('CoreScanner (e2e)', () => {
       base: {
         targetUrlBaseDomain: input.url,
       },
-      home: {
+      primary: {
         error: null,
         result: {
           dapScan: {
             dapDetected: true,
             dapParameters:
-              result.home.status === ScanStatus.Completed
-                ? result.home.result.dapScan.dapParameters
+              result.primary.status === ScanStatus.Completed
+                ? result.primary.result.dapScan.dapParameters
                 : undefined, // need to fix this eventually
           },
           seoScan: {
@@ -56,8 +56,8 @@ describe('CoreScanner (e2e)', () => {
           thirdPartyScan: {
             thirdPartyServiceCount: 5,
             thirdPartyServiceDomains:
-              result.home.status === ScanStatus.Completed
-                ? result.home.result.thirdPartyScan.thirdPartyServiceDomains
+              result.primary.status === ScanStatus.Completed
+                ? result.primary.result.thirdPartyScan.thirdPartyServiceDomains
                 : undefined, // need to fix this eventually
           },
           urlScan: {
@@ -164,14 +164,14 @@ describe('CoreScanner (e2e)', () => {
         },
         status: ScanStatus.Completed,
       },
-      home: {
+      primary: {
         error: null,
         result: {
           dapScan: {
             dapDetected: true,
             dapParameters:
-              result.home.status === ScanStatus.Completed
-                ? result.home.result.dapScan.dapParameters
+              result.primary.status === ScanStatus.Completed
+                ? result.primary.result.dapScan.dapParameters
                 : undefined, // need to fix this eventually
           },
           seoScan: {
@@ -184,8 +184,8 @@ describe('CoreScanner (e2e)', () => {
           thirdPartyScan: {
             thirdPartyServiceCount: 12,
             thirdPartyServiceDomains:
-              result.home.status === ScanStatus.Completed
-                ? result.home.result.thirdPartyScan.thirdPartyServiceDomains
+              result.primary.status === ScanStatus.Completed
+                ? result.primary.result.thirdPartyScan.thirdPartyServiceDomains
                 : undefined, // need to fix this eventually
           },
           urlScan: {

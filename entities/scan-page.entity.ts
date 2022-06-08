@@ -12,14 +12,14 @@ type PageScan<T> =
       error: string;
     };
 
-export type HomePageScans = {
+export type PrimaryScans = {
   urlScan: ScanData.UrlScan;
   dapScan: ScanData.DapScan;
   seoScan: ScanData.SeoScan;
   thirdPartyScan: ScanData.ThirdPartyScan;
   uswdsScan: ScanData.UswdsScan;
 };
-export type HomePageScan = PageScan<HomePageScans>;
+export type PrimaryScan = PageScan<PrimaryScans>;
 
 export type RobotsTxtPageScans = {
   robotsTxtScan: ScanData.RobotsTxtScan;

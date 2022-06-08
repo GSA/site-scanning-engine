@@ -109,7 +109,7 @@ const CSV_COLUMN_ORDER = [
   'target_url_agency_code',
   'target_url_bureau_code',
   'scan_date',
-  'home_scan_status',
+  'primary_scan_status',
   'not_found_scan_status',
   'robots_txt_scan_status',
   'sitemap_xml_scan_status',
