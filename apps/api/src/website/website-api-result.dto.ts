@@ -417,4 +417,25 @@ export class WebsiteApiResultDto {
    * @example 10
    */
   target_url_bureau_code: number;
+
+  /**
+   * `source_list_federal_domains` indicates whether the List of Federal Domains provided this URL for the Target URL List.
+   *
+   * @example true
+   */
+  source_list_federal_domains: boolean;
+
+  /**
+   * `source_list_dap` indicates whether the Digital Analytics Program provided this URL for the Target URL List.
+   *
+   * @example true
+   */
+  source_list_dap: boolean;
+
+  /**
+   * `source_list_pulse` indicates whether the pulse.cio.gov Snapshot provided this URL for the Target URL List.
+   *
+   * @example true
+   */
+  source_list_pulse: boolean;
 }

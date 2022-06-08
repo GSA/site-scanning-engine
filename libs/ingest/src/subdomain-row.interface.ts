@@ -7,4 +7,7 @@ export interface SubdomainRow {
   agencyCode: string;
   bureau: string;
   bureauCode: string;
+  sourceListFedDomains: boolean;
+  sourceListDap: boolean;
+  sourceListPulse: boolean;
 }

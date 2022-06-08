@@ -55,6 +55,24 @@ export class Website {
   @Expose({ name: 'target_url_bureau_code' })
   bureauCode?: number;
 
+  @Column({
+    nullable: true,
+  })
+  @Expose({ name: 'source_list_federal_domains' })
+  sourceListFedDomains?: boolean;
+
+  @Column({
+    nullable: true,
+  })
+  @Expose({ name: 'source_list_dap' })
+  sourceListDap?: boolean;
+
+  @Column({
+    nullable: true,
+  })
+  @Expose({ name: 'source_list_pulse' })
+  sourceListPulse?: boolean;
+
   serialized() {
     const serializedWebsite = classToPlain(this);
     const serializedCoreResult = classToPlain(this.coreResult);
