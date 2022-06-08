@@ -78,3 +78,7 @@ export type NotFoundScan = {
 export type DnsScan = {
   ipv6: boolean;
 };
+
+export type LoginScan = {
+  loginDetected: string[];
+};

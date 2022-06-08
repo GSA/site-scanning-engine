@@ -18,6 +18,7 @@ export type PrimaryScans = {
   seoScan: ScanData.SeoScan;
   thirdPartyScan: ScanData.ThirdPartyScan;
   uswdsScan: ScanData.UswdsScan;
+  loginScan: ScanData.LoginScan;
 };
 export type PrimaryScan = PageScan<PrimaryScans>;
 
