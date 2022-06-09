@@ -131,4 +131,12 @@ export class WebsiteService {
       await this.website.insert(website);
     }
   }
+
+  async delete(id: number) {
+    await this.website
+      .createQueryBuilder('website')
+      .delete()
+      .where('id = :id', { id: id })
+      .execute();
+  }
 }

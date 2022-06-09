@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { parse } from '@fast-csv/parse';
 import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { map } from 'rxjs/operators';
@@ -38,6 +39,19 @@ export class IngestService {
       const err = error as Error;
       this.logger.error(
         `encountered error saving to database: ${err.message}`,
+        err.stack,
+      );
+    }
+  }
+
+  async removeFromDatabase(id: number) {
+    try {
+      await this.websiteService.delete(id);
+      this.logger.debug(`deleted website id ${id}`);
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(
+        `encountered error deleting from database: ${err.message}`,
         err.stack,
       );
     }
@@ -91,6 +105,73 @@ export class IngestService {
       stream.end(async () => {
         await Promise.all(writes);
         this.logger.debug('finished ingest of urls');
+        resolve('');
+      });
+    });
+
+    return end;
+  }
+
+  /**
+   * removeOldUrls checks urls in the website table against the most recently
+   * ingested url list, finds urls that are no longer on the url list, and
+   * removes those urls from the websites and core-scan tables.
+   */
+  async removeOldUrls(urls: string) {
+    // list of valid target URLs
+    const validUrls = [];
+    // list of Promises to delete invalid URLs
+    const deletes: Promise<any>[] = [];
+
+    const stream = parse({
+      headers: [
+        'website',
+        'baseDomain',
+        'url',
+        'branch',
+        'agency',
+        'agencyCode',
+        'bureau',
+        'bureauCode',
+        'sourceListFederalDomains',
+        'sourceListDap',
+        'sourceListPulse',
+      ],
+      renameHeaders: true, // discard the existing headers to ease parsing
+    })
+      .transform((data: SubdomainRow) => ({
+        website: data.website.toLowerCase(),
+      }))
+      .on('error', (error) => this.logger.error(error.message, error.stack))
+      .on('data', (row) => {
+        validUrls.push(row['website']);
+      });
+
+    stream.write(urls);
+
+    const end = new Promise((resolve) => {
+      stream.end(async () => {
+        try {
+          const savedWebsites = await this.websiteService.findAllWebsites();
+          let countDeleted = 0;
+
+          for (let i = 0; i < savedWebsites.length; i++) {
+            if (!validUrls.includes(savedWebsites[i]['url'])) {
+              countDeleted = countDeleted + 1;
+              deletes.push(this.removeFromDatabase(savedWebsites[i]['id']));
+            }
+          }
+
+          this.logger.debug(
+            `number of websites flagged for removal from the database: ${countDeleted}`,
+          );
+        } catch (err) {
+          this.logger.error(err.message, err.stack);
+        }
+
+        await Promise.all(deletes);
+
+        this.logger.debug('finished removing old urls');
         resolve('');
       });
     });
