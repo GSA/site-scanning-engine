@@ -7,6 +7,7 @@ import { CreateWebsiteDto } from '@app/database/websites/dto/create-website.dto'
 import { WebsiteService } from '@app/database/websites/websites.service';
 
 import { SubdomainRow } from './subdomain-row.interface';
+import { Website } from 'entities/website.entity';
 
 @Injectable()
 export class IngestService {
@@ -120,8 +121,6 @@ export class IngestService {
   async removeOldUrls(urls: string) {
     // list of valid target URLs
     const validUrls = [];
-    // list of Promises to delete invalid URLs
-    const deletes: Promise<any>[] = [];
 
     const stream = parse({
       headers: [
@@ -137,7 +136,7 @@ export class IngestService {
         'sourceListDap',
         'sourceListPulse',
       ],
-      renameHeaders: true, // discard the existing headers to ease parsing
+      renameHeaders: true,
     })
       .transform((data: SubdomainRow) => ({
         website: data.website.toLowerCase(),
@@ -153,29 +152,42 @@ export class IngestService {
       stream.end(async () => {
         try {
           const savedWebsites = await this.websiteService.findAllWebsites();
-          let countDeleted = 0;
 
-          for (let i = 0; i < savedWebsites.length; i++) {
-            if (!validUrls.includes(savedWebsites[i]['url'])) {
-              countDeleted = countDeleted + 1;
-              deletes.push(this.removeFromDatabase(savedWebsites[i]['id']));
-            }
-          }
+          const idsToDelete = this.getInvalidWebsiteIds(
+            savedWebsites,
+            validUrls,
+          );
 
           this.logger.debug(
-            `number of websites flagged for removal from the database: ${countDeleted}`,
+            `number of websites flagged for removal from the database: ${idsToDelete.length}`,
           );
+
+          await Promise.all(idsToDelete);
+
+          this.logger.debug('finished removing old urls');
         } catch (err) {
           this.logger.error(err.message, err.stack);
         }
 
-        await Promise.all(deletes);
-
-        this.logger.debug('finished removing old urls');
         resolve('');
       });
     });
 
     return end;
+  }
+
+  getInvalidWebsiteIds(
+    currentWebsites: Website[],
+    validUrls: string[],
+  ): Promise<any>[] {
+    const idsToDelete: Promise<any>[] = [];
+
+    for (let i = 0; i < currentWebsites.length; i++) {
+      if (!validUrls.includes(currentWebsites[i]['url'])) {
+        idsToDelete.push(this.removeFromDatabase(currentWebsites[i]['id']));
+      }
+    }
+
+    return idsToDelete;
   }
 }
