@@ -30,35 +30,6 @@ export class IngestService {
   }
 
   /**
-   * writeToDatabase writes a CSV to the database.
-   * @param row a CreateWebsiteDto object.
-   */
-  async writeToDatabase(row: CreateWebsiteDto) {
-    try {
-      await this.websiteService.create(row);
-    } catch (error) {
-      const err = error as Error;
-      this.logger.error(
-        `encountered error saving to database: ${err.message}`,
-        err.stack,
-      );
-    }
-  }
-
-  async removeFromDatabase(id: number) {
-    try {
-      await this.websiteService.delete(id);
-      this.logger.debug(`deleted website id ${id}`);
-    } catch (error) {
-      const err = error as Error;
-      this.logger.error(
-        `encountered error deleting from database: ${err.message}`,
-        err.stack,
-      );
-    }
-  }
-
-  /**
    * writeUrls writes target urls to the Websites table.
    */
   async writeUrls(urls: string, maxRows?: number) {
@@ -174,6 +145,40 @@ export class IngestService {
     });
 
     return end;
+  }
+
+  /**
+   * writeToDatabase writes a CSV to the database.
+   * @param row a CreateWebsiteDto object.
+   */
+  async writeToDatabase(row: CreateWebsiteDto) {
+    try {
+      await this.websiteService.create(row);
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(
+        `encountered error saving to database: ${err.message}`,
+        err.stack,
+      );
+    }
+  }
+
+  /**
+   * removeFromDatabase removes a website and its
+   * corresponding scan result from the datatabase.
+   * @param id given Website's primary key.
+   */
+  async removeFromDatabase(id: number) {
+    try {
+      await this.websiteService.delete(id);
+      this.logger.debug(`deleted website id ${id}`);
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(
+        `encountered error deleting from database: ${err.message}`,
+        err.stack,
+      );
+    }
   }
 
   getInvalidWebsiteIds(
