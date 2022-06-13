@@ -129,13 +129,17 @@ export class IngestService {
             validUrls,
           );
 
-          this.logger.debug(
-            `number of websites flagged for removal from the database: ${idsToDelete.length}`,
-          );
+          if (idsToDelete.length > 0) {
+            this.logger.debug(
+              `number of websites flagged for removal from the database: ${idsToDelete.length}`,
+            );
 
-          await Promise.all(idsToDelete);
+            await Promise.all(
+              idsToDelete.map((id) => this.removeFromDatabase(id)),
+            );
 
-          this.logger.debug('finished removing old urls');
+            this.logger.debug('finished removing old urls');
+          }
         } catch (err) {
           this.logger.error(err.message, err.stack);
         }
@@ -181,15 +185,23 @@ export class IngestService {
     }
   }
 
+  /**
+   * getInvalidWebsiteIds compares an array of websites
+   * agaist an array of valid urls and returns an array
+   * containing the ids of any websites that do not have
+   * a valid url.
+   * @param currentWebsites array of Websites.
+   * @param validUrls array of valid urls.
+   */
   getInvalidWebsiteIds(
     currentWebsites: Website[],
     validUrls: string[],
-  ): Promise<any>[] {
-    const idsToDelete: Promise<any>[] = [];
+  ): number[] {
+    const idsToDelete = [];
 
     for (let i = 0; i < currentWebsites.length; i++) {
       if (!validUrls.includes(currentWebsites[i]['url'])) {
-        idsToDelete.push(this.removeFromDatabase(currentWebsites[i]['id']));
+        idsToDelete.push(currentWebsites[i]['id']);
       }
     }
 
