@@ -96,6 +96,9 @@ export class CoreResultService {
       coreResult.uswdsSemanticVersion = result.uswdsScan.uswdsSemanticVersion;
       coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
       coreResult.uswdsCount = result.uswdsScan.uswdsCount;
+
+      // Login scan
+      coreResult.loginDetected = result.loginScan.loginDetected;
     }
 
     coreResult.notFoundScanStatus = pages.notFound.status;

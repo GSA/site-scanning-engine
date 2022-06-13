@@ -80,5 +80,5 @@ export type DnsScan = {
 };
 
 export type LoginScan = {
-  loginDetected: string[];
+  loginDetected: string;
 };

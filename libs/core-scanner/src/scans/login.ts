@@ -32,6 +32,6 @@ export const buildLoginResult = async (
   });
 
   return {
-    loginDetected: result.sort(),
+    loginDetected: result.sort().join(','),
   };
 };
