@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import { parse } from '@fast-csv/parse';
 import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { map } from 'rxjs/operators';
