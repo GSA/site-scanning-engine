@@ -116,7 +116,8 @@ export class WebsiteService {
     website.branch = createWebsiteDto.branch;
     website.agencyCode = createWebsiteDto.agencyCode;
     website.bureauCode = createWebsiteDto.bureauCode;
-    website.sourceListFedDomains = createWebsiteDto.sourceListFedDomains;
+    website.sourceListFederalDomains =
+      createWebsiteDto.sourceListFederalDomains;
     website.sourceListDap = createWebsiteDto.sourceListDap;
     website.sourceListPulse = createWebsiteDto.sourceListPulse;
 
