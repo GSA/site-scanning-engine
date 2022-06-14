@@ -33,9 +33,9 @@ async function ingest(cmdObj) {
   console.log('ingesting target urls');
 
   if (cmdObj.limit) {
-    await controller.writeUrls(cmdObj.limit);
+    await controller.refreshUrls(cmdObj.limit);
   } else {
-    await controller.writeUrls();
+    await controller.refreshUrls();
   }
   printMemoryUsage();
   await nestApp.close();
