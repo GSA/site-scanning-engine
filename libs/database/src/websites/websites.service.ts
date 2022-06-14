@@ -37,7 +37,11 @@ export class WebsiteService {
       order: { updated: 'DESC' },
     });
 
-    return result[0];
+    if (Array.isArray(result)) {
+      return result[0];
+    }
+
+    return result;
   }
 
   async paginatedFilter(
