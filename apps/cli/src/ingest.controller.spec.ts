@@ -27,7 +27,6 @@ describe('IngestController', () => {
     it('should refresh Urls', async () => {
       await ingestController.refreshUrls();
       expect(mockIngestService.writeUrls).toHaveBeenCalled();
-      expect(mockIngestService.removeOldUrls).toHaveBeenCalled();
     });
   });
 });
