@@ -58,9 +58,13 @@ export class IngestService {
           agencyCode: data.agencyCode ? parseInt(data.agencyCode) : null,
           bureauCode: data.bureauCode ? parseInt(data.bureauCode) : null,
           sourceListFederalDomains:
-            data.sourceListFederalDomains === 'TRUE' ? true : false,
-          sourceListDap: data.sourceListDap === 'TRUE' ? true : false,
-          sourceListPulse: data.sourceListPulse === 'TRUE' ? true : false,
+            data.sourceListFederalDomains.toLowerCase() === 'true'
+              ? true
+              : false,
+          sourceListDap:
+            data.sourceListDap.toLowerCase() === 'true' ? true : false,
+          sourceListPulse:
+            data.sourceListPulse.toLowerCase() === 'true' ? true : false,
         }),
       )
       .on('error', (error) => this.logger.error(error.message, error.stack))
