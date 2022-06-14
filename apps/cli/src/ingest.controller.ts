@@ -9,6 +9,5 @@ export class IngestController {
   async refreshUrls(limit?: number) {
     const urls = await this.ingestService.getUrls();
     await this.ingestService.writeUrls(urls, limit);
-    await this.ingestService.removeOldUrls(urls);
   }
 }
