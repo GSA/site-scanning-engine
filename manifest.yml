@@ -26,3 +26,4 @@ applications:
     health-check-type: process
     env:
       OPTIMIZE_MEMORY: true
+      TZ: UTC
