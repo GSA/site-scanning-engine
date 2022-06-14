@@ -23,7 +23,9 @@ export class Website {
   @Exclude({ toPlainOnly: true })
   updated: string;
 
-  @OneToOne(() => CoreResult, (coreResult) => coreResult.website)
+  @OneToOne(() => CoreResult, (coreResult) => coreResult.website, {
+    onDelete: 'CASCADE',
+  })
   @Exclude({ toPlainOnly: true })
   coreResult: CoreResult;
 

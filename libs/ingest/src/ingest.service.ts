@@ -28,26 +28,12 @@ export class IngestService {
   }
 
   /**
-   * writeToDatabase writes a CSV to the database.
-   * @param row a CreateWebsiteDto object.
-   */
-  async writeToDatabase(row: CreateWebsiteDto) {
-    try {
-      await this.websiteService.create(row);
-    } catch (error) {
-      const err = error as Error;
-      this.logger.error(
-        `encountered error saving to database: ${err.message}`,
-        err.stack,
-      );
-    }
-  }
-
-  /**
    * writeUrls writes target urls to the Websites table.
    */
   async writeUrls(urls: string, maxRows?: number) {
     const writes: Promise<any>[] = [];
+    const newestWebsiteRecord = await this.websiteService.findNewestWebsite();
+
     const stream = parse<SubdomainRow, CreateWebsiteDto>({
       headers: [
         'website',
@@ -86,14 +72,48 @@ export class IngestService {
       });
 
     stream.write(urls);
+
     const end = new Promise((resolve) => {
       stream.end(async () => {
-        await Promise.all(writes);
-        this.logger.debug('finished ingest of urls');
-        resolve('');
+        try {
+          await Promise.all(writes);
+          this.logger.debug('finished ingest of urls');
+
+          if (newestWebsiteRecord) {
+            const deleted = await this.websiteService.deleteBefore(
+              new Date(newestWebsiteRecord.updated),
+            );
+            this.logger.debug(
+              `finished removing ${deleted.affected} invalid url(s)`,
+            );
+          }
+          resolve('');
+        } catch (error) {
+          const err = error as Error;
+          this.logger.error(
+            `encountered error during ingest process: ${err.message}`,
+            err.stack,
+          );
+        }
       });
     });
 
     return end;
+  }
+
+  /**
+   * writeToDatabase writes a CSV to the database.
+   * @param row a CreateWebsiteDto object.
+   */
+  async writeToDatabase(row: CreateWebsiteDto) {
+    try {
+      await this.websiteService.create(row);
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(
+        `encountered error saving to database: ${err.message}`,
+        err.stack,
+      );
+    }
   }
 }

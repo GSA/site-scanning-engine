@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Website } from 'entities/website.entity';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, Repository } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import {
   IPaginationOptions,
@@ -27,6 +27,20 @@ export class WebsiteService {
 
   async findAllWebsites(): Promise<Website[]> {
     const result = await this.website.find();
+    return result;
+  }
+
+  async findNewestWebsite(): Promise<Website> {
+    const result = await this.website.find({
+      skip: 0,
+      take: 1,
+      order: { updated: 'DESC' },
+    });
+
+    if (Array.isArray(result)) {
+      return result[0];
+    }
+
     return result;
   }
 
@@ -131,5 +145,15 @@ export class WebsiteService {
     } else {
       await this.website.insert(website);
     }
+  }
+
+  async deleteBefore(date: Date) {
+    return await this.website
+      .createQueryBuilder('website')
+      .delete()
+      .where({
+        updated: LessThanOrEqual(date.toISOString()),
+      })
+      .execute();
   }
 }
