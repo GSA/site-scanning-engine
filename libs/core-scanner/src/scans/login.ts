@@ -26,12 +26,12 @@ export const buildLoginResult = async (
   const html = await mainResponse.text();
 
   loginStrings.forEach((string) => {
-    if (html.includes(string)) {
+    if (html.toLowerCase().includes(string.toLowerCase())) {
       result.push(string);
     }
   });
 
   return {
-    loginDetected: result.sort().join(','),
+    loginDetected: result.length > 0 ? result.sort().join(',') : null,
   };
 };
