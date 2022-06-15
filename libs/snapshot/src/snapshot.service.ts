@@ -115,6 +115,9 @@ const CSV_COLUMN_ORDER = [
   'sitemap_xml_scan_status',
   'dns_scan_status',
   'dns_ipv6',
+  'source_list_federal_domains',
+  'source_list_dap',
+  'source_list_pulse',
   'uswds_favicon',
   'uswds_favicon_in_css',
   'uswds_merriweather_font',
@@ -156,7 +159,4 @@ const CSV_COLUMN_ORDER = [
   'third_party_service_count',
   'dap_detected_final_url',
   'dap_parameters_final_url',
-  'source_list_federal_domains',
-  'source_list_dap',
-  'source_list_pulse',
 ];
