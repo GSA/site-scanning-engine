@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Website } from 'entities/website.entity';
 import { mock } from 'jest-mock-extended';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { DeleteQueryBuilder, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { WebsiteService } from './websites.service';
 
@@ -70,7 +70,7 @@ describe('WebsiteService', () => {
       bureau: 'GSA,FAS,Technology Transformation Service',
       agencyCode: 10,
       bureauCode: 10,
-      sourceListFedDomains: true,
+      sourceListFederalDomains: true,
       sourceListDap: false,
       sourceListPulse: false,
     };
@@ -82,11 +82,36 @@ describe('WebsiteService', () => {
     website.bureau = createWebsiteDto.bureau;
     website.agencyCode = 10;
     website.bureauCode = 10;
-    website.sourceListFedDomains = true;
+    website.sourceListFederalDomains = true;
     website.sourceListDap = false;
     website.sourceListPulse = false;
 
     await service.create(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
+  });
+
+  it('should get the most recently updated Website in the database', async () => {
+    const website = new Website();
+    website.url = 'https://18f.gov';
+    website.updated = new Date().toISOString();
+    mockRepository.find.calledWith().mockResolvedValue(website);
+
+    const result = await service.findNewestWebsite();
+    expect(result).toStrictEqual(website);
+  });
+
+  it('should delete Websites from the database that were last updated on or before a given datetime', async () => {
+    const date = new Date();
+    const website = new Website();
+    website.url = 'https://18f.gov';
+    website.updated = date.toISOString();
+
+    const mockDeleteQB = mock<DeleteQueryBuilder<Website>>();
+    mockDeleteQB.delete.mockReturnThis();
+    mockDeleteQB.where.mockReturnThis();
+    mockRepository.createQueryBuilder.mockReturnValue(mockDeleteQB);
+
+    await service.deleteBefore(date);
+    expect(mockRepository.delete.toHaveBeenCalled);
   });
 });

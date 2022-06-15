@@ -23,7 +23,9 @@ export class Website {
   @Exclude({ toPlainOnly: true })
   updated: string;
 
-  @OneToOne(() => CoreResult, (coreResult) => coreResult.website)
+  @OneToOne(() => CoreResult, (coreResult) => coreResult.website, {
+    onDelete: 'CASCADE',
+  })
   @Exclude({ toPlainOnly: true })
   coreResult: CoreResult;
 
@@ -59,7 +61,7 @@ export class Website {
     nullable: true,
   })
   @Expose({ name: 'source_list_federal_domains' })
-  sourceListFedDomains?: boolean;
+  sourceListFederalDomains?: boolean;
 
   @Column({
     nullable: true,

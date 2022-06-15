@@ -39,7 +39,9 @@ export class CoreResult {
   @Expose({ name: 'scan_date' })
   updated: string;
 
-  @OneToOne(() => Website, (website) => website.coreResult)
+  @OneToOne(() => Website, (website) => website.coreResult, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   @Exclude({ toPlainOnly: true })
   website: Website;
