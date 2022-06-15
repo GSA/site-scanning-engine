@@ -57,11 +57,14 @@ export class IngestService {
           website: data.website.toLowerCase(),
           agencyCode: data.agencyCode ? parseInt(data.agencyCode) : null,
           bureauCode: data.bureauCode ? parseInt(data.bureauCode) : null,
-          sourceListFedDomains: data.sourceListFedDomains
-            ? data.sourceListFedDomains
-            : null,
-          sourceListDap: data.sourceListDap ? data.sourceListDap : null,
-          sourceListPulse: data.sourceListPulse ? data.sourceListPulse : null,
+          sourceListFederalDomains:
+            data.sourceListFederalDomains.toLowerCase() === 'true'
+              ? true
+              : false,
+          sourceListDap:
+            data.sourceListDap.toLowerCase() === 'true' ? true : false,
+          sourceListPulse:
+            data.sourceListPulse.toLowerCase() === 'true' ? true : false,
         }),
       )
       .on('error', (error) => this.logger.error(error.message, error.stack))

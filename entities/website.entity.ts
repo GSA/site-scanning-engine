@@ -61,7 +61,7 @@ export class Website {
     nullable: true,
   })
   @Expose({ name: 'source_list_federal_domains' })
-  sourceListFedDomains?: boolean;
+  sourceListFederalDomains?: boolean;
 
   @Column({
     nullable: true,

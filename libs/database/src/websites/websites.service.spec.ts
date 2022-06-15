@@ -70,7 +70,7 @@ describe('WebsiteService', () => {
       bureau: 'GSA,FAS,Technology Transformation Service',
       agencyCode: 10,
       bureauCode: 10,
-      sourceListFedDomains: true,
+      sourceListFederalDomains: true,
       sourceListDap: false,
       sourceListPulse: false,
     };
@@ -82,7 +82,7 @@ describe('WebsiteService', () => {
     website.bureau = createWebsiteDto.bureau;
     website.agencyCode = 10;
     website.bureauCode = 10;
-    website.sourceListFedDomains = true;
+    website.sourceListFederalDomains = true;
     website.sourceListDap = false;
     website.sourceListPulse = false;
 
