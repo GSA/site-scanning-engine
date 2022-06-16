@@ -17,8 +17,6 @@ describe('login scan', () => {
           text: async () => html,
         }),
       ),
-    ).toEqual({
-      loginDetected: ['"password"', 'type="password"'],
-    });
+    ).toEqual({ loginDetected: '"password",type="password"' });
   });
 });

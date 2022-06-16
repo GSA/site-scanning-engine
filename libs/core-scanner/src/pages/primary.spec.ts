@@ -66,6 +66,9 @@ describe('primary scanner', () => {
         dapDetected: false,
         dapParameters: undefined,
       },
+      loginScan: {
+        loginDetected: null,
+      },
       seoScan: {
         mainElementFinalUrl: true,
         ogArticleModifiedFinalUrl: time,

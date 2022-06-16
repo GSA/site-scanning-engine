@@ -45,6 +45,9 @@ describe('CoreScanner (e2e)', () => {
                 ? result.primary.result.dapScan.dapParameters
                 : undefined, // need to fix this eventually
           },
+          loginScan: {
+            loginDetected: null,
+          },
           seoScan: {
             mainElementFinalUrl: true,
             ogArticleModifiedFinalUrl: undefined,
@@ -173,6 +176,9 @@ describe('CoreScanner (e2e)', () => {
               result.primary.status === ScanStatus.Completed
                 ? result.primary.result.dapScan.dapParameters
                 : undefined, // need to fix this eventually
+          },
+          loginScan: {
+            loginDetected: null,
           },
           seoScan: {
             mainElementFinalUrl: false,
