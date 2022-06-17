@@ -1,6 +1,7 @@
 import { parse } from '@fast-csv/parse';
 import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { map } from 'rxjs/operators';
+import { ConfigService } from '@nestjs/config';
 
 import { CreateWebsiteDto } from '@app/database/websites/dto/create-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
@@ -14,14 +15,17 @@ export class IngestService {
   constructor(
     private httpService: HttpService,
     private websiteService: WebsiteService,
+    private configService: ConfigService,
   ) {}
 
-  private currentFederalSubdomains =
-    'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv';
+  private currentFederalSubdomains = this.configService.get<string>(
+    'federalSubdomainsUrl',
+  );
 
-  async getUrls(): Promise<string> {
+  async getUrls(url?: string): Promise<string> {
+    const urlList = url ?? this.currentFederalSubdomains;
     const urls = await this.httpService
-      .get(this.currentFederalSubdomains)
+      .get(urlList)
       .pipe(map((resp) => resp.data))
       .toPromise();
     return urls;
