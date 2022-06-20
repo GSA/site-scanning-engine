@@ -8,11 +8,9 @@ on:
         description: deployed cloud.gov space
         required: true
         default: prod
-#        federalSubdomainsUrl:
-#          description: CSV with domain list
-#          required: true
-# yamllint disable-line rule:line-length
-#          default: 'https://raw.githubusercontent.com/GSA/federal-website-index/main/data/site-scanning-target-url-list.csv'
+      federalSubdomainsUrl:
+        description: CSV with domain list (leave blank to use default)
+        required: false
 
 jobs:
   ingest:

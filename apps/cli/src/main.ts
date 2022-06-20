@@ -32,11 +32,7 @@ async function ingest(cmdObj) {
   const controller = nestApp.get(IngestController);
   console.log('ingesting target urls');
 
-  if (cmdObj.limit) {
-    await controller.refreshUrls(cmdObj.limit);
-  } else {
-    await controller.refreshUrls();
-  }
+  await controller.refreshUrls(cmdObj.limit, cmdObj.federalSubdomainsUrl);
   printMemoryUsage();
   await nestApp.close();
 }
@@ -96,6 +92,10 @@ async function main() {
       '--limit <number>',
       'limits the ingest service to <number> urls',
       parseInt,
+    )
+    .option(
+      '--federalSubdomainsUrl <string>',
+      'URL pointing to CSV of federal subdomains',
     )
     .action(ingest);
 
