@@ -6,8 +6,8 @@ import { IngestService } from '@app/ingest';
 export class IngestController {
   constructor(private readonly ingestService: IngestService) {}
 
-  async refreshUrls(limit?: number) {
-    const urls = await this.ingestService.getUrls();
+  async refreshUrls(limit?: number, federalSubdomainsUrl?: string) {
+    const urls = await this.ingestService.getUrls(federalSubdomainsUrl);
     await this.ingestService.writeUrls(urls, limit);
   }
 }
