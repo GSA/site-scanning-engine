@@ -157,7 +157,7 @@ const CSV_COLUMN_ORDER = [
   'dns_ipv6',
   'third_party_service_domains',
   'third_party_service_count',
+  'login_detected',
   'dap_detected_final_url',
   'dap_parameters_final_url',
-  'login_detected',
 ];
