@@ -24,9 +24,10 @@ export const buildLoginResult = async (
 ): Promise<LoginScan> => {
   const result = [];
   const html = await mainResponse.text();
+  const htmlLower = html.toLowerCase();
 
   loginStrings.forEach((string) => {
-    if (html.toLowerCase().includes(string.toLowerCase())) {
+    if (htmlLower.includes(string.toLowerCase())) {
       result.push(string);
     }
   });
