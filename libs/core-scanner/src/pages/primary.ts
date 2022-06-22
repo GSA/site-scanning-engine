@@ -10,6 +10,7 @@ import { buildDapResult } from '../scans/dap';
 import { buildSeoResult } from '../scans/seo';
 import { buildThirdPartyResult } from '../scans/third-party';
 import { createUswdsScanner } from '../scans/uswds';
+import { buildLoginResult } from '../scans/login';
 import { promiseAll, getHttpsUrl } from '../util';
 
 import {
@@ -40,12 +41,14 @@ const primaryScan = async (
     waitUntil: 'networkidle2',
   });
 
-  const [dapScan, thirdPartyScan, seoScan, uswdsScan] = await promiseAll([
-    buildDapResult(getOutboundRequests()),
-    buildThirdPartyResult(response, getOutboundRequests()),
-    buildSeoResult(logger, page),
-    createUswdsScanner({ logger, getCSSRequests }, page)(response),
-  ]);
+  const [dapScan, thirdPartyScan, seoScan, uswdsScan, loginScan] =
+    await promiseAll([
+      buildDapResult(getOutboundRequests()),
+      buildThirdPartyResult(response, getOutboundRequests()),
+      buildSeoResult(logger, page),
+      createUswdsScanner({ logger, getCSSRequests }, page)(response),
+      buildLoginResult(response),
+    ]);
   const urlScan = buildUrlScanResult(input, page, response);
 
   return {
@@ -54,5 +57,6 @@ const primaryScan = async (
     seoScan,
     thirdPartyScan,
     uswdsScan,
+    loginScan,
   };
 };
