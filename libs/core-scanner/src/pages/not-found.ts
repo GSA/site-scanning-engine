@@ -1,4 +1,5 @@
-import { HttpService, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { Agent } from 'https';
 import { v4 } from 'uuid';
 

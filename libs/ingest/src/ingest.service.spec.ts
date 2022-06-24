@@ -1,5 +1,5 @@
 import { WebsiteService } from '@app/database/websites/websites.service';
-import { HttpService } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { IngestService } from './ingest.service';

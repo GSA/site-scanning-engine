@@ -1,10 +1,10 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
 import { Logger } from 'pino';
 
 import { BrowserService } from '@app/browser';
 
-import { CoreResult } from 'entities/core-result.entity';
 import { parseBrowserError, ScanStatus } from 'entities/scan-status';
 import { Scanner } from 'libs/scanner.interface';
 

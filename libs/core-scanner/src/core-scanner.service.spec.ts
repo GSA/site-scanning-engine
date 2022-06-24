@@ -2,7 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Page, HTTPResponse, HTTPRequest, Browser } from 'puppeteer';
 import { getLoggerToken, PinoLogger } from 'nestjs-pino';
 import { of } from 'rxjs';
-import { HttpModule, HttpService } from '@nestjs/common';
+import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { BrowserModule, BrowserService } from '@app/browser';
