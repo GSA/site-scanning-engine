@@ -19,7 +19,7 @@ export class SnapshotService {
   ) {}
 
   /**
-   * weeklySnapshot is meant to be called weekly (likely through a CRON job).
+   * weeklySnapshot is meant to be called weekly.
    *
    * If there is an existing weekly-snapshot.json and weekly-snapshot.csv it copies it to the
    * archive bucket, and names it weekly-snapshot-<date-one-week-previous>.

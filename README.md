@@ -84,7 +84,7 @@ Before starting Docker, create a `.env` file in the project root and add
 the following values replacing `<add_a_key_here>` with a local passwords
 that are at least 8 characters long.
 
-**Note: this is only for local development and has no impact on the Cloud.gov configuration**_
+**Note: this is only for local development and has no impact on the Cloud.gov configuration**
 
 ```env
 # postgres configuration
@@ -96,11 +96,6 @@ POSTGRES_PASSWORD=<add_a_key_here>
 # redis configuration
 QUEUE_HOST=localhost
 QUEUE_PORT=6379
-
-# cron configuration -- you can set these to any valid CRONTAB string
-# by default it runs the scans every 5 minutes and the snapshot every 10 minutes
-CORE_SCAN_SCHEDULE=*/5 * * * *
-SNAPSHOT_SCHEDULE=*/10 * * * *
 
 # Minio Config -- Minio is an S3 api compliant storage
 MINIO_ACCESS_KEY=<add_a_key_here>
@@ -190,7 +185,7 @@ npm run start:scan-engine
 ### Ingest Website List
 
 The Site Scanner relies on a list of federal domains and metadata about
-those to domains to operate.  This list is ingested into the system
+those to domains to operate. This list is ingested into the system
 from a public repository using a the [Ingest Service](libs/ingest).
 
 To run the ingest service do the following:
