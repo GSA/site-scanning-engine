@@ -1,5 +1,6 @@
 import { parse } from '@fast-csv/parse';
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { map } from 'rxjs/operators';
 import { ConfigService } from '@nestjs/config';
 
