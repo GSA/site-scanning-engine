@@ -5,7 +5,7 @@ valid federal subdomains into the system.
 
 ## Configuration
 
-The ingest library's [configuration file](../libs/ingest/src/config/ingest.config.ts)
+The ingest library's [configuration file](https://github.com/GSA/site-scanning-engine/blob/main/libs/ingest/src/config/ingest.config.ts)
 specifies a URL that points to a CSV file containing valid federal subdomains.
 
 ## Use
