@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import { Logger } from 'pino';
 import { Page } from 'puppeteer';
 
