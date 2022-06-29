@@ -11,7 +11,10 @@ export const createOutboundRequestsExtractor = (page: Page) => {
   };
 };
 
-export const createCSSRequestsExtractor = (page: Page, logger: Logger) => {
+export const createCSSRequestsExtractor = async (
+  page: Page,
+  logger: Logger,
+) => {
   const cssPages = [];
   page.on('response', async (response) => {
     if (response.ok() && response.request().resourceType() == 'stylesheet') {
