@@ -33,7 +33,7 @@ const primaryScan = async (
 
   logger.info('Processing main page...');
 
-  const getCSSRequests = createCSSRequestsExtractor(page);
+  const getCSSRequests = createCSSRequestsExtractor(page, logger);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
 
   // goto url and wait until there are only 2 idle requests

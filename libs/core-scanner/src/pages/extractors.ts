@@ -1,4 +1,5 @@
 import { HTTPRequest, Page } from 'puppeteer';
+import { Logger } from 'pino';
 
 export const createOutboundRequestsExtractor = (page: Page) => {
   const outboundRequests: HTTPRequest[] = [];
@@ -10,12 +11,16 @@ export const createOutboundRequestsExtractor = (page: Page) => {
   };
 };
 
-export const createCSSRequestsExtractor = (page: Page) => {
+export const createCSSRequestsExtractor = (page: Page, logger: Logger) => {
   const cssPages = [];
   page.on('response', async (response) => {
     if (response.ok() && response.request().resourceType() == 'stylesheet') {
-      const cssPage = await response.text();
-      cssPages.push(cssPage);
+      try {
+        const cssPage = await response.text();
+        cssPages.push(cssPage);
+      } catch (error) {
+        logger.error(error.message, error.stack);
+      }
     }
   });
   return () => {
