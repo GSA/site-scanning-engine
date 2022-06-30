@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import { Logger } from 'pino';
 import { Page } from 'puppeteer';
 
@@ -33,7 +32,7 @@ const primaryScan = async (
 
   logger.info('Processing main page...');
 
-  const getCSSRequests = createCSSRequestsExtractor(page);
+  const getCSSRequests = await createCSSRequestsExtractor(page, logger);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
 
   // goto url and wait until there are only 2 idle requests
