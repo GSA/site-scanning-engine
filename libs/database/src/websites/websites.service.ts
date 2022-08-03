@@ -19,7 +19,7 @@ export class WebsiteService {
   async findWebsiteResults(): Promise<Website[]> {
     const websites = this.website
       .createQueryBuilder('website')
-      .leftJoinAndSelect('website.coreResult', 'coreResult')
+      .innerJoinAndSelect('website.coreResult', 'coreResult')
       .getMany();
 
     return websites;
