@@ -35,7 +35,7 @@ describe('WebsiteService', () => {
     const website = new Website();
     website.url = 'https://18f.gov';
 
-    mockQB.leftJoinAndSelect.mockReturnThis();
+    mockQB.innerJoinAndSelect.mockReturnThis();
     mockQB.getMany.mockResolvedValue([website]);
     mockRepository.createQueryBuilder.mockReturnValue(mockQB);
 
