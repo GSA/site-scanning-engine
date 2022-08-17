@@ -28,6 +28,7 @@ export const buildUswdsResult = async (
   page: Page,
 ): Promise<UswdsScan> => {
   const uswdsSemanticVersion = uswdsSemVer(logger, cssPages);
+  const uswdsVersionScoreAdjustment = 100;
   const result = {
     usaClasses: await usaClassesCount(page),
     uswdsString: uswdsInHtml(logger, htmlText),
@@ -40,7 +41,7 @@ export const buildUswdsResult = async (
     uswdsPublicSansFont: uswdsPublicSansFont(cssPages),
     uswdsSourceSansFont: uswdsSourceSansFont(cssPages),
     uswdsSemanticVersion,
-    uswdsVersion: uswdsSemanticVersion ? 20 : 0,
+    uswdsVersion: uswdsSemanticVersion ? uswdsVersionScoreAdjustment : 0,
     uswdsCount: 0,
   };
   result.uswdsCount = sum([
@@ -176,7 +177,7 @@ const uswdsPublicSansFont = (cssPages: string[]) => {
   for (const page of cssPages) {
     const match = page.match(re);
     if (match) {
-      score = 20;
+      score = 40;
       break;
     }
   }
