@@ -44,7 +44,7 @@ export class Website {
   @Column({
     nullable: true,
   })
-  @Expose({ name: 'target_url_agency_code' })
+  @Exclude()
   agencyCode?: number;
 
   @Column()
@@ -54,7 +54,7 @@ export class Website {
   @Column({
     nullable: true,
   })
-  @Expose({ name: 'target_url_bureau_code' })
+  @Exclude()
   bureauCode?: number;
 
   @Column({

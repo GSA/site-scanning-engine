@@ -106,8 +106,6 @@ const CSV_COLUMN_ORDER = [
   'target_url_branch',
   'final_url_status_code',
   'target_url_404_test',
-  'target_url_agency_code',
-  'target_url_bureau_code',
   'scan_date',
   'primary_scan_status',
   'not_found_scan_status',
