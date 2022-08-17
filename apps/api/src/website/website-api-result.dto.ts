@@ -398,25 +398,11 @@ export class WebsiteApiResultDto {
   target_url_agency_owner: string;
 
   /**
-   * `target_url_agency_code` is a number denoting the agency code.
-   *
-   * @example 23
-   */
-  target_url_agency_code: number;
-
-  /**
    * `target_url_bureau_owner` is the name of the bureau that owns the target url.
    *
    * @example "GSA,FAS,Technology Transformation Service"
    */
   target_url_bureau_owner: string;
-
-  /**
-   * `target_url_bureau_code` is a number denoting the bureau code.
-   *
-   * @example 10
-   */
-  target_url_bureau_code: number;
 
   /**
    * `source_list_federal_domains` indicates whether the List of Federal Domains provided this URL for the Target URL List.
