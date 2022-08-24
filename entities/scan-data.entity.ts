@@ -34,14 +34,11 @@ export type ThirdPartyScan = {
 export type UswdsScan = {
   usaClasses: number;
   uswdsString: number;
-  uswdsTables: number;
   uswdsInlineCss: number;
   uswdsUsFlag: number;
   uswdsUsFlagInCss: number;
   uswdsStringInCss: number;
-  uswdsMerriweatherFont: number;
   uswdsPublicSansFont: number;
-  uswdsSourceSansFont: number;
   uswdsSemanticVersion: string;
   uswdsVersion: number;
   uswdsCount: number;

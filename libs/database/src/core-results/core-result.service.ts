@@ -85,14 +85,11 @@ export class CoreResultService {
 
       coreResult.usaClasses = result.uswdsScan.usaClasses;
       coreResult.uswdsString = result.uswdsScan.uswdsString;
-      coreResult.uswdsTables = result.uswdsScan.uswdsTables;
       coreResult.uswdsInlineCss = result.uswdsScan.uswdsInlineCss;
       coreResult.uswdsUsFlag = result.uswdsScan.uswdsUsFlag;
       coreResult.uswdsUsFlagInCss = result.uswdsScan.uswdsUsFlagInCss;
       coreResult.uswdsStringInCss = result.uswdsScan.uswdsStringInCss;
-      coreResult.uswdsMerriweatherFont = result.uswdsScan.uswdsMerriweatherFont;
       coreResult.uswdsPublicSansFont = result.uswdsScan.uswdsPublicSansFont;
-      coreResult.uswdsSourceSansFont = result.uswdsScan.uswdsSourceSansFont;
       coreResult.uswdsSemanticVersion = result.uswdsScan.uswdsSemanticVersion;
       coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
       coreResult.uswdsCount = result.uswdsScan.uswdsCount;

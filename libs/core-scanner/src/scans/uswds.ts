@@ -32,14 +32,11 @@ export const buildUswdsResult = async (
   const result = {
     usaClasses: await usaClassesCount(page),
     uswdsString: uswdsInHtml(logger, htmlText),
-    uswdsTables: tableCount(htmlText),
     uswdsInlineCss: inlineUsaCssCount(htmlText),
     uswdsUsFlag: uswdsFlagDetected(htmlText),
     uswdsUsFlagInCss: uswdsFlagInCSS(cssPages),
     uswdsStringInCss: uswdsInCss(cssPages),
-    uswdsMerriweatherFont: uswdsMerriweatherFont(cssPages),
     uswdsPublicSansFont: uswdsPublicSansFont(cssPages),
-    uswdsSourceSansFont: uswdsSourceSansFont(cssPages),
     uswdsSemanticVersion,
     uswdsVersion: uswdsSemanticVersion ? uswdsVersionScoreAdjustment : 0,
     uswdsCount: 0,
@@ -47,13 +44,10 @@ export const buildUswdsResult = async (
   result.uswdsCount = sum([
     result.usaClasses,
     result.uswdsString,
-    result.uswdsTables,
     result.uswdsInlineCss,
     result.uswdsUsFlag,
     result.uswdsUsFlagInCss,
     result.uswdsStringInCss,
-    result.uswdsMerriweatherFont,
-    result.uswdsSourceSansFont,
     result.uswdsPublicSansFont,
     result.uswdsVersion,
   ]);
@@ -81,24 +75,6 @@ const uswdsInHtml = (logger: Logger, htmlText: string) => {
   const occurrenceCount = [...htmlText.matchAll(re)].length;
   logger.debug(`uswds occurs ${occurrenceCount} times`);
   return occurrenceCount;
-};
-
-/**
- * tableCount detects the presence of <table> elements in HTML. This is a negative indicator of USWDS.
- *
- * @param htmlText html in text.
- */
-const tableCount = (htmlText: string) => {
-  const re = /<table/g;
-  const occurrenceCount = [...htmlText.matchAll(re)].length;
-  let deduction = 0;
-
-  if (occurrenceCount > 0) {
-    const tableDeduction = -10;
-    deduction = tableDeduction * occurrenceCount;
-  }
-
-  return deduction;
 };
 
 const inlineUsaCssCount = (htmlText: string) => {
@@ -155,21 +131,6 @@ const uswdsFlagInCSS = (cssPages: string[]) => {
   return score;
 };
 
-const uswdsMerriweatherFont = (cssPages: string[]) => {
-  const re = /[Mm]erriweather/;
-  let score = 0;
-
-  for (const page of cssPages) {
-    const match = page.match(re);
-    if (match) {
-      score = 5;
-      break;
-    }
-  }
-
-  return score;
-};
-
 const uswdsPublicSansFont = (cssPages: string[]) => {
   const re = /[Pp]ublic.[Ss]ans/;
   let score = 0;
@@ -178,21 +139,6 @@ const uswdsPublicSansFont = (cssPages: string[]) => {
     const match = page.match(re);
     if (match) {
       score = 40;
-      break;
-    }
-  }
-
-  return score;
-};
-
-const uswdsSourceSansFont = (cssPages: string[]) => {
-  const re = /[Ss]ource.[Ss]ans.[Pp]ro/;
-  let score = 0;
-
-  for (const page of cssPages) {
-    const match = page.match(re);
-    if (match) {
-      score = 5;
       break;
     }
   }
