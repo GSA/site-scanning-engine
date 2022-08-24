@@ -148,14 +148,6 @@ export class WebsiteApiResultDto {
   uswds_favicon_in_css: number;
 
   /**
-   * `uswds_merriweather_font` is the presence of the merriweather font in CSS source.
-   * Presence adds 5 points to the USWDS likelihood heuristic.
-   *
-   * @example 5
-   */
-  uswds_merriweather_font: number;
-
-  /**
    * `uswds_publicsans_font` is the presence of the Public Sans font in CSS source.
    * Presence adds 20 points to the USWDS likelihood heuristic.
    *

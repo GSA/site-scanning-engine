@@ -135,16 +135,8 @@ export class CoreResult {
   uswdsUsFlagInCss?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'uswds_merriweather_font' })
-  uswdsMerriweatherFont?: number;
-
-  @Column({ nullable: true })
   @Expose({ name: 'uswds_publicsans_font' })
   uswdsPublicSansFont?: number;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'uswds_source_sans_font' })
-  uswdsSourceSansFont?: number;
 
   @Column({ nullable: true })
   @Expose({ name: 'uswds_semantic_version' })

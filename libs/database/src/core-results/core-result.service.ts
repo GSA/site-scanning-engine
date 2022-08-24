@@ -90,9 +90,7 @@ export class CoreResultService {
       coreResult.uswdsUsFlag = result.uswdsScan.uswdsUsFlag;
       coreResult.uswdsUsFlagInCss = result.uswdsScan.uswdsUsFlagInCss;
       coreResult.uswdsStringInCss = result.uswdsScan.uswdsStringInCss;
-      coreResult.uswdsMerriweatherFont = result.uswdsScan.uswdsMerriweatherFont;
       coreResult.uswdsPublicSansFont = result.uswdsScan.uswdsPublicSansFont;
-      coreResult.uswdsSourceSansFont = result.uswdsScan.uswdsSourceSansFont;
       coreResult.uswdsSemanticVersion = result.uswdsScan.uswdsSemanticVersion;
       coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
       coreResult.uswdsCount = result.uswdsScan.uswdsCount;

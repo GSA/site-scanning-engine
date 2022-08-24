@@ -37,9 +37,7 @@ export const buildUswdsResult = async (
     uswdsUsFlag: uswdsFlagDetected(htmlText),
     uswdsUsFlagInCss: uswdsFlagInCSS(cssPages),
     uswdsStringInCss: uswdsInCss(cssPages),
-    uswdsMerriweatherFont: uswdsMerriweatherFont(cssPages),
     uswdsPublicSansFont: uswdsPublicSansFont(cssPages),
-    uswdsSourceSansFont: uswdsSourceSansFont(cssPages),
     uswdsSemanticVersion,
     uswdsVersion: uswdsSemanticVersion ? uswdsVersionScoreAdjustment : 0,
     uswdsCount: 0,
@@ -52,8 +50,6 @@ export const buildUswdsResult = async (
     result.uswdsUsFlag,
     result.uswdsUsFlagInCss,
     result.uswdsStringInCss,
-    result.uswdsMerriweatherFont,
-    result.uswdsSourceSansFont,
     result.uswdsPublicSansFont,
     result.uswdsVersion,
   ]);
@@ -155,21 +151,6 @@ const uswdsFlagInCSS = (cssPages: string[]) => {
   return score;
 };
 
-const uswdsMerriweatherFont = (cssPages: string[]) => {
-  const re = /[Mm]erriweather/;
-  let score = 0;
-
-  for (const page of cssPages) {
-    const match = page.match(re);
-    if (match) {
-      score = 5;
-      break;
-    }
-  }
-
-  return score;
-};
-
 const uswdsPublicSansFont = (cssPages: string[]) => {
   const re = /[Pp]ublic.[Ss]ans/;
   let score = 0;
@@ -178,21 +159,6 @@ const uswdsPublicSansFont = (cssPages: string[]) => {
     const match = page.match(re);
     if (match) {
       score = 40;
-      break;
-    }
-  }
-
-  return score;
-};
-
-const uswdsSourceSansFont = (cssPages: string[]) => {
-  const re = /[Ss]ource.[Ss]ans.[Pp]ro/;
-  let score = 0;
-
-  for (const page of cssPages) {
-    const match = page.match(re);
-    if (match) {
-      score = 5;
       break;
     }
   }
