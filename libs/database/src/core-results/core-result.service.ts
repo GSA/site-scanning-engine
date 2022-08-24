@@ -85,7 +85,6 @@ export class CoreResultService {
 
       coreResult.usaClasses = result.uswdsScan.usaClasses;
       coreResult.uswdsString = result.uswdsScan.uswdsString;
-      coreResult.uswdsTables = result.uswdsScan.uswdsTables;
       coreResult.uswdsInlineCss = result.uswdsScan.uswdsInlineCss;
       coreResult.uswdsUsFlag = result.uswdsScan.uswdsUsFlag;
       coreResult.uswdsUsFlagInCss = result.uswdsScan.uswdsUsFlagInCss;

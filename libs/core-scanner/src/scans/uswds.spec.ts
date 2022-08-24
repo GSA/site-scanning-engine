@@ -18,7 +18,6 @@ describe('uswds scan', () => {
       expect(result).toEqual({
         usaClasses: 55,
         uswdsString: 103,
-        uswdsTables: 0,
         uswdsInlineCss: 2214,
         uswdsUsFlag: 20,
         uswdsStringInCss: 0,

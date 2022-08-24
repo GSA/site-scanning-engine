@@ -98,7 +98,6 @@ describe('primary scanner', () => {
         uswdsSemanticVersion: undefined,
         uswdsString: 1,
         uswdsStringInCss: 0,
-        uswdsTables: 0,
         uswdsUsFlag: 20,
         uswdsUsFlagInCss: 0,
         uswdsVersion: 0,

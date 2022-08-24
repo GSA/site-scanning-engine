@@ -118,7 +118,6 @@ const MOCK_ROW = {
     targetUrlRedirects: null,
     usaClasses: null,
     uswdsString: null,
-    uswdsTables: null,
     uswdsInlineCss: null,
     uswdsUsFlag: null,
     uswdsStringInCss: null,

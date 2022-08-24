@@ -32,7 +32,6 @@ export const buildUswdsResult = async (
   const result = {
     usaClasses: await usaClassesCount(page),
     uswdsString: uswdsInHtml(logger, htmlText),
-    uswdsTables: tableCount(htmlText),
     uswdsInlineCss: inlineUsaCssCount(htmlText),
     uswdsUsFlag: uswdsFlagDetected(htmlText),
     uswdsUsFlagInCss: uswdsFlagInCSS(cssPages),
@@ -45,7 +44,6 @@ export const buildUswdsResult = async (
   result.uswdsCount = sum([
     result.usaClasses,
     result.uswdsString,
-    result.uswdsTables,
     result.uswdsInlineCss,
     result.uswdsUsFlag,
     result.uswdsUsFlagInCss,
@@ -77,24 +75,6 @@ const uswdsInHtml = (logger: Logger, htmlText: string) => {
   const occurrenceCount = [...htmlText.matchAll(re)].length;
   logger.debug(`uswds occurs ${occurrenceCount} times`);
   return occurrenceCount;
-};
-
-/**
- * tableCount detects the presence of <table> elements in HTML. This is a negative indicator of USWDS.
- *
- * @param htmlText html in text.
- */
-const tableCount = (htmlText: string) => {
-  const re = /<table/g;
-  const occurrenceCount = [...htmlText.matchAll(re)].length;
-  let deduction = 0;
-
-  if (occurrenceCount > 0) {
-    const tableDeduction = -10;
-    deduction = tableDeduction * occurrenceCount;
-  }
-
-  return deduction;
 };
 
 const inlineUsaCssCount = (htmlText: string) => {

@@ -34,7 +34,6 @@ export type ThirdPartyScan = {
 export type UswdsScan = {
   usaClasses: number;
   uswdsString: number;
-  uswdsTables: number;
   uswdsInlineCss: number;
   uswdsUsFlag: number;
   uswdsUsFlagInCss: number;

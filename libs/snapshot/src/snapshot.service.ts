@@ -119,7 +119,6 @@ const CSV_COLUMN_ORDER = [
   'uswds_favicon',
   'uswds_favicon_in_css',
   'uswds_publicsans_font',
-  'uswds_tables',
   'uswds_count',
   'uswds_usa_classes',
   'uswds_inline_css',

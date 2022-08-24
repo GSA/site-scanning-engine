@@ -115,10 +115,6 @@ export class CoreResult {
   uswdsString?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'uswds_tables' })
-  uswdsTables?: number;
-
-  @Column({ nullable: true })
   @Expose({ name: 'uswds_inline_css' })
   uswdsInlineCss?: number;
 

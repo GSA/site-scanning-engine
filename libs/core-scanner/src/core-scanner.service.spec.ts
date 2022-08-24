@@ -221,7 +221,6 @@ xdescribe('SolutionsScannerService', () => {
     expected.website = website;
     expected.usaClasses = 4;
     expected.uswdsString = 1;
-    expected.uswdsTables = 0;
     expected.uswdsInlineCss = 0;
     expected.uswdsUsFlag = 20;
     expected.uswdsStringInCss = 0; // :TODO mock this
