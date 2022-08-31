@@ -65,8 +65,7 @@ export class AnalysisService {
     }
 
     const websites = await query.getMany();
-    console.log(query);
-    console.log(websites);
+
     return {
       total: websites.length,
       // total number of `target_url_domain_owners` values
