@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreResultModule } from './core-results/core-result.module';
 import { WebsiteModule } from './websites/website.module';
+import { AnalysisModule } from './analysis/analysis.module';
 import dbconfig from './config/db.config';
 import { Website } from 'entities/website.entity';
 import { CoreResult } from 'entities/core-result.entity';
@@ -30,8 +31,8 @@ const ScannerDatabase = TypeOrmModule.forRootAsync({
 });
 
 @Module({
-  imports: [ScannerDatabase, WebsiteModule, CoreResultModule],
+  imports: [ScannerDatabase, WebsiteModule, CoreResultModule, AnalysisModule],
   providers: [],
-  exports: [ScannerDatabase, WebsiteModule, CoreResultModule],
+  exports: [ScannerDatabase, WebsiteModule, CoreResultModule, AnalysisModule],
 })
 export class DatabaseModule {}
