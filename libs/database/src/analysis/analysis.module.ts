@@ -8,4 +8,4 @@ import { AnalysisService } from './analysis.service';
   providers: [AnalysisService],
   exports: [TypeOrmModule, AnalysisService],
 })
-export class WebsiteModule {}
+export class AnalysisModule {}

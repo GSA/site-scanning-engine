@@ -64,12 +64,20 @@ export class AnalysisService {
       });
     }
 
-    const websites = await query.getMany();
+    const results = await query.getMany();
+
+    const uniqueBaseDomainCount = results
+      .map((website) => website.coreResult.finalUrlBaseDomain)
+      .filter((url, i, baseDomains) => baseDomains.indexOf(url) === i).length;
+
+    const uniqueAgenciesCount = results
+      .map((website) => website.agency)
+      .filter((agency, i, agencies) => agencies.indexOf(agency) === i).length;
 
     return {
-      total: websites.length,
-      // total number of `target_url_domain_owners` values
-      // total number of unique `final_url_domain` values
+      total: results.length,
+      totalFinalUrlBaseDomains: uniqueBaseDomainCount,
+      totalAgencies: uniqueAgenciesCount,
     };
   }
 }
