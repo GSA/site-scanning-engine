@@ -15,4 +15,10 @@ describe('DatetimeService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should get the current datetime', () => {
+    const expected = new Date();
+    const result = service.now();
+    expect(expected).toEqual(result);
+  });
 });
