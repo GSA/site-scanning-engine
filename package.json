@@ -91,7 +91,7 @@
     "eslint-plugin-import": "^2.25.4",
     "jest": "^26.6.3",
     "jest-mock-extended": "^1.0.14",
-    "mermaid": "^8.13.10",
+    "mermaid": "^9.1.7",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "sqlite3": "^5.0.11",
