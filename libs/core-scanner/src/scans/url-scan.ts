@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
@@ -40,6 +41,6 @@ const getFinalUrl = (page: Page) => {
 };
 
 const isLive = (res: HTTPResponse) => {
-  const isLive = res.status() / 100 === 2; // 2xx family
-  return isLive;
+  const http200FamilyCodes = [200, 201, 202, 203, 204, 205, 206];
+  return _.includes(http200FamilyCodes, res.status());
 };
