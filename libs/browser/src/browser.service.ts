@@ -34,6 +34,9 @@ export class BrowserService implements OnModuleDestroy {
   ) {
     this.logger.debug('Creating Puppeteer page...');
     const page = await browser.newPage();
+    const userAgent =
+      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4182.0 Safari/537.36';
+    await page.setUserAgent(userAgent);
     await page.setCacheEnabled(false);
 
     // Process page with a 60 second timeout.
