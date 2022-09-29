@@ -41,7 +41,7 @@ export class IngestService {
 
     const stream = parse<SubdomainRow, CreateWebsiteDto>({
       headers: [
-        'target_url',
+        'targetUrl',
         'baseDomain',
         'url',
         'branch',
@@ -59,7 +59,7 @@ export class IngestService {
       .transform(
         (data: SubdomainRow): CreateWebsiteDto => ({
           ...data,
-          website: data.target_url.toLowerCase(),
+          website: data.targetUrl.toLowerCase(),
           agencyCode: data.agencyCode ? parseInt(data.agencyCode) : null,
           bureauCode: data.bureauCode ? parseInt(data.bureauCode) : null,
           sourceListFederalDomains:

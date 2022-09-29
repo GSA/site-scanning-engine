@@ -1,5 +1,5 @@
 export interface SubdomainRow {
-  target_url: string;
+  targetUrl: string;
   baseDomain: string;
   url: string;
   branch: string;
