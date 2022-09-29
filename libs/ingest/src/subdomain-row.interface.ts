@@ -1,7 +1,6 @@
 export interface SubdomainRow {
   targetUrl: string;
   baseDomain: string;
-  url: string;
   branch: string;
   agency: string;
   agencyCode: string;
@@ -10,4 +9,5 @@ export interface SubdomainRow {
   sourceListFederalDomains: string;
   sourceListDap: string;
   sourceListPulse: string;
+  sourceManuallyAdded: string;
 }

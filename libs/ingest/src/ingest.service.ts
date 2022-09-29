@@ -43,7 +43,6 @@ export class IngestService {
       headers: [
         'targetUrl',
         'baseDomain',
-        'url',
         'branch',
         'agency',
         'agencyCode',
@@ -52,6 +51,7 @@ export class IngestService {
         'sourceListFederalDomains',
         'sourceListDap',
         'sourceListPulse',
+        'sourceManuallyAdded',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
