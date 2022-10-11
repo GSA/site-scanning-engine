@@ -116,7 +116,7 @@ export class IngestService {
    */
   async writeToDatabase(row: CreateWebsiteDto) {
     try {
-      await this.websiteService.create(row);
+      await this.websiteService.upsert(row);
     } catch (error) {
       const err = error as Error;
       this.logger.error(

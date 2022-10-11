@@ -86,7 +86,7 @@ describe('WebsiteService', () => {
     website.sourceListDap = false;
     website.sourceListPulse = false;
 
-    await service.create(createWebsiteDto);
+    await service.upsert(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
   });
 

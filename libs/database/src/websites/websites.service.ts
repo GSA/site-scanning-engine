@@ -122,7 +122,7 @@ export class WebsiteService {
     return result;
   }
 
-  async create(createWebsiteDto: CreateWebsiteDto) {
+  async upsert(createWebsiteDto: CreateWebsiteDto) {
     const website = new Website();
     website.url = createWebsiteDto.website;
     website.agency = createWebsiteDto.agency;
