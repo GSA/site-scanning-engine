@@ -89,10 +89,11 @@ export class IngestService {
           this.logger.debug('finished ingest of urls');
 
           if (newestWebsiteRecord) {
+            this.logger.log(`invalid url(s) detected`);
             const deleted = await this.websiteService.deleteBefore(
               new Date(newestWebsiteRecord.updated),
             );
-            this.logger.debug(
+            this.logger.log(
               `finished removing ${deleted.affected} invalid url(s)`,
             );
           }
