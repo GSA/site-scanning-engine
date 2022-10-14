@@ -146,14 +146,4 @@ export class WebsiteService {
       await this.website.insert(website);
     }
   }
-
-  async deleteBefore(date: Date) {
-    return await this.website
-      .createQueryBuilder('website')
-      .delete()
-      .where({
-        updated: LessThanOrEqual(date.toISOString()),
-      })
-      .execute();
-  }
 }
