@@ -99,4 +99,19 @@ describe('WebsiteService', () => {
     const result = await service.findNewestWebsite();
     expect(result).toStrictEqual(website);
   });
+
+  it('should delete Websites from the database that were last updated on or before a given datetime', async () => {
+    const date = new Date();
+    const website = new Website();
+    website.url = 'https://18f.gov';
+    website.updated = date.toISOString();
+
+    const mockDeleteQB = mock<DeleteQueryBuilder<Website>>();
+    mockDeleteQB.delete.mockReturnThis();
+    mockDeleteQB.where.mockReturnThis();
+    mockRepository.createQueryBuilder.mockReturnValue(mockDeleteQB);
+
+    await service.deleteBefore(date);
+    expect(mockRepository.delete.toHaveBeenCalled);
+  });
 });

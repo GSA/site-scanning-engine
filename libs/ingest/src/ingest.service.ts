@@ -37,6 +37,7 @@ export class IngestService {
    */
   async writeUrls(urls: string, maxRows?: number) {
     const writes: Promise<any>[] = [];
+    const newestWebsiteRecord = await this.websiteService.findNewestWebsite();
 
     const stream = parse<SubdomainRow, CreateWebsiteDto>({
       headers: [
@@ -86,6 +87,17 @@ export class IngestService {
         try {
           await Promise.all(writes);
           this.logger.debug('finished ingest of urls');
+
+          if (newestWebsiteRecord) {
+            this.logger.log(`invalid url(s) detected`);
+            const deleted = await this.websiteService.deleteBefore(
+              new Date(newestWebsiteRecord.updated),
+            );
+            this.logger.log(
+              `finished removing ${deleted.affected} invalid url(s)`,
+            );
+          }
+
           resolve('');
         } catch (error) {
           const err = error as Error;
