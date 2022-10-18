@@ -16,10 +16,20 @@ export class WebsiteService {
     @InjectRepository(Website) private website: Repository<Website>,
   ) {}
 
-  async findWebsiteResults(): Promise<Website[]> {
+  async findAllWebsiteResults(): Promise<Website[]> {
     const websites = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .getMany();
+
+    return websites;
+  }
+
+  async findLiveWebsiteResults(): Promise<Website[]> {
+    const websites = this.website
+      .createQueryBuilder('website')
+      .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .where('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .getMany();
 
     return websites;

@@ -53,7 +53,7 @@ describe('SnapshotService', () => {
     const copyDate = new Date(date);
     mockDatetimeService.now.mockReturnValue(date);
 
-    coreResult.notFoundScanStatus = 'completed';
+    coreResult.finalUrlIsLive = true;
     coreResult.primaryScanStatus = 'completed';
     coreResult.robotsTxtScanStatus = 'completed';
     coreResult.sitemapXmlScanStatus = 'completed';
@@ -65,22 +65,30 @@ describe('SnapshotService', () => {
     const fileName = 'weekly-snapshot.json';
     const body = JSON.stringify([website.serialized()]);
 
-    mockWebsiteService.findWebsiteResults.mockResolvedValue([website]);
-    const result = await service.weeklySnapshot();
+    mockWebsiteService.findLiveWebsiteResults.mockResolvedValue([website]);
+    mockWebsiteService.findAllWebsiteResults.mockResolvedValue([website]);
+
+    await service.weeklySnapshot();
 
     copyDate.setDate(copyDate.getDate() - 7);
-
+    const expectedDate = copyDate.toISOString();
     expect(mockStorageService.upload).toBeCalledWith(fileName, body);
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.json',
-      `archive/json/weekly-snapshot-${copyDate.toISOString()}.json`,
+      `archive/json/weekly-snapshot-${expectedDate}.json`,
     );
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.csv',
-      `archive/csv/weekly-snapshot-${copyDate.toISOString()}.csv`,
+      `archive/csv/weekly-snapshot-${expectedDate}.csv`,
     );
-
-    //expect(result).toEqual(null);
+    expect(mockStorageService.copy).toBeCalledWith(
+      'weekly-snapshot-all.json',
+      `archive/json/weekly-snapshot-all-${expectedDate}.json`,
+    );
+    expect(mockStorageService.copy).toBeCalledWith(
+      'weekly-snapshot-all.csv',
+      `archive/csv/weekly-snapshot-all-${expectedDate}.csv`,
+    );
   });
 });
 
