@@ -5,6 +5,7 @@ import { mock } from 'jest-mock-extended';
 import { DeleteQueryBuilder, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { WebsiteService } from './websites.service';
+import { CoreResult } from 'entities/core-result.entity';
 
 describe('WebsiteService', () => {
   let service: WebsiteService;
@@ -39,7 +40,7 @@ describe('WebsiteService', () => {
     mockQB.getMany.mockResolvedValue([website]);
     mockRepository.createQueryBuilder.mockReturnValue(mockQB);
 
-    const result = await service.findWebsiteResults();
+    const result = await service.findAllWebsiteResults();
 
     const expected = [website];
     expect(result).toStrictEqual(expected);
