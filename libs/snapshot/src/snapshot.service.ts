@@ -3,6 +3,8 @@ import { WebsiteService } from '@app/database/websites/websites.service';
 import { StorageService } from '@app/storage';
 import { DatetimeService } from 'libs/datetime/src';
 import { Snapshot } from './snapshot';
+import { JsonSerializer } from './serializers/json-serializer';
+import { CsvSerializer } from './serializers/csv-serializer';
 
 @Injectable()
 export class SnapshotService {
@@ -30,7 +32,7 @@ export class SnapshotService {
 
     const allWebsites = new Snapshot(
       this.storageService,
-      this.logger,
+      [new JsonSerializer(), new CsvSerializer(Snapshot.CSV_COLUMN_ORDER)],
       await this.websiteService.findAllWebsiteResults(),
       priorDate,
       'weekly-snapshot-all',
@@ -38,7 +40,7 @@ export class SnapshotService {
 
     const liveWebsites = new Snapshot(
       this.storageService,
-      this.logger,
+      [new JsonSerializer(), new CsvSerializer(Snapshot.CSV_COLUMN_ORDER)],
       await this.websiteService.findLiveWebsiteResults(),
       priorDate,
       'weekly-snapshot',
@@ -46,11 +48,9 @@ export class SnapshotService {
 
     await Promise.all([
       await allWebsites.archivePriorSnapshot(),
-      await allWebsites.saveAsJson(),
-      await allWebsites.saveAsCsv(),
+      await allWebsites.saveNewSnapshot(),
       await liveWebsites.archivePriorSnapshot(),
-      await liveWebsites.saveAsJson(),
-      await liveWebsites.saveAsCsv(),
+      await liveWebsites.saveNewSnapshot(),
     ]);
   }
 }

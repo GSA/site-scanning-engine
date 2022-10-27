@@ -1,20 +1,19 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 import { StorageService } from '@app/storage';
-import { Logger } from '@nestjs/common';
 import { Snapshot } from './snapshot';
 import { Website } from 'entities/website.entity';
 import { CoreResult } from 'entities/core-result.entity';
+import { JsonSerializer } from './serializers/json-serializer';
+import { CsvSerializer } from './serializers/csv-serializer';
 
 describe('Snapshot', () => {
   let mockStorageService: MockProxy<StorageService>;
-  let mockLogger: MockProxy<Logger>;
 
   beforeEach(async () => {
     mockStorageService = mock<StorageService>();
-    mockLogger = mock<Logger>();
   });
 
-  it('archivePriorSnapshot', async () => {
+  it('archives prior snapshot', async () => {
     const dateString = new Date().toISOString();
     const website = new Website();
     website.id = 1;
@@ -24,7 +23,7 @@ describe('Snapshot', () => {
 
     const snapshot = new Snapshot(
       mockStorageService,
-      mockLogger,
+      [new JsonSerializer(), new CsvSerializer(Snapshot.CSV_COLUMN_ORDER)],
       [website],
       dateString,
       'weekly-snapshot',
@@ -42,7 +41,7 @@ describe('Snapshot', () => {
     );
   });
 
-  it('saveAsJson', async () => {
+  it('saves new snapshot', async () => {
     const dateString = new Date().toISOString();
     const website = new Website();
     website.id = 1;
@@ -52,35 +51,24 @@ describe('Snapshot', () => {
 
     const snapshot = new Snapshot(
       mockStorageService,
-      mockLogger,
+      [new JsonSerializer(), new CsvSerializer(Snapshot.CSV_COLUMN_ORDER)],
       [website],
       dateString,
       'weekly-snapshot',
     );
 
-    await snapshot.saveAsJson();
+    await snapshot.saveNewSnapshot();
 
-    expect(mockStorageService.upload).toBeCalled();
+    expect(mockStorageService.upload).toHaveBeenCalledTimes(2);
   });
 
-  it('saveAsCsv', async () => {
-    const dateString = new Date().toISOString();
-    const website = new Website();
-    website.id = 1;
-    website.created = dateString;
-    website.updated = dateString;
-    website.coreResult = new CoreResult();
+  it('specifies the correct column order', () => {
+    const expectedColumnOrder = new Set(Snapshot.CSV_COLUMN_ORDER);
+    const actualColumnOrder = new Set([
+      ...CoreResult.getColumnNames(),
+      ...Website.getColumnNames(),
+    ]);
 
-    const snapshot = new Snapshot(
-      mockStorageService,
-      mockLogger,
-      [website],
-      dateString,
-      'weekly-snapshot',
-    );
-
-    await snapshot.saveAsCsv();
-
-    expect(mockStorageService.upload).toBeCalled();
+    expect(expectedColumnOrder).toEqual(actualColumnOrder);
   });
 });
