@@ -1,12 +1,10 @@
 import { StorageService } from '@app/storage';
-import { Logger } from '@nestjs/common';
 import { Website } from 'entities/website.entity';
-import { CoreResult } from 'entities/core-result.entity';
-import * as csv from './csv';
+import { Serializer } from './serializers/serializer';
 
 export class Snapshot {
   storageService: StorageService;
-  logger: Logger;
+  serializers: Serializer[];
   websites: Website[];
   priorDate: string;
   fileName: string;
@@ -69,7 +67,6 @@ export class Snapshot {
     'sitemap_xml_final_url_filesize_in_bytes',
     'sitemap_xml_count',
     'sitemap_xml_pdf_count',
-    'dns_ipv6',
     'third_party_service_domains',
     'third_party_service_count',
     'login_detected',
@@ -79,61 +76,46 @@ export class Snapshot {
 
   constructor(
     storageService: StorageService,
-    logger: Logger,
+    serializers: Serializer[],
     websites: Website[],
     priorDate: string,
     fileName: string,
   ) {
     this.storageService = storageService;
-    this.logger = logger;
+    this.serializers = serializers;
     this.websites = websites;
     this.priorDate = priorDate;
     this.fileName = fileName;
   }
 
   async archivePriorSnapshot(): Promise<void> {
-    const newJsonFileName = `archive/json/${this.fileName}-${this.priorDate}.json`;
-    const newCsvFileName = `archive/csv/${this.fileName}-${this.priorDate}.csv`;
+    const operations = [];
 
-    this.logger.debug('archiving any exisiting files...');
-    await Promise.all([
-      await this.storageService.copy(`${this.fileName}.json`, newJsonFileName),
-      await this.storageService.copy(`${this.fileName}.csv`, newCsvFileName),
-    ]);
+    this.serializers.forEach((serializer) => {
+      const newFileName = `archive/${serializer.fileExtension}/${this.fileName}-${this.priorDate}.${serializer.fileExtension}`;
+      operations.push(
+        this.storageService.copy(
+          `${this.fileName}.${serializer.fileExtension}`,
+          newFileName,
+        ),
+      );
+    });
+
+    await Promise.all(operations);
   }
 
-  async saveAsJson(): Promise<void> {
-    await this.storageService.upload(
-      `${this.fileName}.json`,
-      this.getSerializedJson(),
-    );
-  }
+  async saveNewSnapshot(): Promise<void> {
+    const operations = [];
 
-  async saveAsCsv(): Promise<void> {
-    await this.storageService.upload(
-      `${this.fileName}.csv`,
-      this.getSerializedCsv(),
-    );
-  }
+    this.serializers.forEach((serializer) => {
+      operations.push(
+        this.storageService.upload(
+          `${this.fileName}.${serializer.fileExtension}`,
+          serializer.serialize(this.websites),
+        ),
+      );
+    });
 
-  private getSerializedJson(): string {
-    const serializedResults = this.websites.map((website) =>
-      website.serialized(),
-    );
-    return JSON.stringify(serializedResults);
-  }
-
-  private getSerializedCsv(): string {
-    // Throw an exception if there's a mismatch between CSV_COLUMN_ORDER and the
-    // CoreResult entity.
-    csv.ensureAllFields(
-      new Set([...CoreResult.getColumnNames(), ...Website.getColumnNames()]),
-      new Set(Snapshot.CSV_COLUMN_ORDER),
-    );
-
-    const serializedResults = this.websites.map((website) =>
-      website.serialized(),
-    );
-    return csv.createCsv(serializedResults, Snapshot.CSV_COLUMN_ORDER);
+    await Promise.all(operations);
   }
 }
