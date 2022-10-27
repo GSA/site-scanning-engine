@@ -61,4 +61,14 @@ describe('Snapshot', () => {
 
     expect(mockStorageService.upload).toHaveBeenCalledTimes(2);
   });
+
+  it('specifies the correct column order', () => {
+    const expectedColumnOrder = new Set(Snapshot.CSV_COLUMN_ORDER);
+    const actualColumnOrder = new Set([
+      ...CoreResult.getColumnNames(),
+      ...Website.getColumnNames(),
+    ]);
+
+    expect(expectedColumnOrder).toEqual(actualColumnOrder);
+  });
 });

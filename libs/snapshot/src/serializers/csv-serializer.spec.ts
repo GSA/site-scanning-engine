@@ -75,32 +75,6 @@ describe('CsvSerializer', () => {
     const csvString = serializer.createCsv([]);
     expect(csvString).toEqual(`"field1","field2","field3"`);
   });
-
-  it('errors on missing columns', () => {
-    const serializer = new CsvSerializer(['field1', 'field2']);
-
-    expect(() => serializer.ensureAllFields(new Set(['field1']))).toThrow(
-      /missing or extra fields/,
-    );
-  });
-
-  it('errors on extra columns', () => {
-    const serializer = new CsvSerializer(['field1', 'field2', 'field3']);
-
-    expect(() =>
-      serializer.ensureAllFields(
-        new Set(['field1', 'field2', 'field3', 'field4']),
-      ),
-    ).toThrow(/missing or extra fields/);
-  });
-
-  it('works with all fields reordered', () => {
-    const serializer = new CsvSerializer(['field1', 'field2', 'field3']);
-
-    expect(() =>
-      serializer.ensureAllFields(new Set(['field2', 'field3', 'field1'])),
-    );
-  });
 });
 
 const MOCK_DATA = [

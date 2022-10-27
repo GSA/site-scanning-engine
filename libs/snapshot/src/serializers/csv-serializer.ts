@@ -1,7 +1,5 @@
 import { Serializer } from './serializer';
 import { Website } from 'entities/website.entity';
-import { CoreResult } from 'entities/core-result.entity';
-import * as _ from 'lodash';
 import { Parser } from 'json2csv';
 import { flatten } from 'flat';
 
@@ -17,31 +15,8 @@ export class CsvSerializer implements Serializer {
   }
 
   serialize(websites: Website[]) {
-    // Throw an exception if there's a mismatch between CSV_COLUMN_ORDER and the
-    // CoreResult entity.
-    this.ensureAllFields(
-      new Set([...CoreResult.getColumnNames(), ...Website.getColumnNames()]),
-    );
-
     const serializedResults = websites.map((website) => website.serialized());
     return this.createCsv(serializedResults);
-  }
-
-  ensureAllFields(expectedHeaders: Set<string>) {
-    const providedHeaders = new Set(this.columnOrder);
-    if (!_.isEqual(expectedHeaders, providedHeaders)) {
-      const missing = Array.from(expectedHeaders).filter(
-        (x) => !providedHeaders.has(x),
-      );
-      const extra = Array.from(providedHeaders).filter(
-        (x) => !expectedHeaders.has(x),
-      );
-      throw new Error(
-        `Can't create CSV with missing or extra fields. <Missing: ${JSON.stringify(
-          missing,
-        )} Extra: ${JSON.stringify(extra)}`,
-      );
-    }
   }
 
   createCsv(rows: { [x: string]: any }[]) {
