@@ -1,6 +1,7 @@
 import { parse } from '@fast-csv/parse';
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ConfigService } from '@nestjs/config';
 
@@ -27,9 +28,9 @@ export class IngestService {
     const urlList = url ?? this.currentFederalSubdomains;
     const urls = await this.httpService
       .get(urlList)
-      .pipe(map((resp) => resp.data))
-      .toPromise();
-    return urls;
+      .pipe(map((resp) => resp.data));
+
+    return await lastValueFrom(urls);
   }
 
   /**
