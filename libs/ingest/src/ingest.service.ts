@@ -1,10 +1,6 @@
 import { parse } from '@fast-csv/parse';
 import { Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { lastValueFrom } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { ConfigService } from '@nestjs/config';
-
+import { UrlList } from './url-list';
 import { CreateWebsiteDto } from '@app/database/websites/dto/create-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
 
@@ -15,28 +11,18 @@ export class IngestService {
   private logger = new Logger(IngestService.name);
 
   constructor(
-    private httpService: HttpService,
     private websiteService: WebsiteService,
-    private configService: ConfigService,
+    private urlList: UrlList,
   ) {}
 
-  private currentFederalSubdomains = this.configService.get<string>(
-    'federalSubdomainsUrl',
-  );
-
   async getUrls(url?: string): Promise<string> {
-    const urlList = url ?? this.currentFederalSubdomains;
-    const urls = await this.httpService
-      .get(urlList)
-      .pipe(map((resp) => resp.data));
-
-    return await lastValueFrom(urls);
+    return await this.urlList.fetch(url);
   }
 
   /**
    * writeUrls writes target urls to the Websites table.
    */
-  async writeUrls(urls: string, maxRows?: number) {
+  async writeUrls(urls, maxRows?: number) {
     const writes: Promise<any>[] = [];
     const newestWebsiteRecord = await this.websiteService.findNewestWebsite();
 
@@ -114,7 +100,7 @@ export class IngestService {
   }
 
   /**
-   * writeToDatabase writes a CSV to the database.
+   * writeToDatabase writes a CSV row to the database.
    * @param row a CreateWebsiteDto object.
    */
   async writeToDatabase(row: CreateWebsiteDto) {
