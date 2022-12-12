@@ -2,6 +2,8 @@
 name: Ingest website list
 # yamllint disable-line rule:truthy
 on:
+  schedule:
+    - cron: '0 21 * * 3'
   workflow_dispatch:
     inputs:
       cf_space:
