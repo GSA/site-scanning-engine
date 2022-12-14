@@ -9,5 +9,5 @@ export interface SubdomainRow {
   sourceListFederalDomains: string;
   sourceListDap: string;
   sourceListPulse: string;
-  sourceManuallyAdded: string;
+  sourceListOther: string;
 }

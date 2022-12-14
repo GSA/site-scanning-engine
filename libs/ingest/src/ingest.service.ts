@@ -38,7 +38,7 @@ export class IngestService {
         'sourceListFederalDomains',
         'sourceListDap',
         'sourceListPulse',
-        'sourceManuallyAdded',
+        'sourceListOther',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
@@ -57,6 +57,8 @@ export class IngestService {
             data.sourceListDap.toLowerCase() === 'true' ? true : false,
           sourceListPulse:
             data.sourceListPulse.toLowerCase() === 'true' ? true : false,
+          sourceListOther:
+            data.sourceListOther.toLowerCase() === 'true' ? true : false,
         }),
       )
       .on('error', (error) => this.logger.error(error.message, error.stack))

@@ -34,6 +34,7 @@ export class Snapshot {
     'source_list_federal_domains',
     'source_list_dap',
     'source_list_pulse',
+    'source_list_other',
     'uswds_favicon',
     'uswds_favicon_in_css',
     'uswds_publicsans_font',

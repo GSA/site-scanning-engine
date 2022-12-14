@@ -11,4 +11,5 @@ export class CreateWebsiteDto {
   sourceListFederalDomains: boolean;
   sourceListDap: boolean;
   sourceListPulse: boolean;
+  sourceListOther: boolean;
 }
