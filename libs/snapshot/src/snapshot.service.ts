@@ -29,6 +29,9 @@ export class SnapshotService {
    *
    * If there are existing snapshots, they are copied to the archive bucket, and
    * named as such: weekly-snapshot-<date-one-week-previous>.
+   *
+   * The particular filename is specified by /config/snapshot.config.ts,
+   * depending on whichever environment the application is running in.
    */
   async weeklySnapshot() {
     const date = this.datetimeService.now();
