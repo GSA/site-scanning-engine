@@ -4,6 +4,7 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { IngestService } from './ingest.service';
 import { ConfigModule } from '@nestjs/config';
+import { UrlList } from './url-list';
 import ingestConfig from './config/ingest.config';
 
 @Module({
@@ -11,6 +12,7 @@ import ingestConfig from './config/ingest.config';
     HttpModule,
     WebsiteModule,
     DatabaseModule,
+    UrlList,
     ConfigModule.forRoot({
       load: [ingestConfig],
     }),
