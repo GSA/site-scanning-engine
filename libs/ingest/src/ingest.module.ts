@@ -12,12 +12,11 @@ import ingestConfig from './config/ingest.config';
     HttpModule,
     WebsiteModule,
     DatabaseModule,
-    UrlList,
     ConfigModule.forRoot({
       load: [ingestConfig],
     }),
   ],
-  providers: [IngestService],
+  providers: [IngestService, UrlList],
   exports: [IngestService],
 })
 export class IngestModule {}
