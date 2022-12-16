@@ -6,6 +6,7 @@ import { Website } from 'entities/website.entity';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { DatetimeService } from 'libs/datetime/src';
 import { SnapshotService } from './snapshot.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('SnapshotService', () => {
   let service: SnapshotService;
@@ -18,6 +19,7 @@ describe('SnapshotService', () => {
     mockStorageService = mock<StorageService>();
     mockWebsiteService = mock<WebsiteService>();
     mockDatetimeService = mock<DatetimeService>();
+
     module = await Test.createTestingModule({
       providers: [
         SnapshotService,
@@ -32,6 +34,20 @@ describe('SnapshotService', () => {
         {
           provide: DatetimeService,
           useValue: mockDatetimeService,
+        },
+        {
+          provide: ConfigService,
+          useValue: {
+            get: jest.fn((key: string) => {
+              if (key === 'fileNameLive') {
+                return 'weekly-snapshot';
+              }
+
+              if (key === 'fileNameAll') {
+                return 'weekly-snapshot-all';
+              }
+            }),
+          },
         },
       ],
     }).compile();
