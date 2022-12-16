@@ -5,6 +5,7 @@ import { DatetimeService } from 'libs/datetime/src';
 import { Snapshot } from './snapshot';
 import { JsonSerializer } from './serializers/json-serializer';
 import { CsvSerializer } from './serializers/csv-serializer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SnapshotService {
@@ -14,7 +15,11 @@ export class SnapshotService {
     private storageService: StorageService,
     private websiteService: WebsiteService,
     private datetimeService: DatetimeService,
+    private configService: ConfigService,
   ) {}
+
+  private fileNameLive = this.configService.get<string>('fileNameLive');
+  private fileNameAll = this.configService.get<string>('fileNameAll');
 
   /**
    * weeklySnapshot is meant to be called weekly. It takes two snapshots:
@@ -24,6 +29,9 @@ export class SnapshotService {
    *
    * If there are existing snapshots, they are copied to the archive bucket, and
    * named as such: weekly-snapshot-<date-one-week-previous>.
+   *
+   * The particular filename is specified by /config/snapshot.config.ts,
+   * depending on whichever environment the application is running in.
    */
   async weeklySnapshot() {
     const date = this.datetimeService.now();
@@ -35,7 +43,7 @@ export class SnapshotService {
       [new JsonSerializer(), new CsvSerializer(Snapshot.CSV_COLUMN_ORDER)],
       await this.websiteService.findAllWebsiteResults(),
       priorDate,
-      'weekly-snapshot-all',
+      this.fileNameAll,
     );
 
     const liveWebsites = new Snapshot(
@@ -43,7 +51,7 @@ export class SnapshotService {
       [new JsonSerializer(), new CsvSerializer(Snapshot.CSV_COLUMN_ORDER)],
       await this.websiteService.findLiveWebsiteResults(),
       priorDate,
-      'weekly-snapshot',
+      this.fileNameLive,
     );
 
     await Promise.all([
