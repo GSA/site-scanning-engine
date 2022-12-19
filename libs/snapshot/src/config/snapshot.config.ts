@@ -9,8 +9,8 @@ export default () => {
     };
   } else {
     return {
-      fileNameLive: 'weekly-snapshot-staging',
-      fileNameAll: 'weekly-snapshot-all-staging',
+      fileNameLive: `weekly-snapshot-${process.env.NODE_ENV}`,
+      fileNameAll: `weekly-snapshot-all-${process.env.NODE_ENV}`,
     };
   }
 };
