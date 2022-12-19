@@ -1,12 +1,13 @@
 ---
-name: Ingest target url list in prod environment
+name: Ingest an arbitrary target url list in dev environment
 
 # yamllint disable-line rule:truthy
 on:
-  schedule:
-    - cron: '0 21 * * 4'
-
   workflow_dispatch:
+    inputs:
+      federalSubdomainsUrl:
+        description: CSV with target url list
+        required: true
 
 jobs:
   ingest:
@@ -19,7 +20,7 @@ jobs:
           cf_username: ${{ secrets.CF_USERNAME }}
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
-          cf_space: prod
+          cf_space: dev
           cf_command: |
             run-task site-scanner-consumer
             --command "node dist/apps/cli/main.js ingest"
