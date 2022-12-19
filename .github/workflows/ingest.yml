@@ -1,5 +1,6 @@
 ---
-name: Ingest target url list in prod environment
+# Ingest target url list in prod environment
+name: Ingest
 
 # yamllint disable-line rule:truthy
 on:
