@@ -28,5 +28,5 @@ jobs:
           cf_space: ${{ github.event.inputs.cf_space || 'prod' }}
           cf_command: run-task site-scanner-consumer
             -c "node dist/apps/cli/main.js enqueue-scans"
-            -k 2G -m 4G
+            -k 2G -m 2G
             --name github-action-enqueue-scans-${{ github.run_id }}
