@@ -75,6 +75,12 @@ export class Website {
   @Expose({ name: 'source_list_pulse' })
   sourceListPulse?: boolean;
 
+  @Column({
+    nullable: true,
+  })
+  @Expose({ name: 'source_list_other' })
+  sourceListOther?: boolean;
+
   serialized() {
     const serializedWebsite = classToPlain(this);
     const serializedCoreResult = classToPlain(this.coreResult);

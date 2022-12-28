@@ -74,6 +74,7 @@ describe('WebsiteService', () => {
       sourceListFederalDomains: true,
       sourceListDap: false,
       sourceListPulse: false,
+      sourceListOther: false,
     };
 
     const website = new Website();
