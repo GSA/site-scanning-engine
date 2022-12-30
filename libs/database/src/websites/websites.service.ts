@@ -144,6 +144,7 @@ export class WebsiteService {
       createWebsiteDto.sourceListFederalDomains;
     website.sourceListDap = createWebsiteDto.sourceListDap;
     website.sourceListPulse = createWebsiteDto.sourceListPulse;
+    website.sourceListOther = createWebsiteDto.sourceListOther;
 
     const exists = await this.website.findOne({
       where: {
