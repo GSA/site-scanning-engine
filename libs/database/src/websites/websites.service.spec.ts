@@ -87,6 +87,7 @@ describe('WebsiteService', () => {
     website.sourceListFederalDomains = true;
     website.sourceListDap = false;
     website.sourceListPulse = false;
+    website.sourceListOther = false;
 
     await service.upsert(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
