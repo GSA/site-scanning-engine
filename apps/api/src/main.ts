@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
-
+import { HstsInterceptor } from './hsts.interceptor';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -19,6 +19,7 @@ async function bootstrap() {
       forbidUnknownValues: true,
     }),
   );
+  app.useGlobalInterceptors(new HstsInterceptor());
   app.enableCors();
 
   if (process.env.NODE_ENV === 'dev') {
