@@ -20,14 +20,13 @@ export type CoreResultPages = {
 
 @Injectable()
 export class CoreResultService {
-  private logger = new Logger(CoreResultService.name);
-
   constructor(
-    @InjectRepository(CoreResult) private coreResult: Repository<CoreResult>,
+    @InjectRepository(CoreResult)
+    private coreResultRepository: Repository<CoreResult>,
   ) {}
 
   async findAll(): Promise<CoreResult[]> {
-    const results = await this.coreResult.find();
+    const results = await this.coreResultRepository.find();
     return results;
   }
 
@@ -162,21 +161,8 @@ export class CoreResultService {
     return this.create(coreResult);
   }
 
-  async findOne(id: number): Promise<CoreResult> {
-    const result = await this.coreResult.findOne(id);
-    return result;
-  }
-
-  async findResultsWithWebsite() {
-    const result = await this.coreResult.find({
-      relations: ['website'],
-    });
-
-    return result;
-  }
-
   async create(coreResult: CoreResult) {
-    const exists = await this.coreResult.findOne({
+    const exists = await this.coreResultRepository.findOne({
       where: {
         website: {
           id: coreResult.website.id,
@@ -184,9 +170,13 @@ export class CoreResultService {
       },
     });
     if (exists) {
-      await this.coreResult.update(exists.id, coreResult);
+      await this.coreResultRepository.update(exists.id, coreResult);
     } else {
-      await this.coreResult.insert(coreResult);
+      await this.coreResultRepository.insert(coreResult);
     }
+  }
+
+  async findOne(id: number): Promise<CoreResult> {
+    return await this.coreResultRepository.findOne(id);
   }
 }
