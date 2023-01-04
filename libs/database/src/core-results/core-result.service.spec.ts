@@ -5,6 +5,8 @@ import { Website } from 'entities/website.entity';
 import { mock, mockReset } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
 import { CoreResultService } from './core-result.service';
+import { Logger } from '@nestjs/common';
+import { ScanStatus } from 'entities/scan-status';
 
 describe('CoreResultService', () => {
   let service: CoreResultService;
@@ -66,5 +68,112 @@ describe('CoreResultService', () => {
 
     await service.create(coreResult);
     expect(mockRepository.insert).toHaveBeenCalledWith(coreResult);
+  });
+
+  it('should create a CoreResult from CoreResultPages', async () => {
+    const websiteId = 1;
+    const scanStatus: ScanStatus = ScanStatus['Completed'];
+    const pages = {
+      base: {
+        targetUrlBaseDomain: 'df.gov',
+      },
+      notFound: {
+        status: scanStatus,
+        result: {
+          notFoundScan: {
+            targetUrl404Test: false,
+          },
+        },
+      },
+      primary: {
+        status: scanStatus,
+        result: {
+          urlScan: {
+            targetUrlRedirects: null,
+            finalUrl: null,
+            finalUrlIsLive: null,
+            finalUrlBaseDomain: null,
+            finalUrlMIMEType: null,
+            finalUrlSameDomain: null,
+            finalUrlStatusCode: null,
+            finalUrlSameWebsite: null,
+          },
+          dapScan: {
+            dapDetected: null,
+            dapParameters: null,
+          },
+          seoScan: {
+            ogTitleFinalUrl: null,
+            ogDescriptionFinalUrl: null,
+            ogArticlePublishedFinalUrl: null,
+            ogArticleModifiedFinalUrl: null,
+            mainElementFinalUrl: null,
+          },
+          thirdPartyScan: {
+            thirdPartyServiceDomains: null,
+            thirdPartyServiceCount: null,
+          },
+          uswdsScan: {
+            usaClasses: null,
+            uswdsString: null,
+            uswdsInlineCss: null,
+            uswdsUsFlag: null,
+            uswdsStringInCss: null,
+            uswdsUsFlagInCss: null,
+            uswdsPublicSansFont: null,
+            uswdsSemanticVersion: null,
+            uswdsVersion: null,
+            uswdsCount: null,
+          },
+          loginScan: {
+            loginDetected: null,
+          },
+        },
+      },
+      robotsTxt: {
+        status: scanStatus,
+        result: {
+          robotsTxtScan: {
+            robotsTxtFinalUrl: null,
+            robotsTxtStatusCode: null,
+            robotsTxtFinalUrlLive: null,
+            robotsTxtDetected: null,
+            robotsTxtFinalUrlMimeType: null,
+            robotsTxtTargetUrlRedirects: null,
+            robotsTxtFinalUrlSize: null,
+            robotsTxtCrawlDelay: null,
+            robotsTxtSitemapLocations: null,
+          },
+        },
+      },
+      sitemapXml: {
+        status: scanStatus,
+        result: {
+          sitemapXmlScan: {
+            sitemapXmlDetected: null,
+            sitemapXmlStatusCode: null,
+            sitemapXmlFinalUrl: null,
+            sitemapXmlFinalUrlLive: null,
+            sitemapTargetUrlRedirects: null,
+            sitemapXmlFinalUrlFilesize: null,
+            sitemapXmlFinalUrlMimeType: null,
+            sitemapXmlCount: null,
+            sitemapXmlPdfCount: null,
+          },
+        },
+      },
+      dns: {
+        status: scanStatus,
+        result: {
+          dnsScan: {
+            ipv6: true,
+          },
+        },
+      },
+    };
+    const logger = mock<Logger>();
+
+    await service.createFromCoreResultPages(websiteId, pages, logger);
+    expect(mockRepository.insert).toHaveBeenCalled();
   });
 });
