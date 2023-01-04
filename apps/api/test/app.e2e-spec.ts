@@ -20,11 +20,13 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 
-  it('/ (GET)', async () => {
-    const response = await request(app.getHttpServer()).get('/');
+  it('/analysis (GET)', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/analysis')
+      .set({ 'X-Secret-Api-Access-Token': process.env.API_KEY });
     expect(response.status).toStrictEqual(200);
-    expect(response.body).toStrictEqual({
-      endpoints: ['websites', 'results'],
-    });
+    expect(response.body.total).toBeDefined();
+    expect(response.body.totalAgencies).toBeDefined();
+    expect(response.body.totalFinalUrlBaseDomains).toBeDefined();
   });
 });

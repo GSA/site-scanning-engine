@@ -75,7 +75,7 @@ describe('CoreScanner (e2e)', () => {
           },
           uswdsScan: {
             usaClasses: 55,
-            uswdsCount: 153,
+            uswdsCount: 243,
             uswdsInlineCss: 0,
             uswdsPublicSansFont: 40,
             uswdsSemanticVersion: '2.9.0',
@@ -128,10 +128,10 @@ describe('CoreScanner (e2e)', () => {
         result: {
           sitemapXmlScan: {
             sitemapTargetUrlRedirects: true,
-            sitemapXmlCount: 720,
+            sitemapXmlCount: 738,
             sitemapXmlDetected: true,
             sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
-            sitemapXmlFinalUrlFilesize: 100394,
+            sitemapXmlFinalUrlFilesize: 102650,
             sitemapXmlFinalUrlLive: true,
             sitemapXmlFinalUrlMimeType: 'application/xml',
             sitemapXmlPdfCount: 0,
@@ -250,7 +250,7 @@ describe('CoreScanner (e2e)', () => {
             sitemapXmlCount: 0,
             sitemapXmlDetected: true,
             sitemapXmlFinalUrl: 'https://www.poolsafely.gov/sitemap.xml',
-            sitemapXmlFinalUrlFilesize: 26500,
+            sitemapXmlFinalUrlFilesize: 27376,
             sitemapXmlFinalUrlLive: true,
             sitemapXmlFinalUrlMimeType: 'text/xml',
             sitemapXmlPdfCount: 0,
