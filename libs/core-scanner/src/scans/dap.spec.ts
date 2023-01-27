@@ -16,12 +16,25 @@ describe('dap scan', () => {
       dapParameters: undefined,
     });
   });
-  it('DAP detected if analytics code in POST data', async () => {
+  it('DAP detected if an analytics code is in POST data', async () => {
     expect(
       await buildDapResult([
         mock<HTTPRequest>({
           url: () => 'https://test.gov',
           postData: () => 'abcd-def/UA-33523145-1/xyz',
+        }),
+      ]),
+    ).toEqual({
+      dapDetected: true,
+      dapParameters: undefined,
+    });
+  });
+  it('DAP detected if another analytics code is in POST data', async () => {
+    expect(
+      await buildDapResult([
+        mock<HTTPRequest>({
+          url: () => 'https://test.gov',
+          postData: () => 'abcd-def/G-9TNNMGP8WJ/xyz',
         }),
       ]),
     ).toEqual({

@@ -18,17 +18,21 @@ export const buildDapResult = async (
  * @param outboundRequests
  */
 const dapDetected = (outboundRequests: HTTPRequest[]) => {
-  const dapUaId = 'UA-33523145-1';
+  const dapIds = ['UA-33523145-1', 'G-9TNNMGP8WJ'];
   let detected = false;
 
   for (const request of outboundRequests) {
-    if (request.url().includes(dapUaId)) {
+    const urlIncludesId = dapIds.some((id) => request.url().includes(id));
+    if (urlIncludesId) {
       detected = true;
       break;
     }
 
     try {
-      if (request.postData().includes(dapUaId)) {
+      const postDataIncludesId = dapIds.some((id) =>
+        request.postData().includes(id),
+      );
+      if (postDataIncludesId) {
         detected = true;
         break;
       }
