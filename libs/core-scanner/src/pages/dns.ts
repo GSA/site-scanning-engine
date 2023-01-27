@@ -1,7 +1,18 @@
 import { promises as dns } from 'dns';
 import { Logger } from 'pino';
+import { DnsScan } from 'entities/scan-data.entity';
 
-export const dnsScan = (logger: Logger, hostname: string) => {
+export const dnsScan = async (
+  logger: Logger,
+  hostname: string,
+): Promise<DnsScan> => {
+  return {
+    ipv6: await ipv6Scan(hostname, logger),
+    cloudProvider: await cloudScan(hostname, logger),
+  };
+};
+
+const ipv6Scan = async (hostname, logger) => {
   return dns
     .resolve6(hostname)
     .then((response) => {
@@ -11,5 +22,19 @@ export const dnsScan = (logger: Logger, hostname: string) => {
     .catch((error) => {
       logger.info({ msg: 'No IPv6 record available', error });
       return false;
+    });
+};
+
+const cloudScan = async (hostname, logger) => {
+  return dns
+    .resolve(hostname)
+    .then((addresses) => {
+      return dns.reverse(addresses[0]).then((hostnames) => {
+        return hostnames.toString();
+      });
+    })
+    .catch((error) => {
+      logger.info({ msg: 'Error during cloud scan:', error });
+      return null;
     });
 };

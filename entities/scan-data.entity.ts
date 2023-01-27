@@ -74,6 +74,7 @@ export type NotFoundScan = {
 
 export type DnsScan = {
   ipv6: boolean;
+  cloudProvider: string;
 };
 
 export type LoginScan = {
