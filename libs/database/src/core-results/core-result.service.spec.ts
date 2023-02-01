@@ -167,6 +167,7 @@ describe('CoreResultService', () => {
         result: {
           dnsScan: {
             ipv6: true,
+            dnsHostname: null,
           },
         },
       },

@@ -111,15 +111,18 @@ export class CoreScannerService
               }),
             ),
           pages.dnsScan(scanLogger, input.url).then(
-            (ipv6) => ({
-              status: ScanStatus.Completed,
-              result: {
-                dnsScan: {
-                  ipv6,
+            (result) => {
+              return {
+                status: ScanStatus.Completed,
+                result: {
+                  dnsScan: {
+                    ipv6: result.ipv6,
+                    dnsHostname: result.dnsHostname,
+                  },
                 },
-              },
-              error: null,
-            }),
+                error: null,
+              };
+            },
             (error) => {
               return {
                 status: this.getScanStatus(error, input.url, scanLogger),
@@ -130,6 +133,7 @@ export class CoreScannerService
           ),
         ],
       );
+
       const result = {
         base: {
           targetUrlBaseDomain: getBaseDomain(getHttpsUrl(input.url)),
@@ -143,6 +147,7 @@ export class CoreScannerService
       scanLogger.info({ result }, 'solutions scan results');
       return result;
     });
+
     return scanData;
   }
 

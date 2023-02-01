@@ -156,6 +156,7 @@ export class CoreResultService {
       coreResult.dnsScanStatus = pages.dns.error;
     } else {
       coreResult.dnsIpv6 = pages.dns.result.dnsScan.ipv6;
+      coreResult.dnsHostname = pages.dns.result.dnsScan.dnsHostname;
     }
 
     return this.create(coreResult);

@@ -291,6 +291,10 @@ export class CoreResult {
   @Expose({ name: 'login_detected' })
   loginDetected?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'dns_hostname' })
+  dnsHostname?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
