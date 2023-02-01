@@ -8,7 +8,7 @@ export const dnsScan = async (
 ): Promise<DnsScan> => {
   return {
     ipv6: await ipv6Scan(hostname, logger),
-    cloudProvider: await cloudScan(hostname, logger),
+    dnsHostname: await hostnameScan(hostname, logger),
   };
 };
 
@@ -25,7 +25,7 @@ const ipv6Scan = async (hostname, logger) => {
     });
 };
 
-const cloudScan = async (hostname, logger) => {
+const hostnameScan = async (hostname, logger) => {
   return dns
     .resolve(hostname)
     .then((addresses) => {

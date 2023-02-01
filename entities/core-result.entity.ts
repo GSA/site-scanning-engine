@@ -292,8 +292,8 @@ export class CoreResult {
   loginDetected?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'cloud_provider' })
-  cloudProvider?: string;
+  @Expose({ name: 'dns_hostname' })
+  dnsHostname?: string;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names

@@ -118,7 +118,7 @@ export class CoreScannerService
                 result: {
                   dnsScan: {
                     ipv6: result.ipv6,
-                    cloudProvider: result.cloudProvider,
+                    dnsHostname: result.dnsHostname,
                   },
                 },
                 error: null,
