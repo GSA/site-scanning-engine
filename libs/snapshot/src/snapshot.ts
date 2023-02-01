@@ -31,6 +31,7 @@ export class Snapshot {
     'sitemap_xml_scan_status',
     'dns_scan_status',
     'dns_ipv6',
+    'dns_hostname',
     'source_list_federal_domains',
     'source_list_dap',
     'source_list_pulse',
