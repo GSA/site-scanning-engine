@@ -30,7 +30,9 @@ const hostnameScan = async (hostname, logger) => {
     .resolve(hostname)
     .then((addresses) => {
       return dns.reverse(addresses[0]).then((hostnames) => {
-        return hostnames.toString();
+        const domain = hostnames[0].split('.').slice(-2).join('.');
+        if (usesCloudService(domain)) return domain;
+        return null;
       });
     })
     .catch((error) => {
@@ -38,3 +40,26 @@ const hostnameScan = async (hostname, logger) => {
       return null;
     });
 };
+
+const usesCloudService = (domain): boolean => {
+  if (domain === 'cloud.gov' || domain === 'data.gov') return true;
+
+  return cloudServiceStrings
+    .map((string) => domain.split('.')[0].includes(string))
+    .includes(true);
+};
+
+const cloudServiceStrings = [
+  'acquia',
+  'akadns',
+  'akamai',
+  'aws',
+  'azure',
+  'cloudfront',
+  'cloudflare',
+  'edgekey',
+  'github',
+  'microsoft',
+  'qip',
+  'quest',
+];
