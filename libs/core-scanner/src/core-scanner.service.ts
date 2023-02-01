@@ -112,7 +112,6 @@ export class CoreScannerService
             ),
           pages.dnsScan(scanLogger, input.url).then(
             (result) => {
-              console.log(result);
               return {
                 status: ScanStatus.Completed,
                 result: {
