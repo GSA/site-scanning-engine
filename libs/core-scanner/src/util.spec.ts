@@ -1,6 +1,12 @@
 import { mock } from 'jest-mock-extended';
 import { HTTPResponse } from 'puppeteer';
-import { getBaseDomain, getFullDomain, getHttpsUrl, getMIMEType } from './util';
+import {
+  getBaseDomain,
+  getFullDomain,
+  getHttpsUrl,
+  getMIMEType,
+  getWithSubdomain,
+} from './util';
 
 describe('core-scanner util', () => {
   describe('getBaseDomain', () => {
@@ -65,6 +71,26 @@ describe('core-scanner util', () => {
       });
       const result = getMIMEType(mockResponse);
       expect(result).toBe('text/html');
+    });
+  });
+
+  describe('getWithSubdomain', () => {
+    it('gets the full domain and subdomain for a url with a subdomain', () => {
+      const url = 'https://18f.gsa.gov';
+      const result = getWithSubdomain(url);
+      expect(result).toBe('18f.gsa.gov');
+    });
+
+    it('gets the full domain for a url with no subdomain', () => {
+      const url = 'https://gsa.gov';
+      const result = getWithSubdomain(url);
+      expect(result).toBe('gsa.gov');
+    });
+
+    it('gets an empty string if the url passed in is a file', () => {
+      const url = 'file:///18f_gov_dump.mht';
+      const result = getWithSubdomain(url);
+      expect(result).toBe('');
     });
   });
 });

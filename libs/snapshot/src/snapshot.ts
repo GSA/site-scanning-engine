@@ -14,6 +14,7 @@ export class Snapshot {
     'target_url_domain',
     'final_url',
     'final_url_domain',
+    'final_url_website',
     'final_url_mimetype',
     'final_url_live',
     'target_url_redirects',
