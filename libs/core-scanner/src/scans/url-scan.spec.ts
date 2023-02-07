@@ -1,4 +1,3 @@
-import { Browser } from 'puppeteer';
 import { newTestPage } from '../test-helper';
 import { buildUrlScanResult } from './url-scan';
 
