@@ -9,6 +9,7 @@ import {
   getFullDomain,
   getHttpsUrl,
   getMIMEType,
+  getWithSubdomain,
 } from '../util';
 
 export const buildUrlScanResult = (
@@ -22,6 +23,7 @@ export const buildUrlScanResult = (
   return {
     targetUrlRedirects: redirects(redirectChain),
     finalUrl: finalUrl,
+    finalUrlWebsite: getWithSubdomain(finalUrl),
     finalUrlMIMEType: getMIMEType(response),
     finalUrlIsLive: isLive(response),
     finalUrlBaseDomain: getBaseDomain(finalUrl),

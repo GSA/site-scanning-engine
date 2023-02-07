@@ -83,6 +83,7 @@ describe('primary scanner', () => {
       urlScan: {
         finalUrl: 'https://18f.gsa.gov',
         finalUrlBaseDomain: 'gsa.gov',
+        finalUrlWebsite: '18f.gsa.gov',
         finalUrlIsLive: true,
         finalUrlMIMEType: 'text/html',
         finalUrlSameDomain: false,

@@ -43,3 +43,9 @@ export const getMIMEType = (res: HTTPResponse): string => {
     return 'unknown';
   }
 };
+
+export const getWithSubdomain = (url: string): string => {
+  const parsedUrl = new URL(url);
+  const result = _.takeRight(_.split(parsedUrl.origin, '//'))[0];
+  return result && result !== 'null' ? result : '';
+};

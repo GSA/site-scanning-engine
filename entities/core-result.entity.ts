@@ -295,6 +295,10 @@ export class CoreResult {
   @Expose({ name: 'dns_hostname' })
   dnsHostname?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'final_url_website' })
+  finalUrlWebsite?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

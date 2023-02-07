@@ -1,8 +1,7 @@
-import { Browser } from 'puppeteer';
 import { newTestPage } from '../test-helper';
 import { buildUrlScanResult } from './url-scan';
 
-describe('core scan', () => {
+describe('url scan', () => {
   it('works', async () => {
     await newTestPage(async ({ page, response, sourceUrl }) => {
       expect(
@@ -14,6 +13,7 @@ describe('core scan', () => {
       ).toEqual({
         finalUrl: sourceUrl,
         finalUrlBaseDomain: '',
+        finalUrlWebsite: '',
         finalUrlIsLive: true,
         finalUrlMIMEType: 'multipart/related',
         finalUrlSameDomain: false,
