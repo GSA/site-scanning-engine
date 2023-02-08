@@ -299,6 +299,10 @@ export class CoreResult {
   @Expose({ name: 'final_url_website' })
   finalUrlWebsite?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'cloud_dot_gov_pages' })
+  cloudDotGovPages?: boolean;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
