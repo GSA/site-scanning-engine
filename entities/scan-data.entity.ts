@@ -81,3 +81,7 @@ export type DnsScan = {
 export type LoginScan = {
   loginDetected: string;
 };
+
+export type CloudDotGovPagesScan = {
+  cloudDotGovPages: boolean;
+};

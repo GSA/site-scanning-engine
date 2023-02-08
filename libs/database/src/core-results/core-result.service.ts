@@ -96,6 +96,10 @@ export class CoreResultService {
 
       // Login scan
       coreResult.loginDetected = result.loginScan.loginDetected;
+
+      // Cloud.gov Pages scan
+      coreResult.cloudDotGovPages =
+        result.cloudDotGovPagesScan.cloudDotGovPages;
     }
 
     coreResult.notFoundScanStatus = pages.notFound.status;

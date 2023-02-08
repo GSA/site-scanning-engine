@@ -103,6 +103,9 @@ describe('primary scanner', () => {
         uswdsUsFlagInCss: 0,
         uswdsVersion: 0,
       },
+      cloudDotGovPagesScan: {
+        cloudDotGovPages: false,
+      },
     });
   });
 });
