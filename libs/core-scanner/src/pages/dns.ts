@@ -44,9 +44,9 @@ const hostnameScan = async (hostname, logger) => {
 const usesCloudService = (domain): boolean => {
   if (domain === 'cloud.gov' || domain === 'data.gov') return true;
 
-  return cloudServiceStrings
-    .map((string) => domain.split('.')[0].includes(string))
-    .includes(true);
+  return cloudServiceStrings.some((string) =>
+    domain.split('.')[0].includes(string),
+  );
 };
 
 const cloudServiceStrings = [
