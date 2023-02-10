@@ -13,7 +13,7 @@ describe('url scan', () => {
       ).toEqual({
         finalUrl: sourceUrl,
         finalUrlBaseDomain: '',
-        finalUrlWebsite: '',
+        finalUrlWebsite: null,
         finalUrlIsLive: true,
         finalUrlMIMEType: 'multipart/related',
         finalUrlSameDomain: false,
