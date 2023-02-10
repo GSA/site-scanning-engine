@@ -44,8 +44,8 @@ export const getMIMEType = (res: HTTPResponse): string => {
   }
 };
 
-export const getWithSubdomain = (url: string): string => {
+export const getWithSubdomain = (url: string): string | null => {
+  if (!url.match(/^https?:\/\//)) return null;
   const parsedUrl = new URL(url);
-  const result = _.takeRight(_.split(parsedUrl.origin, '//'))[0];
-  return result && result !== 'null' ? result : '';
+  return _.takeRight(_.split(parsedUrl.origin, '//'))[0];
 };

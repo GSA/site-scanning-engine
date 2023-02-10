@@ -75,22 +75,28 @@ describe('core-scanner util', () => {
   });
 
   describe('getWithSubdomain', () => {
-    it('gets the full domain and subdomain for a url with a subdomain', () => {
+    it('returns the full domain and subdomain for a url with a subdomain', () => {
       const url = 'https://18f.gsa.gov';
       const result = getWithSubdomain(url);
       expect(result).toBe('18f.gsa.gov');
     });
 
-    it('gets the full domain for a url with no subdomain', () => {
+    it('returns the full domain for a url with no subdomain', () => {
       const url = 'https://gsa.gov';
       const result = getWithSubdomain(url);
       expect(result).toBe('gsa.gov');
     });
 
-    it('gets an empty string if the url passed in is a file', () => {
-      const url = 'file:///18f_gov_dump.mht';
+    it('returns null if the string is does not contain an http(s) protocol', () => {
+      const url = '18f.gsa.gov';
       const result = getWithSubdomain(url);
-      expect(result).toBe('');
+      expect(result).toBe(null);
+    });
+
+    it('returns null if the string is not a valid url', () => {
+      const url = '18fgsagov';
+      const result = getWithSubdomain(url);
+      expect(result).toBe(null);
     });
   });
 });
