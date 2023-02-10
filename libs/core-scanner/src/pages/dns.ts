@@ -13,40 +13,32 @@ export const dnsScan = async (
 };
 
 const ipv6Scan = async (hostname, logger) => {
-  return dns
-    .resolve6(hostname)
-    .then((response) => {
-      logger.info('Resolved address is:', response);
-      return true;
-    })
-    .catch((error) => {
-      logger.info({ msg: 'No IPv6 record available', error });
-      return false;
-    });
+  try {
+    const response = await dns.resolve6(hostname);
+    logger.info('Resolved address is:', response);
+    return true;
+  } catch (error) {
+    logger.info({ msg: 'No IPv6 record available', error });
+    return false;
+  }
 };
 
 const hostnameScan = async (hostname, logger) => {
-  return dns
-    .resolve(hostname)
-    .then((addresses) => {
-      return dns.reverse(addresses[0]).then((hostnames) => {
-        const domain = hostnames[0].split('.').slice(-2).join('.');
-        if (usesCloudService(domain)) return domain;
-        return null;
-      });
-    })
-    .catch((error) => {
-      logger.info({ msg: 'Error during cloud scan:', error });
-      return null;
-    });
+  try {
+    const addresses = await dns.resolve(hostname);
+    const hostnames = await dns.reverse(addresses[0]);
+    const domain = hostnames[0].split('.').slice(-2).join('.');
+    return usesCloudService(domain) ? domain : null;
+  } catch (error) {
+    logger.info({ msg: 'Error during cloud scan:', error });
+    return null;
+  }
 };
 
 const usesCloudService = (domain): boolean => {
   if (domain === 'cloud.gov' || domain === 'data.gov') return true;
 
-  return cloudServiceStrings.some((string) =>
-    domain.split('.')[0].includes(string),
-  );
+  return cloudServiceStrings.some((string) => domain.includes(string));
 };
 
 const cloudServiceStrings = [
