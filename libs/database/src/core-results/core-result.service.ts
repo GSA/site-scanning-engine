@@ -65,6 +65,7 @@ export class CoreResultService {
         result.seoScan.ogArticlePublishedFinalUrl;
       coreResult.ogDescriptionFinalUrl = result.seoScan.ogDescriptionFinalUrl;
       coreResult.ogTitleFinalUrl = result.seoScan.ogTitleFinalUrl;
+      coreResult.canonicalLink = result.seoScan.canonicalLink;
 
       // Third-party scan
       coreResult.thirdPartyServiceCount =

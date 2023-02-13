@@ -38,6 +38,9 @@ describe('CoreScanner (e2e)', () => {
       primary: {
         error: null,
         result: {
+          cloudDotGovPagesScan: {
+            cloudDotGovPages: true,
+          },
           dapScan: {
             dapDetected: true,
             dapParameters:
@@ -55,6 +58,7 @@ describe('CoreScanner (e2e)', () => {
             ogDescriptionFinalUrl:
               '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
             ogTitleFinalUrl: '18F: Digital service delivery | Home',
+            canonicalLink: 'https://18f.gsa.gov/',
           },
           thirdPartyScan: {
             thirdPartyServiceCount: 5,
@@ -71,6 +75,7 @@ describe('CoreScanner (e2e)', () => {
             finalUrlSameDomain: false,
             finalUrlSameWebsite: false,
             finalUrlStatusCode: 200,
+            finalUrlWebsite: '18f.gsa.gov',
             targetUrlRedirects: true,
           },
           uswdsScan: {
@@ -93,6 +98,7 @@ describe('CoreScanner (e2e)', () => {
         result: {
           dnsScan: {
             ipv6: true,
+            dnsHostname: 'cloudfront.net',
           },
         },
         status: ScanStatus.Completed,
@@ -128,10 +134,10 @@ describe('CoreScanner (e2e)', () => {
         result: {
           sitemapXmlScan: {
             sitemapTargetUrlRedirects: true,
-            sitemapXmlCount: 738,
+            sitemapXmlCount: 736,
             sitemapXmlDetected: true,
             sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
-            sitemapXmlFinalUrlFilesize: 102650,
+            sitemapXmlFinalUrlFilesize: 102494,
             sitemapXmlFinalUrlLive: true,
             sitemapXmlFinalUrlMimeType: 'application/xml',
             sitemapXmlPdfCount: 0,
@@ -160,6 +166,7 @@ describe('CoreScanner (e2e)', () => {
         result: {
           dnsScan: {
             ipv6: true,
+            dnsHostname: 'akamaitechnologies.com',
           },
         },
         status: ScanStatus.Completed,
@@ -167,6 +174,9 @@ describe('CoreScanner (e2e)', () => {
       primary: {
         error: null,
         result: {
+          cloudDotGovPagesScan: {
+            cloudDotGovPages: false,
+          },
           dapScan: {
             dapDetected: true,
             dapParameters:
@@ -183,6 +193,7 @@ describe('CoreScanner (e2e)', () => {
             ogArticlePublishedFinalUrl: undefined,
             ogDescriptionFinalUrl: null,
             ogTitleFinalUrl: 'Pool Safely',
+            canonicalLink: 'https://www.poolsafely.gov/',
           },
           thirdPartyScan: {
             thirdPartyServiceCount: 12,
@@ -199,6 +210,7 @@ describe('CoreScanner (e2e)', () => {
             finalUrlSameDomain: false,
             finalUrlSameWebsite: false,
             finalUrlStatusCode: 200,
+            finalUrlWebsite: 'www.poolsafely.gov',
             targetUrlRedirects: true,
           },
           uswdsScan: {

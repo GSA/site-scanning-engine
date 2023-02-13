@@ -303,6 +303,10 @@ export class CoreResult {
   @Expose({ name: 'cloud_dot_gov_pages' })
   cloudDotGovPages?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'canonical_link' })
+  canonicalLink?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
