@@ -109,6 +109,7 @@ describe('CoreResultService', () => {
             ogArticlePublishedFinalUrl: null,
             ogArticleModifiedFinalUrl: null,
             mainElementFinalUrl: null,
+            canonicalLink: null,
           },
           thirdPartyScan: {
             thirdPartyServiceDomains: null,

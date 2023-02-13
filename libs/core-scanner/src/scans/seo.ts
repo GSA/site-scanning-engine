@@ -22,6 +22,7 @@ export const buildSeoResult = async (
       'article:modified_date',
     ),
     mainElementFinalUrl: await findMainElement(page),
+    canonicalLink: await findCanonicalLink(page),
   };
 };
 
@@ -68,4 +69,15 @@ const findMainElement = async (page: Page) => {
   });
 
   return main;
+};
+
+const findCanonicalLink = async (page: Page) => {
+  const canoniclaLinkResult = await page.evaluate(() => {
+    const canonicalLink = document.querySelector<Element>(
+      'link[rel="canonical"]',
+    );
+    return canonicalLink.getAttribute('href');
+  });
+
+  return canoniclaLinkResult;
 };

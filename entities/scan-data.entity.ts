@@ -25,6 +25,7 @@ export type SeoScan = {
   ogArticlePublishedFinalUrl: Date;
   ogArticleModifiedFinalUrl: Date;
   mainElementFinalUrl: boolean;
+  canonicalLink: string;
 };
 
 export type ThirdPartyScan = {
