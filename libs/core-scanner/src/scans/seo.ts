@@ -72,12 +72,12 @@ const findMainElement = async (page: Page) => {
 };
 
 const findCanonicalLink = async (page: Page) => {
-  const canoniclaLinkResult = await page.evaluate(() => {
+  const canonicalLinkResult = await page.evaluate(() => {
     const canonicalLink = document.querySelector<Element>(
       'link[rel="canonical"]',
     );
     return canonicalLink.getAttribute('href');
   });
 
-  return canoniclaLinkResult;
+  return canonicalLinkResult;
 };
