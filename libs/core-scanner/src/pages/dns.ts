@@ -34,6 +34,16 @@ const hostnameScan = async (hostname, logger) => {
   return null;
 };
 
+const cnameLookup = async (hostname, logger) => {
+  try {
+    const cnameResolution = await dns.resolveCname(hostname);
+    return cnameResolution[0].split('.').slice(-2).join('.');
+  } catch (error) {
+    logger.info({ msg: 'Error during cname lookup:', error });
+    return null;
+  }
+};
+
 const reverseLookup = async (hostname, logger) => {
   try {
     const addresses = await dns.resolve(hostname);
@@ -42,16 +52,6 @@ const reverseLookup = async (hostname, logger) => {
     return domain;
   } catch (error) {
     logger.info({ msg: 'Error during reverse lookup:', error });
-    return null;
-  }
-};
-
-const cnameLookup = async (hostname, logger) => {
-  try {
-    const cnameResolution = await dns.resolveCname(hostname);
-    return cnameResolution[0].split('.').slice(-2).join('.');
-  } catch (error) {
-    logger.info({ msg: 'Error during cname lookup:', error });
     return null;
   }
 };
