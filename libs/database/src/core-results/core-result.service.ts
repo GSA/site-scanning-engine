@@ -36,22 +36,48 @@ export class CoreResultService {
     logger: Logger,
   ) {
     const coreResult = new CoreResult();
-
     const website = new Website();
     website.id = websiteId;
     coreResult.website = website;
-
-    // Base scan data
     coreResult.targetUrlBaseDomain = pages.base.targetUrlBaseDomain;
 
-    // Home page data
-    coreResult.primaryScanStatus = pages.primary.status;
-    if (pages.primary.status !== ScanStatus.Completed) {
-      logger.error({
-        msg: pages.primary.error,
-        page: 'primary',
-      });
+    this.updatePrimaryScanResults(coreResult, pages, logger);
+    this.updateNotFoundScanResults(coreResult, pages, logger);
+    this.updateRobotsTxtScanResults(coreResult, pages, logger);
+    this.updateSitemapXmlScanResults(coreResult, pages, logger);
+    this.updateDnsScanResults(coreResult, pages, logger);
+
+    return this.create(coreResult);
+  }
+
+  async create(coreResult: CoreResult) {
+    const exists = await this.coreResultRepository.findOne({
+      where: {
+        website: {
+          id: coreResult.website.id,
+        },
+      },
+    });
+
+    if (exists) {
+      await this.coreResultRepository.update(exists.id, coreResult);
     } else {
+      await this.coreResultRepository.insert(coreResult);
+    }
+  }
+
+  async findOne(id: number): Promise<CoreResult> {
+    return await this.coreResultRepository.findOne(id);
+  }
+
+  private updatePrimaryScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.primaryScanStatus = pages.primary.status;
+
+    if (pages.primary.status === ScanStatus.Completed) {
       const result = pages.primary.result;
       // DAP scan
       coreResult.dapDetected = result.dapScan.dapDetected;
@@ -84,6 +110,7 @@ export class CoreResultService {
       coreResult.finalUrlStatusCode = result.urlScan.finalUrlStatusCode;
       coreResult.targetUrlRedirects = result.urlScan.targetUrlRedirects;
 
+      // USWDS scan
       coreResult.usaClasses = result.uswdsScan.usaClasses;
       coreResult.uswdsString = result.uswdsScan.uswdsString;
       coreResult.uswdsInlineCss = result.uswdsScan.uswdsInlineCss;
@@ -101,26 +128,73 @@ export class CoreResultService {
       // Cloud.gov Pages scan
       coreResult.cloudDotGovPages =
         result.cloudDotGovPagesScan.cloudDotGovPages;
+    } else {
+      logger.error({
+        msg: pages.primary.error,
+        page: 'primary',
+      });
+      coreResult.dapDetected = null;
+      coreResult.dapParameters = null;
+      coreResult.mainElementFinalUrl = null;
+      coreResult.ogArticleModifiedFinalUrl = null;
+      coreResult.ogArticlePublishedFinalUrl = null;
+      coreResult.ogDescriptionFinalUrl = null;
+      coreResult.ogTitleFinalUrl = null;
+      coreResult.canonicalLink = null;
+      coreResult.thirdPartyServiceCount = null;
+      coreResult.thirdPartyServiceDomains = null;
+      coreResult.finalUrl = null;
+      coreResult.finalUrlBaseDomain = null;
+      coreResult.finalUrlWebsite = null;
+      coreResult.finalUrlIsLive = null;
+      coreResult.finalUrlMIMEType = null;
+      coreResult.finalUrlSameDomain = null;
+      coreResult.finalUrlSameWebsite = null;
+      coreResult.finalUrlStatusCode = null;
+      coreResult.targetUrlRedirects = null;
+      coreResult.usaClasses = null;
+      coreResult.uswdsString = null;
+      coreResult.uswdsInlineCss = null;
+      coreResult.uswdsUsFlag = null;
+      coreResult.uswdsUsFlagInCss = null;
+      coreResult.uswdsStringInCss = null;
+      coreResult.uswdsPublicSansFont = null;
+      coreResult.uswdsSemanticVersion = null;
+      coreResult.uswdsVersion = null;
+      coreResult.uswdsCount = null;
+      coreResult.loginDetected = null;
+      coreResult.cloudDotGovPages = null;
     }
+  }
 
+  private updateNotFoundScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
     coreResult.notFoundScanStatus = pages.notFound.status;
-    if (pages.notFound.status !== ScanStatus.Completed) {
+
+    if (pages.notFound.status === ScanStatus.Completed) {
+      coreResult.targetUrl404Test =
+        pages.notFound.result.notFoundScan.targetUrl404Test;
+    } else {
       logger.error({
         msg: pages.notFound.error,
         page: 'notFound',
       });
-    } else {
-      coreResult.targetUrl404Test =
-        pages.notFound.result.notFoundScan.targetUrl404Test;
-    }
 
+      coreResult.targetUrl404Test = null;
+    }
+  }
+
+  private updateRobotsTxtScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
     coreResult.robotsTxtScanStatus = pages.robotsTxt.status;
-    if (pages.robotsTxt.status !== ScanStatus.Completed) {
-      logger.error({
-        msg: pages.robotsTxt.error,
-        page: 'robotsTxt',
-      });
-    } else {
+
+    if (pages.robotsTxt.status === ScanStatus.Completed) {
       const robotsTxt = pages.robotsTxt.result.robotsTxtScan;
       coreResult.robotsTxtFinalUrlSize = robotsTxt.robotsTxtFinalUrlSize;
       coreResult.robotsTxtCrawlDelay = robotsTxt.robotsTxtCrawlDelay;
@@ -134,15 +208,32 @@ export class CoreResultService {
         robotsTxt.robotsTxtFinalUrlMimeType;
       coreResult.robotsTxtStatusCode = robotsTxt.robotsTxtStatusCode;
       coreResult.robotsTxtDetected = robotsTxt.robotsTxtDetected;
-    }
-
-    coreResult.sitemapXmlScanStatus = pages.sitemapXml.status;
-    if (pages.sitemapXml.status !== ScanStatus.Completed) {
-      logger.error({
-        msg: pages.sitemapXml.error,
-        page: 'sitemap.xml',
-      });
     } else {
+      logger.error({
+        msg: pages.robotsTxt.error,
+        page: 'robotsTxt',
+      });
+
+      coreResult.robotsTxtFinalUrlSize = null;
+      coreResult.robotsTxtCrawlDelay = null;
+      coreResult.robotsTxtSitemapLocations = null;
+      coreResult.robotsTxtFinalUrl = null;
+      coreResult.robotsTxtFinalUrlLive = null;
+      coreResult.robotsTxtTargetUrlRedirects = null;
+      coreResult.robotsTxtFinalUrlMimeType = null;
+      coreResult.robotsTxtStatusCode = null;
+      coreResult.robotsTxtDetected = null;
+    }
+  }
+
+  private updateSitemapXmlScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.sitemapXmlScanStatus = pages.sitemapXml.status;
+
+    if (pages.sitemapXml.status === ScanStatus.Completed) {
       const sitemap = pages.sitemapXml.result.sitemapXmlScan;
       coreResult.sitemapXmlFinalUrlFilesize =
         sitemap.sitemapXmlFinalUrlFilesize;
@@ -155,35 +246,42 @@ export class CoreResultService {
         sitemap.sitemapXmlFinalUrlMimeType;
       coreResult.sitemapXmlStatusCode = sitemap.sitemapXmlStatusCode;
       coreResult.sitemapXmlDetected = sitemap.sitemapXmlDetected;
-    }
-
-    coreResult.dnsScanStatus = pages.dns.status;
-    if (pages.dns.status !== ScanStatus.Completed) {
-      coreResult.dnsScanStatus = pages.dns.error;
     } else {
+      logger.error({
+        msg: pages.sitemapXml.error,
+        page: 'sitemap.xml',
+      });
+
+      coreResult.sitemapXmlFinalUrlFilesize = null;
+      coreResult.sitemapXmlCount = null;
+      coreResult.sitemapXmlPdfCount = null;
+      coreResult.sitemapXmlFinalUrl = null;
+      coreResult.sitemapXmlFinalUrlLive = null;
+      coreResult.sitemapTargetUrlRedirects = null;
+      coreResult.sitemapXmlFinalUrlMimeType = null;
+      coreResult.sitemapXmlStatusCode = null;
+      coreResult.sitemapXmlDetected = null;
+    }
+  }
+
+  private updateDnsScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.dnsScanStatus = pages.dns.status;
+
+    if (pages.dns.status === ScanStatus.Completed) {
       coreResult.dnsIpv6 = pages.dns.result.dnsScan.ipv6;
       coreResult.dnsHostname = pages.dns.result.dnsScan.dnsHostname;
-    }
-
-    return this.create(coreResult);
-  }
-
-  async create(coreResult: CoreResult) {
-    const exists = await this.coreResultRepository.findOne({
-      where: {
-        website: {
-          id: coreResult.website.id,
-        },
-      },
-    });
-    if (exists) {
-      await this.coreResultRepository.update(exists.id, coreResult);
     } else {
-      await this.coreResultRepository.insert(coreResult);
-    }
-  }
+      logger.error({
+        msg: pages.dns.error,
+        page: 'dns',
+      });
 
-  async findOne(id: number): Promise<CoreResult> {
-    return await this.coreResultRepository.findOne(id);
+      coreResult.dnsIpv6 = null;
+      coreResult.dnsHostname = null;
+    }
   }
 }
