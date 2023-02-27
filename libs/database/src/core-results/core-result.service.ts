@@ -133,6 +133,7 @@ export class CoreResultService {
         msg: pages.primary.error,
         page: 'primary',
       });
+
       coreResult.dapDetected = null;
       coreResult.dapParameters = null;
       coreResult.mainElementFinalUrl = null;
