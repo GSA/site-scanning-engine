@@ -106,6 +106,9 @@ describe('primary scanner', () => {
       cloudDotGovPagesScan: {
         cloudDotGovPages: false,
       },
+      cmsScan: {
+        cms: null,
+      },
     });
   });
 });

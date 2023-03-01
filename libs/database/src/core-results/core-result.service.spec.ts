@@ -133,6 +133,9 @@ describe('CoreResultService', () => {
           cloudDotGovPagesScan: {
             cloudDotGovPages: false,
           },
+          cmsScan: {
+            cms: null,
+          },
         },
       },
       robotsTxt: {

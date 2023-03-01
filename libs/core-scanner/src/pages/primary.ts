@@ -12,7 +12,7 @@ import { createUswdsScanner } from '../scans/uswds';
 import { buildLoginResult } from '../scans/login';
 import { buildCloudDotGovPagesResult } from '../scans/cloud-dot-gov-pages';
 import { promiseAll, getHttpsUrl } from '../util';
-
+import { buildCmsResult } from '../scans/cms';
 import {
   createCSSRequestsExtractor,
   createOutboundRequestsExtractor,
@@ -48,6 +48,7 @@ const primaryScan = async (
     uswdsScan,
     loginScan,
     cloudDotGovPagesScan,
+    cmsScan,
   ] = await promiseAll([
     buildDapResult(getOutboundRequests()),
     buildThirdPartyResult(response, getOutboundRequests()),
@@ -55,6 +56,7 @@ const primaryScan = async (
     createUswdsScanner({ logger, getCSSRequests }, page)(response),
     buildLoginResult(response),
     buildCloudDotGovPagesResult(response),
+    buildCmsResult(response),
   ]);
   const urlScan = buildUrlScanResult(input, page, response);
 
@@ -66,5 +68,6 @@ const primaryScan = async (
     uswdsScan,
     loginScan,
     cloudDotGovPagesScan,
+    cmsScan,
   };
 };

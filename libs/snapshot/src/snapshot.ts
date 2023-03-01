@@ -38,6 +38,7 @@ export class Snapshot {
     'source_list_dap',
     'source_list_pulse',
     'source_list_other',
+    'cms',
     'cloud_dot_gov_pages',
     'uswds_favicon',
     'uswds_favicon_in_css',
