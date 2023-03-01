@@ -307,6 +307,10 @@ export class CoreResult {
   @Expose({ name: 'canonical_link' })
   canonicalLink?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'cms' })
+  cms?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

@@ -128,6 +128,9 @@ export class CoreResultService {
       // Cloud.gov Pages scan
       coreResult.cloudDotGovPages =
         result.cloudDotGovPagesScan.cloudDotGovPages;
+
+      // CMS scan
+      coreResult.cms = result.cmsScan.cms;
     } else {
       logger.error({
         msg: pages.primary.error,
@@ -165,6 +168,7 @@ export class CoreResultService {
       coreResult.uswdsCount = null;
       coreResult.loginDetected = null;
       coreResult.cloudDotGovPages = null;
+      coreResult.cms = null;
     }
   }
 

@@ -20,6 +20,7 @@ export type PrimaryScans = {
   uswdsScan: ScanData.UswdsScan;
   loginScan: ScanData.LoginScan;
   cloudDotGovPagesScan: ScanData.CloudDotGovPagesScan;
+  cmsScan: ScanData.CmsScan;
 };
 export type PrimaryScan = PageScan<PrimaryScans>;
 
