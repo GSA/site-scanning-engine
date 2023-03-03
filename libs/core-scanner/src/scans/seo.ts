@@ -76,7 +76,7 @@ const findCanonicalLink = async (page: Page) => {
     const canonicalLink = document.querySelector<Element>(
       'link[rel="canonical"]',
     );
-    return canonicalLink.getAttribute('href');
+    return canonicalLink ? canonicalLink.getAttribute('href') : null;
   });
 
   return canonicalLinkResult;
