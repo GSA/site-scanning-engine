@@ -67,7 +67,7 @@ export class CoreResultService {
   }
 
   async findOne(id: number): Promise<CoreResult> {
-    return await this.coreResultRepository.findOne(id);
+    return await this.coreResultRepository.findOneBy({ id: id });
   }
 
   private updatePrimaryScanResults(

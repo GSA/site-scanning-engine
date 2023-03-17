@@ -49,7 +49,7 @@ describe('WebsiteService', () => {
   it('should return one Website by id', async () => {
     const website = new Website();
     const lookup = 1;
-    mockRepository.findOne.calledWith().mockResolvedValue(website);
+    mockRepository.findOneBy.calledWith().mockResolvedValue(website);
 
     const result = await service.findOne(lookup);
     expect(result).toStrictEqual(website);
@@ -57,7 +57,7 @@ describe('WebsiteService', () => {
 
   it('should return a Website by url', async () => {
     const website = new Website();
-    mockRepository.findOne.mockResolvedValue(website);
+    mockRepository.find.mockResolvedValue(website);
 
     const result = await service.findByUrl('18f.gov');
     expect(result).toStrictEqual(website);
