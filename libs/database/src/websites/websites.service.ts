@@ -116,20 +116,20 @@ export class WebsiteService {
   }
 
   async findOne(id: number): Promise<Website> {
-    const website = await this.website.findOne(id);
+    const website = await this.website.findOneBy({ id: id });
     return website;
   }
 
   async findByUrl(url: string): Promise<Website> {
     url = url.toLowerCase();
-    const result = await this.website.findOne({
-      relations: ['coreResult'],
+    const result = await this.website.find({
       where: {
         url: url,
       },
+      relations: ['coreResult'],
     });
 
-    return result;
+    return Array.isArray(result) ? result[0] : result;
   }
 
   async upsert(createWebsiteDto: CreateWebsiteDto) {
@@ -146,10 +146,8 @@ export class WebsiteService {
     website.sourceListPulse = createWebsiteDto.sourceListPulse;
     website.sourceListOther = createWebsiteDto.sourceListOther;
 
-    const exists = await this.website.findOne({
-      where: {
-        url: website.url,
-      },
+    const exists = await this.website.findOneBy({
+      url: website.url,
     });
     if (exists) {
       await this.website.update(exists.id, website);

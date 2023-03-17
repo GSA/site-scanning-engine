@@ -4,6 +4,7 @@ import { getLoggerToken, PinoLogger } from 'nestjs-pino';
 import { of } from 'rxjs';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AxiosResponse } from 'axios';
 
 import { BrowserModule, BrowserService } from '@app/browser';
 import { PUPPETEER_TOKEN } from '@app/browser/puppeteer.service';
@@ -85,15 +86,19 @@ xdescribe('CoreScannerService', () => {
       scanId: '123',
     };
 
-    mockHttpService.get.mockImplementationOnce(() => {
-      return of({
-        data: {},
-        status: 404,
-        statusText: 'Not Found',
-        headers: {},
-        config: {},
-      });
-    });
+    const response: AxiosResponse<any> = {
+      data: {},
+      status: 404,
+      statusText: 'Not Found',
+      headers: {},
+      config: {
+        headers: null,
+      },
+    };
+
+    jest
+      .spyOn(mockHttpService, 'get')
+      .mockImplementationOnce(() => of(response));
 
     const website = new Website();
     website.id = coreInputDto.websiteId;

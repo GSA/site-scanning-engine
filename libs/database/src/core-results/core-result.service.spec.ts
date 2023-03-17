@@ -53,7 +53,7 @@ describe('CoreResultService', () => {
     const coreResult = new CoreResult();
     coreResult.id = 1;
 
-    mockRepository.findOne.calledWith().mockResolvedValue(coreResult);
+    mockRepository.findOneBy.calledWith().mockResolvedValue(coreResult);
     const result = await service.findOne(1);
 
     expect(result).toStrictEqual(coreResult);
