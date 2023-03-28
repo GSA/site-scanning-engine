@@ -136,6 +136,9 @@ describe('CoreResultService', () => {
           cmsScan: {
             cms: null,
           },
+          hstsScan: {
+            hsts: false,
+          },
         },
       },
       robotsTxt: {

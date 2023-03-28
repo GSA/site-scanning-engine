@@ -13,6 +13,7 @@ import { buildLoginResult } from '../scans/login';
 import { buildCloudDotGovPagesResult } from '../scans/cloud-dot-gov-pages';
 import { promiseAll, getHttpsUrl } from '../util';
 import { buildCmsResult } from '../scans/cms';
+import { buildHstsResult } from '../scans/hsts';
 import {
   createCSSRequestsExtractor,
   createOutboundRequestsExtractor,
@@ -49,6 +50,7 @@ const primaryScan = async (
     loginScan,
     cloudDotGovPagesScan,
     cmsScan,
+    hstsScan,
   ] = await promiseAll([
     buildDapResult(getOutboundRequests()),
     buildThirdPartyResult(response, getOutboundRequests()),
@@ -57,6 +59,7 @@ const primaryScan = async (
     buildLoginResult(response),
     buildCloudDotGovPagesResult(response),
     buildCmsResult(response),
+    buildHstsResult(response),
   ]);
   const urlScan = buildUrlScanResult(input, page, response);
 
@@ -69,5 +72,6 @@ const primaryScan = async (
     loginScan,
     cloudDotGovPagesScan,
     cmsScan,
+    hstsScan,
   };
 };

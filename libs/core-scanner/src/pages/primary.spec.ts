@@ -109,6 +109,9 @@ describe('primary scanner', () => {
       cmsScan: {
         cms: null,
       },
+      hstsScan: {
+        hsts: false,
+      },
     });
   });
 });
