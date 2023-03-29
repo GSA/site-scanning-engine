@@ -311,6 +311,10 @@ export class CoreResult {
   @Expose({ name: 'cms' })
   cms?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'hsts' })
+  hsts?: boolean;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

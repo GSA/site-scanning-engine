@@ -90,3 +90,7 @@ export type CloudDotGovPagesScan = {
 export type CmsScan = {
   cms: string;
 };
+
+export type HstsScan = {
+  hsts: boolean;
+};

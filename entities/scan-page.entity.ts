@@ -21,6 +21,7 @@ export type PrimaryScans = {
   loginScan: ScanData.LoginScan;
   cloudDotGovPagesScan: ScanData.CloudDotGovPagesScan;
   cmsScan: ScanData.CmsScan;
+  hstsScan: ScanData.HstsScan;
 };
 export type PrimaryScan = PageScan<PrimaryScans>;
 

@@ -131,6 +131,9 @@ export class CoreResultService {
 
       // CMS scan
       coreResult.cms = result.cmsScan.cms;
+
+      // HSTS scan
+      coreResult.hsts = result.hstsScan.hsts;
     } else {
       logger.error({
         msg: pages.primary.error,
@@ -169,6 +172,7 @@ export class CoreResultService {
       coreResult.loginDetected = null;
       coreResult.cloudDotGovPages = null;
       coreResult.cms = null;
+      coreResult.hsts = null;
     }
   }
 
