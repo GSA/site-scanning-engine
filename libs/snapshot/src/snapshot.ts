@@ -33,6 +33,7 @@ export class Snapshot {
     'sitemap_xml_scan_status',
     'dns_scan_status',
     'dns_ipv6',
+    'hsts',
     'dns_hostname',
     'source_list_federal_domains',
     'source_list_dap',
@@ -78,7 +79,6 @@ export class Snapshot {
     'login_detected',
     'dap_detected_final_url',
     'dap_parameters_final_url',
-    'hsts',
   ];
 
   constructor(
