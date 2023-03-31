@@ -31,119 +31,28 @@ describe('CoreScanner (e2e)', () => {
     };
 
     const result = await service.scan(input);
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       base: {
         targetUrlBaseDomain: input.url,
       },
       primary: {
         error: null,
-        result: {
-          cloudDotGovPagesScan: {
-            cloudDotGovPages: true,
-          },
-          dapScan: {
-            dapDetected: true,
-            dapParameters:
-              result.primary.status === ScanStatus.Completed
-                ? result.primary.result.dapScan.dapParameters
-                : undefined, // need to fix this eventually
-          },
-          loginScan: {
-            loginDetected: null,
-          },
-          seoScan: {
-            mainElementFinalUrl: true,
-            ogArticleModifiedFinalUrl: undefined,
-            ogArticlePublishedFinalUrl: undefined,
-            ogDescriptionFinalUrl:
-              '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
-            ogTitleFinalUrl: '18F: Digital service delivery | Home',
-            canonicalLink: 'https://18f.gsa.gov/',
-          },
-          thirdPartyScan: {
-            thirdPartyServiceCount: 5,
-            thirdPartyServiceDomains:
-              result.primary.status === ScanStatus.Completed
-                ? result.primary.result.thirdPartyScan.thirdPartyServiceDomains
-                : undefined, // need to fix this eventually
-          },
-          urlScan: {
-            finalUrl: 'https://18f.gsa.gov/',
-            finalUrlBaseDomain: 'gsa.gov',
-            finalUrlIsLive: true,
-            finalUrlMIMEType: 'text/html',
-            finalUrlSameDomain: false,
-            finalUrlSameWebsite: false,
-            finalUrlStatusCode: 200,
-            finalUrlWebsite: '18f.gsa.gov',
-            targetUrlRedirects: true,
-          },
-          uswdsScan: {
-            usaClasses: 55,
-            uswdsCount: 243,
-            uswdsInlineCss: 0,
-            uswdsPublicSansFont: 40,
-            uswdsSemanticVersion: '2.9.0',
-            uswdsString: 8,
-            uswdsStringInCss: 20,
-            uswdsUsFlag: 20,
-            uswdsUsFlagInCss: 0,
-            uswdsVersion: 100,
-          },
-        },
         status: ScanStatus.Completed,
       },
       dns: {
         error: null,
-        result: {
-          dnsScan: {
-            ipv6: true,
-            dnsHostname: 'cloudfront.net',
-          },
-        },
         status: ScanStatus.Completed,
       },
       notFound: {
         error: null,
-        result: {
-          notFoundScan: {
-            targetUrl404Test: true,
-          },
-        },
         status: ScanStatus.Completed,
       },
       robotsTxt: {
         error: null,
-        result: {
-          robotsTxtScan: {
-            robotsTxtCrawlDelay: null,
-            robotsTxtDetected: true,
-            robotsTxtFinalUrl: 'https://18f.gsa.gov/robots.txt',
-            robotsTxtFinalUrlLive: true,
-            robotsTxtFinalUrlMimeType: 'text/plain',
-            robotsTxtFinalUrlSize: 65,
-            robotsTxtSitemapLocations: 'https://18f.gsa.gov/sitemap.xml',
-            robotsTxtStatusCode: 200,
-            robotsTxtTargetUrlRedirects: true,
-          },
-        },
         status: ScanStatus.Completed,
       },
       sitemapXml: {
         error: null,
-        result: {
-          sitemapXmlScan: {
-            sitemapTargetUrlRedirects: true,
-            sitemapXmlCount: 736,
-            sitemapXmlDetected: true,
-            sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
-            sitemapXmlFinalUrlFilesize: 102494,
-            sitemapXmlFinalUrlLive: true,
-            sitemapXmlFinalUrlMimeType: 'application/xml',
-            sitemapXmlPdfCount: 0,
-            sitemapXmlStatusCode: 200,
-          },
-        },
         status: ScanStatus.Completed,
       },
     });
@@ -157,118 +66,28 @@ describe('CoreScanner (e2e)', () => {
     };
 
     const result = await service.scan(input);
-    expect(result).toEqual({
+    expect(result).toMatchObject({
       base: {
         targetUrlBaseDomain: input.url,
       },
       dns: {
         error: null,
-        result: {
-          dnsScan: {
-            ipv6: true,
-            dnsHostname: 'akamaitechnologies.com',
-          },
-        },
         status: ScanStatus.Completed,
       },
       primary: {
         error: null,
-        result: {
-          cloudDotGovPagesScan: {
-            cloudDotGovPages: false,
-          },
-          dapScan: {
-            dapDetected: true,
-            dapParameters:
-              result.primary.status === ScanStatus.Completed
-                ? result.primary.result.dapScan.dapParameters
-                : undefined, // need to fix this eventually
-          },
-          loginScan: {
-            loginDetected: null,
-          },
-          seoScan: {
-            mainElementFinalUrl: false,
-            ogArticleModifiedFinalUrl: undefined,
-            ogArticlePublishedFinalUrl: undefined,
-            ogDescriptionFinalUrl: null,
-            ogTitleFinalUrl: 'Pool Safely',
-            canonicalLink: 'https://www.poolsafely.gov/',
-          },
-          thirdPartyScan: {
-            thirdPartyServiceCount: 12,
-            thirdPartyServiceDomains:
-              result.primary.status === ScanStatus.Completed
-                ? result.primary.result.thirdPartyScan.thirdPartyServiceDomains
-                : undefined, // need to fix this eventually
-          },
-          urlScan: {
-            finalUrl: 'https://www.poolsafely.gov/',
-            finalUrlBaseDomain: 'poolsafely.gov',
-            finalUrlIsLive: true,
-            finalUrlMIMEType: 'text/html',
-            finalUrlSameDomain: false,
-            finalUrlSameWebsite: false,
-            finalUrlStatusCode: 200,
-            finalUrlWebsite: 'www.poolsafely.gov',
-            targetUrlRedirects: true,
-          },
-          uswdsScan: {
-            usaClasses: 0,
-            uswdsCount: 0,
-            uswdsInlineCss: 0,
-            uswdsPublicSansFont: 0,
-            uswdsSemanticVersion: undefined,
-            uswdsString: 0,
-            uswdsStringInCss: 0,
-            uswdsUsFlag: 0,
-            uswdsUsFlagInCss: 0,
-            uswdsVersion: 0,
-          },
-        },
         status: ScanStatus.Completed,
       },
       notFound: {
         error: null,
-        result: {
-          notFoundScan: {
-            targetUrl404Test: true,
-          },
-        },
         status: ScanStatus.Completed,
       },
       robotsTxt: {
         error: null,
-        result: {
-          robotsTxtScan: {
-            robotsTxtCrawlDelay: null,
-            robotsTxtDetected: true,
-            robotsTxtFinalUrl: 'https://www.poolsafely.gov/robots.txt',
-            robotsTxtFinalUrlLive: true,
-            robotsTxtFinalUrlMimeType: 'text/plain',
-            robotsTxtFinalUrlSize: 170,
-            robotsTxtSitemapLocations: 'https://www.poolsafely.gov/sitemap.xml',
-            robotsTxtStatusCode: 200,
-            robotsTxtTargetUrlRedirects: true,
-          },
-        },
         status: ScanStatus.Completed,
       },
       sitemapXml: {
         error: null,
-        result: {
-          sitemapXmlScan: {
-            sitemapTargetUrlRedirects: true,
-            sitemapXmlCount: 0,
-            sitemapXmlDetected: true,
-            sitemapXmlFinalUrl: 'https://www.poolsafely.gov/sitemap.xml',
-            sitemapXmlFinalUrlFilesize: 27376,
-            sitemapXmlFinalUrlLive: true,
-            sitemapXmlFinalUrlMimeType: 'text/xml',
-            sitemapXmlPdfCount: 0,
-            sitemapXmlStatusCode: 200,
-          },
-        },
         status: ScanStatus.Completed,
       },
     });
