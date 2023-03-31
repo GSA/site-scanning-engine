@@ -66,10 +66,6 @@ describe('CoreScannerService', () => {
     service = module.get<CoreScannerService>(CoreScannerService);
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
