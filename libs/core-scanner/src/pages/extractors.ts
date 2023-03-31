@@ -6,9 +6,7 @@ export const createOutboundRequestsExtractor = (page: Page) => {
   page.on('request', (request) => {
     outboundRequests.push(request);
   });
-  return () => {
-    return outboundRequests;
-  };
+  return () => outboundRequests;
 };
 
 export const createCSSRequestsExtractor = async (
@@ -17,7 +15,7 @@ export const createCSSRequestsExtractor = async (
 ) => {
   const cssPages = [];
   page.on('response', async (response) => {
-    if (response.ok() && response.request().resourceType() == 'stylesheet') {
+    if (response.ok() && response.request().resourceType() === 'stylesheet') {
       try {
         const cssPage = await response.text();
         cssPages.push(cssPage);
@@ -26,7 +24,5 @@ export const createCSSRequestsExtractor = async (
       }
     }
   });
-  return () => {
-    return cssPages;
-  };
+  return () => cssPages;
 };
