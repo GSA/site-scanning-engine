@@ -4,7 +4,6 @@ import { LoggerModule } from 'nestjs-pino';
 import { BrowserModule } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { CoreResult } from 'entities/core-result.entity';
 import { ScanStatus } from 'entities/scan-status';
 
 describe('CoreScanner (e2e)', () => {
