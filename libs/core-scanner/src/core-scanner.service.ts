@@ -11,7 +11,7 @@ import { Scanner } from 'libs/scanner.interface';
 import { CoreInputDto } from './core.input.dto';
 import * as pages from './pages';
 import { getBaseDomain, getHttpsUrl } from './util';
-import { CoreResultPages } from '@app/database/core-results/core-result.service';
+import { CoreResultPages } from 'entities/core-result.entity';
 
 @Injectable()
 export class CoreScannerService

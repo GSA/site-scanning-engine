@@ -4,19 +4,9 @@ import { Repository } from 'typeorm';
 
 import * as ScanPage from 'entities/scan-page.entity';
 import { CoreResult } from 'entities/core-result.entity';
-import { BaseScan } from 'entities/scan-data.entity';
 import { Website } from 'entities/website.entity';
 import { ScanStatus } from 'entities/scan-status';
-
-// The CoreResult table includes all scan data. Create a type that represents this.
-export type CoreResultPages = {
-  base: BaseScan;
-  notFound: ScanPage.NotFoundPageScan;
-  primary: ScanPage.PrimaryScan;
-  robotsTxt: ScanPage.RobotsTxtPageScan;
-  sitemapXml: ScanPage.SitemapXmlPageScan;
-  dns: ScanPage.DnsPageScan;
-};
+import { CoreResultPages } from 'entities/core-result.entity';
 
 @Injectable()
 export class CoreResultService {
