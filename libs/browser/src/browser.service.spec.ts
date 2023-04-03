@@ -35,6 +35,9 @@ describe('BrowserService', () => {
     }).compile();
 
     service = module.get<BrowserService>(BrowserService);
+
+    jest.useFakeTimers();
+    jest.spyOn(global, 'setTimeout');
   });
 
   it('should be defined', () => {
@@ -43,7 +46,9 @@ describe('BrowserService', () => {
 
   it('should close the page after scanning', async () => {
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
-    await service.processPage(mockBrowser, async () => {}); // eslint-disable-line  @typescript-eslint/no-empty-function
+    await service.processPage(mockBrowser, async (page) => {
+      expect(page).toEqual(mockPage);
+    });
     expect(mockPage.close).toHaveBeenCalled();
   });
 

@@ -1,5 +1,5 @@
 import { Logger } from 'pino';
-import { HTTPResponse } from 'puppeteer';
+import { Page, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { RobotsTxtScan } from 'entities/scan-data.entity';
@@ -9,7 +9,7 @@ import { getHttpsUrl, getMIMEType } from '../util';
 
 export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   const url = getHttpsUrl(input.url);
-  return async (robotsPage): Promise<RobotsTxtPageScans> => {
+  return async (robotsPage: Page): Promise<RobotsTxtPageScans> => {
     // go to the robots page from the target url
     const robotsUrl = new URL(url);
     robotsUrl.pathname = 'robots.txt';

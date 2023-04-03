@@ -2,6 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Agent } from 'https';
 import { v4 } from 'uuid';
+import { lastValueFrom } from 'rxjs';
 
 import { getHttpsUrl } from '../util';
 
@@ -17,14 +18,14 @@ export const createNotFoundScanner = async (
     rejectUnauthorized: false, // lgtm[js/disabling-certificate-validation]
   });
 
-  const resp = await httpService
-    .get(randomUrl.toString(), {
+  const resp = await lastValueFrom(
+    await httpService.get(randomUrl.toString(), {
       validateStatus: () => {
         return true;
       },
       httpsAgent: agent,
-    })
-    .toPromise();
+    }),
+  );
 
-  return resp.status == HttpStatus.NOT_FOUND;
+  return resp.status === HttpStatus.NOT_FOUND;
 };
