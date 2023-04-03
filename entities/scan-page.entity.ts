@@ -6,6 +6,7 @@ type PageScan<T> =
   | {
       status: ScanStatus.Completed;
       result: T;
+      error?: null;
     }
   | {
       status: Exclude<ScanStatus, ScanStatus.Completed>;
