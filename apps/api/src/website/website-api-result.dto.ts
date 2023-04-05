@@ -45,6 +45,13 @@ export class WebsiteApiResultDto {
   final_url_domain: string;
 
   /**
+   * `final_url_domain` includes the submdomain and the top-level domain of the final url.
+   *
+   * @example www.gsa.gov
+   */
+  final_url_website: string;
+
+  /**
    * `final_url_MIMEType` is the MIME type of the final url extracted from the Content-Type header.
    *
    * @example text/html
@@ -87,13 +94,6 @@ export class WebsiteApiResultDto {
    * @example true
    */
   target_url_redirects: boolean;
-
-  /**
-   * `solutions_scan_status` is a enumeration that shows the success status of the Solutions Scan.
-   *
-   * @example completed
-   */
-  solutions_scan_status: string;
 
   /**
    * `uswds_usa_classes` is the number of CSS classes found that start with ".usa-".
@@ -369,6 +369,41 @@ export class WebsiteApiResultDto {
   third_party_service_count: number;
 
   /**
+   * `dns_hostname` is the domain of underlying system, which often suggests use of a cloud or CDN provider.
+   *
+   * @example cloudfront.net
+   */
+  dns_hostname: string;
+
+  /**
+   * `cloud_dot_gov_pages` indicates that the final URL is hosted using Cloud.gov Pages.
+   *
+   * @example true
+   */
+  cloud_dot_gov_pages: boolean;
+
+  /**
+   * `canonical_link` indicates the presence of a canonical link tag.
+   *
+   * @example "https://18f.gsa.gov/
+   */
+  canonical_link: string;
+
+  /**
+   * `cms` indicates the content management system used to host the final url.
+   *
+   * @example "WordPress"
+   */
+  cms: string;
+
+  /**
+   * `hsts` indicates the presence of a Strict-Transport-Security Header.
+   *
+   * @example true
+   */
+  hsts: boolean;
+
+  /**
    * `target_url` is the url the scanner starts the scan with.
    *
    * @example 18f.gov
@@ -416,4 +451,11 @@ export class WebsiteApiResultDto {
    * @example true
    */
   source_list_pulse: boolean;
+
+  /**
+   * `source_list_other` indicates whether the manually maintained list of additiona websites provided this URL for the Target URL List.
+   *
+   * @example true
+   */
+  source_list_other: boolean;
 }

@@ -29,7 +29,7 @@ export class WebsiteController {
   @Get()
   @UseInterceptors(WebsiteSerializerInterceptor)
   @ApiOkResponse({
-    //  This decorator is for OpenAPI/Swagger documentation.
+    // This decorator is for OpenAPI/Swagger documentation.
     description: 'A successful response from the API.',
     type: PaginatedWebsiteResponseDto,
   })
@@ -52,7 +52,7 @@ export class WebsiteController {
     new NotFoundInterceptor('No website found for provided target url'),
   )
   @ApiOkResponse({
-    //  This decorator is for OpenAPI/Swagger documentation.
+    // This decorator is for OpenAPI/Swagger documentation.
     description: 'A successful response from the API.',
     type: WebsiteApiResultDto,
   })
@@ -65,7 +65,6 @@ export class WebsiteController {
     description: 'This response type indicates an internal error.',
   })
   async getResultByUrl(@Param('url') url: string) {
-    const result = await this.websiteService.findByUrl(url);
-    return result;
+    return await this.websiteService.findByUrl(url);
   }
 }
