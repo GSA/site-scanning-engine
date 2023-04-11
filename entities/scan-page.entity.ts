@@ -23,6 +23,7 @@ export type PrimaryScans = {
   cloudDotGovPagesScan: ScanData.CloudDotGovPagesScan;
   cmsScan: ScanData.CmsScan;
   hstsScan: ScanData.HstsScan;
+  requiredLinksScan: ScanData.RequiredLinksScan;
 };
 export type PrimaryScan = PageScan<PrimaryScans>;
 

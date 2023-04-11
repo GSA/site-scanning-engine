@@ -315,6 +315,17 @@ export class CoreResult {
   @Expose({ name: 'hsts' })
   hsts?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'required_links' })
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  requiredLinks?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

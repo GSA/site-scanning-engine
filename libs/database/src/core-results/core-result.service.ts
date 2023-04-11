@@ -124,6 +124,9 @@ export class CoreResultService {
 
       // HSTS scan
       coreResult.hsts = result.hstsScan.hsts;
+
+      // Required links scan
+      coreResult.requiredLinks = result.requiredLinksScan.requiredLinks;
     } else {
       logger.error({
         msg: pages.primary.error,
@@ -163,6 +166,7 @@ export class CoreResultService {
       coreResult.cloudDotGovPages = null;
       coreResult.cms = null;
       coreResult.hsts = null;
+      coreResult.requiredLinks = null;
     }
   }
 
