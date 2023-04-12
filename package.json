@@ -47,7 +47,7 @@
     "@nestjs/swagger": "^6.2.1",
     "@nestjs/typeorm": "^9.0.1",
     "@types/json2csv": "^5.0.1",
-    "aws-sdk": "^2.1070.0",
+    "aws-sdk": "^2.1354.0",
     "bull": "^3.22.4",
     "class-transformer": "^0.3.1",
     "class-validator": ">=0.14.0",
@@ -67,7 +67,7 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.2",
     "swagger-ui-express": "^4.3.0",
-    "typeorm": "^0.3.12",
+    "typeorm": "^0.3.14",
     "uuid": "^8.3.2",
     "webpack": ">=5.76.0"
   },
