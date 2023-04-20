@@ -18,6 +18,7 @@ import {
   createCSSRequestsExtractor,
   createOutboundRequestsExtractor,
 } from './extractors';
+import { buildRequiredLinksResult } from '../scans/required-links';
 
 export const createPrimaryScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
@@ -51,6 +52,7 @@ const primaryScan = async (
     cloudDotGovPagesScan,
     cmsScan,
     hstsScan,
+    requiredLinksScan,
   ] = await promiseAll([
     buildDapResult(getOutboundRequests()),
     buildThirdPartyResult(response, getOutboundRequests()),
@@ -60,6 +62,7 @@ const primaryScan = async (
     buildCloudDotGovPagesResult(response),
     buildCmsResult(response),
     buildHstsResult(response),
+    buildRequiredLinksResult(response),
   ]);
   const urlScan = buildUrlScanResult(input, page, response);
 
@@ -73,5 +76,6 @@ const primaryScan = async (
     cloudDotGovPagesScan,
     cmsScan,
     hstsScan,
+    requiredLinksScan,
   };
 };

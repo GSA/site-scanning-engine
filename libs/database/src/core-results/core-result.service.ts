@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import * as ScanPage from 'entities/scan-page.entity';
 import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 import { ScanStatus } from 'entities/scan-status';
@@ -124,6 +123,10 @@ export class CoreResultService {
 
       // HSTS scan
       coreResult.hsts = result.hstsScan.hsts;
+
+      // Required links scan
+      coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
+      coreResult.requiredLinksText = result.requiredLinksScan.requiredLinksText;
     } else {
       logger.error({
         msg: pages.primary.error,
@@ -163,6 +166,8 @@ export class CoreResultService {
       coreResult.cloudDotGovPages = null;
       coreResult.cms = null;
       coreResult.hsts = null;
+      coreResult.requiredLinksUrl = null;
+      coreResult.requiredLinksText = null;
     }
   }
 

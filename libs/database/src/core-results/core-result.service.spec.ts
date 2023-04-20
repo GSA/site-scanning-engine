@@ -139,6 +139,10 @@ describe('CoreResultService', () => {
           hstsScan: {
             hsts: false,
           },
+          requiredLinksScan: {
+            requiredLinksUrl: null,
+            requiredLinksText: null,
+          },
         },
       },
       robotsTxt: {

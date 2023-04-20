@@ -41,6 +41,8 @@ export class Snapshot {
     'source_list_other',
     'cms',
     'cloud_dot_gov_pages',
+    'required_links_url',
+    'required_links_text',
     'uswds_favicon',
     'uswds_favicon_in_css',
     'uswds_publicsans_font',

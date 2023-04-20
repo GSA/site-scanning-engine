@@ -94,3 +94,8 @@ export type CmsScan = {
 export type HstsScan = {
   hsts: boolean;
 };
+
+export type RequiredLinksScan = {
+  requiredLinksUrl: string;
+  requiredLinksText: string;
+};
