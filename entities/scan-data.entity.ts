@@ -96,5 +96,6 @@ export type HstsScan = {
 };
 
 export type RequiredLinksScan = {
-  requiredLinks: string;
+  requiredLinksUrl: string;
+  requiredLinksText: string;
 };

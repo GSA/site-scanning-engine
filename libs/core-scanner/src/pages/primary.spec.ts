@@ -112,6 +112,10 @@ describe('primary scanner', () => {
       hstsScan: {
         hsts: false,
       },
+      requiredLinksScan: {
+        requiredLinksText: 'vulnerability',
+        requiredLinksUrl: 'about,foia,usa.gov',
+      },
     });
   });
 });

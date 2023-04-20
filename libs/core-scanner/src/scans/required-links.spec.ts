@@ -12,7 +12,31 @@ describe('required links scan', () => {
     });
 
     expect(await buildRequiredLinksResult(mockResonse)).toEqual({
-      requiredLinks: '',
+      requiredLinksUrl: '',
+      requiredLinksText: '',
+    });
+  });
+
+  it('Detects if the response has multiple required links', async () => {
+    const mockResonse = mock<HTTPResponse>({
+      text: async () => {
+        return `<html>
+            <a href="https://www.usa.gov">USA Dot Gov</a>
+            <a href="https://18f.gsa.gov/about/">About 18F</a>
+            <a href="https://www.gsa.gov/website-information/accessibility-statement">Accessibility Support</a>
+            <a href="https://www.foia.gov">Freedom of Information Act (FOIA)</a>
+            <a href="https://home.treasury.gov/footer/no-fear-act">No Fear Act</a>
+            <a href="https://www.gsaig.gov/">Office of the Inspector General</a>
+            <a href="https://www.gsa.gov/website-information/website-policies#privacy">Privacy Policy</a>
+            <a href="https://www.gsa.gov/vulnerability-disclosure-policy">Vulnerability Disclosure</a>
+            </html>`;
+      },
+    });
+
+    expect(await buildRequiredLinksResult(mockResonse)).toEqual({
+      requiredLinksUrl: 'about,fear,foia,privacy,usa.gov',
+      requiredLinksText:
+        'accessibility,fear,foia,inspector,privacy,vulnerability',
     });
   });
 
@@ -24,19 +48,8 @@ describe('required links scan', () => {
     });
 
     expect(await buildRequiredLinksResult(mockResonse)).toEqual({
-      requiredLinks: 'usa.gov',
-    });
-  });
-
-  it('Detects if the response has a foia link', async () => {
-    const mockResonse = mock<HTTPResponse>({
-      text: async () => {
-        return '<html><a href="https://www.foia.gov">USA Dot Gov</a></html>';
-      },
-    });
-
-    expect(await buildRequiredLinksResult(mockResonse)).toEqual({
-      requiredLinks: 'foia',
+      requiredLinksUrl: 'usa.gov',
+      requiredLinksText: '',
     });
   });
 
@@ -48,7 +61,8 @@ describe('required links scan', () => {
     });
 
     expect(await buildRequiredLinksResult(mockResonse)).toEqual({
-      requiredLinks: 'foia',
+      requiredLinksUrl: 'foia',
+      requiredLinksText: 'foia',
     });
   });
 
@@ -63,7 +77,8 @@ describe('required links scan', () => {
     });
 
     expect(await buildRequiredLinksResult(mockResonse)).toEqual({
-      requiredLinks: 'foia,usa.gov',
+      requiredLinksUrl: 'foia,usa.gov',
+      requiredLinksText: 'foia',
     });
   });
 });

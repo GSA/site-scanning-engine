@@ -316,7 +316,7 @@ export class CoreResult {
   hsts?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'required_links' })
+  @Expose({ name: 'required_links_url' })
   @Transform((value: string) => {
     if (value) {
       return value.split(',');
@@ -324,7 +324,18 @@ export class CoreResult {
       return null;
     }
   })
-  requiredLinks?: string;
+  requiredLinksUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'required_links_text' })
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  requiredLinksText?: string;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names
