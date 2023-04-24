@@ -113,7 +113,7 @@ describe('primary scanner', () => {
         hsts: false,
       },
       requiredLinksScan: {
-        requiredLinksText: 'vulnerability',
+        requiredLinksText: 'vulnerability disclosure',
         requiredLinksUrl: 'about,foia,usa.gov',
       },
     });

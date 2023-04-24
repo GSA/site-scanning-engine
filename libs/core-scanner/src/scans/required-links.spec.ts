@@ -24,7 +24,7 @@ describe('required links scan', () => {
             <a href="https://www.usa.gov">USA Dot Gov</a>
             <a href="https://18f.gsa.gov/about/">About 18F</a>
             <a href="https://www.gsa.gov/website-information/accessibility-statement">Accessibility Support</a>
-            <a href="https://www.foia.gov">Freedom of Information Act (FOIA)</a>
+            <a href="https://www.foia.gov">Freedom of Information Act</a>
             <a href="https://home.treasury.gov/footer/no-fear-act">No Fear Act</a>
             <a href="https://www.gsaig.gov/">Office of the Inspector General</a>
             <a href="https://www.gsa.gov/website-information/website-policies#privacy">Privacy Policy</a>
@@ -36,7 +36,7 @@ describe('required links scan', () => {
     expect(await buildRequiredLinksResult(mockResonse)).toEqual({
       requiredLinksUrl: 'about,fear,foia,privacy,usa.gov',
       requiredLinksText:
-        'accessibility,fear,foia,inspector,privacy,vulnerability',
+        'accessibility,no fear act,freedom of information act,inspector general,privacy policy,vulnerability disclosure',
     });
   });
 
@@ -62,7 +62,7 @@ describe('required links scan', () => {
 
     expect(await buildRequiredLinksResult(mockResonse)).toEqual({
       requiredLinksUrl: 'foia',
-      requiredLinksText: 'foia',
+      requiredLinksText: 'freedom of information act',
     });
   });
 
@@ -78,7 +78,7 @@ describe('required links scan', () => {
 
     expect(await buildRequiredLinksResult(mockResonse)).toEqual({
       requiredLinksUrl: 'foia,usa.gov',
-      requiredLinksText: 'foia',
+      requiredLinksText: 'freedom of information act',
     });
   });
 });
