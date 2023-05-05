@@ -119,6 +119,7 @@
     "testEnvironment": "node",
     "roots": [
       "<rootDir>/apps/",
+      "<rootDir>/entities/",
       "<rootDir>/libs/"
     ],
     "modulePaths": [
