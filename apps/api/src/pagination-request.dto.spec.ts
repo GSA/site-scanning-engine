@@ -1,5 +1,6 @@
 import { validate } from 'class-validator';
 import { PaginationRequestDto } from './pagination-request.dto';
+import { plainToClass } from 'class-transformer';
 
 describe('PaginationRequestDto', () => {
   let paginationRequest: PaginationRequestDto;
@@ -40,5 +41,18 @@ describe('PaginationRequestDto', () => {
     paginationRequest.page = 1;
     const validationErrors = await validate(paginationRequest);
     expect(validationErrors).toStrictEqual([]);
+  });
+
+  it('should transform string values to numbers', async () => {
+    const plainPaginationRequest = {
+      limit: '100',
+      page: '1',
+    };
+    const classedPaginationRequest = plainToClass(
+      PaginationRequestDto,
+      plainPaginationRequest,
+    );
+    expect(typeof classedPaginationRequest.limit).toBe('number');
+    expect(typeof classedPaginationRequest.page).toBe('number');
   });
 });

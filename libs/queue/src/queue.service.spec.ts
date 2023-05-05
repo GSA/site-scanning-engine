@@ -52,4 +52,23 @@ describe('QueueService', () => {
 
     expect(result.data).toStrictEqual(mockJob.data);
   });
+
+  it('should empty and clean the Scanner queue', async () => {
+    await service.emptyAndClean();
+
+    expect(mockQueue.empty).toHaveBeenCalled();
+    expect(mockQueue.clean).toHaveBeenCalled();
+  });
+
+  it('should get the Scanner queue status', async () => {
+    mockQueue.getActiveCount.mockResolvedValue(1);
+    mockQueue.count.mockResolvedValue(2);
+
+    const result = await service.getQueueStatus();
+
+    expect(result).toStrictEqual({
+      activeCount: 1,
+      count: 2,
+    });
+  });
 });
