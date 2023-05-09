@@ -1,7 +1,6 @@
 import { Serializer } from './serializer';
 import { Website } from 'entities/website.entity';
 import { Parser } from 'json2csv';
-import { flatten } from 'flat';
 
 export class CsvSerializer implements Serializer {
   columnOrder: string[];
@@ -25,25 +24,14 @@ export class CsvSerializer implements Serializer {
       return this.columnOrder.map((f) => `"${f}"`).join(',');
     }
 
-    // Get rows flattened into dot-delimited key names.
-    const { allHeaders, flattenedRows } = this.flattenRows(rows);
-
-    // Sort allHeaders, placing nested attributes after their position in the
-    // specified column order.
-    const fields = this.sortOrder(this.columnOrder, Array.from(allHeaders));
+    const fields = this.sortOrder(
+      this.columnOrder,
+      Array.from(Object.keys(rows[0])),
+    );
 
     const parser = new Parser({ fields });
-    return parser.parse(flattenedRows);
-  }
 
-  private flattenRows(rows: { [x: string]: any }[]) {
-    const allHeaders = new Set<string>();
-    const flattenedRows = rows.map((row) => {
-      const flattened: { [x: string]: any } = flatten(row, { safe: true });
-      Object.keys(flattened).forEach((item) => allHeaders.add(item));
-      return flattened;
-    });
-    return { allHeaders, flattenedRows };
+    return parser.parse(rows);
   }
 
   private sortOrder(fieldOrder: string[], flattenedFields: string[]) {
