@@ -113,7 +113,8 @@ describe('primary scanner', () => {
         hsts: false,
       },
       requiredLinksScan: {
-        requiredLinksText: 'vulnerability disclosure',
+        requiredLinksText:
+          'accessibility,budget and performance,no fear act,foia,freedom of information act,inspector general,vulnerability disclosure',
         requiredLinksUrl: 'about,foia,usa.gov',
       },
     });
