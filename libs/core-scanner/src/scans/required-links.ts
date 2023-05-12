@@ -48,7 +48,7 @@ const hasStringInHref = (html: string, string: string): boolean => {
 };
 
 const hasStringInLinkText = (html: string, string: string): boolean => {
-  const linkTexts = html.match(/(?<=<a\b[^>]*>)(.*?)(?=<\/a>)/gi);
+  const linkTexts = html.match(/(?<=<a\b[^>]*>)([\s\S]*?)(?=<\/a>)/gi);
   if (!linkTexts) return false;
   const matchingLinkTexts = linkTexts.filter((linkText) =>
     linkText.toLowerCase().includes(string),
