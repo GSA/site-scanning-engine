@@ -82,9 +82,7 @@ describe('IngestService', () => {
     website.bureau = 'GSA, TTS';
     website.agencyCode = 10;
     website.bureauCode = 10;
-    website.sourceListFederalDomains = true;
-    website.sourceListDap = false;
-    website.sourceListPulse = false;
+    website.sourceList = 'gov';
 
     jest
       .spyOn(mockWebsiteService, 'findNewestWebsite')

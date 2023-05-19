@@ -49,16 +49,7 @@ export class IngestService {
           website: data.targetUrl.toLowerCase(),
           agencyCode: data.agencyCode ? parseInt(data.agencyCode) : null,
           bureauCode: data.bureauCode ? parseInt(data.bureauCode) : null,
-          sourceListFederalDomains:
-            data.sourceListFederalDomains.toLowerCase() === 'true'
-              ? true
-              : false,
-          sourceListDap:
-            data.sourceListDap.toLowerCase() === 'true' ? true : false,
-          sourceListPulse:
-            data.sourceListPulse.toLowerCase() === 'true' ? true : false,
-          sourceListOther:
-            data.sourceListOther.toLowerCase() === 'true' ? true : false,
+          sourceList: this.getSourceList(data),
         }),
       )
       .on('error', (error) => this.logger.error(error.message, error.stack))
@@ -115,5 +106,27 @@ export class IngestService {
         err.stack,
       );
     }
+  }
+
+  private getSourceList(row: SubdomainRow): string {
+    const sourceList = [];
+
+    if (row.sourceListFederalDomains.toLowerCase() === 'true') {
+      sourceList.push('gov');
+    }
+
+    if (row.sourceListDap.toLowerCase() === 'true') {
+      sourceList.push('dap');
+    }
+
+    if (row.sourceListPulse.toLowerCase() === 'true') {
+      sourceList.push('pulse');
+    }
+
+    if (row.sourceListOther.toLowerCase() === 'true') {
+      sourceList.push('other');
+    }
+
+    return sourceList.join(',');
   }
 }

@@ -71,10 +71,7 @@ describe('WebsiteService', () => {
       bureau: 'GSA,FAS,Technology Transformation Service',
       agencyCode: 10,
       bureauCode: 10,
-      sourceListFederalDomains: true,
-      sourceListDap: false,
-      sourceListPulse: false,
-      sourceListOther: false,
+      sourceList: 'gov',
     };
 
     const website = new Website();
@@ -84,10 +81,7 @@ describe('WebsiteService', () => {
     website.bureau = createWebsiteDto.bureau;
     website.agencyCode = 10;
     website.bureauCode = 10;
-    website.sourceListFederalDomains = true;
-    website.sourceListDap = false;
-    website.sourceListPulse = false;
-    website.sourceListOther = false;
+    website.sourceList = 'gov';
 
     await service.upsert(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);

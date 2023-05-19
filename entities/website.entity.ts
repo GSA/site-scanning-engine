@@ -1,4 +1,4 @@
-import { classToPlain, Exclude, Expose } from 'class-transformer';
+import { classToPlain, Exclude, Expose, Transform } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -57,29 +57,16 @@ export class Website {
   @Exclude()
   bureauCode?: number;
 
-  @Column({
-    nullable: true,
+  @Column({ nullable: true })
+  @Expose({ name: 'source_list' })
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
   })
-  @Expose({ name: 'source_list_federal_domains' })
-  sourceListFederalDomains?: boolean;
-
-  @Column({
-    nullable: true,
-  })
-  @Expose({ name: 'source_list_dap' })
-  sourceListDap?: boolean;
-
-  @Column({
-    nullable: true,
-  })
-  @Expose({ name: 'source_list_pulse' })
-  sourceListPulse?: boolean;
-
-  @Column({
-    nullable: true,
-  })
-  @Expose({ name: 'source_list_other' })
-  sourceListOther?: boolean;
+  sourceList?: string;
 
   serialized() {
     const serializedWebsite = classToPlain(this);

@@ -42,9 +42,7 @@ describe('AnalysisService', () => {
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.agencyCode = 10;
     firstWebsite.bureauCode = 10;
-    firstWebsite.sourceListFederalDomains = true;
-    firstWebsite.sourceListDap = false;
-    firstWebsite.sourceListPulse = false;
+    firstWebsite.sourceList = 'gov';
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -53,9 +51,7 @@ describe('AnalysisService', () => {
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.agencyCode = 10;
     secondWebsite.bureauCode = 10;
-    secondWebsite.sourceListFederalDomains = true;
-    secondWebsite.sourceListDap = false;
-    secondWebsite.sourceListPulse = false;
+    secondWebsite.sourceList = 'gov';
 
     const firstCoreResult = new CoreResult();
     firstCoreResult.website = firstWebsite;
