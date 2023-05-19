@@ -140,12 +140,7 @@ export class WebsiteService {
     website.branch = createWebsiteDto.branch;
     website.agencyCode = createWebsiteDto.agencyCode;
     website.bureauCode = createWebsiteDto.bureauCode;
-    website.sourceListFederalDomains =
-      createWebsiteDto.sourceListFederalDomains;
-    website.sourceListDap = createWebsiteDto.sourceListDap;
-    website.sourceListPulse = createWebsiteDto.sourceListPulse;
-    website.sourceListOther = createWebsiteDto.sourceListOther;
-
+    website.sourceList = createWebsiteDto.sourceList;
     const exists = await this.website.findOneBy({
       url: website.url,
     });
