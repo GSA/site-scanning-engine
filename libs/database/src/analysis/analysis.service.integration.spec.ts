@@ -44,9 +44,7 @@ describe('AnalysisService', () => {
     website.bureau = 'GSA,FAS,Technology Transformation Service';
     website.agencyCode = 10;
     website.bureauCode = 10;
-    website.sourceListFederalDomains = true;
-    website.sourceListDap = false;
-    website.sourceListPulse = false;
+    website.sourceList = 'gov';
 
     const coreResult = createCoreResult(website);
     coreResult.finalUrlBaseDomain = '18f.gov';
@@ -80,9 +78,7 @@ describe('AnalysisService', () => {
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.agencyCode = 10;
     firstWebsite.bureauCode = 10;
-    firstWebsite.sourceListFederalDomains = true;
-    firstWebsite.sourceListDap = false;
-    firstWebsite.sourceListPulse = false;
+    firstWebsite.sourceList = 'gov';
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -91,9 +87,7 @@ describe('AnalysisService', () => {
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.agencyCode = 10;
     secondWebsite.bureauCode = 10;
-    secondWebsite.sourceListFederalDomains = true;
-    secondWebsite.sourceListDap = false;
-    secondWebsite.sourceListPulse = false;
+    secondWebsite.sourceList = 'gov';
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';
@@ -131,9 +125,7 @@ describe('AnalysisService', () => {
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.agencyCode = 10;
     firstWebsite.bureauCode = 10;
-    firstWebsite.sourceListFederalDomains = true;
-    firstWebsite.sourceListDap = false;
-    firstWebsite.sourceListPulse = false;
+    firstWebsite.sourceList = 'gov';
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -142,9 +134,7 @@ describe('AnalysisService', () => {
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.agencyCode = 10;
     secondWebsite.bureauCode = 10;
-    secondWebsite.sourceListFederalDomains = true;
-    secondWebsite.sourceListDap = false;
-    secondWebsite.sourceListPulse = false;
+    secondWebsite.sourceList = 'gov';
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';
@@ -182,9 +172,7 @@ describe('AnalysisService', () => {
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.agencyCode = 10;
     firstWebsite.bureauCode = 10;
-    firstWebsite.sourceListFederalDomains = true;
-    firstWebsite.sourceListDap = false;
-    firstWebsite.sourceListPulse = false;
+    firstWebsite.sourceList = 'gov';
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -193,9 +181,7 @@ describe('AnalysisService', () => {
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.agencyCode = 10;
     secondWebsite.bureauCode = 10;
-    secondWebsite.sourceListFederalDomains = true;
-    secondWebsite.sourceListDap = false;
-    secondWebsite.sourceListPulse = false;
+    secondWebsite.sourceList = 'gov';
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';
