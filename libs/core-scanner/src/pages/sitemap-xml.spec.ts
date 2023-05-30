@@ -6,7 +6,7 @@ import { CoreInputDto } from '../core.input.dto';
 import { createSitemapXmlScanner } from './sitemap-xml';
 import { source } from './test-page-source';
 
-describe('robots-txt scanner', () => {
+describe('sitemap-xml scanner', () => {
   let mockPage: MockProxy<Page>;
   let mockRequest: MockProxy<HTTPRequest>;
   let redirectRequest: MockProxy<HTTPRequest>;
