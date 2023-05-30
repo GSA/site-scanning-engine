@@ -26,7 +26,7 @@ describe('sitemap-xml scanner', () => {
     mockResponse.request.calledWith().mockReturnValue(mockRequest);
     mockResponse.status.calledWith().mockReturnValue(200);
     mockResponse.headers.calledWith().mockReturnValue({
-      'Content-Type': 'text/html; charset=utf-8',
+      'Content-Type': 'text/xml; charset=utf-8',
     });
     mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
     mockPage.url.calledWith().mockReturnValue(finalUrl);
@@ -40,7 +40,7 @@ describe('sitemap-xml scanner', () => {
     };
 
     mockResponse.text.mockResolvedValue(source);
-    mockResponse.url.mockReturnValue('https://18f.gsa.gov');
+    mockResponse.url.mockReturnValue('https://18f.gsa.gov/sitemap.xml');
     mockPage.goto.mockResolvedValue(mockResponse);
     redirectRequest.redirectChain.mockReturnValue([]);
 
@@ -49,12 +49,15 @@ describe('sitemap-xml scanner', () => {
 
     expect(result).toEqual({
       sitemapXmlScan: {
-        sitemapXmlFinalUrl: 'https://18f.gsa.gov/',
+        sitemapXmlCount: undefined,
+        sitemapXmlFinalUrlFilesize: 39170,
+        sitemapXmlPdfCount: 0,
+        sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
         sitemapXmlFinalUrlLive: true,
         sitemapTargetUrlRedirects: true,
-        sitemapXmlFinalUrlMimeType: 'text/html',
+        sitemapXmlFinalUrlMimeType: 'text/xml',
         sitemapXmlStatusCode: 200,
-        sitemapXmlDetected: false,
+        sitemapXmlDetected: true,
       },
     });
   });
