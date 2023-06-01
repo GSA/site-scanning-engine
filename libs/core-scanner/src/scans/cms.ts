@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { HTTPResponse } from 'puppeteer';
 
 import { CmsScan } from 'entities/scan-data.entity';
@@ -5,30 +6,71 @@ import { CmsScan } from 'entities/scan-data.entity';
 export const buildCmsResult = async (
   mainResponse: HTTPResponse,
 ): Promise<CmsScan> => {
-  const html = await mainResponse.text();
-  const result = cmsRegex.filter((obj) => {
-    if (Array.isArray(obj.regex)) {
+  const htmlMatches = await getHtmlMatches(mainResponse);
+  const headerMatches = await getHeaderMatches(mainResponse);
+
+  let cms = null;
+
+  if (htmlMatches.length > 0) {
+    cms = htmlMatches[0].cms;
+  } else if (headerMatches.length > 0) {
+    cms = headerMatches[0].cms;
+  }
+
+  return { cms };
+};
+
+const getHtmlMatches = async (response: HTTPResponse) => {
+  const actualHtml = await response.text();
+
+  return cmsData.filter((obj) => {
+    if (Array.isArray(obj.html)) {
       return (
-        obj.regex.filter((regex) => {
-          if (html.match(new RegExp(regex))) {
+        obj.html.filter((html) => {
+          if (actualHtml.match(new RegExp(html))) {
             return obj;
           }
         }).length > 0
       );
     } else {
-      if (html.match(new RegExp(obj.regex))) {
+      if (actualHtml.match(new RegExp(obj.html))) {
         return obj;
       }
     }
   });
-
-  return { cms: result.length > 0 ? result[0].cms : null };
 };
 
-const cmsRegex = [
+const getHeaderMatches = async (response: HTTPResponse) => {
+  const actualHeaders = await response.headers();
+  const formattedActualHeaders = _.transform(
+    actualHeaders,
+    function (result, val, key) {
+      result[key.toLowerCase()] = val;
+    },
+  );
+
+  return cmsData.filter((obj) => {
+    if (obj.headers) {
+      return obj.headers.some((header) => {
+        const formattedKey = header.key.toLowerCase();
+        if (Object.keys(formattedActualHeaders).includes(formattedKey)) {
+          const actualValue = formattedActualHeaders[formattedKey];
+          if (
+            actualValue.match(new RegExp(header.value)) ||
+            header.value === ''
+          ) {
+            return header;
+          }
+        }
+      });
+    }
+  });
+};
+
+const cmsData = [
   {
     cms: 'Adobe Experience Manager',
-    regex: [
+    html: [
       '<div class="[^"]*parbase',
       '<div[^>]+data-component-path="[^"+]jcr:',
       '<div class="[^"]*aem-Grid',
@@ -36,160 +78,197 @@ const cmsRegex = [
   },
   {
     cms: 'Bloomreach',
-    regex: '<[^>]+/binaries/(?:[^/]+/)*content/gallery/',
+    html: '<[^>]+/binaries/(?:[^/]+/)*content/gallery/',
   },
   {
     cms: 'BoldGrid',
-    regex: [
+    html: [
       `<link rel=["']stylesheet["'] [^>]+boldgrid`,
       `<link rel=["']stylesheet["'] [^>]+post-and-page-builder`,
       '<link[^>]+s\\d+\\.boldgrid\\.com',
     ],
   },
-  { cms: 'Business Catalyst', regex: '<!-- BC_OBNW -->' },
+  { cms: 'Business Catalyst', html: '<!-- BC_OBNW -->' },
   {
     cms: 'Contentful',
-    regex:
-      '<[^>]+(?:https?:)?//(?:assets|downloads|images|videos)\\.(?:ct?fassets\\.net|contentful\\.com)',
+    html: '<[^>]+(?:https?:)?//(?:assets|downloads|images|videos)\\.(?:ct?fassets\\.net|contentful\\.com)',
+    headers: [{ key: 'x-contentful-request-id', value: '' }],
   },
   {
     cms: 'DNN',
-    regex: ['<!-- by DotNetNuke Corporation', '<!-- DNN Platform'],
+    html: ['<!-- by DotNetNuke Corporation', '<!-- DNN Platform'],
+    headers: [
+      { key: 'Cookie', value: 'dnn_IsMobile=' },
+      { key: 'DNNOutputCache', value: '' },
+      { key: 'X-Compressed-By', value: 'DotNetNuke' },
+    ],
   },
   {
     cms: 'Drupal',
-    regex: '<(?:link|style)[^>]+"/sites/(?:default|all)/(?:themes|modules)/',
+    html: '<(?:link|style)[^>]+"/sites/(?:default|all)/(?:themes|modules)/',
+    headers: [
+      { key: 'X-Drupal-Cache', value: '' },
+      { key: 'X-Generator', value: '^Drupal(?:\\s([\\d.]+))?\\;version:\\1' },
+    ],
   },
-  { cms: 'FaraPy', regex: '<!-- Powered by FaraPy.' },
+  { cms: 'FaraPy', html: '<!-- Powered by FaraPy.' },
   {
     cms: 'FlexCMP',
-    regex: '<!--[^>]+FlexCMP[^>v]+v\\. ([\\d.]+)\\;version:\\1',
+    html: '<!--[^>]+FlexCMP[^>v]+v\\. ([\\d.]+)\\;version:\\1',
+    headers: [
+      { key: 'X-Flex-Lang', value: '' },
+      {
+        key: 'X-Powered-By',
+        value: 'FlexCMP.+\\[v\\. ([\\d.]+)\\;version:\\1',
+      },
+    ],
   },
-  { cms: 'GX WebManager', regex: '<!--\\s+Powered by GX' },
+  {
+    cms: 'GX WebManager',
+    html: '<!--\\s+Powered by GX',
+  },
   {
     cms: 'Green Valley CMS',
-    regex: '<img[^>]+/dsresource\\?objectid=',
+    html: '<img[^>]+/dsresource\\?objectid=',
   },
-  { cms: 'Indexhibit', regex: '<(?:link|a href) [^>]+ndxz-studio' },
+  { cms: 'Indexhibit', html: '<(?:link|a href) [^>]+ndxz-studio' },
   {
     cms: 'Indico',
-    regex:
-      'Powered by\\s+(?:CERN )?<a href="http://(?:cdsware\\.cern\\.ch/indico/|indico-software\\.org|cern\\.ch/indico)">(?:CDS )?Indico( [\\d\\.]+)?\\;version:\\1',
+    html: 'Powered by\\s+(?:CERN )?<a href="http://(?:cdsware\\.cern\\.ch/indico/|indico-software\\.org|cern\\.ch/indico)">(?:CDS )?Indico( [\\d\\.]+)?\\;version:\\1',
   },
   {
     cms: 'Jahia DX',
-    regex: '<script id="staticAssetAggregatedJavascrip',
+    html: '<script id="staticAssetAggregatedJavascrip',
   },
   {
     cms: 'Joomla',
-    regex:
-      '(?:<div[^>]+id="wrapper_r"|<(?:link|script)[^>]+(?:feed|components)/com_|<table[^>]+class="pill)\\;confidence:50',
+    html: '(?:<div[^>]+id="wrapper_r"|<(?:link|script)[^>]+(?:feed|components)/com_|<table[^>]+class="pill)\\;confidence:50',
+    headers: [
+      { key: 'X-Content-Encoded-By', value: 'Joomla! ([\\d.]+)\\;version:\\1' },
+    ],
   },
   {
     cms: 'Koala Framework',
-    regex: '<!--[^>]+This website is powered by Koala Web Framework CMS',
+    html: '<!--[^>]+This website is powered by Koala Web Framework CMS',
   },
   {
     cms: 'Koken',
-    regex: [
+    html: [
       '<html lang="en" class="k-source-essays k-lens-essays">',
       '<!--\\s+KOKEN DEBUGGING',
     ],
   },
   {
     cms: 'Koobi',
-    regex: '<!--[^K>-]+Koobi ([a-z\\d.]+)\\;version:\\1',
+    html: '<!--[^K>-]+Koobi ([a-z\\d.]+)\\;version:\\1',
   },
-  { cms: 'Lede', regex: ['<a [^>]*href="[^"]+joinlede.com'] },
+  { cms: 'Lede', html: ['<a [^>]*href="[^"]+joinlede.com'] },
   {
     cms: 'LightMon Engine',
-    regex: '<!-- Lightmon Engine Copyright Lightmon',
+    html: '<!-- Lightmon Engine Copyright Lightmon',
   },
-  { cms: 'Lithium', regex: ' <a [^>]+Powered by Lithium' },
+  { cms: 'Lithium', html: ' <a [^>]+Powered by Lithium' },
   {
     cms: 'LocomotiveCMS',
-    regex: '<link[^>]*/sites/[a-z\\d]{24}/theme/stylesheets',
+    html: '<link[^>]*/sites/[a-z\\d]{24}/theme/stylesheets',
   },
   {
     cms: 'MODX',
-    regex: [
+    html: [
       '<a[^>]+>Powered by MODX</a>',
       '<!-- Modx process time debug info -->',
       '<(?:link|script)[^>]+assets/snippets/\\;confidence:20',
       '<form[^>]+id="ajaxSearch_form\\;confidence:20',
       '<input[^>]+id="ajaxSearch_input\\;confidence:20',
     ],
+    headers: [{ key: 'X-Powered-By', value: '^MODX' }],
   },
   {
     cms: 'Melis Platform',
-    regex: [
+    html: [
       '<!-- Rendered with Melis CMS V2',
       '<!-- Rendered with Melis Platform',
     ],
   },
-  { cms: 'Methode', regex: '<!-- Methode uuid: "[a-f\\d]+" ?-->' },
+  { cms: 'Methode', html: '<!-- Methode uuid: "[a-f\\d]+" ?-->' },
   {
     cms: 'Moguta.CMS',
-    regex: `<link[^>]+href=["'][^"]+mg-(?:core|plugins|templates)/`,
+    html: `<link[^>]+href=["'][^"]+mg-(?:core|plugins|templates)/`,
   },
   {
     cms: 'MotoCMS',
-    regex: '<link [^>]*href="[^>]*\\/mt-content\\/[^>]*\\.css',
+    html: '<link [^>]*href="[^>]*\\/mt-content\\/[^>]*\\.css',
   },
   {
     cms: 'Odoo',
-    regex:
-      '<link[^>]* href=[^>]+/web/css/(?:web\\.assets_common/|website\\.assets_frontend/)\\;confidence:25',
+    html: '<link[^>]* href=[^>]+/web/css/(?:web\\.assets_common/|website\\.assets_frontend/)\\;confidence:25',
   },
-  { cms: 'OpenCms', regex: '<link href="/opencms/' },
+  {
+    cms: 'OpenCms',
+    html: '<link href="/opencms/',
+    headers: [{ key: 'Server', value: 'OpenCms' }],
+  },
   {
     cms: 'OpenText Web Solutions',
-    regex: '<!--[^>]+published by Open Text Web Solutions',
+    html: '<!--[^>]+published by Open Text Web Solutions',
   },
-  { cms: 'PHP-Nuke', regex: '<[^>]+Powered by PHP-Nuke' },
+  { cms: 'PHP-Nuke', html: '<[^>]+Powered by PHP-Nuke' },
   {
     cms: 'PHPFusion',
-    regex: [
+    html: [
       'Powered by <a href="[^>]+phpfusion',
       'Powered by <a href="[^>]+php-fusion',
     ],
+    headers: [
+      { key: 'X-PHPFusion', value: '(.+)$\\;version:\\1' },
+      { key: 'X-Powered-By', value: 'PHPFusion (.+)$\\;version:\\1' },
+    ],
   },
-  { cms: 'Percussion', regex: '<[^>]+class="perc-region"' },
-  { cms: 'Pligg', regex: '<span[^>]+id="xvotes-0' },
-  { cms: 'Posterous', regex: '<div class="posterous' },
+  { cms: 'Percussion', html: '<[^>]+class="perc-region"' },
+  { cms: 'Pligg', html: '<span[^>]+id="xvotes-0' },
+  { cms: 'Posterous', html: '<div class="posterous' },
   {
     cms: 'Proximis Unified Commerce',
-    regex: '<html[^>]+data-ng-app="RbsChangeApp"',
+    html: '<html[^>]+data-ng-app="RbsChangeApp"',
   },
   {
     cms: 'Quick.CMS',
-    regex: '<a href="[^>]+opensolution\\.org/">CMS by',
+    html: '<a href="[^>]+opensolution\\.org/">CMS by',
   },
-  { cms: 'RBS Change', regex: '<html[^>]+xmlns:change=' },
-  { cms: 'RebelMouse', regex: '<!-- Powered by RebelMouse\\.' },
-  { cms: 'SDL Tridion', regex: '<img[^>]+_tcm\\d{2,3}-\\d{6}\\.' },
-  { cms: 'Scorpion', regex: '<[^>]+id="HSScorpion' },
+  { cms: 'RBS Change', html: '<html[^>]+xmlns:change=' },
+  {
+    cms: 'RebelMouse',
+    html: '<!-- Powered by RebelMouse\\.',
+    headers: [
+      { key: 'x-rebelmouse-cache-control', value: '' },
+      { key: 'x-rebelmouse-surrogate-control', value: '' },
+    ],
+  },
+  { cms: 'SDL Tridion', html: '<img[^>]+_tcm\\d{2,3}-\\d{6}\\.' },
+  { cms: 'Scorpion', html: '<[^>]+id="HSScorpion' },
   {
     cms: 'SilverStripe',
-    regex: 'Powered by <a href="[^>]+SilverStripe',
+    html: 'Powered by <a href="[^>]+SilverStripe',
   },
-  { cms: 'SmartSite', regex: '<[^>]+/smartsite\\.(?:dws|shtml)\\?id=' },
+  { cms: 'SmartSite', html: '<[^>]+/smartsite\\.(?:dws|shtml)\\?id=' },
   {
     cms: 'Smartstore Page Builder',
-    regex: '<section[^>]+class="g-stage',
+    html: '<section[^>]+class="g-stage',
   },
   {
     cms: 'Solodev',
-    regex: `<div class=["']dynamicDiv["'] id=["']dd\\.\\d\\.\\d(?:\\.\\d)?["']>`,
+    html: `<div class=["']dynamicDiv["'] id=["']dd\\.\\d\\.\\d(?:\\.\\d)?["']>`,
+    headers: [{ key: 'solodev_session', value: '' }],
   },
   {
     cms: 'Squiz Matrix',
-    regex: '<!--\\s+Running (?:MySource|Squiz) Matrix',
+    html: '<!--\\s+Running (?:MySource|Squiz) Matrix',
+    headers: [{ key: 'X-Powered-By', value: 'Squiz Matrix' }],
   },
-  { cms: 'Strikingly', regex: '<!-- Powered by Strikingly\\.com' },
+  { cms: 'Strikingly', html: '<!-- Powered by Strikingly\\.com' },
   {
     cms: 'TYPO3 CMS',
-    regex: [
+    html: [
       '<link[^>]+ href="/?typo3(?:conf|temp)/',
       '<img[^>]+ src="/?typo3(?:conf|temp)/',
       '<!--\n\tThis website is powered by TYPO3',
@@ -197,52 +276,61 @@ const cmsRegex = [
   },
   {
     cms: 'Thelia',
-    regex: '<(?:link|style|script)[^>]+/assets/frontOffice/',
+    html: '<(?:link|style|script)[^>]+/assets/frontOffice/',
   },
   {
     cms: 'TiddlyWiki',
-    regex: '<[^>]*type=[^>]text\\/vnd\\.tiddlywiki',
+    html: '<[^>]*type=[^>]text\\/vnd\\.tiddlywiki',
   },
   {
     cms: 'Tilda',
-    regex: '<link[^>]* href=[^>]+tilda(?:cdn|\\.ws|-blocks)',
+    html: '<link[^>]* href=[^>]+tilda(?:cdn|\\.ws|-blocks)',
   },
   {
     cms: 'Vigbo',
-    regex: '<link[^>]* href=[^>]+(?:\\.vigbo\\.com|\\.gophotoweb\\.com)',
+    html: '<link[^>]* href=[^>]+(?:\\.vigbo\\.com|\\.gophotoweb\\.com)',
   },
-  { cms: 'Vignette', regex: '<[^>]+="vgn-?ext' },
+  { cms: 'Vignette', html: '<[^>]+="vgn-?ext' },
   {
     cms: 'Voog.com Website Builder',
-    regex: '<script [^>]*src="[^"]*voog\\.com/tracker\\.js',
+    html: '<script [^>]*src="[^"]*voog\\.com/tracker\\.js',
   },
   {
     cms: 'Wolf CMS',
-    regex:
-      '(?:<a href="[^>]+wolfcms\\.org[^>]+>Wolf CMS(?:</a>)? inside|Thank you for using <a[^>]+>Wolf CMS)',
+    html: '(?:<a href="[^>]+wolfcms\\.org[^>]+>Wolf CMS(?:</a>)? inside|Thank you for using <a[^>]+>Wolf CMS)',
   },
   {
     cms: 'WordPress',
-    regex: [
+    html: [
       `<link rel=["']stylesheet["'] [^>]+/wp-(?:content|includes)/`,
       '<link[^>]+s\\d+\\.wp\\.com',
+    ],
+    headers: [
+      { key: 'X-Pingback', value: '/xmlrpc\\.php$' },
+      { key: 'link', value: 'rel="https://api\\.w\\.org/"' },
     ],
   },
   {
     cms: 'imperia CMS',
-    regex: '<imp:live-info sysid="[0-9a-f-]+"(?: node_id="[0-9/]*")? *\\/>',
+    html: '<imp:live-info sysid="[0-9a-f-]+"(?: node_id="[0-9/]*")? *\\/>',
   },
-  { cms: 'papaya CMS', regex: '<link[^>]*/papaya-themes/' },
+  { cms: 'papaya CMS', html: '<link[^>]*/papaya-themes/' },
   {
     cms: 'phpwind',
-    regex: '(?:Powered|Code) by <a href="[^"]+phpwind\\.net',
+    html: '(?:Powered|Code) by <a href="[^"]+phpwind\\.net',
   },
   {
     cms: 'pirobase CMS',
-    regex: [
+    html: [
       '<(?:script|link)[^>]/site/[a-z0-9/._-]+/resourceCached/[a-z0-9/._-]+',
       '<input[^>]+cbi:///cms/',
     ],
   },
-  { cms: 'uKnowva', regex: '<a[^>]+>Powered by uKnowva</a>' },
+  {
+    cms: 'uKnowva',
+    html: '<a[^>]+>Powered by uKnowva</a>',
+    headers: [
+      { key: 'X-Content-Encoded-By', value: 'uKnowva ([\\d.]+)\\;version:\\1' },
+    ],
+  },
 ];
