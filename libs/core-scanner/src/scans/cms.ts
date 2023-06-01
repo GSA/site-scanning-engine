@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { HTTPResponse } from 'puppeteer';
 
 import { CmsScan } from 'entities/scan-data.entity';
@@ -8,13 +9,15 @@ export const buildCmsResult = async (
   const htmlMatches = await getHtmlMatches(mainResponse);
   const headerMatches = await getHeaderMatches(mainResponse);
 
+  let cms = null;
+
   if (htmlMatches.length > 0) {
-    return { cms: htmlMatches[0].cms };
+    cms = htmlMatches[0].cms;
   } else if (headerMatches.length > 0) {
-    return { cms: headerMatches[0].cms };
-  } else {
-    return { cms: null };
+    cms = headerMatches[0].cms;
   }
+
+  return { cms };
 };
 
 const getHtmlMatches = async (response: HTTPResponse) => {
@@ -39,8 +42,29 @@ const getHtmlMatches = async (response: HTTPResponse) => {
 
 const getHeaderMatches = async (response: HTTPResponse) => {
   const actualHeaders = await response.headers();
+  const formattedActualHeaders = _.transform(
+    actualHeaders,
+    function (result, val, key) {
+      result[key.toLowerCase()] = val;
+    },
+  );
 
-  return [];
+  return cmsData.filter((obj) => {
+    if (obj.headers) {
+      return obj.headers.some((header) => {
+        const formattedKey = header.key.toLowerCase();
+        if (Object.keys(formattedActualHeaders).includes(formattedKey)) {
+          const actualValue = formattedActualHeaders[formattedKey];
+          if (
+            actualValue.match(new RegExp(header.value)) ||
+            header.value === ''
+          ) {
+            return header;
+          }
+        }
+      });
+    }
+  });
 };
 
 const cmsData = [

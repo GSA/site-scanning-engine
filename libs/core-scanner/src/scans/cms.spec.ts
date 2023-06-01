@@ -13,6 +13,9 @@ describe('cms scan', () => {
     expect(
       await buildCmsResult(
         mock<HTTPResponse>({
+          headers: () => {
+            return {};
+          },
           text: async () => html,
         }),
       ),
@@ -26,13 +29,16 @@ describe('cms scan', () => {
     expect(
       await buildCmsResult(
         mock<HTTPResponse>({
+          headers: () => {
+            return {};
+          },
           text: async () => html,
         }),
       ),
     ).toEqual({ cms: 'papaya CMS' });
   });
 
-  it('Detects if the site uses a cms by way of http response headers', async () => {
+  it('Detects if the site uses a cms by way of http response headers with a given value', async () => {
     expect(
       await buildCmsResult(
         mock<HTTPResponse>({
@@ -43,5 +49,18 @@ describe('cms scan', () => {
         }),
       ),
     ).toEqual({ cms: 'WordPress' });
+  });
+
+  it('Detects if the site uses a cms by way of http response headers with a given key', async () => {
+    expect(
+      await buildCmsResult(
+        mock<HTTPResponse>({
+          headers: () => {
+            return { DNNOutputCache: 'yadda' };
+          },
+          text: async () => '<html></html>',
+        }),
+      ),
+    ).toEqual({ cms: 'DNN' });
   });
 });
