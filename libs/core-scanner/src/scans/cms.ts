@@ -24,17 +24,19 @@ const getHtmlMatches = async (response: HTTPResponse) => {
   const actualHtml = await response.text();
 
   return cmsData.filter((obj) => {
-    if (Array.isArray(obj.html)) {
-      return (
-        obj.html.filter((html) => {
-          if (actualHtml.match(new RegExp(html))) {
-            return obj;
-          }
-        }).length > 0
-      );
-    } else {
-      if (actualHtml.match(new RegExp(obj.html))) {
-        return obj;
+    if (obj.html) {
+      if (Array.isArray(obj.html)) {
+        return (
+          obj.html.filter((html) => {
+            if (actualHtml.match(new RegExp(html))) {
+              return obj;
+            }
+          }).length > 0
+        );
+      } else {
+        if (actualHtml.match(new RegExp(obj.html))) {
+          return obj;
+        }
       }
     }
   });
@@ -192,6 +194,15 @@ const cmsData = [
   },
   { cms: 'Methode', html: '<!-- Methode uuid: "[a-f\\d]+" ?-->' },
   {
+    cms: 'Microsoft Sharepoint',
+    headers: [
+      { key: 'MicrosoftSharePointTeamServices', value: '^(.+)$\\;version:\\1' },
+      { key: 'SPRequestGuid', value: '' },
+      { key: 'SharePointHealthScore', value: '' },
+      { key: 'X-SharePointHealthScore', value: '' },
+    ],
+  },
+  {
     cms: 'Moguta.CMS',
     html: `<link[^>]+href=["'][^"]+mg-(?:core|plugins|templates)/`,
   },
@@ -244,8 +255,8 @@ const cmsData = [
       { key: 'x-rebelmouse-surrogate-control', value: '' },
     ],
   },
-  { cms: 'SDL Tridion', html: '<img[^>]+_tcm\\d{2,3}-\\d{6}\\.' },
   { cms: 'Scorpion', html: '<[^>]+id="HSScorpion' },
+  { cms: 'SDL Tridion', html: '<img[^>]+_tcm\\d{2,3}-\\d{6}\\.' },
   {
     cms: 'SilverStripe',
     html: 'Powered by <a href="[^>]+SilverStripe',
