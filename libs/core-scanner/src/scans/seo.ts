@@ -14,12 +14,12 @@ export const buildSeoResult = async (
     ogArticlePublishedFinalUrl: await findOpenGraphDates(
       logger,
       page,
-      'article:published_date',
+      'article:published_time',
     ),
     ogArticleModifiedFinalUrl: await findOpenGraphDates(
       logger,
       page,
-      'article:modified_date',
+      'article:modified_time',
     ),
     mainElementFinalUrl: await findMainElement(page),
     canonicalLink: await findCanonicalLink(page),
