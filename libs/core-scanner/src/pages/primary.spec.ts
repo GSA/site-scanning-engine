@@ -68,6 +68,7 @@ describe('primary scanner', () => {
       },
       loginScan: {
         loginDetected: null,
+        loginProvider: null,
       },
       seoScan: {
         mainElementFinalUrl: true,
