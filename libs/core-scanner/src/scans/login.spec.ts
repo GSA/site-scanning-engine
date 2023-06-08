@@ -17,6 +17,37 @@ describe('login scan', () => {
           text: async () => html,
         }),
       ),
-    ).toEqual({ loginDetected: '"password",type="password"' });
+    ).toEqual({
+      loginDetected: '"password",type="password"',
+      loginProvider: null,
+    });
+  });
+
+  it('Detects login providers in href', async () => {
+    const html = `
+      <a href="id.me"></a>
+    `;
+
+    expect(
+      await buildLoginResult(
+        mock<HTTPResponse>({
+          text: async () => html,
+        }),
+      ),
+    ).toEqual({ loginDetected: null, loginProvider: 'id.me' });
+  });
+
+  it('Detects login providers in anchor tag text', async () => {
+    const html = `
+      <a href="">Sign In With Login.gov</a>
+    `;
+
+    expect(
+      await buildLoginResult(
+        mock<HTTPResponse>({
+          text: async () => html,
+        }),
+      ),
+    ).toEqual({ loginDetected: null, loginProvider: 'login.gov' });
   });
 });

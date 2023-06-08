@@ -337,6 +337,10 @@ export class CoreResult {
   })
   requiredLinksText?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'login_provider' })
+  loginProvider?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
