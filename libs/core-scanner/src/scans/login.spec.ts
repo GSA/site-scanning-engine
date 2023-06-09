@@ -25,7 +25,7 @@ describe('login scan', () => {
 
   it('Detects login providers in href', async () => {
     const html = `
-      <a href="id.me">Some Label/a>
+      <a href="id.me">Some Label</a>
     `;
 
     expect(
