@@ -113,6 +113,7 @@ export class CoreResultService {
 
       // Login scan
       coreResult.loginDetected = result.loginScan.loginDetected;
+      coreResult.loginProvider = result.loginScan.loginProvider;
 
       // Cloud.gov Pages scan
       coreResult.cloudDotGovPages =
@@ -163,6 +164,7 @@ export class CoreResultService {
       coreResult.uswdsVersion = null;
       coreResult.uswdsCount = null;
       coreResult.loginDetected = null;
+      coreResult.loginProvider = null;
       coreResult.cloudDotGovPages = null;
       coreResult.cms = null;
       coreResult.hsts = null;
