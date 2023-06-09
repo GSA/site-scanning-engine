@@ -46,27 +46,14 @@ const getLoginDetectedResults = (html: string) => {
 const getLoginProviderResults = (html: string) => {
   const results = [];
 
-  const hrefs = html.match(/href=['"](.*?)['"]/gi);
-  if (hrefs) {
+  const anchorElements = html.match(/<a\b([^>]*)>(.*?)<\/a>/gi);
+  if (anchorElements) {
     loginProviderStrings.forEach((string) => {
-      const matchingHrefs = hrefs.filter((href) =>
+      const matchingHrefs = anchorElements.filter((href) =>
         href.toLowerCase().includes(string),
       );
 
       if (matchingHrefs.length > 0) {
-        results.push(string);
-      }
-    });
-  }
-
-  const linkTexts = html.match(/(?<=<a\b[^>]*>)([\s\S]*?)(?=<\/a>)/gi);
-  if (linkTexts) {
-    loginProviderStrings.forEach((string) => {
-      const matchingLinkTexts = linkTexts.filter((href) =>
-        href.toLowerCase().includes(string),
-      );
-
-      if (matchingLinkTexts.length > 0) {
         results.push(string);
       }
     });
