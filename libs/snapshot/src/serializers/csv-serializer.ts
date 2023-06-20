@@ -15,7 +15,20 @@ export class CsvSerializer implements Serializer {
 
   serialize(websites: Website[]) {
     const serializedResults = websites.map((website) => website.serialized());
-    return this.createCsv(serializedResults);
+
+    const cleanResults = serializedResults.map((result) => {
+      const cleanResult = {};
+      for (const key in result) {
+        if (typeof result[key] === 'string') {
+          cleanResult[key] = result[key].replace(/\r?\n|\r/g, '');
+        } else {
+          cleanResult[key] = result[key];
+        }
+      }
+      return cleanResult;
+    });
+
+    return this.createCsv(cleanResults);
   }
 
   createCsv(rows: { [x: string]: any }[]) {
