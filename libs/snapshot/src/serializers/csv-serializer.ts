@@ -41,8 +41,8 @@ export class CsvSerializer implements Serializer {
       this.columnOrder,
       Array.from(Object.keys(rows[0])),
     );
-
-    const parser = new Parser({ fields });
+    const eol = '\r\n';
+    const parser = new Parser({ fields, eol });
 
     return parser.parse(rows);
   }
