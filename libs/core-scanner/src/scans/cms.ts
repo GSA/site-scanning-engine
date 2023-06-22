@@ -144,7 +144,10 @@ const cmsData = [
   },
   {
     cms: 'Joomla',
-    html: '(?:<div[^>]+id="wrapper_r"|<(?:link|script)[^>]+(?:feed|components)/com_|<table[^>]+class="pill)\\;confidence:50',
+    html: [
+      '(?:<div[^>]+id="wrapper_r"|<(?:link|script)[^>]+(?:feed|components)/com_|<table[^>]+class="pill)\\;confidence:50',
+      '<meta +[^>]*content=["\'][^"\']*Joomla[^"\']*["\'][^>]*>',
+    ],
     headers: [
       { key: 'X-Content-Encoded-By', value: 'Joomla! ([\\d.]+)\\;version:\\1' },
     ],
@@ -235,7 +238,14 @@ const cmsData = [
       { key: 'X-Powered-By', value: 'PHPFusion (.+)$\\;version:\\1' },
     ],
   },
-  { cms: 'Percussion', html: '<[^>]+class="perc-region"' },
+  {
+    cms: 'Percussion',
+    html: [
+      '<[^>]+class="perc-region"',
+      '<meta +[^>]*content=["\'][^"\']*Percussion[^"\']*["\'][^>]*>',
+      '<meta +[^>]*content=["\'][^"\']*Rhythmyx[^"\']*["\'][^>]*>',
+    ],
+  },
   { cms: 'Pligg', html: '<span[^>]+id="xvotes-0' },
   { cms: 'Posterous', html: '<div class="posterous' },
   {
@@ -259,7 +269,10 @@ const cmsData = [
   { cms: 'SDL Tridion', html: '<img[^>]+_tcm\\d{2,3}-\\d{6}\\.' },
   {
     cms: 'SilverStripe',
-    html: 'Powered by <a href="[^>]+SilverStripe',
+    html: [
+      'Powered by <a href="[^>]+SilverStripe',
+      '<meta +[^>]*content=["\'][^"\']*SilverStripe[^"\']*["\'][^>]*>',
+    ],
   },
   { cms: 'SmartSite', html: '<[^>]+/smartsite\\.(?:dws|shtml)\\?id=' },
   {
