@@ -45,12 +45,12 @@ const dapDetected = (outboundRequests: HTTPRequest[]) => {
 };
 
 const dapParameters = (outboundRequests: HTTPRequest[]) => {
-  const dapUrl = 'dap.digitalgov.gov/Universal-Federated-Analytics-Min.js';
+  const dapScript = 'Universal-Federated-Analytics-Min.js';
   let parameters: string;
   for (const request of outboundRequests) {
     const requestUrl = request.url();
 
-    if (requestUrl.includes(dapUrl)) {
+    if (requestUrl.includes(dapScript)) {
       const parsedUrl = new URL(requestUrl);
       parameters = parsedUrl.searchParams.toString();
       break;
