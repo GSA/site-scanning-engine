@@ -16,6 +16,7 @@ describe('dap scan', () => {
       dapParameters: undefined,
     });
   });
+
   it('DAP detected if an analytics code is in POST data', async () => {
     expect(
       await buildDapResult([
@@ -29,6 +30,7 @@ describe('dap scan', () => {
       dapParameters: undefined,
     });
   });
+
   it('DAP detected if another analytics code is in POST data', async () => {
     expect(
       await buildDapResult([
@@ -42,12 +44,27 @@ describe('dap scan', () => {
       dapParameters: undefined,
     });
   });
-  it('DAP parameters extracted from script request', async () => {
+
+  it('DAP parameters extracted from script hosted remotely', async () => {
     expect(
       await buildDapResult([
         mock<HTTPRequest>({
           url: () =>
             'https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
+        }),
+      ]),
+    ).toEqual({
+      dapDetected: false,
+      dapParameters: 'test1=1&test2=2',
+    });
+  });
+
+  it('DAP parameters extracted from script hosted on the website', async () => {
+    expect(
+      await buildDapResult([
+        mock<HTTPRequest>({
+          url: () =>
+            'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
         }),
       ]),
     ).toEqual({
