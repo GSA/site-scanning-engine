@@ -10,7 +10,8 @@ export const buildCookieResult = async (page: Page): Promise<CookieScan> => {
 };
 
 const cookieDomains = async (page: Page) => {
-  const result = await (page as any)._client.send('Network.getAllCookies');
+  const client = (page as any)._client;
+  const result = await client.send('Network.getAllCookies');
   const domains = uniq(result.cookies.map((cookie) => cookie.domain)).sort();
   return domains.join(',');
 };

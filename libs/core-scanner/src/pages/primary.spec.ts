@@ -1,126 +1,77 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Logger } from 'pino';
-import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
-
-import { Website } from 'entities/website.entity';
 
 import { CoreInputDto } from '../core.input.dto';
 import { createPrimaryScanner } from './primary';
-import { source } from './test-page-source';
+import { newTestPage } from '../test-helper';
 
 describe('primary scanner', () => {
-  let mockPage: MockProxy<Page>;
-  let mockRequest: MockProxy<HTTPRequest>;
-  let redirectRequest: MockProxy<HTTPRequest>;
-  let mockResponse: MockProxy<HTTPResponse>;
   let mockLogger: MockProxy<Logger>;
-  const finalUrl = 'https://18f.gsa.gov';
 
   beforeEach(async () => {
-    mockPage = mock<Page>();
-    mockResponse = mock<HTTPResponse>();
-    mockRequest = mock<HTTPRequest>();
-    redirectRequest = mock<HTTPRequest>();
     mockLogger = mock<Logger>();
-
-    redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
-    mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
-    mockResponse.request.calledWith().mockReturnValue(mockRequest);
-    mockResponse.status.calledWith().mockReturnValue(200);
-    mockResponse.headers.calledWith().mockReturnValue({
-      'Content-Type': 'text/html; charset=utf-8',
-    });
-    mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
-    mockPage.url.calledWith().mockReturnValue(finalUrl);
   });
 
   it('should return the correct response', async () => {
-    const input: CoreInputDto = {
-      websiteId: 1,
-      url: '18f.gov',
-      scanId: '123',
-    };
-
-    const time = new Date('2018-09-15T15:53:00');
-
-    const website = new Website();
-    website.id = input.websiteId;
-
-    mockPage.evaluate.mockResolvedValueOnce('Page Title'); // 1. og:title
-    mockPage.evaluate.mockResolvedValueOnce(4); // 2. undefined
-    mockPage.evaluate.mockResolvedValueOnce('Page Description'); // 3. og:description
-    mockPage.evaluate.mockResolvedValueOnce(time.toString()); // 4. article:published_date
-    mockPage.evaluate.mockResolvedValueOnce(time.toString()); // 5. article:modified_date
-    mockPage.evaluate.mockResolvedValueOnce(true); // 6. undefined
-
-    mockResponse.text.mockResolvedValue(source);
-    mockResponse.url.mockReturnValue('https://18f.gsa.gov');
-    mockPage.goto.mockResolvedValue(mockResponse);
-    redirectRequest.redirectChain.mockReturnValue([]);
-
-    const scanner = createPrimaryScanner(mockLogger, input);
-    const result = await scanner(mockPage);
-
-    expect(result).toEqual({
-      dapScan: {
-        dapDetected: false,
-        dapParameters: undefined,
-      },
-      loginScan: {
-        loginDetected: null,
-        loginProvider: null,
-      },
-      seoScan: {
-        mainElementFinalUrl: true,
-        ogArticleModifiedFinalUrl: time,
-        ogArticlePublishedFinalUrl: time,
-        ogDescriptionFinalUrl: 'Page Description',
-        ogTitleFinalUrl: 'Page Title',
-      },
-      thirdPartyScan: {
-        thirdPartyServiceCount: 0,
-        thirdPartyServiceDomains: '',
-      },
-      cookieScan: {
-        domains: '',
-      },
-      urlScan: {
-        finalUrl: 'https://18f.gsa.gov',
-        finalUrlBaseDomain: 'gsa.gov',
-        finalUrlWebsite: '18f.gsa.gov',
-        finalUrlIsLive: true,
-        finalUrlMIMEType: 'text/html',
-        finalUrlSameDomain: false,
-        finalUrlSameWebsite: false,
-        finalUrlStatusCode: 200,
-        targetUrlRedirects: true,
-      },
-      uswdsScan: {
-        usaClasses: 4,
-        uswdsCount: 25,
-        uswdsInlineCss: 0,
-        uswdsPublicSansFont: 0,
-        uswdsSemanticVersion: undefined,
-        uswdsString: 1,
-        uswdsStringInCss: 0,
-        uswdsUsFlag: 20,
-        uswdsUsFlagInCss: 0,
-        uswdsVersion: 0,
-      },
-      cloudDotGovPagesScan: {
-        cloudDotGovPages: false,
-      },
-      cmsScan: {
-        cms: null,
-      },
-      hstsScan: {
-        hsts: false,
-      },
-      requiredLinksScan: {
-        requiredLinksText:
-          'accessibility,budget and performance,no fear act,foia,freedom of information act,inspector general,vulnerability disclosure',
-        requiredLinksUrl: 'about,foia,usa.gov',
-      },
+    await newTestPage(async ({ page }) => {
+      const input: CoreInputDto = {
+        websiteId: 1,
+        url: '18f.gov',
+        scanId: '123',
+      };
+      const scanner = await createPrimaryScanner(mockLogger, input);
+      const result = await scanner(page);
+      expect(result).toEqual({
+        urlScan: {
+          targetUrlRedirects: true,
+          finalUrl: 'https://18f.gsa.gov/',
+          finalUrlWebsite: '18f.gsa.gov',
+          finalUrlMIMEType: 'text/html',
+          finalUrlIsLive: true,
+          finalUrlBaseDomain: 'gsa.gov',
+          finalUrlSameDomain: false,
+          finalUrlSameWebsite: false,
+          finalUrlStatusCode: 200,
+        },
+        dapScan: {
+          dapDetected: true,
+          dapParameters: 'agency=GSA&subagency=TTS%2C18F',
+        },
+        seoScan: {
+          ogTitleFinalUrl: '18F: Digital service delivery | Home',
+          ogDescriptionFinalUrl:
+            '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
+          mainElementFinalUrl: true,
+          canonicalLink: 'https://18f.gsa.gov/',
+        },
+        thirdPartyScan: {
+          thirdPartyServiceDomains:
+            'dap.digitalgov.gov,fonts.googleapis.com,search.usa.gov,www.google-analytics.com,www.googletagmanager.com',
+          thirdPartyServiceCount: 5,
+        },
+        cookieScan: { domains: '.18f.gsa.gov,.gsa.gov' },
+        uswdsScan: {
+          usaClasses: 55,
+          uswdsString: 8,
+          uswdsInlineCss: 0,
+          uswdsUsFlag: 20,
+          uswdsUsFlagInCss: 0,
+          uswdsStringInCss: 20,
+          uswdsPublicSansFont: 40,
+          uswdsSemanticVersion: '2.9.0',
+          uswdsVersion: 100,
+          uswdsCount: 243,
+        },
+        loginScan: { loginDetected: null, loginProvider: null },
+        cloudDotGovPagesScan: { cloudDotGovPages: true },
+        cmsScan: { cms: null },
+        hstsScan: { hsts: true },
+        requiredLinksScan: {
+          requiredLinksUrl: 'about,foia,privacy,usa.gov',
+          requiredLinksText:
+            'accessibility,no fear act,foia,inspector general,privacy policy,vulnerability disclosure',
+        },
+      });
     });
   });
 });
