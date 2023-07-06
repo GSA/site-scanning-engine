@@ -81,6 +81,9 @@ describe('primary scanner', () => {
         thirdPartyServiceCount: 0,
         thirdPartyServiceDomains: '',
       },
+      cookieScan: {
+        domains: '',
+      },
       urlScan: {
         finalUrl: 'https://18f.gsa.gov',
         finalUrlBaseDomain: 'gsa.gov',

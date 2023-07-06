@@ -11,7 +11,6 @@ import {
 } from 'typeorm';
 
 import * as ScanPage from 'entities/scan-page.entity';
-import { ScanStatus } from 'entities/scan-status';
 import { BaseScan } from './scan-data.entity';
 import { Website } from './website.entity';
 
@@ -282,6 +281,10 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'third_party_service_count' })
   thirdPartyServiceCount?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'cookie_domains' })
+  cookieDomains?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'dns_ipv6' })

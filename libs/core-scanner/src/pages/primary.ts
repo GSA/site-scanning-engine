@@ -19,6 +19,7 @@ import {
   createOutboundRequestsExtractor,
 } from './extractors';
 import { buildRequiredLinksResult } from '../scans/required-links';
+import { buildCookieResult } from '../scans/cookies';
 
 export const createPrimaryScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
@@ -46,6 +47,7 @@ const primaryScan = async (
   const [
     dapScan,
     thirdPartyScan,
+    cookieScan,
     seoScan,
     uswdsScan,
     loginScan,
@@ -56,6 +58,7 @@ const primaryScan = async (
   ] = await promiseAll([
     buildDapResult(getOutboundRequests()),
     buildThirdPartyResult(response, getOutboundRequests()),
+    buildCookieResult(page),
     buildSeoResult(logger, page),
     createUswdsScanner({ logger, getCSSRequests }, page)(response),
     buildLoginResult(response),
@@ -71,6 +74,7 @@ const primaryScan = async (
     dapScan,
     seoScan,
     thirdPartyScan,
+    cookieScan,
     uswdsScan,
     loginScan,
     cloudDotGovPagesScan,
