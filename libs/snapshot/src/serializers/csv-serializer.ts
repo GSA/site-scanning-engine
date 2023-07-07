@@ -18,9 +18,18 @@ export class CsvSerializer implements Serializer {
 
     const cleanResults = serializedResults.map((result) => {
       const cleanResult = {};
+      const stringLengthLimit = 5000;
+
       for (const key in result) {
         if (typeof result[key] === 'string') {
           cleanResult[key] = result[key].replace(/\r?\n|\r/g, '');
+          if (cleanResult[key].length > stringLengthLimit) {
+            const truncatedString = cleanResult[key].substring(
+              0,
+              stringLengthLimit,
+            );
+            cleanResult[key] = truncatedString;
+          }
         } else {
           cleanResult[key] = result[key];
         }
