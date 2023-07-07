@@ -1,7 +1,7 @@
 import { buildCookieResult } from './cookies';
 import { newTestPage } from '../test-helper';
 
-describe('third-party scan', () => {
+describe('cookie scan', () => {
   it('non-navigation different domains treated as third-parties', async () => {
     await newTestPage(async ({ page }) => {
       expect(await buildCookieResult(page)).toEqual({
