@@ -18,6 +18,7 @@ export type PrimaryScans = {
   dapScan: ScanData.DapScan;
   seoScan: ScanData.SeoScan;
   thirdPartyScan: ScanData.ThirdPartyScan;
+  cookieScan: ScanData.CookieScan;
   uswdsScan: ScanData.UswdsScan;
   loginScan: ScanData.LoginScan;
   cloudDotGovPagesScan: ScanData.CloudDotGovPagesScan;

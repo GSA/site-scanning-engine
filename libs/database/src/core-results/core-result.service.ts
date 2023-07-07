@@ -88,6 +88,9 @@ export class CoreResultService {
       coreResult.thirdPartyServiceDomains =
         result.thirdPartyScan.thirdPartyServiceDomains;
 
+      // Cookie scan
+      coreResult.cookieDomains = result.cookieScan.domains;
+
       // Url scan
       coreResult.finalUrl = result.urlScan.finalUrl;
       coreResult.finalUrlBaseDomain = result.urlScan.finalUrlBaseDomain;

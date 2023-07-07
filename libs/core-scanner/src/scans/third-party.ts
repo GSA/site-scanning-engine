@@ -7,10 +7,8 @@ export const buildThirdPartyResult = async (
   mainResponse: HTTPResponse,
   outboundRequests: HTTPRequest[],
 ): Promise<ThirdPartyScan> => {
-  const thirdPartyResult = thirdPartyServices(
-    outboundRequests,
-    mainResponse.url(),
-  );
+  const url = mainResponse.url();
+  const thirdPartyResult = await thirdPartyServices(outboundRequests, url);
   return {
     thirdPartyServiceDomains: thirdPartyResult.domains,
     thirdPartyServiceCount: thirdPartyResult.count,
@@ -20,7 +18,10 @@ export const buildThirdPartyResult = async (
 const thirdPartyServices = (
   outboundRequests: HTTPRequest[],
   finalUrl: string,
-): ThirdPartyServicesResult => {
+): {
+  domains: string;
+  count: number;
+} => {
   const parsedUrl = new URL(finalUrl);
   const thirdPartyDomains = [];
 
@@ -36,8 +37,3 @@ const thirdPartyServices = (
     count: deduped.length,
   };
 };
-
-interface ThirdPartyServicesResult {
-  domains: string;
-  count: number;
-}

@@ -33,6 +33,10 @@ export type ThirdPartyScan = {
   thirdPartyServiceCount: number;
 };
 
+export type CookieScan = {
+  domains: string;
+};
+
 export type UswdsScan = {
   usaClasses: number;
   uswdsString: number;

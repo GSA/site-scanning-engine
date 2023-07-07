@@ -75,6 +75,7 @@ export class Snapshot {
     'sitemap_xml_pdf_count',
     'third_party_service_domains',
     'third_party_service_count',
+    'cookie_domains',
     'login_provider',
     'login_detected',
     'dap_detected_final_url',
