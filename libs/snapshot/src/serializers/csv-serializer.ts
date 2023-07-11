@@ -1,6 +1,7 @@
 import { Serializer } from './serializer';
 import { Website } from 'entities/website.entity';
 import { Parser } from 'json2csv';
+import { truncateArray } from './csv-helpers';
 
 export class CsvSerializer implements Serializer {
   columnOrder: string[];
@@ -18,22 +19,26 @@ export class CsvSerializer implements Serializer {
 
     const cleanResults = serializedResults.map((result) => {
       const cleanResult = {};
-      const stringLengthLimit = 5000;
+      const characterLimit = 5000;
 
       for (const key in result) {
         if (typeof result[key] === 'string') {
           cleanResult[key] = result[key].replace(/\r?\n|\r/g, '');
-          if (cleanResult[key].length > stringLengthLimit) {
+          if (cleanResult[key].length > characterLimit) {
             const truncatedString = cleanResult[key].substring(
               0,
-              stringLengthLimit,
+              characterLimit,
             );
             cleanResult[key] = truncatedString;
           }
+        } else if (Array.isArray(result[key])) {
+          const truncatedArray = truncateArray(result[key], characterLimit);
+          cleanResult[key] = truncatedArray;
         } else {
           cleanResult[key] = result[key];
         }
       }
+
       return cleanResult;
     });
 
