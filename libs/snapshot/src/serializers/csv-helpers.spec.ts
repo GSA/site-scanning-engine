@@ -18,7 +18,7 @@ describe('csv-helpers', () => {
 
     const result = truncateArray(longArray, characterLimit);
 
-    expect(result.join(',').length).toBeLessThanOrEqual(characterLimit);
+    expect(JSON.stringify(result).length).toBeLessThanOrEqual(characterLimit);
   });
 
   it('truncateArray truncates does not truncate an array that would be less than the character limit when serialized', () => {
@@ -39,6 +39,6 @@ describe('csv-helpers', () => {
     const result = truncateArray(shortArray, characterLimit);
 
     expect(result.length).toBe(shortArray.length);
-    expect(result.join(',').length).toBeLessThanOrEqual(characterLimit);
+    expect(JSON.stringify(result).length).toBeLessThanOrEqual(characterLimit);
   });
 });

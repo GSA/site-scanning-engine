@@ -19,7 +19,7 @@ export class CsvSerializer implements Serializer {
 
     const cleanResults = serializedResults.map((result) => {
       const cleanResult = {};
-      const characterLimit = 5000;
+      const characterLimit = 2000;
 
       for (const key in result) {
         if (typeof result[key] === 'string') {
