@@ -97,7 +97,7 @@ describe('CsvSerializer', () => {
     expect(result).toEqual(expectedResult);
   });
 
-  it('serializes a csv file and truncates fields that contain more than 5000 characters', () => {
+  it('serializes a csv file and truncates strings that contain more than 5000 characters', () => {
     const serializer = new CsvSerializer(Snapshot.CSV_COLUMN_ORDER);
     const website = new Website();
     const coreResult = new CoreResult();
