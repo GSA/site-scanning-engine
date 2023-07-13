@@ -19,7 +19,19 @@ const loginDetectedStrings = [
   '"password"',
 ];
 
-const loginProviderStrings = ['id.me', 'login.gov'];
+const loginProviderStrings = [
+  'id.me',
+  'login.gov',
+  'sams.cdc.gov',
+  'orcid',
+  'accounts.google.com',
+  'login.live.com',
+  'login.microsoftonline.com',
+  '.okta.com',
+  'auth.nih.gov',
+  'account.ncbi.nlm.nih.gov',
+  'secureauth',
+];
 
 export const buildLoginResult = async (
   mainResponse: HTTPResponse,
