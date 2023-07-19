@@ -15,34 +15,11 @@ export class CsvSerializer implements Serializer {
   }
 
   serialize(websites: Website[]) {
-    const serializedResults = websites.map((website) => website.serialized());
+    const serializedWebsites = websites.map((website) => website.serialized());
 
-    const cleanResults = serializedResults.map((result) => {
-      const cleanResult = {};
-      const characterLimit = 2000;
+    const formattedResults = this.formatWebsites(serializedWebsites);
 
-      for (const key in result) {
-        if (typeof result[key] === 'string') {
-          cleanResult[key] = result[key].replace(/\r?\n|\r/g, '');
-          if (cleanResult[key].length > characterLimit) {
-            const truncatedString = cleanResult[key].substring(
-              0,
-              characterLimit,
-            );
-            cleanResult[key] = truncatedString;
-          }
-        } else if (Array.isArray(result[key])) {
-          const truncatedArray = truncateArray(result[key], characterLimit);
-          cleanResult[key] = truncatedArray;
-        } else {
-          cleanResult[key] = result[key];
-        }
-      }
-
-      return cleanResult;
-    });
-
-    return this.createCsv(cleanResults);
+    return this.createCsv(formattedResults);
   }
 
   createCsv(rows: { [x: string]: any }[]) {
@@ -59,6 +36,35 @@ export class CsvSerializer implements Serializer {
     const parser = new Parser({ fields, eol });
 
     return parser.parse(rows);
+  }
+
+  private formatWebsites(websites) {
+    const result = websites.map((result) => {
+      const formattedResult = {};
+      const characterLimit = 2000;
+
+      for (const key in result) {
+        if (typeof result[key] === 'string') {
+          formattedResult[key] = result[key].replace(/\r?\n|\r/g, '');
+          if (formattedResult[key].length > characterLimit) {
+            const truncatedString = formattedResult[key].substring(
+              0,
+              characterLimit,
+            );
+            formattedResult[key] = truncatedString;
+          }
+        } else if (Array.isArray(result[key])) {
+          const truncatedArray = truncateArray(result[key], characterLimit);
+          formattedResult[key] = truncatedArray;
+        } else {
+          formattedResult[key] = result[key];
+        }
+      }
+
+      return formattedResult;
+    });
+
+    return result;
   }
 
   private sortOrder(fieldOrder: string[], flattenedFields: string[]) {
