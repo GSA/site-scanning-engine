@@ -344,6 +344,10 @@ export class CoreResult {
   @Expose({ name: 'login_provider' })
   loginProvider?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'search_detected' })
+  searchDetected?: boolean;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

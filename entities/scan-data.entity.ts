@@ -104,3 +104,7 @@ export type RequiredLinksScan = {
   requiredLinksUrl: string;
   requiredLinksText: string;
 };
+
+export type SearchScan = {
+  searchDetected: boolean;
+};

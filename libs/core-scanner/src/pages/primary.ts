@@ -20,6 +20,7 @@ import {
 } from './extractors';
 import { buildRequiredLinksResult } from '../scans/required-links';
 import { buildCookieResult } from '../scans/cookies';
+import { buildSearchResult } from '../scans/search';
 
 export const createPrimaryScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
@@ -55,6 +56,7 @@ const primaryScan = async (
     cmsScan,
     hstsScan,
     requiredLinksScan,
+    searchScan,
   ] = await promiseAll([
     buildDapResult(getOutboundRequests()),
     buildThirdPartyResult(response, getOutboundRequests()),
@@ -66,6 +68,7 @@ const primaryScan = async (
     buildCmsResult(response),
     buildHstsResult(response),
     buildRequiredLinksResult(response),
+    buildSearchResult(page),
   ]);
   const urlScan = buildUrlScanResult(input, page, response);
 
@@ -81,5 +84,6 @@ const primaryScan = async (
     cmsScan,
     hstsScan,
     requiredLinksScan,
+    searchScan,
   };
 };

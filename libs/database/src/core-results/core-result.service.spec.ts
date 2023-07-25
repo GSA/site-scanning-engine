@@ -148,6 +148,9 @@ describe('CoreResultService', () => {
             requiredLinksUrl: null,
             requiredLinksText: null,
           },
+          searchScan: {
+            searchDetected: null,
+          },
         },
       },
       robotsTxt: {

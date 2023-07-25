@@ -131,6 +131,9 @@ export class CoreResultService {
       // Required links scan
       coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
       coreResult.requiredLinksText = result.requiredLinksScan.requiredLinksText;
+
+      // Search scan
+      coreResult.searchDetected = result.searchScan.searchDetected;
     } else {
       logger.error({
         msg: pages.primary.error,
@@ -173,6 +176,7 @@ export class CoreResultService {
       coreResult.hsts = null;
       coreResult.requiredLinksUrl = null;
       coreResult.requiredLinksText = null;
+      coreResult.searchDetected = null;
     }
   }
 
