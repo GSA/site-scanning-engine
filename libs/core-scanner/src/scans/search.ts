@@ -14,8 +14,11 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
 
       if (formElements.length > 0) {
         formElements.forEach((el) => {
-          const actionAttribute = el.getAttribute('action').toLowerCase();
-          if (actionAttribute && actionAttribute.includes('search')) {
+          const actionAttribute = el.getAttribute('action');
+          if (
+            actionAttribute &&
+            actionAttribute.toLowerCase().includes('search')
+          ) {
             result = true;
           }
         });
@@ -47,8 +50,8 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
 
       if (inputElements.length > 0) {
         inputElements.forEach((el) => {
-          const typeAttribute = el.getAttribute('type').toLowerCase();
-          if (typeAttribute && typeAttribute.includes('search')) {
+          const typeAttribute = el.getAttribute('type');
+          if (typeAttribute && typeAttribute.toLowerCase().includes('search')) {
             result = true;
           }
         });
@@ -62,11 +65,11 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
 
       if (formElements.length > 0) {
         formElements.forEach((el) => {
-          const nameAttribute = el.getAttribute('name').toLowerCase();
-          const idAttribute = el.getAttribute('id').toLowerCase();
+          const nameAttribute = el.getAttribute('name');
+          const idAttribute = el.getAttribute('id');
           if (
-            nameAttribute.includes('search') ||
-            idAttribute.includes('search') ||
+            (nameAttribute && nameAttribute.toLowerCase().includes('search')) ||
+            (idAttribute && idAttribute.toLowerCase().includes('search')) ||
             el.classList.contains('search')
           ) {
             result = true;
