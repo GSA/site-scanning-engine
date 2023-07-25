@@ -14,7 +14,7 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
 
       if (formElements.length > 0) {
         formElements.forEach((el) => {
-          const actionAttribute = el.getAttribute('action');
+          const actionAttribute = el.getAttribute('action').toLowerCase();
           if (actionAttribute && actionAttribute.includes('search')) {
             result = true;
           }
@@ -47,7 +47,7 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
 
       if (inputElements.length > 0) {
         inputElements.forEach((el) => {
-          const typeAttribute = el.getAttribute('type');
+          const typeAttribute = el.getAttribute('type').toLowerCase();
           if (typeAttribute && typeAttribute.includes('search')) {
             result = true;
           }
