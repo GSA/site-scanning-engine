@@ -80,6 +80,7 @@ export class Snapshot {
     'login_detected',
     'dap_detected_final_url',
     'dap_parameters_final_url',
+    'search_detected',
   ];
 
   constructor(

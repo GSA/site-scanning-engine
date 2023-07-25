@@ -71,6 +71,9 @@ describe('primary scanner', () => {
           requiredLinksText:
             'accessibility,no fear act,foia,inspector general,privacy policy,vulnerability disclosure',
         },
+        searchScan: {
+          searchDetected: true,
+        },
       });
     });
   });
