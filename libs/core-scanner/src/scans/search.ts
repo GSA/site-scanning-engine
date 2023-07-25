@@ -57,10 +57,32 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
       return result;
     };
 
+    const hasSearchInIdNameOrClass = (formElements: HTMLElement[]): boolean => {
+      let result = false;
+
+      if (formElements.length > 0) {
+        formElements.forEach((el) => {
+          const nameAttribute = el.getAttribute('name').toLowerCase();
+          const idAttribute = el.getAttribute('id').toLowerCase();
+          if (
+            nameAttribute.includes('search') ||
+            idAttribute.includes('search') ||
+            el.classList.contains('search')
+          ) {
+            result = true;
+          }
+        });
+      }
+
+      return result;
+    };
+
     return (
       hasSearchInFormAction(formElements) ||
       hasUswdsSearchComponent(formElements) ||
-      hasSearchInInputType(inputElements)
+      hasSearchInInputType(inputElements) ||
+      hasSearchInIdNameOrClass(formElements) ||
+      hasSearchInIdNameOrClass(inputElements)
     );
   });
 
