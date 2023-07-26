@@ -7,19 +7,21 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
     const formElements = [...document.querySelectorAll('form')];
     const inputElements = [...document.querySelectorAll('input')];
 
-    const searchElements = (criteria) => (elements: HTMLElement[]) => {
-      let result = false;
+    const searchElements =
+      (criteriaFn: (el: HTMLElement) => boolean) =>
+      (elements: HTMLElement[]): boolean => {
+        let result = false;
 
-      if (elements.length > 0) {
-        elements.forEach((el) => {
-          if (criteria(el)) {
-            result = true;
-          }
-        });
-      }
+        if (elements.length > 0) {
+          elements.forEach((el) => {
+            if (criteriaFn(el)) {
+              result = true;
+            }
+          });
+        }
 
-      return result;
-    };
+        return result;
+      };
 
     const hasSearchInFormAction = searchElements((el: HTMLElement) => {
       const actionAttribute = el.getAttribute('action');
