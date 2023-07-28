@@ -134,6 +134,7 @@ export class CoreResultService {
 
       // Search scan
       coreResult.searchDetected = result.searchScan.searchDetected;
+      coreResult.searchgov = result.searchScan.searchgov;
     } else {
       logger.error({
         msg: pages.primary.error,
@@ -177,6 +178,7 @@ export class CoreResultService {
       coreResult.requiredLinksUrl = null;
       coreResult.requiredLinksText = null;
       coreResult.searchDetected = null;
+      coreResult.searchgov = null;
     }
   }
 

@@ -6,6 +6,7 @@ describe('search scan', () => {
     await newTestPage(async ({ page }) => {
       expect(await buildSearchResult(page)).toEqual({
         searchDetected: true,
+        searchgov: true,
       });
     });
   });

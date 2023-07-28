@@ -348,6 +348,10 @@ export class CoreResult {
   @Expose({ name: 'search_detected' })
   searchDetected?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'searchgov' })
+  searchgov?: boolean;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

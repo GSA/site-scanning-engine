@@ -78,6 +78,7 @@ export class Snapshot {
     'cookie_domains',
     'login_provider',
     'login_detected',
+    'searchgov',
     'search_detected',
     'dap_detected_final_url',
     'dap_parameters_final_url',

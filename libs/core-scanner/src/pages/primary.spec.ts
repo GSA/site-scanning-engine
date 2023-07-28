@@ -73,6 +73,7 @@ describe('primary scanner', () => {
         },
         searchScan: {
           searchDetected: true,
+          searchgov: true,
         },
       });
     });
