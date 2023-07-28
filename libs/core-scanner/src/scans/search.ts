@@ -7,78 +7,47 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
     const formElements = [...document.querySelectorAll('form')];
     const inputElements = [...document.querySelectorAll('input')];
 
-    const hasSearchInFormAction = (
-      formElements: HTMLFormElement[],
-    ): boolean => {
-      let result = false;
+    const searchElements =
+      (criteriaFn: (el: HTMLElement) => boolean) =>
+      (elements: HTMLElement[]): boolean => {
+        let result = false;
 
-      if (formElements.length > 0) {
-        formElements.forEach((el) => {
-          const actionAttribute = el.getAttribute('action');
-          if (
-            actionAttribute &&
-            actionAttribute.toLowerCase().includes('search')
-          ) {
-            result = true;
-          }
-        });
-      }
+        if (elements.length > 0) {
+          elements.forEach((el) => {
+            if (criteriaFn(el)) {
+              result = true;
+            }
+          });
+        }
 
-      return result;
-    };
+        return result;
+      };
 
-    const hasUswdsSearchComponent = (
-      formElements: HTMLFormElement[],
-    ): boolean => {
-      let result = false;
+    const hasSearchInFormAction = searchElements((el: HTMLElement) => {
+      const actionAttribute = el.getAttribute('action');
+      return (
+        actionAttribute && actionAttribute.toLowerCase().includes('search')
+      );
+    });
 
-      if (formElements.length > 0) {
-        formElements.forEach((el) => {
-          if (el.classList.contains('usa-search')) {
-            result = true;
-          }
-        });
-      }
+    const hasUswdsSearchComponent = searchElements((el: HTMLElement) => {
+      return el.classList.contains('usa-search');
+    });
 
-      return result;
-    };
+    const hasSearchInInputType = searchElements((el: HTMLElement) => {
+      const typeAttribute = el.getAttribute('type');
+      return typeAttribute && typeAttribute.toLowerCase().includes('search');
+    });
 
-    const hasSearchInInputType = (
-      inputElements: HTMLInputElement[],
-    ): boolean => {
-      let result = false;
-
-      if (inputElements.length > 0) {
-        inputElements.forEach((el) => {
-          const typeAttribute = el.getAttribute('type');
-          if (typeAttribute && typeAttribute.toLowerCase().includes('search')) {
-            result = true;
-          }
-        });
-      }
-
-      return result;
-    };
-
-    const hasSearchInIdNameOrClass = (formElements: HTMLElement[]): boolean => {
-      let result = false;
-
-      if (formElements.length > 0) {
-        formElements.forEach((el) => {
-          const nameAttribute = el.getAttribute('name');
-          const idAttribute = el.getAttribute('id');
-          if (
-            (nameAttribute && nameAttribute.toLowerCase().includes('search')) ||
-            (idAttribute && idAttribute.toLowerCase().includes('search')) ||
-            el.classList.contains('search')
-          ) {
-            result = true;
-          }
-        });
-      }
-
-      return result;
-    };
+    const hasSearchInIdNameOrClass = searchElements((el: HTMLElement) => {
+      const nameAttribute = el.getAttribute('name');
+      const idAttribute = el.getAttribute('id');
+      return (
+        (nameAttribute && nameAttribute.toLowerCase().includes('search')) ||
+        (idAttribute && idAttribute.toLowerCase().includes('search')) ||
+        el.classList.contains('search')
+      );
+    });
 
     return (
       hasSearchInFormAction(formElements) ||
