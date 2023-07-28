@@ -53,7 +53,7 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
       const actionAttribute = el.getAttribute('action');
       return (
         actionAttribute &&
-        actionAttribute.toLowerCase().includes('https://search.usa.gov/search')
+        actionAttribute.toLowerCase() === 'https://search.usa.gov/search'
       );
     });
 
