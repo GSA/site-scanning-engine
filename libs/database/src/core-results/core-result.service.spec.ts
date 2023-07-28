@@ -150,6 +150,7 @@ describe('CoreResultService', () => {
           },
           searchScan: {
             searchDetected: null,
+            searchgov: null,
           },
         },
       },

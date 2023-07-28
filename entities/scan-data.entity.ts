@@ -107,4 +107,5 @@ export type RequiredLinksScan = {
 
 export type SearchScan = {
   searchDetected: boolean;
+  searchgov: boolean;
 };

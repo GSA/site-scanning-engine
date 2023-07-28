@@ -3,7 +3,7 @@ import { Page } from 'puppeteer';
 import { SearchScan } from 'entities/scan-data.entity';
 
 export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
-  const searchDetected = await page.evaluate(() => {
+  const searchScanResults = await page.evaluate(() => {
     const formElements = [...document.querySelectorAll('form')];
     const inputElements = [...document.querySelectorAll('input')];
 
@@ -49,14 +49,24 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
       );
     });
 
-    return (
-      hasSearchInFormAction(formElements) ||
-      hasUswdsSearchComponent(formElements) ||
-      hasSearchInInputType(inputElements) ||
-      hasSearchInIdNameOrClass(formElements) ||
-      hasSearchInIdNameOrClass(inputElements)
-    );
+    const usesSearchGov = searchElements((el: HTMLElement) => {
+      const actionAttribute = el.getAttribute('action');
+      return (
+        actionAttribute &&
+        actionAttribute.toLowerCase() === 'https://search.usa.gov/search'
+      );
+    });
+
+    return {
+      searchDetected:
+        hasSearchInFormAction(formElements) ||
+        hasUswdsSearchComponent(formElements) ||
+        hasSearchInInputType(inputElements) ||
+        hasSearchInIdNameOrClass(formElements) ||
+        hasSearchInIdNameOrClass(inputElements),
+      searchgov: usesSearchGov(formElements) ?? null,
+    };
   });
 
-  return { searchDetected };
+  return searchScanResults;
 };
