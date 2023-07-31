@@ -33,7 +33,6 @@ export class Snapshot {
     'sitemap_xml_scan_status',
     'dns_scan_status',
     'dns_ipv6',
-    'hsts',
     'dns_hostname',
     'source_list',
     'cms',

@@ -8,6 +8,7 @@ export class JsonSerializer implements Serializer {
 
   serialize(websites: Website[]) {
     const serializedResults = websites.map((website) => website.serialized());
+
     return JSON.stringify(serializedResults);
   }
 }
