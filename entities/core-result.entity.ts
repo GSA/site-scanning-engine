@@ -316,7 +316,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'hsts' })
-  @Exclude({ toPlainOnly: true })
+  @Exclude()
   hsts?: boolean;
 
   @Column({ nullable: true })
