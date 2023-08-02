@@ -57,6 +57,8 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
       );
     });
 
+    const usesSearchGovResult = usesSearchGov(formElements);
+
     return {
       searchDetected:
         hasSearchInFormAction(formElements) ||
@@ -64,7 +66,7 @@ export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
         hasSearchInInputType(inputElements) ||
         hasSearchInIdNameOrClass(formElements) ||
         hasSearchInIdNameOrClass(inputElements),
-      searchgov: usesSearchGov(formElements) ?? null,
+      searchgov: usesSearchGovResult ? usesSearchGovResult : null,
     };
   });
 
