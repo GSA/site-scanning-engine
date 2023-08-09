@@ -69,7 +69,7 @@ describe('primary scanner', () => {
         requiredLinksScan: {
           requiredLinksUrl: 'about,foia,privacy,usa.gov',
           requiredLinksText:
-            'accessibility,no fear act,foia,inspector general,privacy policy,vulnerability disclosure',
+            'accessibility,no fear act,foia,inspector general,privacy policy,vulnerability disclosure,usa.gov',
         },
         searchScan: {
           searchDetected: true,

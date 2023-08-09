@@ -28,6 +28,7 @@ export const buildRequiredLinksResult = async (
     'inspector general',
     'privacy policy',
     'vulnerability disclosure',
+    'usa.gov',
   ]
     .filter((string) => hasStringInLinkText(html, string))
     .join(',');
