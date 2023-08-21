@@ -39,39 +39,47 @@ export const buildLoginResult = async (
   const html = await mainResponse.text();
   const htmlLower = html.toLowerCase();
 
+  const loginDetected = getLoginDetectedResults(htmlLower);
+  const loginProvider = getLoginProviderResults(htmlLower);
+
   return {
-    loginDetected: getLoginDetectedResults(htmlLower),
-    loginProvider: getLoginProviderResults(htmlLower),
+    loginDetected,
+    loginProvider,
   };
 };
 
-const getLoginDetectedResults = (html: string) => {
+const getLoginDetectedResults = (html: string): string | null => {
   const results = [];
+
   loginDetectedStrings.forEach((string) => {
     if (html.includes(string.toLowerCase())) {
       results.push(string);
     }
   });
-  return results.length > 0 ? results.sort().join(',') : null;
+
+  return formatResults(results);
 };
 
-const getLoginProviderResults = (html: string) => {
+const getLoginProviderResults = (html: string): string | null => {
   const results = [];
-
   const anchorElements = html.match(/<a\b([^>]*)>(.*?)<\/a>/gi);
+
   if (anchorElements) {
     loginProviderStrings.forEach((string) => {
-      const matchingHrefs = anchorElements.filter((href) =>
-        href.toLowerCase().includes(string),
+      const matchingAnchorEls = anchorElements.filter((el) =>
+        el.toLowerCase().includes(string),
       );
 
-      if (matchingHrefs.length > 0) {
+      if (matchingAnchorEls.length > 0) {
         results.push(string);
       }
     });
   }
 
-  const uniqueResults = [...new Set(results)];
+  return formatResults(results);
+};
 
-  return uniqueResults.length > 0 ? uniqueResults.sort().join(',') : null;
+const formatResults = (arr: string[]): string | null => {
+  const uniqueArr = [...new Set(arr)];
+  return uniqueArr.length > 0 ? uniqueArr.sort().join(',') : null;
 };
