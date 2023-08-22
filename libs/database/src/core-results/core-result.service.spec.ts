@@ -141,9 +141,6 @@ describe('CoreResultService', () => {
           cmsScan: {
             cms: null,
           },
-          hstsScan: {
-            hsts: false,
-          },
           requiredLinksScan: {
             requiredLinksUrl: null,
             requiredLinksText: null,
