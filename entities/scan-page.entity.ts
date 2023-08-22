@@ -23,7 +23,6 @@ export type PrimaryScans = {
   loginScan: ScanData.LoginScan;
   cloudDotGovPagesScan: ScanData.CloudDotGovPagesScan;
   cmsScan: ScanData.CmsScan;
-  hstsScan: ScanData.HstsScan;
   requiredLinksScan: ScanData.RequiredLinksScan;
   searchScan: ScanData.SearchScan;
 };
@@ -48,3 +47,8 @@ export type DnsScans = {
   dnsScan: ScanData.DnsScan;
 };
 export type DnsPageScan = PageScan<DnsScans>;
+
+export type SecurityScans = {
+  securityScan: ScanData.SecurityScan;
+};
+export type SecurityPageScan = PageScan<SecurityScans>;

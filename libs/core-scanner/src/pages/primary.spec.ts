@@ -65,7 +65,6 @@ describe('primary scanner', () => {
         loginScan: { loginDetected: null, loginProvider: null },
         cloudDotGovPagesScan: { cloudDotGovPages: true },
         cmsScan: { cms: null },
-        hstsScan: { hsts: true },
         requiredLinksScan: {
           requiredLinksUrl: 'about,foia,privacy,usa.gov',
           requiredLinksText:

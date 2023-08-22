@@ -35,6 +35,7 @@ export class CoreResultService {
     this.updateRobotsTxtScanResults(coreResult, pages, logger);
     this.updateSitemapXmlScanResults(coreResult, pages, logger);
     this.updateDnsScanResults(coreResult, pages, logger);
+    this.updateSecurityScanResults(coreResult, pages, logger);
 
     return this.create(coreResult);
   }
@@ -125,9 +126,6 @@ export class CoreResultService {
       // CMS scan
       coreResult.cms = result.cmsScan.cms;
 
-      // HSTS scan
-      coreResult.hsts = result.hstsScan.hsts;
-
       // Required links scan
       coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
       coreResult.requiredLinksText = result.requiredLinksScan.requiredLinksText;
@@ -174,7 +172,6 @@ export class CoreResultService {
       coreResult.loginProvider = null;
       coreResult.cloudDotGovPages = null;
       coreResult.cms = null;
-      coreResult.hsts = null;
       coreResult.requiredLinksUrl = null;
       coreResult.requiredLinksText = null;
       coreResult.searchDetected = null;
@@ -297,6 +294,29 @@ export class CoreResultService {
 
       coreResult.dnsIpv6 = null;
       coreResult.dnsHostname = null;
+    }
+  }
+
+  private updateSecurityScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.securityScanStatus = pages.security.status;
+
+    if (pages.security.status === ScanStatus.Completed) {
+      coreResult.httpsEnforced =
+        pages.security.result.securityScan.httpsEnforced;
+      coreResult.hstsPreloading =
+        pages.security.result.securityScan.hstsPreloading;
+    } else {
+      logger.error({
+        msg: pages.security.error,
+        page: 'security',
+      });
+
+      coreResult.httpsEnforced = null;
+      coreResult.hstsPreloading = null;
     }
   }
 }
