@@ -141,9 +141,6 @@ describe('CoreResultService', () => {
           cmsScan: {
             cms: null,
           },
-          hstsScan: {
-            hsts: false,
-          },
           requiredLinksScan: {
             requiredLinksUrl: null,
             requiredLinksText: null,
@@ -192,6 +189,15 @@ describe('CoreResultService', () => {
           dnsScan: {
             ipv6: true,
             dnsHostname: null,
+          },
+        },
+      },
+      security: {
+        status: scanStatus,
+        result: {
+          securityScan: {
+            httpsEnforced: true,
+            hstsPreloading: true,
           },
         },
       },

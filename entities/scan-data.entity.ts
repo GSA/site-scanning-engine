@@ -96,10 +96,6 @@ export type CmsScan = {
   cms: string;
 };
 
-export type HstsScan = {
-  hsts: boolean;
-};
-
 export type RequiredLinksScan = {
   requiredLinksUrl: string;
   requiredLinksText: string;
@@ -108,4 +104,9 @@ export type RequiredLinksScan = {
 export type SearchScan = {
   searchDetected: boolean;
   searchgov: boolean;
+};
+
+export type SecurityScan = {
+  httpsEnforced: boolean;
+  hstsPreloading: boolean;
 };

@@ -397,13 +397,6 @@ export class WebsiteApiResultDto {
   cms: string;
 
   /**
-   * `hsts` indicates the presence of a Strict-Transport-Security Header.
-   *
-   * @example true
-   */
-  hsts: boolean;
-
-  /**
    * `target_url` is the url the scanner starts the scan with.
    *
    * @example 18f.gov

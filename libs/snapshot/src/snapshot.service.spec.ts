@@ -46,6 +46,10 @@ describe('SnapshotService', () => {
               if (key === 'fileNameAll') {
                 return 'weekly-snapshot-all';
               }
+
+              if (key === 'fileNameExperimental') {
+                return 'weekly-snapshot-experimental';
+              }
             }),
           },
         },
@@ -78,9 +82,6 @@ describe('SnapshotService', () => {
     website.coreResult = coreResult;
     website.url = 'supremecourt.gov';
 
-    const fileName = 'weekly-snapshot.json';
-    const body = JSON.stringify([website.serialized()]);
-
     mockWebsiteService.findLiveWebsiteResults.mockResolvedValue([website]);
     mockWebsiteService.findAllWebsiteResults.mockResolvedValue([website]);
 
@@ -88,94 +89,37 @@ describe('SnapshotService', () => {
 
     copyDate.setDate(copyDate.getDate() - 7);
     const expectedDate = copyDate.toISOString();
-    expect(mockStorageService.upload).toBeCalledWith(fileName, body);
+
+    expect(mockStorageService.copy).toBeCalledTimes(6);
+
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.json',
       `archive/json/weekly-snapshot-${expectedDate}.json`,
     );
+
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.csv',
       `archive/csv/weekly-snapshot-${expectedDate}.csv`,
     );
+
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot-all.json',
       `archive/json/weekly-snapshot-all-${expectedDate}.json`,
     );
+
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot-all.csv',
       `archive/csv/weekly-snapshot-all-${expectedDate}.csv`,
     );
+
+    expect(mockStorageService.copy).toBeCalledWith(
+      'weekly-snapshot-experimental.json',
+      `archive/json/weekly-snapshot-experimental-${expectedDate}.json`,
+    );
+
+    expect(mockStorageService.copy).toBeCalledWith(
+      'weekly-snapshot-experimental.csv',
+      `archive/csv/weekly-snapshot-experimental-${expectedDate}.csv`,
+    );
   });
 });
-
-const MOCK_ROW = {
-  id: 3,
-  created: '2022-02-25T03:20:07.830Z',
-  updated: '2022-02-25T03:20:07.830Z',
-  url: 'df.gov',
-  branch: 'Federal - Executive',
-  agency: 'Central Intelligence Agency',
-  agencyCode: null,
-  bureau: 'Central Intelligence Agency',
-  bureauCode: null,
-  coreResult: {
-    id: 2,
-    created: '2022-02-25T03:21:34.662Z',
-    updated: '2022-02-25T03:21:34.662Z',
-    notFoundScanStatus: 'unknown_error',
-    primaryScanStatus: 'dns_resolution_error',
-    robotsTxtScanStatus: 'dns_resolution_error',
-    sitemapXmlScanStatus: 'dns_resolution_error',
-    notFoundScanStatusDetails: '',
-    primaryScanStatusDetails: '{}',
-    robotsTxtScanStatusDetails: '{}',
-    sitemapXmlScanStatusDetails: '{}',
-    targetUrlBaseDomain: 'df.gov',
-    finalUrl: null,
-    finalUrlIsLive: null,
-    finalUrlBaseDomain: null,
-    finalUrlMIMEType: null,
-    finalUrlSameDomain: null,
-    finalUrlStatusCode: null,
-    finalUrlSameWebsite: null,
-    targetUrl404Test: null,
-    targetUrlRedirects: null,
-    usaClasses: null,
-    uswdsString: null,
-    uswdsInlineCss: null,
-    uswdsUsFlag: null,
-    uswdsStringInCss: null,
-    uswdsUsFlagInCss: null,
-    uswdsPublicSansFont: null,
-    uswdsSemanticVersion: null,
-    uswdsVersion: null,
-    uswdsCount: null,
-    dapDetected: null,
-    dapParameters: null,
-    ogTitleFinalUrl: null,
-    ogDescriptionFinalUrl: null,
-    ogArticlePublishedFinalUrl: null,
-    ogArticleModifiedFinalUrl: null,
-    mainElementFinalUrl: null,
-    robotsTxtFinalUrl: null,
-    robotsTxtStatusCode: null,
-    robotsTxtFinalUrlLive: null,
-    robotsTxtDetected: null,
-    robotsTxtFinalUrlMimeType: null,
-    robotsTxtTargetUrlRedirects: null,
-    robotsTxtFinalUrlSize: null,
-    robotsTxtCrawlDelay: null,
-    robotsTxtSitemapLocations: null,
-    sitemapXmlDetected: null,
-    sitemapXmlStatusCode: null,
-    sitemapXmlFinalUrl: null,
-    sitemapXmlFinalUrlLive: null,
-    sitemapTargetUrlRedirects: null,
-    sitemapXmlFinalUrlFilesize: null,
-    sitemapXmlFinalUrlMimeType: null,
-    sitemapXmlCount: null,
-    sitemapXmlPdfCount: null,
-    thirdPartyServiceDomains: null,
-    thirdPartyServiceCount: null,
-  },
-};

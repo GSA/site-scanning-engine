@@ -15,7 +15,15 @@ export class CsvSerializer implements Serializer {
   }
 
   serialize(websites: Website[]) {
-    const serializedWebsites = websites.map((website) => website.serialized());
+    const serializedWebsites = websites
+      .map((website) => website.serialized())
+      .map((serializedWebsite) => {
+        const extractedData: any = {};
+        this.columnOrder.forEach((column) => {
+          extractedData[column] = serializedWebsite[column];
+        });
+        return extractedData;
+      });
 
     const formattedResults = this.formatWebsites(serializedWebsites);
 
