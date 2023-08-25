@@ -25,14 +25,21 @@ export class WebsiteService {
     return websites;
   }
 
-  async findLiveWebsiteResults(): Promise<Website[]> {
-    const websites = this.website
+  async findLiveSnapshotWebsiteResults(): Promise<Website[]> {
+    const queryBuilder = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
       .where('coreResult.finalUrlIsLive = :isLive', { isLive: true })
-      .getMany();
+      .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
+        mimeTypes: [
+          'application/xhtml+xml',
+          'application/xml',
+          'application/json',
+          'text/xml',
+        ],
+      });
 
-    return websites;
+    return await queryBuilder.getMany();
   }
 
   async findAllWebsites(): Promise<Website[]> {

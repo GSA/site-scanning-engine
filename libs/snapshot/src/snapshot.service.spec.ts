@@ -77,12 +77,15 @@ describe('SnapshotService', () => {
     coreResult.primaryScanStatus = 'completed';
     coreResult.robotsTxtScanStatus = 'completed';
     coreResult.sitemapXmlScanStatus = 'completed';
+    coreResult.finalUrlMIMEType = 'text/html';
 
     const website = new Website();
     website.coreResult = coreResult;
     website.url = 'supremecourt.gov';
 
-    mockWebsiteService.findLiveWebsiteResults.mockResolvedValue([website]);
+    mockWebsiteService.findLiveSnapshotWebsiteResults.mockResolvedValue([
+      website,
+    ]);
     mockWebsiteService.findAllWebsiteResults.mockResolvedValue([website]);
 
     await service.weeklySnapshot();
