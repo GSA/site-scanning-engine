@@ -128,7 +128,7 @@ export class SnapshotService {
     const liveSnapshot = new Snapshot(
       this.storageService,
       [new JsonSerializer(liveColumnOrder), new CsvSerializer(liveColumnOrder)],
-      await this.websiteService.findLiveWebsiteResults(),
+      await this.websiteService.findLiveSnapshotWebsiteResults(),
       priorDate,
       this.fileNameLive,
     );

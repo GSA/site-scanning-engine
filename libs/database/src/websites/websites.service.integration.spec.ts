@@ -34,7 +34,7 @@ describe('AnalysisService', () => {
     expect(service).toBeDefined();
   });
 
-  it('get only live website results', async () => {
+  it('get only live snapshot website results', async () => {
     const firstWebsite = new Website();
     firstWebsite.url = 'https://18f.gov';
     firstWebsite.branch = 'Federal Agency - Executive';
@@ -53,6 +53,15 @@ describe('AnalysisService', () => {
     secondWebsite.bureauCode = 10;
     secondWebsite.sourceList = 'gov';
 
+    const thirdWebsite = new Website();
+    thirdWebsite.url = 'https://anotherfake.gov';
+    thirdWebsite.branch = 'Federal Agency - Executive';
+    thirdWebsite.agency = 'Fake Agency';
+    thirdWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
+    thirdWebsite.agencyCode = 10;
+    thirdWebsite.bureauCode = 10;
+    thirdWebsite.sourceList = 'gov';
+
     const firstCoreResult = new CoreResult();
     firstCoreResult.website = firstWebsite;
     firstCoreResult.finalUrlIsLive = true;
@@ -61,6 +70,7 @@ describe('AnalysisService', () => {
     firstCoreResult.robotsTxtScanStatus = 'complete';
     firstCoreResult.sitemapXmlScanStatus = 'complete';
     firstCoreResult.targetUrlBaseDomain = 'complete';
+    firstCoreResult.finalUrlMIMEType = 'text/html';
 
     const secondCoreResult = new CoreResult();
     secondCoreResult.website = secondWebsite;
@@ -70,13 +80,26 @@ describe('AnalysisService', () => {
     secondCoreResult.robotsTxtScanStatus = 'complete';
     secondCoreResult.sitemapXmlScanStatus = 'complete';
     secondCoreResult.targetUrlBaseDomain = 'complete';
+    secondCoreResult.finalUrlMIMEType = 'text/html';
+
+    const thirdCoreResult = new CoreResult();
+    thirdCoreResult.website = thirdWebsite;
+    thirdCoreResult.finalUrlIsLive = true;
+    thirdCoreResult.notFoundScanStatus = 'complete';
+    thirdCoreResult.primaryScanStatus = 'complete';
+    thirdCoreResult.robotsTxtScanStatus = 'complete';
+    thirdCoreResult.sitemapXmlScanStatus = 'complete';
+    thirdCoreResult.targetUrlBaseDomain = 'complete';
+    thirdCoreResult.finalUrlMIMEType = 'application/json';
 
     await websiteRepository.insert(firstWebsite);
     await coreResultRepository.insert(firstCoreResult);
     await websiteRepository.insert(secondWebsite);
     await coreResultRepository.insert(secondCoreResult);
+    await websiteRepository.insert(thirdWebsite);
+    await coreResultRepository.insert(thirdCoreResult);
 
-    const result = await service.findLiveWebsiteResults();
+    const result = await service.findLiveSnapshotWebsiteResults();
 
     expect(result.length).toStrictEqual(1);
   });
