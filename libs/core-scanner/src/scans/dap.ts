@@ -1,14 +1,34 @@
 import { HTTPRequest } from 'puppeteer';
-
 import { DapScan } from 'entities/scan-data.entity';
 
 export const buildDapResult = async (
   outboundRequests: HTTPRequest[],
 ): Promise<DapScan> => {
+  const dapParameters = getDapParameters(outboundRequests);
+  const dapDetected =
+    getDapDetected(outboundRequests) || typeof dapParameters !== 'undefined';
+
   return {
-    dapDetected: dapDetected(outboundRequests),
-    dapParameters: dapParameters(outboundRequests),
+    dapDetected,
+    dapParameters,
   };
+};
+
+const getDapParameters = (outboundRequests: HTTPRequest[]): string => {
+  const dapScript = 'Universal-Federated-Analytics-Min.js';
+  let parameters: string;
+
+  for (const request of outboundRequests) {
+    const requestUrl = request.url();
+
+    if (requestUrl.includes(dapScript)) {
+      const parsedUrl = new URL(requestUrl);
+      parameters = parsedUrl.searchParams.toString();
+      break;
+    }
+  }
+
+  return parameters;
 };
 
 /**
@@ -17,7 +37,7 @@ export const buildDapResult = async (
  * It works by looking for the Google Analytics UA Identifier in either the URL or Post Data.
  * @param outboundRequests
  */
-const dapDetected = (outboundRequests: HTTPRequest[]) => {
+const getDapDetected = (outboundRequests: HTTPRequest[]): boolean => {
   const dapIds = ['UA-33523145-1', 'G-9TNNMGP8WJ'];
   let detected = false;
 
@@ -42,20 +62,4 @@ const dapDetected = (outboundRequests: HTTPRequest[]) => {
   }
 
   return detected;
-};
-
-const dapParameters = (outboundRequests: HTTPRequest[]) => {
-  const dapScript = 'Universal-Federated-Analytics-Min.js';
-  let parameters: string;
-  for (const request of outboundRequests) {
-    const requestUrl = request.url();
-
-    if (requestUrl.includes(dapScript)) {
-      const parsedUrl = new URL(requestUrl);
-      parameters = parsedUrl.searchParams.toString();
-      break;
-    }
-  }
-
-  return parameters;
 };
