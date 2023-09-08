@@ -54,7 +54,7 @@ describe('dap scan', () => {
         }),
       ]),
     ).toEqual({
-      dapDetected: false,
+      dapDetected: true,
       dapParameters: 'test1=1&test2=2',
     });
   });
@@ -68,7 +68,7 @@ describe('dap scan', () => {
         }),
       ]),
     ).toEqual({
-      dapDetected: false,
+      dapDetected: true,
       dapParameters: 'test1=1&test2=2',
     });
   });
