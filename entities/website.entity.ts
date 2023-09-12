@@ -34,6 +34,10 @@ export class Website {
   url: string;
 
   @Column()
+  @Expose({ name: 'target_url_top_level_domain' })
+  topLevelDomain: string;
+
+  @Column()
   @Expose({ name: 'target_url_branch' })
   branch: string;
 

@@ -37,7 +37,7 @@ describe('IngestService', () => {
 
   it('should get a list of URLs', async () => {
     const csvString =
-      'target_url,base_domain,branch,agency,agency_code,bureau,bureau_code,source_list_federal_domains,source_list_dap,source_list_pulse,source_list_other\n18f.gov,18f.gov,Executive,General Services Administration,23,"GSA, TTS",,FALSE,FALSE,TRUE,FALSE';
+      'target_url,base_domain,top_level_domain,branch,agency,agency_code,bureau,bureau_code,source_list_federal_domains,source_list_dap,source_list_pulse,source_list_other\n18f.gov,18f.gov,gov,Executive,General Services Administration,23,"GSA, TTS",,FALSE,FALSE,TRUE,FALSE';
 
     jest
       .spyOn(mockUrlList, 'fetch')
@@ -50,7 +50,7 @@ describe('IngestService', () => {
 
   it('write a list of URLs', async () => {
     const csvString =
-      'target_url,base_domain,branch,agency,agency_code,bureau,bureau_code,source_list_federal_domains,source_list_dap,source_list_pulse,source_list_other\n18f.gov,18f.gov,Executive,General Services Administration,23,"GSA, TTS",,FALSE,FALSE,TRUE,FALSE';
+      'target_url,base_domain,top_level_domain,branch,agency,agency_code,bureau,bureau_code,source_list_federal_domains,source_list_dap,source_list_pulse,source_list_other\n18f.gov,18f.gov,gov,Executive,General Services Administration,23,"GSA, TTS",,FALSE,FALSE,TRUE,FALSE';
 
     jest
       .spyOn(mockUrlList, 'fetch')
@@ -66,7 +66,7 @@ describe('IngestService', () => {
 
   it('write a list of URLs and removes invalid urls', async () => {
     const csvString =
-      'target_url,base_domain,branch,agency,agency_code,bureau,bureau_code,source_list_federal_domains,source_list_dap,source_list_pulse,source_list_other\n18f.gov,18f.gov,Executive,General Services Administration,23,"GSA, TTS",,FALSE,FALSE,TRUE,FALSE';
+      'target_url,base_domain,top_level_domain,branch,agency,agency_code,bureau,bureau_code,source_list_federal_domains,source_list_dap,source_list_pulse,source_list_other\n18f.gov,18f.gov,gov,Executive,General Services Administration,23,"GSA, TTS",,FALSE,FALSE,TRUE,FALSE';
 
     jest
       .spyOn(mockUrlList, 'fetch')

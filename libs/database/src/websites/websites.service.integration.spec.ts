@@ -37,6 +37,7 @@ describe('AnalysisService', () => {
   it('get only live snapshot website results', async () => {
     const firstWebsite = new Website();
     firstWebsite.url = 'https://18f.gov';
+    firstWebsite.topLevelDomain = 'gov';
     firstWebsite.branch = 'Federal Agency - Executive';
     firstWebsite.agency = 'General Services Administration';
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
@@ -46,6 +47,7 @@ describe('AnalysisService', () => {
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
+    secondWebsite.topLevelDomain = 'gov';
     secondWebsite.branch = 'Federal Agency - Executive';
     secondWebsite.agency = 'Fake Agency';
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
@@ -55,6 +57,7 @@ describe('AnalysisService', () => {
 
     const thirdWebsite = new Website();
     thirdWebsite.url = 'https://anotherfake.gov';
+    thirdWebsite.topLevelDomain = 'gov';
     thirdWebsite.branch = 'Federal Agency - Executive';
     thirdWebsite.agency = 'Fake Agency';
     thirdWebsite.bureau = 'GSA,FAS,Technology Transformation Service';

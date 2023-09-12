@@ -66,6 +66,7 @@ describe('WebsiteService', () => {
   it('should insert a Website', async () => {
     const createWebsiteDto: CreateWebsiteDto = {
       website: 'https://18f.gov',
+      topLevelDomain: 'gov',
       branch: 'Federal Agency - Executive',
       agency: 'General Services Administration',
       bureau: 'GSA,FAS,Technology Transformation Service',
@@ -76,6 +77,7 @@ describe('WebsiteService', () => {
 
     const website = new Website();
     website.url = createWebsiteDto.website;
+    website.topLevelDomain = createWebsiteDto.topLevelDomain;
     website.branch = createWebsiteDto.branch;
     website.agency = createWebsiteDto.agency;
     website.bureau = createWebsiteDto.bureau;

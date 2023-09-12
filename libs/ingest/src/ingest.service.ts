@@ -30,6 +30,7 @@ export class IngestService {
       headers: [
         'targetUrl',
         'baseDomain',
+        'topLevelDomain',
         'branch',
         'agency',
         'agencyCode',
