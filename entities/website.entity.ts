@@ -33,7 +33,7 @@ export class Website {
   @Expose({ name: 'target_url' })
   url: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Expose({ name: 'target_url_top_level_domain' })
   topLevelDomain: string;
 
