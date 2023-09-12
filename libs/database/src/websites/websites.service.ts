@@ -142,6 +142,7 @@ export class WebsiteService {
   async upsert(createWebsiteDto: CreateWebsiteDto) {
     const website = new Website();
     website.url = createWebsiteDto.website;
+    website.topLevelDomain = createWebsiteDto.topLevelDomain;
     website.agency = createWebsiteDto.agency;
     website.bureau = createWebsiteDto.bureau;
     website.branch = createWebsiteDto.branch;

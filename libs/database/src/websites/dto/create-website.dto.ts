@@ -3,6 +3,7 @@
  */
 export class CreateWebsiteDto {
   website: string;
+  topLevelDomain: string;
   branch: string;
   agency: string;
   agencyCode?: number;

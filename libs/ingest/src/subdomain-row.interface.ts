@@ -1,6 +1,7 @@
 export interface SubdomainRow {
   targetUrl: string;
   baseDomain: string;
+  topLevelDomain: string;
   branch: string;
   agency: string;
   agencyCode: string;
