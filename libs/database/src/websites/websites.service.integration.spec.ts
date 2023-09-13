@@ -34,7 +34,7 @@ describe('AnalysisService', () => {
     expect(service).toBeDefined();
   });
 
-  it('get only live snapshot website results', async () => {
+  it('get only live snapshot website results with the appropriate tld', async () => {
     const firstWebsite = new Website();
     firstWebsite.url = 'https://18f.gov';
     firstWebsite.topLevelDomain = 'gov';
@@ -64,6 +64,15 @@ describe('AnalysisService', () => {
     thirdWebsite.agencyCode = 10;
     thirdWebsite.bureauCode = 10;
     thirdWebsite.sourceList = 'gov';
+
+    const fourthWebsite = new Website();
+    fourthWebsite.url = 'https://anotherfake.com';
+    fourthWebsite.topLevelDomain = 'com';
+    fourthWebsite.branch = 'fake';
+    fourthWebsite.bureau = 'fake';
+    fourthWebsite.agencyCode = 10;
+    fourthWebsite.bureauCode = 10;
+    fourthWebsite.sourceList = '';
 
     const firstCoreResult = new CoreResult();
     firstCoreResult.website = firstWebsite;
@@ -95,6 +104,16 @@ describe('AnalysisService', () => {
     thirdCoreResult.targetUrlBaseDomain = 'complete';
     thirdCoreResult.finalUrlMIMEType = 'application/json';
 
+    const fourthCoreResult = new CoreResult();
+    fourthCoreResult.website = fourthWebsite;
+    fourthCoreResult.finalUrlIsLive = true;
+    fourthCoreResult.notFoundScanStatus = 'complete';
+    fourthCoreResult.primaryScanStatus = 'complete';
+    fourthCoreResult.robotsTxtScanStatus = 'complete';
+    fourthCoreResult.sitemapXmlScanStatus = 'complete';
+    fourthCoreResult.targetUrlBaseDomain = 'complete';
+    fourthCoreResult.finalUrlMIMEType = 'application/html';
+
     await websiteRepository.insert(firstWebsite);
     await coreResultRepository.insert(firstCoreResult);
     await websiteRepository.insert(secondWebsite);
@@ -102,7 +121,7 @@ describe('AnalysisService', () => {
     await websiteRepository.insert(thirdWebsite);
     await coreResultRepository.insert(thirdCoreResult);
 
-    const result = await service.findLiveSnapshotWebsiteResults();
+    const result = await service.findLiveSnapshotResults();
 
     expect(result.length).toStrictEqual(1);
   });

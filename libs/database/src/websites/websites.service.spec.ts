@@ -5,7 +5,6 @@ import { mock } from 'jest-mock-extended';
 import { DeleteQueryBuilder, Repository, SelectQueryBuilder } from 'typeorm';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { WebsiteService } from './websites.service';
-import { CoreResult } from 'entities/core-result.entity';
 
 describe('WebsiteService', () => {
   let service: WebsiteService;
@@ -32,15 +31,17 @@ describe('WebsiteService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return all Websites', async () => {
+  it('should return all Websites needed for the snapshot', async () => {
     const website = new Website();
     website.url = 'https://18f.gov';
+    website.topLevelDomain = 'gov';
 
     mockQB.innerJoinAndSelect.mockReturnThis();
+    mockQB.where.mockReturnThis();
     mockQB.getMany.mockResolvedValue([website]);
     mockRepository.createQueryBuilder.mockReturnValue(mockQB);
 
-    const result = await service.findAllWebsiteResults();
+    const result = await service.findAllSnapshotResults();
 
     const expected = [website];
     expect(result).toStrictEqual(expected);
