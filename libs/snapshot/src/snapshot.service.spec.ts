@@ -83,10 +83,8 @@ describe('SnapshotService', () => {
     website.coreResult = coreResult;
     website.url = 'supremecourt.gov';
 
-    mockWebsiteService.findLiveSnapshotWebsiteResults.mockResolvedValue([
-      website,
-    ]);
-    mockWebsiteService.findAllWebsiteResults.mockResolvedValue([website]);
+    mockWebsiteService.findLiveSnapshotResults.mockResolvedValue([website]);
+    mockWebsiteService.findAllSnapshotResults.mockResolvedValue([website]);
 
     await service.weeklySnapshot();
 

@@ -120,7 +120,7 @@ export class SnapshotService {
     const allSnapshot = new Snapshot(
       this.storageService,
       [new JsonSerializer(liveColumnOrder), new CsvSerializer(liveColumnOrder)],
-      await this.websiteService.findAllWebsiteResults(),
+      await this.websiteService.findAllSnapshotResults(),
       priorDate,
       this.fileNameAll,
     );
@@ -128,7 +128,7 @@ export class SnapshotService {
     const liveSnapshot = new Snapshot(
       this.storageService,
       [new JsonSerializer(liveColumnOrder), new CsvSerializer(liveColumnOrder)],
-      await this.websiteService.findLiveSnapshotWebsiteResults(),
+      await this.websiteService.findLiveSnapshotResults(),
       priorDate,
       this.fileNameLive,
     );
@@ -216,7 +216,7 @@ export class SnapshotService {
         new JsonSerializer(experimentalColumnOrder),
         new CsvSerializer(experimentalColumnOrder),
       ],
-      await this.websiteService.findAllWebsiteResults(),
+      await this.websiteService.findAllSnapshotResults(),
       priorDate,
       this.fileNameExperimental,
     );

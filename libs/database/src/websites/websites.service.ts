@@ -16,20 +16,22 @@ export class WebsiteService {
     @InjectRepository(Website) private website: Repository<Website>,
   ) {}
 
-  async findAllWebsiteResults(): Promise<Website[]> {
+  async findAllSnapshotResults(): Promise<Website[]> {
     const websites = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .where('website.topLevelDomain = :tld', { tld: 'gov' })
       .getMany();
 
     return websites;
   }
 
-  async findLiveSnapshotWebsiteResults(): Promise<Website[]> {
+  async findLiveSnapshotResults(): Promise<Website[]> {
     const queryBuilder = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
-      .where('coreResult.finalUrlIsLive = :isLive', { isLive: true })
+      .where('website.topLevelDomain = :tld', { tld: 'gov' })
+      .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
         mimeTypes: [
           'application/xhtml+xml',
@@ -67,7 +69,8 @@ export class WebsiteService {
   ): Promise<Pagination<Website>> {
     const query = this.website
       .createQueryBuilder('website')
-      .leftJoinAndSelect('website.coreResult', 'coreResult');
+      .leftJoinAndSelect('website.coreResult', 'coreResult')
+      .where('website.topLevelDomain = :tld', { tld: 'gov' });
 
     if (dto.target_url_domain) {
       query.andWhere('coreResult.targetUrlBaseDomain = :baseDomain', {
