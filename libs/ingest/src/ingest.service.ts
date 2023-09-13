@@ -25,6 +25,7 @@ export class IngestService {
   async writeUrls(urls, maxRows?: number) {
     const writes: Promise<any>[] = [];
     const newestWebsiteRecord = await this.websiteService.findNewestWebsite();
+    let hasParsingError = false;
 
     const stream = parse<SubdomainRow, CreateWebsiteDto>({
       headers: [
@@ -53,7 +54,10 @@ export class IngestService {
           sourceList: this.getSourceList(data),
         }),
       )
-      .on('error', (error) => this.logger.error(error.message, error.stack))
+      .on('error', (error) => {
+        hasParsingError = true;
+        this.logger.error(error.message, error.stack);
+      })
       .on('data', (row: CreateWebsiteDto) => {
         writes.push(this.writeToDatabase(row));
       })
@@ -65,27 +69,29 @@ export class IngestService {
 
     const end = new Promise((resolve) => {
       stream.end(async () => {
-        try {
-          await Promise.all(writes);
-          this.logger.debug('finished ingest of urls');
+        if (!hasParsingError) {
+          try {
+            await Promise.all(writes);
+            this.logger.debug('finished ingest of urls');
 
-          if (newestWebsiteRecord) {
-            this.logger.log(`invalid url(s) detected`);
-            const deleted = await this.websiteService.deleteBefore(
-              new Date(newestWebsiteRecord.updated),
-            );
-            this.logger.log(
-              `finished removing ${deleted.affected} invalid url(s)`,
+            if (newestWebsiteRecord) {
+              this.logger.log(`invalid url(s) detected`);
+              const deleted = await this.websiteService.deleteBefore(
+                new Date(newestWebsiteRecord.updated),
+              );
+              this.logger.log(
+                `finished removing ${deleted.affected} invalid url(s)`,
+              );
+            }
+
+            resolve('');
+          } catch (error) {
+            const err = error as Error;
+            this.logger.error(
+              `encountered error during ingest process: ${err.message}`,
+              err.stack,
             );
           }
-
-          resolve('');
-        } catch (error) {
-          const err = error as Error;
-          this.logger.error(
-            `encountered error during ingest process: ${err.message}`,
-            err.stack,
-          );
         }
       });
     });
