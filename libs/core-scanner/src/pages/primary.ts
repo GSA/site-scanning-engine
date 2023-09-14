@@ -56,7 +56,7 @@ const primaryScan = async (
     requiredLinksScan,
     searchScan,
   ] = await promiseAll([
-    buildDapResult(getOutboundRequests()),
+    buildDapResult(logger, getOutboundRequests()),
     buildThirdPartyResult(response, getOutboundRequests()),
     buildCookieResult(page),
     buildSeoResult(logger, page),
