@@ -1,12 +1,24 @@
+import { Logger } from 'pino';
 import { HTTPRequest } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
 
 export const buildDapResult = async (
+  logger: Logger,
   outboundRequests: HTTPRequest[],
 ): Promise<DapScan> => {
   const dapParameters = getDapParameters(outboundRequests);
   const dapDetected =
     getDapDetected(outboundRequests) || typeof dapParameters !== 'undefined';
+
+  logger.info({
+    msg: 'dapParameters result:',
+    dapParameters,
+  });
+
+  logger.info({
+    msg: 'dapDetected result:',
+    dapDetected,
+  });
 
   return {
     dapDetected,
