@@ -14,7 +14,7 @@ describe('dap scan', () => {
       ]),
     ).toEqual({
       dapDetected: true,
-      dapParameters: undefined,
+      dapParameters: null,
     });
   });
 
@@ -28,7 +28,7 @@ describe('dap scan', () => {
       ]),
     ).toEqual({
       dapDetected: true,
-      dapParameters: undefined,
+      dapParameters: null,
     });
   });
 
@@ -42,7 +42,7 @@ describe('dap scan', () => {
       ]),
     ).toEqual({
       dapDetected: true,
-      dapParameters: undefined,
+      dapParameters: null,
     });
   });
 
