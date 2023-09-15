@@ -8,7 +8,7 @@ export const buildDapResult = async (
 ): Promise<DapScan> => {
   const dapParameters = getDapParameters(outboundRequests);
   const dapDetected =
-    getDapDetected(outboundRequests) || typeof dapParameters !== 'undefined';
+    getDapDetected(outboundRequests) || dapParameters !== null;
 
   logger.info({
     msg: 'dapParameters result:',
@@ -26,7 +26,7 @@ export const buildDapResult = async (
   };
 };
 
-const getDapParameters = (outboundRequests: HTTPRequest[]): string => {
+const getDapParameters = (outboundRequests: HTTPRequest[]): string | null => {
   const dapScript = 'Universal-Federated-Analytics-Min.js';
   let parameters: string;
 
@@ -40,7 +40,7 @@ const getDapParameters = (outboundRequests: HTTPRequest[]): string => {
     }
   }
 
-  return parameters;
+  return typeof parameters === 'undefined' ? null : parameters;
 };
 
 /**
