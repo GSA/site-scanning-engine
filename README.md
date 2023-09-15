@@ -8,16 +8,10 @@
 
 ## Description
 
-_Note: The project is a work in progress and APIs are unstable._
+This repository is for the Site Scanning engine itself, the codebase that actually runs the scans and generates data. This is the new base scanner repository which uses Headless Chrome, powered by Puppeteer for scanning.
 
-This repository is for the Site Scanning project. This is the new
-base scanner repository which uses Headless Chrome, powered by
-Puppeteer for scanning.
-
-For more detailed documentation about the Site Scanning program,
-including **who it's for**, **long-term goals**, and **how you can help**
-please visit
-[Site Scanning Documentation Repository](https://github.com/GSA/site-scanning-documentation).
+For more detailed documentation about the Site Scanning program, including **who it's for**, **what it does**, **long-term goals**, etc. please visit the 
+[Site Scanning program website](https://digital.gov/site-scanning), especially the [Technical Details page](https://github.com/GSA/site-scanning).  
 
 ## Table of Contents
 
