@@ -85,7 +85,7 @@ describe('JsonSerializer', () => {
 
     const result = serializer.serialize([website]);
     const expectedResult =
-      '[{"source_list":null,"required_links_url":null,"required_links_text":null,"robots_txt_sitemap_locations":null,"third_party_service_domains":null}]';
+      '[{"source_list":null,"required_links_url":null,"required_links_text":null,"robots_txt_sitemap_locations":null,"third_party_service_domains":null,"cookie_domains":null,"login_detected":null}]';
 
     expect(result).toEqual(expectedResult);
   });
