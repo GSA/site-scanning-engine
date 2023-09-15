@@ -285,6 +285,13 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'cookie_domains' })
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
   cookieDomains?: string;
 
   @Column({ nullable: true })
@@ -293,6 +300,13 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'login_detected' })
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
   loginDetected?: string;
 
   @Column({ nullable: true })
