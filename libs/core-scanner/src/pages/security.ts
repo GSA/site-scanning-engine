@@ -2,6 +2,7 @@ import * as http from 'http';
 import * as https from 'https';
 import { Logger } from 'pino';
 import { SecurityScan } from 'entities/scan-data.entity';
+import { includes } from 'lodash';
 
 export const securityScan = async (
   logger: Logger,
@@ -18,6 +19,7 @@ export const securityScan = async (
 
 const hasHttpsEnforced = async (url, logger): Promise<boolean> => {
   let httpsEnforced = false;
+
   try {
     const response = await new Promise<http.IncomingMessage>(
       (resolve, reject) => {
@@ -31,7 +33,8 @@ const hasHttpsEnforced = async (url, logger): Promise<boolean> => {
       },
     );
 
-    if (response.statusCode === 301 || response.statusCode === 302) {
+    const valid300ResponseCodes = [300, 301, 302, 303, 304, 307, 308];
+    if (includes(valid300ResponseCodes, response.statusCode)) {
       const locationHeader = response.headers['location'];
       if (locationHeader && locationHeader.startsWith('https://')) {
         httpsEnforced = true;
