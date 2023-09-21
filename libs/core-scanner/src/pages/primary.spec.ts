@@ -46,21 +46,21 @@ describe('primary scanner', () => {
         },
         thirdPartyScan: {
           thirdPartyServiceDomains:
-            'dap.digitalgov.gov,fonts.googleapis.com,search.usa.gov,www.google-analytics.com,www.googletagmanager.com',
-          thirdPartyServiceCount: 5,
+            'dap.digitalgov.gov,search.usa.gov,www.google-analytics.com,www.googletagmanager.com',
+          thirdPartyServiceCount: 4,
         },
         cookieScan: { domains: '.18f.gsa.gov,.gsa.gov' },
         uswdsScan: {
-          usaClasses: 55,
-          uswdsString: 8,
+          usaClasses: 50,
+          uswdsString: 7,
           uswdsInlineCss: 0,
           uswdsUsFlag: 20,
           uswdsUsFlagInCss: 0,
           uswdsStringInCss: 20,
-          uswdsPublicSansFont: 40,
-          uswdsSemanticVersion: '2.9.0',
+          uswdsPublicSansFont: 0,
+          uswdsSemanticVersion: 'v3.5.0',
           uswdsVersion: 100,
-          uswdsCount: 243,
+          uswdsCount: 197,
         },
         loginScan: { loginDetected: null, loginProvider: null },
         cloudDotGovPagesScan: { cloudDotGovPages: true },
@@ -71,8 +71,8 @@ describe('primary scanner', () => {
             'accessibility,no fear act,foia,inspector general,privacy policy,vulnerability disclosure,usa.gov',
         },
         searchScan: {
-          searchDetected: true,
-          searchgov: true,
+          searchDetected: false,
+          searchgov: null,
         },
       });
     });
