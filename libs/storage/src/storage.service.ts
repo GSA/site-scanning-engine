@@ -1,15 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3 } from '@aws-sdk/client-s3';
+import { S3Client } from '@aws-sdk/client-s3';
 
 @Injectable()
 export class StorageService {
-  private s3: S3;
+  private s3: S3Client;
   private bucket: string;
   private logger = new Logger(StorageService.name);
 
   constructor(private configService: ConfigService) {
-    this.s3 = new S3({
+    this.s3 = new S3Client({
       endpoint: this.configService.get<string>('s3.endpoint'),
       region: this.configService.get<string>('s3.region'),
       credentials: {
