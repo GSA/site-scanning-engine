@@ -1,15 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { S3Client } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  CopyObjectCommand,
+  HeadObjectCommand,
+} from '@aws-sdk/client-s3';
 
 @Injectable()
 export class StorageService {
-  private s3: S3Client;
+  private s3client: S3Client;
   private bucket: string;
   private logger = new Logger(StorageService.name);
 
   constructor(private configService: ConfigService) {
-    this.s3 = new S3Client({
+    this.s3client = new S3Client({
       endpoint: this.configService.get<string>('s3.endpoint'),
       region: this.configService.get<string>('s3.region'),
       credentials: {
@@ -25,11 +30,12 @@ export class StorageService {
   async upload(fileName: string, body: string) {
     this.logger.debug('attempting s3 putObject request...');
     try {
-      await this.s3.putObject({
+      const command = new PutObjectCommand({
         Bucket: this.bucket,
         Key: fileName,
         Body: body,
       });
+      await this.s3client.send(command);
       this.logger.debug('putObject request completed');
     } catch (error) {
       const err = error as Error;
@@ -40,11 +46,12 @@ export class StorageService {
   async copy(from: string, to: string) {
     this.logger.debug('attempting s3 copyObject request...');
     try {
-      await this.s3.copyObject({
+      const command = new CopyObjectCommand({
         Bucket: this.bucket,
         CopySource: `${this.bucket}/${from}`,
         Key: to,
       });
+      await this.s3client.send(command);
       this.logger.debug('copyObject request completed');
     } catch (error) {
       const err = error as Error;
@@ -55,10 +62,11 @@ export class StorageService {
   async exists(objectName: string): Promise<boolean> {
     this.logger.debug(`checking if ${objectName} exists...`);
     try {
-      this.s3.headObject({
+      const command = new HeadObjectCommand({
         Bucket: this.bucket,
         Key: objectName,
       });
+      await this.s3client.send(command);
       return true;
     } catch (error) {
       const err = error as Error;
