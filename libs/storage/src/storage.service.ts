@@ -11,6 +11,7 @@ export class StorageService {
   constructor(private configService: ConfigService) {
     this.s3 = new S3({
       endpoint: this.configService.get<string>('s3.endpoint'),
+      region: this.configService.get<string>('s3.region'),
       credentials: {
         accessKeyId: this.configService.get<string>('s3.accessKeyId'),
         secretAccessKey: this.configService.get<string>('s3.secretAccessKey'),
