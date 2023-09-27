@@ -5,7 +5,7 @@ export default () => {
     return {
       s3: {
         bucketName: s3.credentials.bucket,
-        endpoint: s3.credentials.fips_endpoint,
+        endpoint: `https://${s3.credentials.fips_endpoint}`,
         accessKeyId: s3.credentials.access_key_id,
         secretAccessKey: s3.credentials.secret_access_key,
         region: s3.credentials.region,
