@@ -26,6 +26,7 @@ describe('primary scanner', () => {
           targetUrlRedirects: true,
           finalUrl: 'https://18f.gsa.gov/',
           finalUrlWebsite: '18f.gsa.gov',
+          finalUrlTopLevelDomain: 'gov',
           finalUrlMIMEType: 'text/html',
           finalUrlIsLive: true,
           finalUrlBaseDomain: 'gsa.gov',

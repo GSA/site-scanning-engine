@@ -46,9 +46,11 @@ export class SnapshotService {
     const liveColumnOrder = [
       'target_url',
       'target_url_domain',
+      'target_url_top_level_domain',
       'final_url',
       'final_url_domain',
       'final_url_website',
+      'final_url_top_level_domain',
       'canonical_link',
       'final_url_mimetype',
       'final_url_live',
@@ -136,9 +138,11 @@ export class SnapshotService {
     const experimentalColumnOrder = [
       'target_url',
       'target_url_domain',
+      'target_url_top_level_domain',
       'final_url',
       'final_url_domain',
       'final_url_website',
+      'final_url_top_level_domain',
       'canonical_link',
       'final_url_mimetype',
       'final_url_live',

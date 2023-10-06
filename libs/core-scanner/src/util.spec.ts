@@ -6,6 +6,7 @@ import {
   getHttpsUrl,
   getMIMEType,
   getWithSubdomain,
+  getTopLevelDomain,
 } from './util';
 
 describe('core-scanner util', () => {
@@ -97,6 +98,14 @@ describe('core-scanner util', () => {
       const url = '18fgsagov';
       const result = getWithSubdomain(url);
       expect(result).toBe(null);
+    });
+  });
+
+  describe('getTopLevelDomain', () => {
+    it('returns the top-level domain for a url', () => {
+      const url = 'https://gsa.gov';
+      const result = getTopLevelDomain(url);
+      expect(result).toBe('gov');
     });
   });
 });

@@ -49,3 +49,16 @@ export const getWithSubdomain = (url: string): string | null => {
   const parsedUrl = new URL(url);
   return _.takeRight(_.split(parsedUrl.origin, '//'))[0];
 };
+
+export const getTopLevelDomain = (url: string): string | null => {
+  const domainPattern = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)(?:\/|$)/;
+  const tldPattern = /\.([a-z0-9\-]+)(?:\/|$)$/i;
+
+  const domainMatch = url.match(domainPattern);
+  if (!domainMatch) return null;
+
+  const domain = domainMatch[1];
+  const tldMatch = domain.match(tldPattern);
+
+  return tldMatch ? tldMatch[1] : null;
+};

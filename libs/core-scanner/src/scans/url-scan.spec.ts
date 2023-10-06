@@ -14,6 +14,7 @@ describe('url scan', () => {
         finalUrl: sourceUrl,
         finalUrlBaseDomain: '',
         finalUrlWebsite: null,
+        finalUrlTopLevelDomain: null,
         finalUrlIsLive: true,
         finalUrlMIMEType: 'multipart/related',
         finalUrlSameDomain: false,
