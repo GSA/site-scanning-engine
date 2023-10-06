@@ -11,4 +11,5 @@ export interface SubdomainRow {
   sourceListDap: string;
   sourceListPulse: string;
   sourceListOther: string;
+  sourceListMil: string;
 }

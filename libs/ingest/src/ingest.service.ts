@@ -41,6 +41,7 @@ export class IngestService {
         'sourceListDap',
         'sourceListPulse',
         'sourceListOther',
+        'sourceListMil',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
@@ -132,6 +133,10 @@ export class IngestService {
 
     if (row.sourceListOther.toLowerCase() === 'true') {
       sourceList.push('other');
+    }
+
+    if (row.sourceListMil.toLowerCase() === 'true') {
+      sourceList.push('mil');
     }
 
     return sourceList.join(',');
