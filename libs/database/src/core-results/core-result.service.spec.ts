@@ -94,6 +94,7 @@ describe('CoreResultService', () => {
             finalUrlIsLive: null,
             finalUrlBaseDomain: null,
             finalUrlWebsite: null,
+            finalUrlTopLevelDomain: null,
             finalUrlMIMEType: null,
             finalUrlSameDomain: null,
             finalUrlStatusCode: null,

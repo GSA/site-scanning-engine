@@ -96,6 +96,7 @@ export class CoreResultService {
       coreResult.finalUrl = result.urlScan.finalUrl;
       coreResult.finalUrlBaseDomain = result.urlScan.finalUrlBaseDomain;
       coreResult.finalUrlWebsite = result.urlScan.finalUrlWebsite;
+      coreResult.finalUrlTopLevelDomain = result.urlScan.finalUrlTopLevelDomain;
       coreResult.finalUrlIsLive = result.urlScan.finalUrlIsLive;
       coreResult.finalUrlMIMEType = result.urlScan.finalUrlMIMEType;
       coreResult.finalUrlSameDomain = result.urlScan.finalUrlSameDomain;

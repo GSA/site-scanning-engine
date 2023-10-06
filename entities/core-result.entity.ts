@@ -318,6 +318,10 @@ export class CoreResult {
   finalUrlWebsite?: string;
 
   @Column({ nullable: true })
+  @Expose({ name: 'final_url_top_level_domain' })
+  finalUrlTopLevelDomain?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'cloud_dot_gov_pages' })
   cloudDotGovPages?: boolean;
 

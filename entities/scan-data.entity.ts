@@ -6,6 +6,7 @@ export type UrlScan = {
   targetUrlRedirects: boolean;
   finalUrl: string;
   finalUrlWebsite: string;
+  finalUrlTopLevelDomain: string;
   finalUrlMIMEType: string;
   finalUrlIsLive: boolean;
   finalUrlBaseDomain: string;
