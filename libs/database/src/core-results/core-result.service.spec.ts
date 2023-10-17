@@ -193,15 +193,6 @@ describe('CoreResultService', () => {
           },
         },
       },
-      security: {
-        status: scanStatus,
-        result: {
-          securityScan: {
-            httpsEnforced: true,
-            hstsPreloading: true,
-          },
-        },
-      },
     };
     const logger = mock<Logger>();
 

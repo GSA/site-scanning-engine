@@ -47,8 +47,3 @@ export type DnsScans = {
   dnsScan: ScanData.DnsScan;
 };
 export type DnsPageScan = PageScan<DnsScans>;
-
-export type SecurityScans = {
-  securityScan: ScanData.SecurityScan;
-};
-export type SecurityPageScan = PageScan<SecurityScans>;

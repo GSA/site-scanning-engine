@@ -106,8 +106,3 @@ export type SearchScan = {
   searchDetected: boolean;
   searchgov: boolean;
 };
-
-export type SecurityScan = {
-  httpsEnforced: boolean;
-  hstsPreloading: boolean;
-};

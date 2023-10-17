@@ -39,7 +39,6 @@ export class CoreScannerService
         robotsTxt: await this.runRobotsTxtScan(browser, input, scanLogger),
         sitemapXml: await this.runSitemapXmlScan(browser, input, scanLogger),
         dns: await this.runDnsScan(input.url, scanLogger),
-        security: await this.runSecurityScan(input.url, scanLogger),
       };
 
       scanLogger.info({ result }, 'solutions scan results');
@@ -165,31 +164,6 @@ export class CoreScannerService
           dnsScan: {
             ipv6: result.ipv6,
             dnsHostname: result.dnsHostname,
-          },
-        },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private async runSecurityScan(
-    url: string,
-    logger: Logger,
-  ): Promise<ScanPage.SecurityPageScan> {
-    const result = await pages.securityScan(logger, url);
-    try {
-      return {
-        status: ScanStatus.Completed,
-        result: {
-          securityScan: {
-            httpsEnforced: result.httpsEnforced,
-            hstsPreloading: result.hstsPreloading,
           },
         },
         error: null,

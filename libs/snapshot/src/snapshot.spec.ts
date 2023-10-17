@@ -84,9 +84,6 @@ describe('Snapshot', () => {
       'search_detected',
       'dap_detected_final_url',
       'dap_parameters_final_url',
-      'security_scan_status',
-      'https_enforced',
-      'hsts_preloading',
     ];
   });
 

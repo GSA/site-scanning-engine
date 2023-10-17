@@ -22,7 +22,6 @@ export type CoreResultPages = {
   robotsTxt: ScanPage.RobotsTxtPageScan;
   sitemapXml: ScanPage.SitemapXmlPageScan;
   dns: ScanPage.DnsPageScan;
-  security: ScanPage.SecurityPageScan;
 };
 
 @Entity()
@@ -366,20 +365,6 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'searchgov' })
   searchgov?: boolean;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'security_scan_status' })
-  securityScanStatus?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'https_enforced' })
-  @Exclude()
-  httpsEnforced?: boolean;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'hsts_preloading' })
-  @Exclude()
-  hstsPreloading?: boolean;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names
