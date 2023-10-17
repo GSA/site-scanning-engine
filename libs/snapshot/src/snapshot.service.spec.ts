@@ -46,10 +46,6 @@ describe('SnapshotService', () => {
               if (key === 'fileNameAll') {
                 return 'weekly-snapshot-all';
               }
-
-              if (key === 'fileNameExperimental') {
-                return 'weekly-snapshot-experimental';
-              }
             }),
           },
         },
@@ -91,7 +87,7 @@ describe('SnapshotService', () => {
     copyDate.setDate(copyDate.getDate() - 7);
     const expectedDate = copyDate.toISOString();
 
-    expect(mockStorageService.copy).toBeCalledTimes(6);
+    expect(mockStorageService.copy).toBeCalledTimes(4);
 
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.json',
@@ -111,16 +107,6 @@ describe('SnapshotService', () => {
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot-all.csv',
       `archive/csv/weekly-snapshot-all-${expectedDate}.csv`,
-    );
-
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot-experimental.json',
-      `archive/json/weekly-snapshot-experimental-${expectedDate}.json`,
-    );
-
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot-experimental.csv',
-      `archive/csv/weekly-snapshot-experimental-${expectedDate}.csv`,
     );
   });
 });

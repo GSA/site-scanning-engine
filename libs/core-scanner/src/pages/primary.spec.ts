@@ -59,7 +59,7 @@ describe('primary scanner', () => {
           uswdsUsFlagInCss: 0,
           uswdsStringInCss: 20,
           uswdsPublicSansFont: 0,
-          uswdsSemanticVersion: 'v3.5.0',
+          uswdsSemanticVersion: 'v3.6.1',
           uswdsVersion: 100,
           uswdsCount: 197,
         },
