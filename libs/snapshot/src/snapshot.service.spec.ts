@@ -87,7 +87,7 @@ describe('SnapshotService', () => {
     copyDate.setDate(copyDate.getDate() - 7);
     const expectedDate = copyDate.toISOString();
 
-    expect(mockStorageService.copy).toBeCalledTimes(6);
+    expect(mockStorageService.copy).toBeCalledTimes(4);
 
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.json',
