@@ -35,6 +35,7 @@ export class CoreResultService {
     this.updateRobotsTxtScanResults(coreResult, pages, logger);
     this.updateSitemapXmlScanResults(coreResult, pages, logger);
     this.updateDnsScanResults(coreResult, pages, logger);
+    this.updateAccessibilityScanResults(coreResult, pages, logger);
 
     return this.create(coreResult);
   }
@@ -294,6 +295,34 @@ export class CoreResultService {
 
       coreResult.dnsIpv6 = null;
       coreResult.dnsHostname = null;
+    }
+  }
+
+  private updateAccessibilityScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.accessibilityScanStatus = pages.accessibility.status;
+
+    if (pages.accessibility.status === ScanStatus.Completed) {
+      coreResult.missingImgAltIssues =
+        pages.accessibility.result.accessibilityScan.missingImgAltIssues;
+
+      coreResult.htmlAttributeIssues =
+        pages.accessibility.result.accessibilityScan.htmlAttributeIssues;
+
+      coreResult.colorContrastIssues =
+        pages.accessibility.result.accessibilityScan.colorContrastIssues;
+    } else {
+      logger.error({
+        msg: pages.accessibility.error,
+        page: 'accessibility',
+      });
+
+      coreResult.missingImgAltIssues = null;
+      coreResult.htmlAttributeIssues = null;
+      coreResult.colorContrastIssues = null;
     }
   }
 }

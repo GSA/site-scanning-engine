@@ -193,6 +193,16 @@ describe('CoreResultService', () => {
           },
         },
       },
+      accessibility: {
+        status: scanStatus,
+        result: {
+          accessibilityScan: {
+            missingImgAltIssues: 0,
+            htmlAttributeIssues: 0,
+            colorContrastIssues: 0,
+          },
+        },
+      },
     };
     const logger = mock<Logger>();
 

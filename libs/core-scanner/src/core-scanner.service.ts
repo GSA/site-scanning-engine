@@ -39,13 +39,12 @@ export class CoreScannerService
         robotsTxt: await this.runRobotsTxtScan(browser, input, scanLogger),
         sitemapXml: await this.runSitemapXmlScan(browser, input, scanLogger),
         dns: await this.runDnsScan(input.url, scanLogger),
+        accessibility: await this.runAccessibilityScan(
+          browser,
+          input,
+          scanLogger,
+        ),
       };
-
-      const a11yScanResults = await this.runAccessibilityScan(
-        browser,
-        input,
-        scanLogger,
-      );
 
       scanLogger.info({ result }, 'solutions scan results');
 

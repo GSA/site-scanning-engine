@@ -22,6 +22,7 @@ export type CoreResultPages = {
   robotsTxt: ScanPage.RobotsTxtPageScan;
   sitemapXml: ScanPage.SitemapXmlPageScan;
   dns: ScanPage.DnsPageScan;
+  accessibility: ScanPage.AccessibilityPageScan;
 };
 
 @Entity()
@@ -374,17 +375,17 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'missing_img_alt_issues' })
   @Exclude()
-  missingImgAltIssues?: boolean;
+  missingImgAltIssues?: number;
 
   @Column({ nullable: true })
   @Expose({ name: 'html_attribute_issues' })
   @Exclude()
-  htmlAttributeIssues?: boolean;
+  htmlAttributeIssues?: number;
 
   @Column({ nullable: true })
   @Expose({ name: 'color_contrast_issues' })
   @Exclude()
-  colorContrastIssues?: boolean;
+  colorContrastIssues?: number;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names
