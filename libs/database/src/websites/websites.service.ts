@@ -20,7 +20,6 @@ export class WebsiteService {
     const websites = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
-      .where('website.topLevelDomain = :tld', { tld: 'gov' })
       .getMany();
 
     return websites;
@@ -30,7 +29,6 @@ export class WebsiteService {
     const queryBuilder = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
-      .where('website.topLevelDomain = :tld', { tld: 'gov' })
       .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
         mimeTypes: [
@@ -69,8 +67,7 @@ export class WebsiteService {
   ): Promise<Pagination<Website>> {
     const query = this.website
       .createQueryBuilder('website')
-      .leftJoinAndSelect('website.coreResult', 'coreResult')
-      .where('website.topLevelDomain = :tld', { tld: 'gov' });
+      .leftJoinAndSelect('website.coreResult', 'coreResult');
 
     if (dto.target_url_domain) {
       query.andWhere('coreResult.targetUrlBaseDomain = :baseDomain', {

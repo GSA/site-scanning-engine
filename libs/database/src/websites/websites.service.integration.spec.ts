@@ -66,13 +66,14 @@ describe('AnalysisService', () => {
     thirdWebsite.sourceList = 'gov';
 
     const fourthWebsite = new Website();
-    fourthWebsite.url = 'https://anotherfake.com';
-    fourthWebsite.topLevelDomain = 'com';
+    fourthWebsite.url = 'https://anotherfake.mil';
+    fourthWebsite.topLevelDomain = 'mil';
+    fourthWebsite.agency = 'Fake Agency';
     fourthWebsite.branch = 'fake';
     fourthWebsite.bureau = 'fake';
     fourthWebsite.agencyCode = 10;
     fourthWebsite.bureauCode = 10;
-    fourthWebsite.sourceList = '';
+    fourthWebsite.sourceList = 'mil';
 
     const firstCoreResult = new CoreResult();
     firstCoreResult.website = firstWebsite;
@@ -120,9 +121,11 @@ describe('AnalysisService', () => {
     await coreResultRepository.insert(secondCoreResult);
     await websiteRepository.insert(thirdWebsite);
     await coreResultRepository.insert(thirdCoreResult);
+    await websiteRepository.insert(fourthWebsite);
+    await coreResultRepository.insert(fourthCoreResult);
 
     const result = await service.findLiveSnapshotResults();
 
-    expect(result.length).toStrictEqual(1);
+    expect(result.length).toStrictEqual(2);
   });
 });
