@@ -108,7 +108,7 @@ export type SearchScan = {
 };
 
 export type AccessibilityScan = {
-  a11yColorContrastIssueCount: number;
-  a11yHtmlAttributeIssueCount: number;
-  a11yMissingImgAltIssueCount: number;
+  missingImgAltIssues: number;
+  htmlAttributeIssues: number;
+  colorContrastIssues: number;
 };

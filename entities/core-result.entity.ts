@@ -366,6 +366,26 @@ export class CoreResult {
   @Expose({ name: 'searchgov' })
   searchgov?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'accessibility_scan_status' })
+  @Exclude()
+  accessibilityScanStatus?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'missing_img_alt_issues' })
+  @Exclude()
+  missingImgAltIssues?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'html_attribute_issues' })
+  @Exclude()
+  htmlAttributeIssues?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'color_contrast_issues' })
+  @Exclude()
+  colorContrastIssues?: boolean;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
