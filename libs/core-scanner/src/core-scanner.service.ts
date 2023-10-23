@@ -39,6 +39,11 @@ export class CoreScannerService
         robotsTxt: await this.runRobotsTxtScan(browser, input, scanLogger),
         sitemapXml: await this.runSitemapXmlScan(browser, input, scanLogger),
         dns: await this.runDnsScan(input.url, scanLogger),
+        accessibility: await this.runAccessibilityScan(
+          browser,
+          input,
+          scanLogger,
+        ),
       };
 
       scanLogger.info({ result }, 'solutions scan results');
@@ -171,6 +176,33 @@ export class CoreScannerService
     } catch (error) {
       return {
         status: this.getScanStatus(error, url, logger),
+        result: null,
+        error,
+      };
+    }
+  }
+
+  private async runAccessibilityScan(
+    browser: Browser,
+    input: CoreInputDto,
+    logger: Logger,
+  ): Promise<ScanPage.AccessibilityPageScan> {
+    try {
+      const result = await this.browserService.processPage(
+        browser,
+        pages.createAccessibilityScanner(
+          logger.child({ page: 'accessibility' }),
+          input,
+        ),
+      );
+      return {
+        status: ScanStatus.Completed,
+        result,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        status: this.getScanStatus(error, input.url, logger),
         result: null,
         error,
       };

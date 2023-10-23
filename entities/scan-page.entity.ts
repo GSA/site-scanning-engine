@@ -47,3 +47,9 @@ export type DnsScans = {
   dnsScan: ScanData.DnsScan;
 };
 export type DnsPageScan = PageScan<DnsScans>;
+
+export type AccessibilityScans = {
+  accessibilityScan: ScanData.AccessibilityScan;
+};
+
+export type AccessibilityPageScan = PageScan<AccessibilityScans>;
