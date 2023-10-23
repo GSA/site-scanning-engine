@@ -106,3 +106,9 @@ export type SearchScan = {
   searchDetected: boolean;
   searchgov: boolean;
 };
+
+export type AccessibilityScan = {
+  a11yColorContrastIssueCount: number;
+  a11yHtmlAttributeIssueCount: number;
+  a11yMissingImgAltIssueCount: number;
+};

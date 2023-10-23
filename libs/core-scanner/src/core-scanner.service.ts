@@ -41,6 +41,12 @@ export class CoreScannerService
         dns: await this.runDnsScan(input.url, scanLogger),
       };
 
+      const a11yScanResults = await this.runAccessibilityScan(
+        browser,
+        input,
+        scanLogger,
+      );
+
       scanLogger.info({ result }, 'solutions scan results');
 
       return result;
@@ -171,6 +177,33 @@ export class CoreScannerService
     } catch (error) {
       return {
         status: this.getScanStatus(error, url, logger),
+        result: null,
+        error,
+      };
+    }
+  }
+
+  private async runAccessibilityScan(
+    browser: Browser,
+    input: CoreInputDto,
+    logger: Logger,
+  ): Promise<ScanPage.AccessibilityPageScan> {
+    try {
+      const result = await this.browserService.processPage(
+        browser,
+        pages.createAccessibilityScanner(
+          logger.child({ page: 'accessibility' }),
+          input,
+        ),
+      );
+      return {
+        status: ScanStatus.Completed,
+        result,
+        error: null,
+      };
+    } catch (error) {
+      return {
+        status: this.getScanStatus(error, input.url, logger),
         result: null,
         error,
       };
