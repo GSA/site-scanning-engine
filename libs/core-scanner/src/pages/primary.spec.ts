@@ -75,6 +75,9 @@ describe('primary scanner', () => {
           searchDetected: false,
           searchgov: null,
         },
+        mobileScan: {
+          hasViewportMetaEl: true,
+        },
       });
     });
   });

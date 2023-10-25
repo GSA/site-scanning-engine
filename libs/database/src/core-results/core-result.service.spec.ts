@@ -150,6 +150,9 @@ describe('CoreResultService', () => {
             searchDetected: null,
             searchgov: null,
           },
+          mobileScan: {
+            hasViewportMetaEl: false,
+          },
         },
       },
       robotsTxt: {
