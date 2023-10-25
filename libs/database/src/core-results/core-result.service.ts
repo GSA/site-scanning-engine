@@ -310,23 +310,23 @@ export class CoreResultService {
     coreResult.accessibilityScanStatus = pages.accessibility.status;
 
     if (pages.accessibility.status === ScanStatus.Completed) {
-      coreResult.missingImgAltIssues =
-        pages.accessibility.result.accessibilityScan.missingImgAltIssues;
+      coreResult.a11yMissingImgAltIssues =
+        pages.accessibility.result.accessibilityScan.a11yMissingImgAltIssues;
 
-      coreResult.htmlAttributeIssues =
-        pages.accessibility.result.accessibilityScan.htmlAttributeIssues;
+      coreResult.a11yHtmlAttributeIssues =
+        pages.accessibility.result.accessibilityScan.a11yHtmlAttributeIssues;
 
-      coreResult.colorContrastIssues =
-        pages.accessibility.result.accessibilityScan.colorContrastIssues;
+      coreResult.a11yColorContrastIssues =
+        pages.accessibility.result.accessibilityScan.a11yColorContrastIssues;
     } else {
       logger.error({
         msg: pages.accessibility.error,
         page: 'accessibility',
       });
 
-      coreResult.missingImgAltIssues = null;
-      coreResult.htmlAttributeIssues = null;
-      coreResult.colorContrastIssues = null;
+      coreResult.a11yMissingImgAltIssues = null;
+      coreResult.a11yHtmlAttributeIssues = null;
+      coreResult.a11yColorContrastIssues = null;
     }
   }
 }

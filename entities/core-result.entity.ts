@@ -373,19 +373,19 @@ export class CoreResult {
   accessibilityScanStatus?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'missing_img_alt_issues' })
+  @Expose({ name: 'a11y_missing_img_alt_issues' })
   @Exclude()
-  missingImgAltIssues?: number;
+  a11yMissingImgAltIssues?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'html_attribute_issues' })
+  @Expose({ name: 'a11y_html_attribute_issues' })
   @Exclude()
-  htmlAttributeIssues?: number;
+  a11yHtmlAttributeIssues?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'color_contrast_issues' })
+  @Expose({ name: 'a11y_color_contrast_issues' })
   @Exclude()
-  colorContrastIssues?: number;
+  a11yColorContrastIssues?: number;
 
   @Column({ nullable: true })
   @Expose({ name: 'has_viewport_meta_el' })

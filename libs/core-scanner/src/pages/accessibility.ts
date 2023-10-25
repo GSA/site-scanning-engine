@@ -47,15 +47,15 @@ async function buildAccessibilityResult(
       throw new Error('html_codesniffer could not run');
     } else {
       return {
-        missingImgAltIssues: getIssueTotalByCategory(
+        a11yMissingImgAltIssues: getIssueTotalByCategory(
           htmlcsResults,
           'WCAG2AA.Principle1.Guideline1_1',
         ),
-        htmlAttributeIssues: getIssueTotalByCategory(
+        a11yHtmlAttributeIssues: getIssueTotalByCategory(
           htmlcsResults,
           'WCAG2AA.Principle4.Guideline4_1',
         ),
-        colorContrastIssues: getIssueTotalByCategory(
+        a11yColorContrastIssues: getIssueTotalByCategory(
           htmlcsResults,
           'WCAG2AA.Principle1.Guideline1_4',
         ),
