@@ -134,6 +134,9 @@ export class CoreResultService {
       // Search scan
       coreResult.searchDetected = result.searchScan.searchDetected;
       coreResult.searchgov = result.searchScan.searchgov;
+
+      // Mobile scan
+      coreResult.hasViewportMetaEl = result.mobileScan.hasViewportMetaEl;
     } else {
       logger.error({
         msg: pages.primary.error,
@@ -177,6 +180,7 @@ export class CoreResultService {
       coreResult.requiredLinksText = null;
       coreResult.searchDetected = null;
       coreResult.searchgov = null;
+      coreResult.hasViewportMetaEl = null;
     }
   }
 
