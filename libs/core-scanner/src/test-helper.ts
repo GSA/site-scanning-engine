@@ -29,7 +29,6 @@ const newPage = async (handler: (page: puppeteer.Page) => Promise<void>) => {
     await page.setCacheEnabled(false);
     await handler(page);
     await page.close();
-    //await browser.close();
   });
 };
 
