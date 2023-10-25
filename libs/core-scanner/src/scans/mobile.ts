@@ -7,10 +7,10 @@ export const buildMobileResult = async (
   logger: Logger,
   page: Page,
 ): Promise<MobileScan> => {
-  const hasViewportMetaTag = await getHasViewportMetaTag(page);
+  const hasViewportMetaEl = await getHasViewportMetaTag(page);
 
   return {
-    hasViewportMetaTag,
+    hasViewportMetaEl,
   };
 };
 

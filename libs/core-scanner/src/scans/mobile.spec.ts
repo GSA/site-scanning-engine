@@ -7,7 +7,7 @@ describe('mobile scan', () => {
   it('detects a meta element that meets the criteria', async () => {
     await newTestPage(async ({ page }) => {
       expect(await buildMobileResult(mock<Logger>(), page)).toEqual({
-        hasViewportMetaTag: true,
+        hasViewportMetaEl: true,
       });
     });
   });
@@ -15,7 +15,7 @@ describe('mobile scan', () => {
   it('detects when a meta element that meets the criteria is not present', async () => {
     await newTestPage(async ({ page }) => {
       expect(await buildMobileResult(mock<Logger>(), page)).toEqual({
-        hasViewportMetaTag: false,
+        hasViewportMetaEl: false,
       });
     }, 'reginfo_gov_dump.mht');
   });
