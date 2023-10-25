@@ -1,5 +1,5 @@
 import { buildCookieResult } from './cookies';
-import { newTestPage } from '../test-helper';
+import { browserInstance, newTestPage } from '../test-helper';
 
 describe('cookie scan', () => {
   it('non-navigation different domains treated as third-parties', async () => {
@@ -10,5 +10,11 @@ describe('cookie scan', () => {
         domains: '',
       });
     });
+  });
+
+  afterAll(async () => {
+    if (browserInstance) {
+      await browserInstance.close();
+    }
   });
 });

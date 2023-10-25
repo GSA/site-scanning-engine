@@ -1,7 +1,7 @@
 import { Logger } from 'pino';
 import { mock } from 'jest-mock-extended';
 
-import { newTestPage } from '../test-helper';
+import { browserInstance, newTestPage } from '../test-helper';
 import { createUswdsScanner } from './uswds';
 
 describe('uswds scan', () => {
@@ -28,5 +28,11 @@ describe('uswds scan', () => {
         uswdsVersion: 0,
       });
     });
+  });
+
+  afterAll(async () => {
+    if (browserInstance) {
+      await browserInstance.close();
+    }
   });
 });

@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 import { Logger } from 'pino';
 
-import { newTestPage } from '../test-helper';
+import { browserInstance, newTestPage } from '../test-helper';
 import { buildSeoResult } from './seo';
 
 describe('seo scan', () => {
@@ -19,5 +19,11 @@ describe('seo scan', () => {
         canonicalLink: 'https://www.arc.gov/',
       });
     }, 'arc_gov_dump.mht');
+  });
+
+  afterAll(async () => {
+    if (browserInstance) {
+      await browserInstance.close();
+    }
   });
 });

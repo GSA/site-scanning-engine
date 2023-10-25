@@ -1,4 +1,4 @@
-import { newTestPage } from '../test-helper';
+import { browserInstance, newTestPage } from '../test-helper';
 import { buildUrlScanResult } from './url-scan';
 
 describe('url scan', () => {
@@ -23,5 +23,11 @@ describe('url scan', () => {
         targetUrlRedirects: false,
       });
     });
+  });
+
+  afterAll(async () => {
+    if (browserInstance) {
+      await browserInstance.close();
+    }
   });
 });

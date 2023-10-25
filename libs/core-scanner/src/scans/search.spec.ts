@@ -1,5 +1,5 @@
 import { buildSearchResult } from './search';
-import { newTestPage } from '../test-helper';
+import { browserInstance, newTestPage } from '../test-helper';
 
 describe('search scan', () => {
   it('detect if a page contains a search form', async () => {
@@ -9,5 +9,11 @@ describe('search scan', () => {
         searchgov: true,
       });
     });
+  });
+
+  afterAll(async () => {
+    if (browserInstance) {
+      await browserInstance.close();
+    }
   });
 });
