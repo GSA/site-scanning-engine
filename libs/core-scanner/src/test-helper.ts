@@ -12,15 +12,15 @@ const initBrowser = async () => {
   });
 };
 
-let browser: puppeteer.Browser;
+export let browserInstance: puppeteer.Browser;
 
 export const useBrowser = async (
-  handler: (browser: puppeteer.Browser) => Promise<void>,
+  handler: (browserInstance: puppeteer.Browser) => Promise<void>,
 ) => {
-  if (!browser) {
-    browser = await initBrowser();
+  if (!browserInstance) {
+    browserInstance = await initBrowser();
   }
-  return await handler(browser);
+  return await handler(browserInstance);
 };
 
 const newPage = async (handler: (page: puppeteer.Page) => Promise<void>) => {
@@ -28,7 +28,7 @@ const newPage = async (handler: (page: puppeteer.Page) => Promise<void>) => {
     const page = await browser.newPage();
     await page.setCacheEnabled(false);
     await handler(page);
-    await browser.close();
+    await page.close();
   });
 };
 

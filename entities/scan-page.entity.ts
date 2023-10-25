@@ -25,6 +25,7 @@ export type PrimaryScans = {
   cmsScan: ScanData.CmsScan;
   requiredLinksScan: ScanData.RequiredLinksScan;
   searchScan: ScanData.SearchScan;
+  mobileScan: ScanData.MobileScan;
 };
 export type PrimaryScan = PageScan<PrimaryScans>;
 

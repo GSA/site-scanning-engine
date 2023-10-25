@@ -387,6 +387,11 @@ export class CoreResult {
   @Exclude()
   colorContrastIssues?: number;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'has_viewport_meta_el' })
+  @Exclude()
+  hasViewportMetaEl: boolean;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

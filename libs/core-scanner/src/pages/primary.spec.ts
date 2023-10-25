@@ -3,7 +3,7 @@ import { Logger } from 'pino';
 
 import { CoreInputDto } from '../core.input.dto';
 import { createPrimaryScanner } from './primary';
-import { newTestPage } from '../test-helper';
+import { browserInstance, newTestPage } from '../test-helper';
 
 describe('primary scanner', () => {
   let mockLogger: MockProxy<Logger>;
@@ -75,7 +75,16 @@ describe('primary scanner', () => {
           searchDetected: false,
           searchgov: null,
         },
+        mobileScan: {
+          hasViewportMetaEl: true,
+        },
       });
     });
+  });
+
+  afterAll(async () => {
+    if (browserInstance) {
+      await browserInstance.close();
+    }
   });
 });

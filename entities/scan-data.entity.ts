@@ -112,3 +112,7 @@ export type AccessibilityScan = {
   htmlAttributeIssues: number;
   colorContrastIssues: number;
 };
+
+export type MobileScan = {
+  hasViewportMetaEl: boolean;
+};
