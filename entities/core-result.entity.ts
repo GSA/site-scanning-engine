@@ -389,7 +389,6 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'viewport_meta_tag' })
-  @Exclude()
   viewportMetaTag: boolean;
 
   static getColumnNames(): string[] {

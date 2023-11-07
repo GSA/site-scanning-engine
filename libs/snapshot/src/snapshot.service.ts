@@ -104,6 +104,7 @@ export class SnapshotService {
       'sitemap_xml_pdf_count',
       'third_party_service_domains',
       'third_party_service_count',
+      'viewport_meta_tag',
       'cookie_domains',
       'login_provider',
       'login_detected',
