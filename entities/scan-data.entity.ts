@@ -114,5 +114,5 @@ export type AccessibilityScan = {
 };
 
 export type MobileScan = {
-  hasViewportMetaEl: boolean;
+  viewportMetaTag: boolean;
 };

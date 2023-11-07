@@ -388,9 +388,8 @@ export class CoreResult {
   a11yColorContrastIssues?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'has_viewport_meta_el' })
-  @Exclude()
-  hasViewportMetaEl: boolean;
+  @Expose({ name: 'viewport_meta_tag' })
+  viewportMetaTag: boolean;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names
