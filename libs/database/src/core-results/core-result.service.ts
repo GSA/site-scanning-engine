@@ -156,6 +156,7 @@ export class CoreResultService {
       coreResult.finalUrl = null;
       coreResult.finalUrlBaseDomain = null;
       coreResult.finalUrlWebsite = null;
+      coreResult.finalUrlTopLevelDomain = null;
       coreResult.finalUrlIsLive = null;
       coreResult.finalUrlMIMEType = null;
       coreResult.finalUrlSameDomain = null;
