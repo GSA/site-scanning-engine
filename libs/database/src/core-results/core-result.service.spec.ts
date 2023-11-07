@@ -151,7 +151,7 @@ describe('CoreResultService', () => {
             searchgov: null,
           },
           mobileScan: {
-            hasViewportMetaEl: false,
+            viewportMetaTag: false,
           },
         },
       },

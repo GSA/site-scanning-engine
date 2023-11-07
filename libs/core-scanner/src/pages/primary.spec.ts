@@ -76,7 +76,7 @@ describe('primary scanner', () => {
           searchgov: null,
         },
         mobileScan: {
-          hasViewportMetaEl: true,
+          viewportMetaTag: true,
         },
       });
     });
