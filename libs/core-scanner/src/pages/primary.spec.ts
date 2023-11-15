@@ -14,6 +14,8 @@ describe('primary scanner', () => {
 
   it('should return the correct response', async () => {
     await newTestPage(async ({ page }) => {
+      // We make an actual network request to 18f.gov in this test case,
+      // so this is more so an integration test than a unit test per se.
       const input: CoreInputDto = {
         websiteId: 1,
         url: '18f.gov',
@@ -59,7 +61,7 @@ describe('primary scanner', () => {
           uswdsUsFlagInCss: 0,
           uswdsStringInCss: 20,
           uswdsPublicSansFont: 0,
-          uswdsSemanticVersion: 'v3.6.1',
+          uswdsSemanticVersion: 'v3.7.0',
           uswdsVersion: 100,
           uswdsCount: 197,
         },

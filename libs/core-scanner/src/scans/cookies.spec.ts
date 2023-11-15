@@ -2,11 +2,25 @@ import { buildCookieResult } from './cookies';
 import { browserInstance, newTestPage } from '../test-helper';
 
 describe('cookie scan', () => {
-  it('non-navigation different domains treated as third-parties', async () => {
+  it('detects if cookies are present', async () => {
     await newTestPage(async ({ page }) => {
-      expect(await buildCookieResult(page)).toEqual({
-        // I'm not sure the best way to test this; MHT files don't include
-        // simulated cookie requests, so we just end up with empty results.
+      // We make an actual network request to 18f.gsa.gov in this test case,
+      // so this is more so an integration test than a unit test per se.
+      await page.goto('https://18f.gsa.gov/');
+
+      const result = await buildCookieResult(page);
+
+      expect(result).toEqual({
+        domains: '.18f.gsa.gov,.gsa.gov',
+      });
+    });
+  });
+
+  it('detects if no cookies are present', async () => {
+    await newTestPage(async ({ page }) => {
+      const result = await buildCookieResult(page);
+
+      expect(result).toEqual({
         domains: '',
       });
     });
