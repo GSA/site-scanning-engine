@@ -197,7 +197,13 @@ export class CoreScannerService
       );
       return {
         status: ScanStatus.Completed,
-        result,
+        result: {
+          accessibilityScan: {
+            a11yMissingImgAltIssues: result.a11yMissingImgAltIssues,
+            a11yHtmlAttributeIssues: result.a11yHtmlAttributeIssues,
+            a11yColorContrastIssues: result.a11yColorContrastIssues,
+          },
+        },
         error: null,
       };
     } catch (error) {
