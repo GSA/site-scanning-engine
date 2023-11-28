@@ -22,9 +22,9 @@ export const createAccessibilityScanner = (
 
     const htmlcsResults = await getHtmlcsResults(logger, pageWithScript);
 
-    let a11yMissingImgAltIssues = null;
-    let a11yHtmlAttributeIssues = null;
-    let a11yColorContrastIssues = null;
+    let a11yMissingImgAltIssues = 0;
+    let a11yHtmlAttributeIssues = 0;
+    let a11yColorContrastIssues = 0;
 
     if (htmlcsResults) {
       const HTMLCS_ERROR_CODE = 1;
