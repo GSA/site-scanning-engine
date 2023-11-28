@@ -11,9 +11,12 @@ export const createAccessibilityScanner = (
   logger: Logger,
   input: CoreInputDto,
 ) => {
+  logger.info('Starting a11y scan...');
+
   return async (page: Page): Promise<AccessibilityScan> => {
     page.on('console', (message) => console.log('PAGE LOG:', message.text()));
     page.on('error', (error) => console.log('ERROR LOG:', error));
+
     await page.goto(getHttpsUrl(input.url));
     const pageWithScript = await addHTMLCScriptTag(logger, page);
 
