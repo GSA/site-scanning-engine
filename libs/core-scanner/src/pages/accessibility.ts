@@ -17,8 +17,7 @@ export const createAccessibilityScanner = (
     await page.goto(getHttpsUrl(input.url));
     const pageWithScript = await addHTMLCScriptTag(logger, page);
 
-    const htmlcsResults =
-      (await getHtmlcsResults(logger, pageWithScript)) ?? [];
+    const htmlcsResults = await getHtmlcsResults(logger, pageWithScript);
 
     let a11yMissingImgAltIssues = null;
     let a11yHtmlAttributeIssues = null;
