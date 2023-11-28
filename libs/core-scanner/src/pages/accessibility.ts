@@ -5,6 +5,7 @@ import { getHttpsUrl } from '../util';
 import { CoreInputDto } from '../core.input.dto';
 import { Page } from 'puppeteer';
 import { AccessibilityScan } from 'entities/scan-data.entity';
+import { Message } from 'html_codesniffer';
 
 export const createAccessibilityScanner = (
   logger: Logger,
@@ -80,9 +81,12 @@ async function addHTMLCScriptTag(logger: Logger, page: Page): Promise<Page> {
   }
 }
 
-async function getHtmlcsResults(logger: Logger, page: Page) {
+async function getHtmlcsResults(
+  logger: Logger,
+  page: Page,
+): Promise<Message[] | undefined> {
   try {
-    return await page.evaluate(() => {
+    return (await page.evaluate(() => {
       return new Promise((resolve, reject) => {
         HTMLCS.process('WCAG2AA', document.documentElement, () => {
           try {
@@ -92,14 +96,18 @@ async function getHtmlcsResults(logger: Logger, page: Page) {
           }
         });
       });
-    });
+    })) as Message[];
   } catch (err) {
     logger.warn(`Error in HTMLCS process: ${err.message}`);
     throw err;
   }
 }
 
-function getIssueTotalByCategory(results, category, errorCode): number {
+function getIssueTotalByCategory(
+  results: Message[],
+  category: string,
+  errorCode: number,
+): number {
   return results.filter(
     (msg) => msg.type === errorCode && msg.code.includes(category),
   ).length;
