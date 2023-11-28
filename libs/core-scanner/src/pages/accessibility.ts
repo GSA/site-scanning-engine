@@ -12,29 +12,41 @@ export const createAccessibilityScanner = (
 ) => {
   return async (page: Page): Promise<AccessibilityScan> => {
     page.on('console', (message) => console.log('PAGE LOG:', message.text()));
+    page.on('error', (error) => console.log('ERROR LOG:', error));
     await page.goto(getHttpsUrl(input.url));
     const pageWithScript = await addHTMLCScriptTag(logger, page);
 
     const htmlcsResults =
       (await getHtmlcsResults(logger, pageWithScript)) ?? [];
-    const HTMLCS_ERROR_CODE = 1;
 
-    return {
-      a11yMissingImgAltIssues: getIssueTotalByCategory(
+    let a11yMissingImgAltIssues = null;
+    let a11yHtmlAttributeIssues = null;
+    let a11yColorContrastIssues = null;
+
+    if (htmlcsResults) {
+      const HTMLCS_ERROR_CODE = 1;
+
+      a11yMissingImgAltIssues = getIssueTotalByCategory(
         htmlcsResults,
         'WCAG2AA.Principle1.Guideline1_1',
         HTMLCS_ERROR_CODE,
-      ),
-      a11yHtmlAttributeIssues: getIssueTotalByCategory(
+      );
+      a11yHtmlAttributeIssues = getIssueTotalByCategory(
         htmlcsResults,
         'WCAG2AA.Principle4.Guideline4_1',
         HTMLCS_ERROR_CODE,
-      ),
-      a11yColorContrastIssues: getIssueTotalByCategory(
+      );
+      a11yColorContrastIssues = getIssueTotalByCategory(
         htmlcsResults,
         'WCAG2AA.Principle1.Guideline1_4',
         HTMLCS_ERROR_CODE,
-      ),
+      );
+    }
+
+    return {
+      a11yMissingImgAltIssues,
+      a11yHtmlAttributeIssues,
+      a11yColorContrastIssues,
     };
   };
 };
