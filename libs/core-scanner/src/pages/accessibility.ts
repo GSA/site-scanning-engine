@@ -1,20 +1,61 @@
 import { join } from 'path';
 import { Logger } from 'pino';
 import * as HTMLCS from 'html_codesniffer';
-import { Message } from 'html_codesniffer';
 import { getHttpsUrl } from '../util';
 import { CoreInputDto } from '../core.input.dto';
 import { Page } from 'puppeteer';
 import { AccessibilityScan } from 'entities/scan-data.entity';
-import { AccessibilityScans } from 'entities/scan-page.entity';
+import { Message } from 'html_codesniffer';
 
 export const createAccessibilityScanner = (
   logger: Logger,
   input: CoreInputDto,
 ) => {
-  return async (page: Page): Promise<AccessibilityScans> => {
-    await page.goto(getHttpsUrl(input.url));
+  logger.info('Starting a11y scan...');
 
+  return async (page: Page): Promise<AccessibilityScan> => {
+    page.on('console', (message) => console.log('PAGE LOG:', message.text()));
+    page.on('error', (error) => console.log('ERROR LOG:', error));
+
+    await page.goto(getHttpsUrl(input.url));
+    const pageWithScript = await addHTMLCScriptTag(logger, page);
+
+    const htmlcsResults = await getHtmlcsResults(logger, pageWithScript);
+
+    let a11yMissingImgAltIssues = 0;
+    let a11yHtmlAttributeIssues = 0;
+    let a11yColorContrastIssues = 0;
+
+    if (htmlcsResults) {
+      const HTMLCS_ERROR_CODE = 1;
+
+      a11yMissingImgAltIssues = getIssueTotalByCategory(
+        htmlcsResults,
+        'WCAG2AA.Principle1.Guideline1_1',
+        HTMLCS_ERROR_CODE,
+      );
+      a11yHtmlAttributeIssues = getIssueTotalByCategory(
+        htmlcsResults,
+        'WCAG2AA.Principle4.Guideline4_1',
+        HTMLCS_ERROR_CODE,
+      );
+      a11yColorContrastIssues = getIssueTotalByCategory(
+        htmlcsResults,
+        'WCAG2AA.Principle1.Guideline1_4',
+        HTMLCS_ERROR_CODE,
+      );
+    }
+
+    return {
+      a11yMissingImgAltIssues,
+      a11yHtmlAttributeIssues,
+      a11yColorContrastIssues,
+    };
+  };
+};
+
+async function addHTMLCScriptTag(logger: Logger, page: Page): Promise<Page> {
+  try {
     const scriptPath = join(
       __dirname,
       '..',
@@ -25,44 +66,19 @@ export const createAccessibilityScanner = (
       'build',
       'HTMLCS.js',
     );
+    await page.addScriptTag({ path: scriptPath });
 
-    await page.addScriptTag({
-      path: scriptPath,
+    const isHTMLCSLoaded = await page.evaluate(() => {
+      return typeof HTMLCS !== 'undefined';
     });
 
-    return {
-      accessibilityScan: await buildAccessibilityResult(logger, page),
-    };
-  };
-};
-
-async function buildAccessibilityResult(
-  logger: Logger,
-  page: Page,
-): Promise<AccessibilityScan> {
-  try {
-    const htmlcsResults = await getHtmlcsResults(logger, page);
-
-    if (!htmlcsResults) {
-      throw new Error('html_codesniffer could not run');
-    } else {
-      return {
-        a11yMissingImgAltIssues: getIssueTotalByCategory(
-          htmlcsResults,
-          'WCAG2AA.Principle1.Guideline1_1',
-        ),
-        a11yHtmlAttributeIssues: getIssueTotalByCategory(
-          htmlcsResults,
-          'WCAG2AA.Principle4.Guideline4_1',
-        ),
-        a11yColorContrastIssues: getIssueTotalByCategory(
-          htmlcsResults,
-          'WCAG2AA.Principle1.Guideline1_4',
-        ),
-      };
+    if (!isHTMLCSLoaded) {
+      throw new Error('HTMLCS script not loaded properly');
     }
+
+    return page;
   } catch (err) {
-    logger.warn(`Error running HTMLCS in page: ${err}`);
+    logger.warn(`Error adding HTMLCS script tag: ${err.message}`);
     throw err;
   }
 }
@@ -70,26 +86,31 @@ async function buildAccessibilityResult(
 async function getHtmlcsResults(
   logger: Logger,
   page: Page,
-): Promise<Message[]> | undefined {
-  const htmlcsResults: any = await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-      try {
+): Promise<Message[] | undefined> {
+  try {
+    return (await page.evaluate(() => {
+      return new Promise((resolve, reject) => {
         HTMLCS.process('WCAG2AA', document.documentElement, () => {
-          const results = HTMLCS.getMessages();
-          resolve(results);
+          try {
+            resolve(HTMLCS.getMessages());
+          } catch (err) {
+            reject(err);
+          }
         });
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
-
-  return htmlcsResults;
+      });
+    })) as Message[];
+  } catch (err) {
+    logger.warn(`Error in HTMLCS process: ${err.message}`);
+    throw err;
+  }
 }
 
-function getIssueTotalByCategory(results: any[], category: string): number {
-  const HTMLCS_ERROR_CODE = 1;
-  return results
-    .filter((msg) => msg.type === HTMLCS_ERROR_CODE)
-    .filter((msg) => msg.code.includes(category)).length;
+function getIssueTotalByCategory(
+  results: Message[],
+  category: string,
+  errorCode: number,
+): number {
+  return results.filter(
+    (msg) => msg.type === errorCode && msg.code.includes(category),
+  ).length;
 }
