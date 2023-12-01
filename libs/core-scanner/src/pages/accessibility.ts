@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { readFile } from 'fs/promises';
 import { Logger } from 'pino';
 import * as HTMLCS from 'html_codesniffer';
 import { getHttpsUrl } from '../util';
@@ -56,17 +57,21 @@ export const createAccessibilityScanner = (
 
 async function addHTMLCScriptTag(logger: Logger, page: Page): Promise<Page> {
   try {
-    const scriptPath = join(
-      __dirname,
-      '..',
-      '..',
-      '..',
-      'node_modules',
-      'html_codesniffer',
-      'build',
-      'HTMLCS.js',
+    const scriptPath = await readFile(
+      join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        'node_modules',
+        'html_codesniffer',
+        'build',
+        'HTMLCS.js',
+      ),
+      'utf-8',
     );
-    await page.addScriptTag({ path: scriptPath });
+
+    await page.evaluate(scriptPath);
 
     const isHTMLCSLoaded = await page.evaluate(() => {
       return typeof HTMLCS !== 'undefined';
