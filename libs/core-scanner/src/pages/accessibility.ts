@@ -94,8 +94,10 @@ async function getHtmlcsResults(
 ): Promise<Message[] | undefined> {
   try {
     return (await page.evaluate(() => {
+      const windowGlobal = window as any;
+
       return new Promise((resolve, reject) => {
-        HTMLCS.process('WCAG2AA', document.documentElement, () => {
+        HTMLCS.process('WCAG2AA', windowGlobal.document, () => {
           try {
             resolve(HTMLCS.getMessages());
           } catch (err) {
