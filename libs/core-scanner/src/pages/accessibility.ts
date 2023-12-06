@@ -19,6 +19,7 @@ export const createAccessibilityScanner = (
     page.on('error', (error) => console.log('ERROR LOG:', error));
 
     await page.goto(getHttpsUrl(input.url));
+    await page.waitForNavigation();
     const pageWithScript = await addHTMLCScriptTag(logger, page);
 
     const htmlcsResults = await getHtmlcsResults(logger, pageWithScript);
