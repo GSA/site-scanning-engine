@@ -19,7 +19,11 @@ export const createAccessibilityScanner = (
     page.on('error', (error) => console.log('ERROR LOG:', error));
 
     await page.goto(getHttpsUrl(input.url));
-    await page.waitForNavigation();
+
+    await navigateIfNeeded(page, async () => {
+      await page.evaluate(() => console.log('...'));
+    });
+
     const pageWithScript = await addHTMLCScriptTag(logger, page);
 
     const htmlcsResults = await getHtmlcsResults(logger, pageWithScript);
@@ -55,6 +59,22 @@ export const createAccessibilityScanner = (
     };
   };
 };
+
+async function navigateIfNeeded(page, actionFunction) {
+  const navigationPromise = page.waitForNavigation();
+
+  await actionFunction();
+
+  try {
+    await Promise.race([
+      navigationPromise,
+      new Promise((resolve) => setTimeout(resolve, 1000)),
+    ]);
+    await navigationPromise;
+  } catch (error) {
+    console.error('Navigation did not start or failed:', error);
+  }
+}
 
 async function addHTMLCScriptTag(logger: Logger, page: Page): Promise<Page> {
   try {
