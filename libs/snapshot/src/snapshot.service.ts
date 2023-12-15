@@ -129,7 +129,7 @@ export class SnapshotService {
 
     const liveWebsites = await this.websiteService.findLiveSnapshotResults();
     this.logger.log(
-      `Total number of live websites retrieved for snapshot: ${allWebsites.length}`,
+      `Total number of live websites retrieved for snapshot: ${liveWebsites.length}`,
     );
 
     const liveSnapshot = new Snapshot(
