@@ -6,6 +6,7 @@ import { RobotsTxtScan } from 'entities/scan-data.entity';
 import { RobotsTxtPageScans } from 'entities/scan-page.entity';
 
 import { getHttpsUrl, getMIMEType } from '../util';
+import { isLive } from '../util';
 
 export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   const url = getHttpsUrl(input.url);
@@ -35,8 +36,7 @@ const buildRobotTxtResult = (
   robotsText: string,
 ): RobotsTxtScan => {
   const robotsUrl = new URL(robotsResponse.url());
-  const robotsStatus = robotsResponse.status();
-  const robotsLive = robotsStatus / 100 === 2;
+  const robotsLive = isLive(robotsResponse);
   const robotsTxtDetected = robotsUrl.pathname === '/robots.txt' && robotsLive;
 
   return {
@@ -45,7 +45,7 @@ const buildRobotTxtResult = (
     robotsTxtTargetUrlRedirects:
       robotsResponse.request().redirectChain().length > 0,
     robotsTxtFinalUrlMimeType: getMIMEType(robotsResponse),
-    robotsTxtStatusCode: robotsStatus,
+    robotsTxtStatusCode: robotsResponse.status(),
 
     robotsTxtDetected,
     ...(robotsTxtDetected

@@ -62,3 +62,8 @@ export const getTopLevelDomain = (url: string): string | null => {
 
   return tldMatch ? tldMatch[1] : null;
 };
+
+export const isLive = (res: HTTPResponse): boolean => {
+  const http200FamilyCodes = [200, 201, 202, 203, 204, 205, 206];
+  return _.includes(http200FamilyCodes, res.status());
+};
