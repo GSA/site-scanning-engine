@@ -114,18 +114,28 @@ export class SnapshotService {
       'dap_parameters_final_url',
     ];
 
+    const allWebsites = await this.websiteService.findAllSnapshotResults();
+    this.logger.log(
+      `Total number of all websites retrieved for snapshot: ${allWebsites.length}`,
+    );
+
     const allSnapshot = new Snapshot(
       this.storageService,
       [new JsonSerializer(liveColumnOrder), new CsvSerializer(liveColumnOrder)],
-      await this.websiteService.findAllSnapshotResults(),
+      allWebsites,
       priorDate,
       this.fileNameAll,
+    );
+
+    const liveWebsites = await this.websiteService.findLiveSnapshotResults();
+    this.logger.log(
+      `Total number of live websites retrieved for snapshot: ${liveWebsites.length}`,
     );
 
     const liveSnapshot = new Snapshot(
       this.storageService,
       [new JsonSerializer(liveColumnOrder), new CsvSerializer(liveColumnOrder)],
-      await this.websiteService.findLiveSnapshotResults(),
+      liveWebsites,
       priorDate,
       this.fileNameLive,
     );
