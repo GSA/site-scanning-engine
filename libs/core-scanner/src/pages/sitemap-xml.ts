@@ -5,7 +5,7 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { SitemapXmlScan } from 'entities/scan-data.entity';
 import { SitemapXmlPageScans } from 'entities/scan-page.entity';
 
-import { getHttpsUrl, getMIMEType } from '../util';
+import { getHttpsUrl, getMIMEType, isLive } from '../util';
 
 export const createSitemapXmlScanner = (
   logger: Logger,
@@ -39,8 +39,7 @@ const buildSitemapResult = async (
   sitemapPage: Page,
 ): Promise<SitemapXmlScan> => {
   const sitemapUrl = new URL(sitemapResponse.url());
-  const sitemapStatus = sitemapResponse.status();
-  const sitemapLive = sitemapStatus / 100 === 2;
+  const sitemapLive = isLive(sitemapResponse);
 
   const sitemapXmlDetected =
     sitemapUrl.pathname === '/sitemap.xml' && sitemapLive;
@@ -51,7 +50,7 @@ const buildSitemapResult = async (
     sitemapTargetUrlRedirects:
       sitemapResponse.request().redirectChain().length > 0,
     sitemapXmlFinalUrlMimeType: getMIMEType(sitemapResponse),
-    sitemapXmlStatusCode: sitemapStatus,
+    sitemapXmlStatusCode: sitemapResponse.status(),
 
     sitemapXmlDetected,
     ...(sitemapXmlDetected

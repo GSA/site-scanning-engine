@@ -3,6 +3,7 @@ import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { UrlScan } from 'entities/scan-data.entity';
+import { isLive } from '../util';
 
 import {
   getBaseDomain,
@@ -42,9 +43,4 @@ const redirects = (requests: HTTPRequest[]): boolean => {
 const getFinalUrl = (page: Page) => {
   const finalUrl = page.url();
   return finalUrl;
-};
-
-const isLive = (res: HTTPResponse) => {
-  const http200FamilyCodes = [200, 201, 202, 203, 204, 205, 206];
-  return _.includes(http200FamilyCodes, res.status());
 };
