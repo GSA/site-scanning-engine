@@ -73,7 +73,10 @@ export class IngestService {
         if (!hasParsingError) {
           try {
             await Promise.all(writes);
-            this.logger.debug('finished ingest of urls');
+            const allWebsites = await this.websiteService.findAllWebsites();
+            this.logger.log(
+              `total number of websites following ingest: ${allWebsites.length}`,
+            );
 
             if (newestWebsiteRecord) {
               this.logger.log(`invalid url(s) detected`);
@@ -82,6 +85,12 @@ export class IngestService {
               );
               this.logger.log(
                 `finished removing ${deleted.affected} invalid url(s)`,
+              );
+
+              const allWebsitesFollowingDeletion =
+                await this.websiteService.findAllWebsites();
+              this.logger.log(
+                `total number of websites following delection of invalid url(s): ${allWebsitesFollowingDeletion.length}`,
               );
             }
 
