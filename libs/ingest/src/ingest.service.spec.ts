@@ -56,6 +56,10 @@ describe('IngestService', () => {
       .spyOn(mockUrlList, 'fetch')
       .mockImplementation(() => Promise.resolve(csvString));
 
+    jest
+      .spyOn(mockWebsiteService, 'findAllWebsites')
+      .mockImplementation(() => Promise.resolve([]));
+
     const urls = await service.getUrls();
     await service.writeUrls(urls);
 
@@ -83,6 +87,10 @@ describe('IngestService', () => {
     website.agencyCode = 10;
     website.bureauCode = 10;
     website.sourceList = 'gov';
+
+    jest
+      .spyOn(mockWebsiteService, 'findAllWebsites')
+      .mockImplementation(() => Promise.resolve([]));
 
     jest
       .spyOn(mockWebsiteService, 'findNewestWebsite')
