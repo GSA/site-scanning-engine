@@ -20,6 +20,8 @@ export class QueueController {
     try {
       const websites = await this.websiteService.findAllWebsites();
 
+      this.logger.log(`adding ${websites.length} websites to the queue`);
+
       for (const website of websites) {
         const coreInput: CoreInputDto = {
           websiteId: website.id,
