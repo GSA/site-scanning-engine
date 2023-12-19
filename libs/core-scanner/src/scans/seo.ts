@@ -52,7 +52,11 @@ const findOpenGraphDates = async (
   if (targetDate) {
     try {
       const date = new Date(targetDate);
-      return date;
+      if (isNaN(date.getTime())) {
+        return null;
+      } else {
+        return date;
+      }
     } catch (e) {
       const err = e as Error;
       logger.warn(`Could not parse date ${targetDate}: ${err.message}`);
