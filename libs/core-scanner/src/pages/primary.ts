@@ -42,7 +42,7 @@ const primaryScan = async (
 
   // goto url and wait until there are only 2 idle requests
   const response = await page.goto(url, {
-    waitUntil: 'networkidle2',
+    waitUntil: 'networkidle0',
   });
 
   const [
