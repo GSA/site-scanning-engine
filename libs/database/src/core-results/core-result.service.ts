@@ -82,6 +82,9 @@ export class CoreResultService {
       coreResult.ogDescriptionFinalUrl = result.seoScan.ogDescriptionFinalUrl;
       coreResult.ogTitleFinalUrl = result.seoScan.ogTitleFinalUrl;
       coreResult.canonicalLink = result.seoScan.canonicalLink;
+      coreResult.pageTitle = result.seoScan.pageTitle;
+      coreResult.metaDescriptionContent = result.seoScan.metaDescriptionContent;
+      coreResult.hreflangCodes = result.seoScan.hreflangCodes;
 
       // Third-party scan
       coreResult.thirdPartyServiceCount =

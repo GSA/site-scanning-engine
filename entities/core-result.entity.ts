@@ -391,6 +391,28 @@ export class CoreResult {
   @Expose({ name: 'viewport_meta_tag' })
   viewportMetaTag: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'page_title' })
+  @Exclude()
+  pageTitle?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'meta_description_content' })
+  @Exclude()
+  metaDescriptionContent?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'hreflang_codes' })
+  @Exclude()
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  hreflangCodes?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

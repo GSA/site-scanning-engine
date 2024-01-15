@@ -1,13 +1,17 @@
 import { mock } from 'jest-mock-extended';
 import { Logger } from 'pino';
-
+import { HTTPResponse } from 'puppeteer';
 import { browserInstance, newTestPage } from '../test-helper';
 import { buildSeoResult } from './seo';
 
 describe('seo scan', () => {
   it('works', async () => {
     await newTestPage(async ({ page }) => {
-      const result = await buildSeoResult(mock<Logger>(), page);
+      const result = await buildSeoResult(
+        mock<Logger>(),
+        page,
+        mock<HTTPResponse>(),
+      );
       expect(result).toEqual({
         mainElementFinalUrl: true,
         ogArticlePublishedFinalUrl: undefined,
@@ -17,6 +21,11 @@ describe('seo scan', () => {
         ogTitleFinalUrl:
           "Investing in Appalachia's economic future. - Appalachian Regional Commission",
         canonicalLink: 'https://www.arc.gov/',
+        pageTitle:
+          "Investing in Appalachia's economic future. - Appalachian Regional Commission",
+        metaDescriptionContent: '',
+
+        hreflangCodes: '',
       });
     }, 'arc_gov_dump.mht');
   });

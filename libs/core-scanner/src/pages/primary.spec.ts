@@ -46,6 +46,10 @@ describe('primary scanner', () => {
             '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
           mainElementFinalUrl: true,
           canonicalLink: 'https://18f.gsa.gov/',
+          pageTitle: '18F: Digital service delivery | Home',
+          metaDescriptionContent:
+            '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
+          hreflangCodes: '',
         },
         thirdPartyScan: {
           thirdPartyServiceDomains:
