@@ -1,28 +1,44 @@
 import { Logger } from 'pino';
 import { Page } from 'puppeteer';
-
+import { HTTPResponse } from 'puppeteer';
 import { SeoScan } from 'entities/scan-data.entity';
 
 export const buildSeoResult = async (
   logger: Logger,
   page: Page,
+  response: HTTPResponse,
 ): Promise<SeoScan> => {
-  // seo
+  const ogTitleFinalUrl = await findOpenGraphTag(page, 'og:title');
+  const ogDescriptionFinalUrl = await findOpenGraphTag(page, 'og:description');
+  const ogArticlePublishedFinalUrl = await findOpenGraphDates(
+    logger,
+    page,
+    'article:published_time',
+  );
+  const ogArticleModifiedFinalUrl = await findOpenGraphDates(
+    logger,
+    page,
+    'article:modified_time',
+  );
+  const mainElementFinalUrl = await findMainElement(page);
+  const canonicalLink =
+    (await findCanonicalLinkInHtml(page)) ??
+    (await findCanonicalLInkInResponseHeaders(response)) ??
+    null;
+  const pageTitle = await findPageTitleText(page);
+  const metaDescriptionContent = await findMetaDescriptionContent(page);
+  const hreflangCodes = await findHrefLangCodes(page);
+
   return {
-    ogTitleFinalUrl: await findOpenGraphTag(page, 'og:title'),
-    ogDescriptionFinalUrl: await findOpenGraphTag(page, 'og:description'),
-    ogArticlePublishedFinalUrl: await findOpenGraphDates(
-      logger,
-      page,
-      'article:published_time',
-    ),
-    ogArticleModifiedFinalUrl: await findOpenGraphDates(
-      logger,
-      page,
-      'article:modified_time',
-    ),
-    mainElementFinalUrl: await findMainElement(page),
-    canonicalLink: await findCanonicalLink(page),
+    ogTitleFinalUrl,
+    ogDescriptionFinalUrl,
+    ogArticlePublishedFinalUrl,
+    ogArticleModifiedFinalUrl,
+    mainElementFinalUrl,
+    canonicalLink,
+    pageTitle,
+    metaDescriptionContent,
+    hreflangCodes,
   };
 };
 
@@ -75,7 +91,7 @@ const findMainElement = async (page: Page) => {
   return main;
 };
 
-const findCanonicalLink = async (page: Page) => {
+const findCanonicalLinkInHtml = async (page: Page): Promise<string | null> => {
   const canonicalLinkResult = await page.evaluate(() => {
     const canonicalLink = document.querySelector<Element>(
       'link[rel="canonical"]',
@@ -84,4 +100,59 @@ const findCanonicalLink = async (page: Page) => {
   });
 
   return canonicalLinkResult;
+};
+
+const findCanonicalLInkInResponseHeaders = async (
+  response: HTTPResponse,
+): Promise<string | null> => {
+  const headers = await response.headers();
+
+  for (const key in headers) {
+    if (key.toLowerCase() === 'link') {
+      const value = headers[key];
+      if (value.toLowerCase().includes('rel=canonical')) {
+        const regex = /https?:\/\/[^;]+(?=; rel="canonical")/i;
+        const matches = value.match(regex);
+        return matches ? matches[0] : null;
+      }
+    }
+  }
+
+  return null;
+};
+
+const findPageTitleText = async (page: Page): Promise<string> => {
+  return await page.evaluate(() => document.title.trim());
+};
+
+const findMetaDescriptionContent = async (
+  page: Page,
+): Promise<string | null> => {
+  const content = await page.evaluate(() => {
+    const metaDescription = document.querySelector('meta[name="description"]');
+
+    if (metaDescription && metaDescription.hasAttribute('content')) {
+      return metaDescription.getAttribute('content').trim();
+    }
+
+    return null;
+  });
+
+  return content;
+};
+
+const findHrefLangCodes = async (page: Page): Promise<string> => {
+  const languageCodes = await page.evaluate(() => {
+    const hreflangElements = document.querySelectorAll(
+      'link[rel="alternate"][hreflang]',
+    );
+
+    const hreflangValues = Array.from(hreflangElements).map((el) => {
+      return el.getAttribute('hreflang').trim().toLowerCase();
+    });
+
+    return hreflangValues;
+  });
+
+  return languageCodes.join(',');
 };

@@ -40,7 +40,6 @@ const primaryScan = async (
   const getCSSRequests = await createCSSRequestsExtractor(page, logger);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
 
-  // goto url and wait until there are only 2 idle requests
   const response = await page.goto(url, {
     waitUntil: 'networkidle0',
   });
@@ -61,7 +60,7 @@ const primaryScan = async (
     buildDapResult(logger, getOutboundRequests()),
     buildThirdPartyResult(response, getOutboundRequests()),
     buildCookieResult(page),
-    buildSeoResult(logger, page),
+    buildSeoResult(logger, page, response),
     createUswdsScanner({ logger, getCSSRequests }, page)(response),
     buildLoginResult(response),
     buildCloudDotGovPagesResult(response),
