@@ -27,7 +27,10 @@ export const buildSeoResult = async (
     null;
   const pageTitle = await findPageTitleText(page);
   const metaDescriptionContent = await findMetaDescriptionContent(page);
-  const hreflangCodes = await findHrefLangCodes(page);
+  const hreflangCodes =
+    (await findHrefLangCodes(page)) ??
+    (await extractHrefLangValues(response)) ??
+    null;
 
   return {
     ogTitleFinalUrl,
@@ -156,3 +159,19 @@ const findHrefLangCodes = async (page: Page): Promise<string> => {
 
   return languageCodes.join(',');
 };
+
+function extractHrefLangValues(response: HTTPResponse): string | null {
+  const linkHeader = response.headers()['link'];
+  if (!linkHeader) {
+    return null;
+  }
+
+  const hrefLangRegex = /hreflang="([^"]+)"/g;
+
+  const matches = linkHeader.match(hrefLangRegex);
+  if (!matches || matches.length === 0) {
+    return null;
+  }
+
+  return matches.map((match) => match.split('"')[1]).join(',');
+}
