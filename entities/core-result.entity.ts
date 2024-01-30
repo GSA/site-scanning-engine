@@ -83,7 +83,7 @@ export class CoreResult {
   finalUrlBaseDomain?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_mimetype' })
+  @Expose({ name: 'final_url_media_type' })
   finalUrlMIMEType?: string;
 
   @Column({ nullable: true })
@@ -147,12 +147,12 @@ export class CoreResult {
   uswdsCount?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'dap_detected_final_url' })
+  @Expose({ name: 'dap' })
   dapDetected?: boolean;
 
   // dap_parameters need to be parsed into JSON on serialization.
   @Column({ nullable: true })
-  @Expose({ name: 'dap_parameters_final_url' })
+  @Expose({ name: 'dap_parameters' })
   @Transform(
     (value) => {
       if (value) {
@@ -170,23 +170,23 @@ export class CoreResult {
   dapParameters?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'og_title_final_url' })
+  @Expose({ name: 'og_title' })
   ogTitleFinalUrl?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'og_description_final_url' })
+  @Expose({ name: 'og_description' })
   ogDescriptionFinalUrl?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'og_article_published_final_url' })
+  @Expose({ name: 'og_article_published' })
   ogArticlePublishedFinalUrl?: Date;
 
   @Column({ nullable: true })
-  @Expose({ name: 'og_article_modified_final_url' })
+  @Expose({ name: 'og_article_modified' })
   ogArticleModifiedFinalUrl?: Date;
 
   @Column({ nullable: true })
-  @Expose({ name: 'main_element_present_final_url' })
+  @Expose({ name: 'main_element_present' })
   mainElementFinalUrl?: boolean;
 
   @Column({ nullable: true })
@@ -206,7 +206,7 @@ export class CoreResult {
   robotsTxtDetected?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url_mimetype' })
+  @Expose({ name: 'robots_txt_final_url_media_type' })
   robotsTxtFinalUrlMimeType?: string;
 
   @Column({ nullable: true })
@@ -214,7 +214,7 @@ export class CoreResult {
   robotsTxtTargetUrlRedirects?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url_filesize_in_bytes' })
+  @Expose({ name: 'robots_txt_final_url_filesize' })
   robotsTxtFinalUrlSize?: number;
 
   @Column({ nullable: true })
@@ -253,11 +253,11 @@ export class CoreResult {
   sitemapTargetUrlRedirects?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url_filesize_in_bytes' })
+  @Expose({ name: 'sitemap_xml_final_url_filesize' })
   sitemapXmlFinalUrlFilesize?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url_mimetype' })
+  @Expose({ name: 'sitemap_xml_final_url_media_type' })
   sitemapXmlFinalUrlMimeType?: string;
 
   @Column({ nullable: true })
@@ -295,11 +295,11 @@ export class CoreResult {
   cookieDomains?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'dns_ipv6' })
+  @Expose({ name: 'ipv6' })
   dnsIpv6?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'login_detected' })
+  @Expose({ name: 'login' })
   @Transform((value: string) => {
     if (value) {
       return value.split(',');
@@ -310,7 +310,7 @@ export class CoreResult {
   loginDetected?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'dns_hostname' })
+  @Expose({ name: 'hostname' })
   dnsHostname?: string;
 
   @Column({ nullable: true })
@@ -360,11 +360,11 @@ export class CoreResult {
   loginProvider?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'search_detected' })
+  @Expose({ name: 'site_search' })
   searchDetected?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'searchgov' })
+  @Expose({ name: 'search_dot_gov' })
   searchgov?: boolean;
 
   @Column({ nullable: true })
