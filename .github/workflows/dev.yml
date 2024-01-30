@@ -36,4 +36,4 @@ jobs:
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
           cf_space: dev
-          cf_command: push -f manifest.yml --vars-file vars-prod.yml
+          cf_command: push -f manifest.yml --vars-file vars-dev.yml
