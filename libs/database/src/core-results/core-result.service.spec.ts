@@ -209,6 +209,15 @@ describe('CoreResultService', () => {
           },
         },
       },
+      performance: {
+        status: scanStatus,
+        result: {
+          performanceScan: {
+            largestContentfulPaint: null,
+            cumulativeLayoutShift: null,
+          },
+        },
+      },
     };
     const logger = mock<Logger>();
 

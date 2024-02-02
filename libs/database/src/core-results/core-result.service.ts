@@ -36,6 +36,7 @@ export class CoreResultService {
     this.updateSitemapXmlScanResults(coreResult, pages, logger);
     this.updateDnsScanResults(coreResult, pages, logger);
     this.updateAccessibilityScanResults(coreResult, pages, logger);
+    this.updatePerformanceScanResults(coreResult, pages, logger);
 
     return this.create(coreResult);
   }
@@ -331,6 +332,30 @@ export class CoreResultService {
       coreResult.a11yMissingImgAltIssues = null;
       coreResult.a11yHtmlAttributeIssues = null;
       coreResult.a11yColorContrastIssues = null;
+    }
+  }
+
+  private updatePerformanceScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.performanceScanStatus = pages.performance.status;
+
+    if (pages.performance.status === ScanStatus.Completed) {
+      coreResult.largestContentfulPaint =
+        pages.performance.result.performanceScan.largestContentfulPaint;
+
+      coreResult.cumulativeLayoutShift =
+        pages.performance.result.performanceScan.cumulativeLayoutShift;
+    } else {
+      logger.error({
+        msg: pages.performance.error,
+        page: 'performance',
+      });
+
+      coreResult.largestContentfulPaint = null;
+      coreResult.cumulativeLayoutShift = null;
     }
   }
 }
