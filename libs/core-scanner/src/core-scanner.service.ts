@@ -44,6 +44,7 @@ export class CoreScannerService
           input,
           scanLogger,
         ),
+        performance: await this.runPerformanceScan(browser, input, scanLogger),
       };
 
       scanLogger.info({ result }, 'solutions scan results');
@@ -202,6 +203,38 @@ export class CoreScannerService
             a11yMissingImgAltIssues: result.a11yMissingImgAltIssues,
             a11yHtmlAttributeIssues: result.a11yHtmlAttributeIssues,
             a11yColorContrastIssues: result.a11yColorContrastIssues,
+          },
+        },
+        error: null,
+      };
+    } catch (error) {
+      return {
+        status: this.getScanStatus(error, input.url, logger),
+        result: null,
+        error,
+      };
+    }
+  }
+
+  private async runPerformanceScan(
+    browser: Browser,
+    input: CoreInputDto,
+    logger: Logger,
+  ): Promise<ScanPage.PerformancePageScan> {
+    try {
+      const result = await this.browserService.processPage(
+        browser,
+        pages.createPerformanceScanner(
+          logger.child({ page: 'performance' }),
+          input,
+        ),
+      );
+      return {
+        status: ScanStatus.Completed,
+        result: {
+          performanceScan: {
+            largestContentfulPaint: result.largestContentfulPaint,
+            cumulativeLayoutShift: result.cumulativeLayoutShift,
           },
         },
         error: null,

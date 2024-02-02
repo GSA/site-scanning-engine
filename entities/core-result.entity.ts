@@ -1,5 +1,4 @@
 import { classToPlain, Exclude, Expose, Transform } from 'class-transformer';
-import { Logger } from 'pino';
 import {
   Column,
   CreateDateColumn,
@@ -23,6 +22,7 @@ export type CoreResultPages = {
   sitemapXml: ScanPage.SitemapXmlPageScan;
   dns: ScanPage.DnsPageScan;
   accessibility: ScanPage.AccessibilityPageScan;
+  performance: ScanPage.PerformancePageScan;
 };
 
 @Entity()
@@ -412,6 +412,21 @@ export class CoreResult {
     }
   })
   hreflangCodes?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'performance_scan_status' })
+  @Exclude()
+  performanceScanStatus?: string;
+
+  @Column({ nullable: true, type: 'decimal' })
+  @Expose({ name: 'largest_contentful_paint' })
+  @Exclude()
+  largestContentfulPaint?: number;
+
+  @Column({ nullable: true, type: 'decimal' })
+  @Expose({ name: 'cumulative_layout_shift' })
+  @Exclude()
+  cumulativeLayoutShift?: number;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names

@@ -119,3 +119,8 @@ export type AccessibilityScan = {
 export type MobileScan = {
   viewportMetaTag: boolean;
 };
+
+export type PerformanceScan = {
+  largestContentfulPaint: number;
+  cumulativeLayoutShift: number;
+};

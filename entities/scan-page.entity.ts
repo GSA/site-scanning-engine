@@ -54,3 +54,9 @@ export type AccessibilityScans = {
 };
 
 export type AccessibilityPageScan = PageScan<AccessibilityScans>;
+
+export type PerformanceScans = {
+  performanceScan: ScanData.PerformanceScan;
+};
+
+export type PerformancePageScan = PageScan<PerformanceScans>;
