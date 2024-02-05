@@ -1,15 +1,13 @@
-README.md
+.github
+.ipynb_checkpoints
+.vscode
 common
 coverage
-deploy-cloudgov.sh
-docker-compose.yml
 docs
 libs
-manifest.yml
-nest-cli.json
 node_modules
-tsconfig.build.json
-tsconfig.json
+notebooks
+storage
 
 .cfignore
 .dockerignore
@@ -18,3 +16,15 @@ tsconfig.json
 .gitignore
 .nvmrc
 .prettierrc
+
+cloudgov-deploy.sh
+cloudgov-run-ingest.sh
+docker-compose.yml
+manifest.yml
+nest-cli.json
+README.md
+sample.env
+setup_node_environment.sh
+site_scanner_endpoint_test.bash
+tsconfig.build.json
+tsconfig.json
