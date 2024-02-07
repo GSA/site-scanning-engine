@@ -166,7 +166,7 @@ npm run start:all
 ```
 
 The apps are started as follows: first the API starts and then
-the Site Scanner worker follows. This is designed so that the
+the Site Scanning worker follows. This is designed so that the
 API app runs any shared configuration against the database first.
 
 Note, that you can start the apps individually as follows:
@@ -178,7 +178,7 @@ npm run start:scan-engine
 
 ### Ingest Website List
 
-The Site Scanner relies on a list of federal domains and metadata about
+The Site Scanning engine relies on a list of federal domains and metadata about
 those to domains to operate. This list is ingested into the system
 from a public repository using a the [Ingest Service](libs/ingest).
 
