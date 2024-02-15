@@ -78,6 +78,8 @@ describe('Snapshot', () => {
       'third_party_service_domains',
       'third_party_service_count',
       'viewport_meta_tag',
+      'cumulative_layout_shift',
+      'largest_contentful_paint',
       'cookie_domains',
       'login_provider',
       'login_detected',

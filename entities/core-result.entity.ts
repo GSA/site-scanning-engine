@@ -420,12 +420,10 @@ export class CoreResult {
 
   @Column({ nullable: true, type: 'decimal' })
   @Expose({ name: 'largest_contentful_paint' })
-  @Exclude()
   largestContentfulPaint?: number;
 
   @Column({ nullable: true, type: 'decimal' })
   @Expose({ name: 'cumulative_layout_shift' })
-  @Exclude()
   cumulativeLayoutShift?: number;
 
   static getColumnNames(): string[] {

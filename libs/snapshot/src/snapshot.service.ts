@@ -76,6 +76,8 @@ export class SnapshotService {
       'third_party_service_count',
       'cookie_domains',
       'viewport_meta_tag',
+      'cumulative_layout_shift',
+      'largest_contentful_paint',
       'required_links_url',
       'required_links_text',
       'og_title',
