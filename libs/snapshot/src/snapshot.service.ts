@@ -80,6 +80,8 @@ export class SnapshotService {
       'largest_contentful_paint',
       'required_links_url',
       'required_links_text',
+      'title',
+      'description',
       'og_title',
       'og_description',
       'og_article_published',
