@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable()
-export class UrlList {
+export class UrlListDataFetcher {
   constructor(
     private httpService: HttpService,
     private configService: ConfigService,

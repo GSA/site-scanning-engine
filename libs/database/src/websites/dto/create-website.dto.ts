@@ -10,4 +10,5 @@ export class CreateWebsiteDto {
   bureau: string;
   bureauCode?: number;
   sourceList: string;
+  ombIdeaPublic: boolean;
 }

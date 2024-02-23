@@ -149,6 +149,7 @@ export class WebsiteService {
     website.agencyCode = createWebsiteDto.agencyCode;
     website.bureauCode = createWebsiteDto.bureauCode;
     website.sourceList = createWebsiteDto.sourceList;
+    website.ombIdeaPublic = createWebsiteDto.ombIdeaPublic;
     const exists = await this.website.findOneBy({
       url: website.url,
     });

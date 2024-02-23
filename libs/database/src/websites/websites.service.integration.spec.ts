@@ -24,7 +24,7 @@ describe('AnalysisService', () => {
     service = new WebsiteService(websiteRepository);
   });
 
-  afterEach(() => db.close());
+  afterEach(() => db.destroy());
 
   it('repository should be defined', () => {
     expect(websiteRepository).toBeDefined();
@@ -44,6 +44,7 @@ describe('AnalysisService', () => {
     firstWebsite.agencyCode = 10;
     firstWebsite.bureauCode = 10;
     firstWebsite.sourceList = 'gov';
+    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -54,6 +55,7 @@ describe('AnalysisService', () => {
     secondWebsite.agencyCode = 10;
     secondWebsite.bureauCode = 10;
     secondWebsite.sourceList = 'gov';
+    secondWebsite.ombIdeaPublic = false;
 
     const thirdWebsite = new Website();
     thirdWebsite.url = 'https://anotherfake.gov';
@@ -64,6 +66,7 @@ describe('AnalysisService', () => {
     thirdWebsite.agencyCode = 10;
     thirdWebsite.bureauCode = 10;
     thirdWebsite.sourceList = 'gov';
+    thirdWebsite.ombIdeaPublic = false;
 
     const fourthWebsite = new Website();
     fourthWebsite.url = 'https://anotherfake.mil';
@@ -74,6 +77,7 @@ describe('AnalysisService', () => {
     fourthWebsite.agencyCode = 10;
     fourthWebsite.bureauCode = 10;
     fourthWebsite.sourceList = 'mil';
+    fourthWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = new CoreResult();
     firstCoreResult.website = firstWebsite;

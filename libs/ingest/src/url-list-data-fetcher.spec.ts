@@ -1,11 +1,11 @@
-import { UrlList } from './url-list';
+import { UrlListDataFetcher } from './url-list-data-fetcher';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { mock } from 'jest-mock-extended';
 import { of } from 'rxjs';
 
 describe('UrlList', () => {
-  let urlList: UrlList;
+  let urlList: UrlListDataFetcher;
 
   beforeEach(() => {
     const mockHttpService = mock<HttpService>();
@@ -21,7 +21,7 @@ describe('UrlList', () => {
       }),
     );
 
-    urlList = new UrlList(mockHttpService, mockConfigService);
+    urlList = new UrlListDataFetcher(mockHttpService, mockConfigService);
   });
 
   it('should be defined', () => {
