@@ -86,8 +86,7 @@ describe('WebsiteService', () => {
     website.agencyCode = 10;
     website.bureauCode = 10;
     website.sourceList = 'gov';
-
-    await service.upsert(createWebsiteDto);
+    (website.ombIdeaPublic = false), await service.upsert(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
   });
 
