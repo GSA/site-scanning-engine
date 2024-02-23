@@ -74,6 +74,7 @@ describe('WebsiteService', () => {
       agencyCode: 10,
       bureauCode: 10,
       sourceList: 'gov',
+      ombIdeaPublic: false,
     };
 
     const website = new Website();

@@ -10,6 +10,13 @@ export interface SubdomainRow {
   sourceListFederalDomains: string;
   sourceListDap: string;
   sourceListPulse: string;
+  sourceListOmbIdea: string;
+  sourceListEotw: string;
+  sourceListUsagov: string;
+  sourceListGovMan: string;
+  sourceListUsacourts: string;
+  sourceListOira: string;
   sourceListOther: string;
+  ombIdeaPublic: string;
   sourceListMil: string;
 }
