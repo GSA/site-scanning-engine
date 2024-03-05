@@ -392,13 +392,11 @@ export class CoreResult {
   viewportMetaTag: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'page_title' })
-  @Exclude()
+  @Expose({ name: 'title' })
   pageTitle?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'meta_description_content' })
-  @Exclude()
+  @Expose({ name: 'description' })
   metaDescriptionContent?: string;
 
   @Column({ nullable: true })
@@ -420,12 +418,10 @@ export class CoreResult {
 
   @Column({ nullable: true, type: 'decimal' })
   @Expose({ name: 'largest_contentful_paint' })
-  @Exclude()
   largestContentfulPaint?: number;
 
   @Column({ nullable: true, type: 'decimal' })
   @Expose({ name: 'cumulative_layout_shift' })
-  @Exclude()
   cumulativeLayoutShift?: number;
 
   static getColumnNames(): string[] {

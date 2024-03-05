@@ -1,6 +1,6 @@
 import { parse } from '@fast-csv/parse';
 import { Injectable, Logger } from '@nestjs/common';
-import { UrlList } from './url-list';
+import { UrlListDataFetcher } from './url-list-data-fetcher';
 import { CreateWebsiteDto } from '@app/database/websites/dto/create-website.dto';
 import { WebsiteService } from '@app/database/websites/websites.service';
 
@@ -12,11 +12,11 @@ export class IngestService {
 
   constructor(
     private websiteService: WebsiteService,
-    private urlList: UrlList,
+    private urlListDataFetcher: UrlListDataFetcher,
   ) {}
 
   async getUrls(url?: string): Promise<string> {
-    return await this.urlList.fetch(url);
+    return await this.urlListDataFetcher.fetch(url);
   }
 
   /**
@@ -40,7 +40,14 @@ export class IngestService {
         'sourceListFederalDomains',
         'sourceListDap',
         'sourceListPulse',
+        'sourceListOmbIdea',
+        'sourceListEotw',
+        'sourceListUsagov',
+        'sourceListGovMan',
+        'sourceListUsacourts',
+        'sourceListOira',
         'sourceListOther',
+        'ombIdeaPublic',
         'sourceListMil',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
@@ -53,6 +60,7 @@ export class IngestService {
           agencyCode: data.agencyCode ? parseInt(data.agencyCode) : null,
           bureauCode: data.bureauCode ? parseInt(data.bureauCode) : null,
           sourceList: this.getSourceList(data),
+          ombIdeaPublic: data.ombIdeaPublic.toLowerCase() === 'true',
         }),
       )
       .on('error', (error) => {
@@ -138,6 +146,30 @@ export class IngestService {
 
     if (row.sourceListPulse.toLowerCase() === 'true') {
       sourceList.push('pulse');
+    }
+
+    if (row.sourceListOmbIdea.toLowerCase() === 'true') {
+      sourceList.push('omb_idea');
+    }
+
+    if (row.sourceListEotw.toLowerCase() === 'true') {
+      sourceList.push('eotw');
+    }
+
+    if (row.sourceListUsagov.toLowerCase() === 'true') {
+      sourceList.push('usagov');
+    }
+
+    if (row.sourceListGovMan.toLowerCase() === 'true') {
+      sourceList.push('gov_man');
+    }
+
+    if (row.sourceListUsacourts.toLowerCase() === 'true') {
+      sourceList.push('usacourts');
+    }
+
+    if (row.sourceListOira.toLowerCase() === 'true') {
+      sourceList.push('oira');
     }
 
     if (row.sourceListOther.toLowerCase() === 'true') {

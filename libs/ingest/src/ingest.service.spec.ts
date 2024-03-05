@@ -1,5 +1,5 @@
 import { WebsiteService } from '@app/database/websites/websites.service';
-import { UrlList } from './url-list';
+import { UrlListDataFetcher } from './url-list-data-fetcher';
 import { Test, TestingModule } from '@nestjs/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { IngestService } from './ingest.service';
@@ -8,11 +8,11 @@ import { Website } from 'entities/website.entity';
 describe('IngestService', () => {
   let service: IngestService;
   let mockWebsiteService: MockProxy<WebsiteService>;
-  let mockUrlList: MockProxy<UrlList>;
+  let mockUrlList: MockProxy<UrlListDataFetcher>;
 
   beforeEach(async () => {
     mockWebsiteService = mock<WebsiteService>();
-    mockUrlList = mock<UrlList>();
+    mockUrlList = mock<UrlListDataFetcher>();
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -22,7 +22,7 @@ describe('IngestService', () => {
           useValue: mockWebsiteService,
         },
         {
-          provide: UrlList,
+          provide: UrlListDataFetcher,
           useValue: mockUrlList,
         },
       ],

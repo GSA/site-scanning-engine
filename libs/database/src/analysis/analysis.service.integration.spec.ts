@@ -26,7 +26,7 @@ describe('AnalysisService', () => {
     service = new AnalysisService(websiteRepository);
   });
 
-  afterEach(() => db.close());
+  afterEach(() => db.destroy());
 
   it('repository should be defined', () => {
     expect(websiteRepository).toBeDefined();
@@ -46,6 +46,7 @@ describe('AnalysisService', () => {
     website.agencyCode = 10;
     website.bureauCode = 10;
     website.sourceList = 'gov';
+    website.ombIdeaPublic = false;
 
     const coreResult = createCoreResult(website);
     coreResult.finalUrlBaseDomain = '18f.gov';
@@ -81,6 +82,7 @@ describe('AnalysisService', () => {
     firstWebsite.agencyCode = 10;
     firstWebsite.bureauCode = 10;
     firstWebsite.sourceList = 'gov';
+    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -91,6 +93,7 @@ describe('AnalysisService', () => {
     secondWebsite.agencyCode = 10;
     secondWebsite.bureauCode = 10;
     secondWebsite.sourceList = 'gov';
+    secondWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';
@@ -130,6 +133,7 @@ describe('AnalysisService', () => {
     firstWebsite.agencyCode = 10;
     firstWebsite.bureauCode = 10;
     firstWebsite.sourceList = 'gov';
+    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -140,6 +144,7 @@ describe('AnalysisService', () => {
     secondWebsite.agencyCode = 10;
     secondWebsite.bureauCode = 10;
     secondWebsite.sourceList = 'gov';
+    secondWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';
@@ -179,6 +184,7 @@ describe('AnalysisService', () => {
     firstWebsite.agencyCode = 10;
     firstWebsite.bureauCode = 10;
     firstWebsite.sourceList = 'gov';
+    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -189,6 +195,7 @@ describe('AnalysisService', () => {
     secondWebsite.agencyCode = 10;
     secondWebsite.bureauCode = 10;
     secondWebsite.sourceList = 'gov';
+    secondWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';
