@@ -196,13 +196,13 @@ export class CoreScannerService
           input,
         ),
       );
+      console.log(result);
       return {
         status: ScanStatus.Completed,
         result: {
           accessibilityScan: {
-            a11yMissingImgAltIssues: result.a11yMissingImgAltIssues,
-            a11yHtmlAttributeIssues: result.a11yHtmlAttributeIssues,
-            a11yColorContrastIssues: result.a11yColorContrastIssues,
+            accessibilityViolations: result.accessibilityViolations,
+            accessibilityViolationsList: result.accessibilityViolationsList,
           },
         },
         error: null,

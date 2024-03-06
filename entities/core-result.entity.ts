@@ -373,19 +373,21 @@ export class CoreResult {
   accessibilityScanStatus?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'a11y_missing_img_alt_issues' })
+  @Expose({ name: 'accessibility_violations' })
   @Exclude()
-  a11yMissingImgAltIssues?: number;
+  accessibilityViolations?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'a11y_html_attribute_issues' })
+  @Expose({ name: 'accessibility_violations_list' })
   @Exclude()
-  a11yHtmlAttributeIssues?: number;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'a11y_color_contrast_issues' })
-  @Exclude()
-  a11yColorContrastIssues?: number;
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  accessibilityViolationsList?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'viewport_meta_tag' })

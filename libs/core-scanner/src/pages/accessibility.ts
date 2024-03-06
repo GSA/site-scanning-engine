@@ -1,12 +1,10 @@
-import { join } from 'path';
-import { readFile } from 'fs/promises';
 import { Logger } from 'pino';
-import * as HTMLCS from 'html_codesniffer';
 import { getHttpsUrl } from '../util';
 import { CoreInputDto } from '../core.input.dto';
 import { Page } from 'puppeteer';
 import { AccessibilityScan } from 'entities/scan-data.entity';
-import { Message } from 'html_codesniffer';
+import { AxePuppeteer } from '@axe-core/puppeteer';
+import { Result } from 'axe-core';
 
 export const createAccessibilityScanner = (
   logger: Logger,
@@ -20,125 +18,96 @@ export const createAccessibilityScanner = (
 
     await page.goto(getHttpsUrl(input.url));
 
-    await navigateIfNeeded(page, async () => {
-      await page.evaluate(() => console.log('...'));
-    });
+    const axeScanResult = await new AxePuppeteer(page).analyze();
+    const violations = axeScanResult.violations;
 
-    const pageWithScript = await addHTMLCScriptTag(logger, page);
+    const { violationsSummary, violationsList } =
+      aggregateViolations(violations);
 
-    const htmlcsResults = await getHtmlcsResults(logger, pageWithScript);
-
-    let a11yMissingImgAltIssues = 0;
-    let a11yHtmlAttributeIssues = 0;
-    let a11yColorContrastIssues = 0;
-
-    if (htmlcsResults) {
-      const HTMLCS_ERROR_CODE = 1;
-
-      a11yMissingImgAltIssues = getIssueTotalByCategory(
-        htmlcsResults,
-        'WCAG2AA.Principle1.Guideline1_1',
-        HTMLCS_ERROR_CODE,
-      );
-      a11yHtmlAttributeIssues = getIssueTotalByCategory(
-        htmlcsResults,
-        'WCAG2AA.Principle4.Guideline4_1',
-        HTMLCS_ERROR_CODE,
-      );
-      a11yColorContrastIssues = getIssueTotalByCategory(
-        htmlcsResults,
-        'WCAG2AA.Principle1.Guideline1_4',
-        HTMLCS_ERROR_CODE,
-      );
-    }
+    const accessibilityViolations = Object.keys(violationsSummary).length
+      ? JSON.stringify(violationsSummary)
+      : null;
+    const accessibilityViolationsList = violationsList.length
+      ? JSON.stringify(violationsList)
+      : null;
 
     return {
-      a11yMissingImgAltIssues,
-      a11yHtmlAttributeIssues,
-      a11yColorContrastIssues,
+      accessibilityViolations,
+      accessibilityViolationsList,
     };
   };
 };
 
-async function navigateIfNeeded(page, actionFunction) {
-  const navigationPromise = page.waitForNavigation();
+type AggregatedViolations = {
+  violationsSummary: Record<string, number>;
+  violationsList: Result[];
+};
 
-  await actionFunction();
+function aggregateViolations(violations: Result[]): AggregatedViolations {
+  const violationsSummary = {};
+  const violationsList = [];
 
-  try {
-    await Promise.race([
-      navigationPromise,
-      new Promise((resolve) => setTimeout(resolve, 1000)),
-    ]);
-    await navigationPromise;
-  } catch (error) {
-    console.error('Navigation did not start or failed:', error);
-  }
-}
+  // Mapping of a11y violation categories to axe-core Result id values
+  const violationCategoryMapping = {
+    aria: [
+      'aria-allowed-attr',
+      'aria-deprecated-role',
+      'aria-hidden-body',
+      'aria-hidden-focus',
+      'aria-prohibited-attr',
+      'aria-required-attr',
+      'aria-required-children',
+      'aria-required-parent',
+      'aria-roles',
+      'aria-tooltip-name',
+      'aria-valid-attr-value',
+      'aria-valid-attr',
+    ],
+    'auto-updating': ['meta-refresh'],
+    contrast: ['color-contrast'],
+    flash: ['blink', 'marquee'],
+    'form-names': ['aria-input-field-name', 'input-field-name', 'select-name'],
+    'frames-iframes': ['frame-title'],
+    images: [
+      'area-alt',
+      'image-alt',
+      'input-image-alt',
+      'object-alt',
+      'role-img-alt',
+      'svg-img-alt',
+    ],
+    'keyboard-access': [
+      'frame-focusable-content',
+      'scrollable-region-focusable',
+    ],
+    language: ['html-lang-valid', 'valid-lang', 'html-has-lang'],
+    'link-purpose': ['link-name'],
+    lists: ['definition-list', 'dlitem', 'list', 'listitem'],
+    'page-titled': ['document-title'],
+    tables: ['td-headers-attr', 'th-has-data-cells'],
+    'user-control-name': [
+      'aria-command-name',
+      'aria-meter-name',
+      'aria-progressbar-name',
+      'aria-toggle-field-name',
+      'button-name',
+    ],
+  };
 
-async function addHTMLCScriptTag(logger: Logger, page: Page): Promise<Page> {
-  try {
-    const scriptPath = await readFile(
-      join(
-        __dirname,
-        '..',
-        '..',
-        '..',
-        'node_modules',
-        'html_codesniffer',
-        'build',
-        'HTMLCS.js',
-      ),
-      'utf-8',
-    );
-
-    await page.evaluate(scriptPath);
-
-    const isHTMLCSLoaded = await page.evaluate(() => {
-      return typeof HTMLCS !== 'undefined';
-    });
-
-    if (!isHTMLCSLoaded) {
-      throw new Error('HTMLCS script not loaded properly');
+  violations.forEach((violation) => {
+    for (const categorys in violationCategoryMapping) {
+      if (violationCategoryMapping[categorys].includes(violation.id)) {
+        violationsSummary[categorys] = violationsSummary[categorys]
+          ? violationsSummary[categorys] + 1
+          : 1;
+        violationsList.push(violation);
+        break;
+      }
     }
+  });
 
-    return page;
-  } catch (err) {
-    logger.warn(`Error adding HTMLCS script tag: ${err.message}`);
-    throw err;
-  }
-}
-
-async function getHtmlcsResults(
-  logger: Logger,
-  page: Page,
-): Promise<Message[] | undefined> {
-  try {
-    return (await page.evaluate(() => {
-      const windowGlobal = window as any;
-
-      return new Promise((resolve, reject) => {
-        HTMLCS.process('WCAG2AA', windowGlobal.document, () => {
-          try {
-            resolve(HTMLCS.getMessages());
-          } catch (err) {
-            reject(err);
-          }
-        });
-      });
-    })) as Message[];
-  } catch (err) {
-    logger.warn(`Error in HTMLCS process: ${err.message}`);
-    throw err;
-  }
-}
-
-function getIssueTotalByCategory(
-  results: Message[],
-  category: string,
-  errorCode: number,
-): number {
-  return results.filter(
-    (msg) => msg.type === errorCode && msg.code.includes(category),
-  ).length;
+  return {
+    violationsSummary,
+    violationsList,
+  };
 }

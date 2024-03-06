@@ -315,23 +315,18 @@ export class CoreResultService {
     coreResult.accessibilityScanStatus = pages.accessibility.status;
 
     if (pages.accessibility.status === ScanStatus.Completed) {
-      coreResult.a11yMissingImgAltIssues =
-        pages.accessibility.result.accessibilityScan.a11yMissingImgAltIssues;
-
-      coreResult.a11yHtmlAttributeIssues =
-        pages.accessibility.result.accessibilityScan.a11yHtmlAttributeIssues;
-
-      coreResult.a11yColorContrastIssues =
-        pages.accessibility.result.accessibilityScan.a11yColorContrastIssues;
+      coreResult.accessibilityViolations =
+        pages.accessibility.result.accessibilityScan.accessibilityViolations;
+      coreResult.accessibilityViolationsList =
+        pages.accessibility.result.accessibilityScan.accessibilityViolationsList;
     } else {
       logger.error({
         msg: pages.accessibility.error,
         page: 'accessibility',
       });
 
-      coreResult.a11yMissingImgAltIssues = null;
-      coreResult.a11yHtmlAttributeIssues = null;
-      coreResult.a11yColorContrastIssues = null;
+      coreResult.accessibilityViolations = null;
+      coreResult.accessibilityViolationsList = null;
     }
   }
 

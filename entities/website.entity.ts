@@ -69,8 +69,7 @@ export class Website {
   sourceList?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'omb_idea_public' })
-  @Exclude()
+  @Expose({ name: 'public' })
   ombIdeaPublic?: boolean;
 
   serialized() {

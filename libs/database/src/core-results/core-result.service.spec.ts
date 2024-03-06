@@ -203,9 +203,8 @@ describe('CoreResultService', () => {
         status: scanStatus,
         result: {
           accessibilityScan: {
-            a11yMissingImgAltIssues: 0,
-            a11yHtmlAttributeIssues: 0,
-            a11yColorContrastIssues: 0,
+            accessibilityViolations: '',
+            accessibilityViolationsList: '',
           },
         },
       },
