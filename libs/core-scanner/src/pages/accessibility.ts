@@ -21,8 +21,15 @@ export const createAccessibilityScanner = (
     const axeScanResult = await new AxePuppeteer(page).analyze();
     const violations = axeScanResult.violations;
 
-    const [accessibilityViolations, accessibilityViolationsList] =
+    const { violationsSummary, violationsList } =
       aggregateViolations(violations);
+
+    const accessibilityViolations = Object.keys(violationsSummary).length
+      ? JSON.stringify(violationsSummary)
+      : null;
+    const accessibilityViolationsList = violationsList.length
+      ? JSON.stringify(violationsList)
+      : null;
 
     return {
       accessibilityViolations,
@@ -31,110 +38,76 @@ export const createAccessibilityScanner = (
   };
 };
 
-function aggregateViolations(violations: Result[]): string[] {
-  const summary = {};
-  const relevantViolations = [];
+type AggregatedViolations = {
+  violationsSummary: Record<string, number>;
+  violationsList: Result[];
+};
+
+function aggregateViolations(violations: Result[]): AggregatedViolations {
+  const violationsSummary = {};
+  const violationsList = [];
+
+  // Mapping of a11y violation categories to axe-core Result id values
+  const violationCategoryMapping = {
+    aria: [
+      'aria-allowed-attr',
+      'aria-deprecated-role',
+      'aria-hidden-body',
+      'aria-hidden-focus',
+      'aria-prohibited-attr',
+      'aria-required-attr',
+      'aria-required-children',
+      'aria-required-parent',
+      'aria-roles',
+      'aria-tooltip-name',
+      'aria-valid-attr-value',
+      'aria-valid-attr',
+    ],
+    'auto-updating': ['meta-refresh'],
+    contrast: ['color-contrast'],
+    flash: ['blink', 'marquee'],
+    'form-names': ['aria-input-field-name', 'input-field-name', 'select-name'],
+    'frames-iframes': ['frame-title'],
+    images: [
+      'area-alt',
+      'image-alt',
+      'input-image-alt',
+      'object-alt',
+      'role-img-alt',
+      'svg-img-alt',
+    ],
+    'keyboard-access': [
+      'frame-focusable-content',
+      'scrollable-region-focusable',
+    ],
+    language: ['html-lang-valid', 'valid-lang', 'html-has-lang'],
+    'link-purpose': ['link-name'],
+    lists: ['definition-list', 'dlitem', 'list', 'listitem'],
+    'page-titled': ['document-title'],
+    tables: ['td-headers-attr', 'th-has-data-cells'],
+    'user-control-name': [
+      'aria-command-name',
+      'aria-meter-name',
+      'aria-progressbar-name',
+      'aria-toggle-field-name',
+      'button-name',
+    ],
+  };
 
   violations.forEach((violation) => {
-    switch (violation.id) {
-      case 'aria-allowed-attr':
-      case 'aria-deprecated-role':
-      case 'aria-hidden-body':
-      case 'aria-hidden-focus':
-      case 'aria-prohibited-attr':
-      case 'aria-required-attr':
-      case 'aria-required-children':
-      case 'aria-required-parent':
-      case 'aria-roles':
-      case 'aria-tooltip-name':
-      case 'aria-valid-attr-value':
-      case 'aria-valid-attr':
-        summary['aria'] = summary['aria'] ? summary['aria'] + 1 : 1;
-        relevantViolations.push(violation);
-      case 'meta-refresh':
-        summary['auto-updating'] = summary['auto-updating']
-          ? summary['auto-updating'] + 1
+    for (const categorys in violationCategoryMapping) {
+      if (violationCategoryMapping[categorys].includes(violation.id)) {
+        violationsSummary[categorys] = violationsSummary[categorys]
+          ? violationsSummary[categorys] + 1
           : 1;
-        relevantViolations.push(violation);
-
-      case 'color-contrast':
-        summary['contrast'] = summary['contrast'] ? summary['contrast'] + 1 : 1;
-        relevantViolations.push(violation);
-
-      case 'blink':
-      case 'marquee':
-        summary['flash'] = summary['flash'] ? summary['flash'] + 1 : 1;
-        relevantViolations.push(violation);
-
-      case 'aria-input-field-name':
-      case 'input-field-name':
-      case 'select-name':
-        summary['form-names'] = summary['form-names']
-          ? summary['form-names'] + 1
-          : 1;
-      case 'frame-title':
-        summary['frames-iframes'] = summary['frames-iframes']
-          ? summary['frames-iframes'] + 1
-          : 1;
-        relevantViolations.push(violation);
-
-      case 'area-alt':
-      case 'image-alt':
-      case 'input-image-alt':
-      case 'object-alt':
-      case 'role-img-alt':
-      case 'svg-img-alt':
-        summary['images'] = summary['images'] ? summary['images'] + 1 : 1;
-        relevantViolations.push(violation);
-
-      case 'frame-focusable-content':
-      case 'scrollable-region-focusable':
-        summary['keyboard-access'] = summary['keyboard-access']
-          ? summary['keyboard-access'] + 1
-          : 1;
-        relevantViolations.push(violation);
-
-      case 'html-lang-valid':
-      case 'valid-lang':
-      case 'html-has-lang':
-        summary['language'] = summary['language'] ? summary['language'] + 1 : 1;
-        relevantViolations.push(violation);
-
-      case 'link-name':
-        summary['link-purpose'] = summary['link-purpose']
-          ? summary['link-purpose'] + 1
-          : 1;
-        relevantViolations.push(violation);
-
-      case 'definition-list':
-      case 'dlitem':
-      case 'list':
-      case 'listitem':
-        summary['lists'] = summary['lists'] ? summary['lists'] + 1 : 1;
-        relevantViolations.push(violation);
-
-      case 'document-title':
-        summary['page-titled'] = summary['page-titled']
-          ? summary['page-titled'] + 1
-          : 1;
-        relevantViolations.push(violation);
-
-      case 'td-headers-attr':
-      case 'th-has-data-cells':
-        summary['tables'] = summary['tables'] ? summary['tables'] + 1 : 1;
-        relevantViolations.push(violation);
-
-      case 'aria-command-name':
-      case 'aria-meter-name':
-      case 'aria-progressbar-name':
-      case 'aria-toggle-field-name':
-      case 'button-name':
-        summary['user-control-name'] = summary['user-control-name']
-          ? summary['user-control-name'] + 1
-          : 1;
-        relevantViolations.push(violation);
+        violationsList.push(violation);
+        break;
+      }
     }
   });
 
-  return [JSON.stringify(summary), JSON.stringify(violations)];
+  return {
+    violationsSummary,
+    violationsList,
+  };
 }
