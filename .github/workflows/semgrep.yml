@@ -3,19 +3,23 @@ name: Semgrep
 
 # yamllint disable-line rule:truthy
 on:
-  # Scan changed files in PRs, block on new issues only
-  # (existing issues ignored)
-  pull_request: {}
+  workflow_dispatch:
+  # Scan changed files in PRs, block on new issues
+  # only (existing issues ignored)
+  push:
 
   # Scan all files on branches, block on any issues
   # push:
   #   branches: ["master", "main"]
 
-  # Schedule this job to run at a certain time, using cron syntax
-  # Note that * is a special character in YAML so you have to quote this string
+  # Schedule this job to run at a certain time,
+  # using cron syntax
+  #
+  # Note that * is a special character in YAML
+  # so you have to quote this string
   # schedule:
   #   - cron: '30 0 1,15 * *'
-  workflow_dispatch:
+
 jobs:
   semgrep:
     name: Scan
@@ -28,14 +32,14 @@ jobs:
 
       - uses: returntocorp/semgrep-action@v1
         with:
-          generateSarif: '1'
+          generateSarif: "1"
           config: >- # more at semgrep.dev/explore
             p/security-audit
             p/secrets
 
       # Upload findings to GitHub Advanced Security Dashboard [step 2/2]
-      - name: Upload SARIF file for GitHub Advanced Security Dashboard
-        uses: github/codeql-action/upload-sarif@v1
+      - uses: github/codeql-action/upload-sarif@v1
+        name: Upload SARIF file for GitHub Advanced Security Dashboard
         with:
           sarif_file: semgrep.sarif
         if: always()
