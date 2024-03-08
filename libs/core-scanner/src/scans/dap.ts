@@ -50,7 +50,7 @@ const getDapParameters = (outboundRequests: HTTPRequest[]): string | null => {
  * @param outboundRequests
  */
 const getDapDetected = (outboundRequests: HTTPRequest[]): boolean => {
-  const dapIds = ['UA-33523145-1', 'G-9TNNMGP8WJ'];
+  const dapIds = ['UA-33523145-1', 'G-9TNNMGP8WJ', 'G-CSLL4ZEK4L'];
   let detected = false;
 
   for (const request of outboundRequests) {
