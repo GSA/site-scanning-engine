@@ -47,7 +47,7 @@ describe('Snapshot', () => {
       'uswds_publicsans_font',
       'uswds_count',
       'uswds_usa_classes',
-      'uswds_inline_css',
+      'uswds_inpage_css',
       'uswds_string',
       'uswds_string_in_css',
       'uswds_semantic_version',

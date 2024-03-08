@@ -118,11 +118,11 @@ export class WebsiteApiResultDto {
   uswds_tables: number;
 
   /**
-   * `uswds_inline_css` is the number of occurrences of ".usa-" CSS classes in inline html source.
+   * `uswds_inpage_css` is the number of occurrences of ".usa-" CSS classes in inline html source.
    *
    * @example 0
    */
-  uswds_inline_css: number;
+  uswds_inpage_css: number;
 
   /**
    * `uswds_favicon` is the presence of the USWDS US Flag favicon in HTML source. Presence adds 20 points to

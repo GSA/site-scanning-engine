@@ -115,7 +115,7 @@ export class CoreResult {
   uswdsString?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'uswds_inline_css' })
+  @Expose({ name: 'uswds_inpage_css' })
   uswdsInlineCss?: number;
 
   @Column({ nullable: true })

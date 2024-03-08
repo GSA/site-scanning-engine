@@ -73,7 +73,7 @@ describe('JsonSerializer', () => {
       'uswds_favicon',
       'uswds_favicon_in_css',
       'uswds_publicsans_font',
-      'uswds_inline_css',
+      'uswds_inpage_css',
       'uswds_usa_classes',
       'uswds_string',
       'uswds_string_in_css',
