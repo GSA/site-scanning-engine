@@ -322,10 +322,6 @@ export class CoreResult {
   finalUrlTopLevelDomain?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'cloud_dot_gov_pages' })
-  cloudDotGovPages?: boolean;
-
-  @Column({ nullable: true })
   @Expose({ name: 'canonical_link' })
   canonicalLink?: string;
 

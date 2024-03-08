@@ -139,9 +139,6 @@ describe('CoreResultService', () => {
             loginDetected: null,
             loginProvider: null,
           },
-          cloudDotGovPagesScan: {
-            cloudDotGovPages: false,
-          },
           cmsScan: {
             cms: null,
           },

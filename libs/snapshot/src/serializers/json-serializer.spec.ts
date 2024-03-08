@@ -33,7 +33,6 @@ describe('JsonSerializer', () => {
       'ipv6',
       'hostname',
       'cms',
-      'cloud_dot_gov_pages',
       'login_provider',
       'login',
       'site_search',

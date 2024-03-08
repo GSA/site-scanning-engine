@@ -97,6 +97,10 @@ const cmsData = [
     headers: [{ key: 'x-contentful-request-id', value: '' }],
   },
   {
+    cms: 'cloud.gov Pages',
+    headers: [{ key: 'x-server', value: 'cloud.gov pages' }],
+  },
+  {
     cms: 'DNN',
     html: ['<!-- by DotNetNuke Corporation', '<!-- DNN Platform'],
     headers: [

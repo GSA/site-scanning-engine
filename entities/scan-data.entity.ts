@@ -92,10 +92,6 @@ export type LoginScan = {
   loginProvider: string;
 };
 
-export type CloudDotGovPagesScan = {
-  cloudDotGovPages: boolean;
-};
-
 export type CmsScan = {
   cms: string;
 };
