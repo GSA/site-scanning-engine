@@ -23,6 +23,7 @@ describe('JsonSerializer', () => {
       'target_url_branch',
       'target_url_404_test',
       'source_list',
+      'public',
       'scan_date',
       'primary_scan_status',
       'dns_scan_status',
