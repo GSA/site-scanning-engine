@@ -70,7 +70,6 @@ describe('primary scanner', () => {
           uswdsCount: 197,
         },
         loginScan: { loginDetected: null, loginProvider: null },
-        cloudDotGovPagesScan: { cloudDotGovPages: true },
         cmsScan: { cms: null },
         requiredLinksScan: {
           requiredLinksUrl: 'about,foia,privacy,usa.gov',

@@ -39,7 +39,6 @@ describe('Snapshot', () => {
       'dns_hostname',
       'source_list',
       'cms',
-      'cloud_dot_gov_pages',
       'required_links_url',
       'required_links_text',
       'uswds_favicon',

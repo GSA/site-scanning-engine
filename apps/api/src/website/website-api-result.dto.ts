@@ -376,13 +376,6 @@ export class WebsiteApiResultDto {
   dns_hostname: string;
 
   /**
-   * `cloud_dot_gov_pages` indicates that the final URL is hosted using Cloud.gov Pages.
-   *
-   * @example true
-   */
-  cloud_dot_gov_pages: boolean;
-
-  /**
    * `canonical_link` indicates the presence of a canonical link tag.
    *
    * @example "https://18f.gsa.gov/

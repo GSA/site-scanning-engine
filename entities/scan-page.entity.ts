@@ -21,7 +21,6 @@ export type PrimaryScans = {
   cookieScan: ScanData.CookieScan;
   uswdsScan: ScanData.UswdsScan;
   loginScan: ScanData.LoginScan;
-  cloudDotGovPagesScan: ScanData.CloudDotGovPagesScan;
   cmsScan: ScanData.CmsScan;
   requiredLinksScan: ScanData.RequiredLinksScan;
   searchScan: ScanData.SearchScan;

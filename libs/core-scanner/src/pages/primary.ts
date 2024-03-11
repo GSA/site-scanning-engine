@@ -10,7 +10,6 @@ import { buildSeoResult } from '../scans/seo';
 import { buildThirdPartyResult } from '../scans/third-party';
 import { createUswdsScanner } from '../scans/uswds';
 import { buildLoginResult } from '../scans/login';
-import { buildCloudDotGovPagesResult } from '../scans/cloud-dot-gov-pages';
 import { promiseAll, getHttpsUrl } from '../util';
 import { buildCmsResult } from '../scans/cms';
 import {
@@ -51,7 +50,6 @@ const primaryScan = async (
     seoScan,
     uswdsScan,
     loginScan,
-    cloudDotGovPagesScan,
     cmsScan,
     requiredLinksScan,
     searchScan,
@@ -63,7 +61,6 @@ const primaryScan = async (
     buildSeoResult(logger, page, response),
     createUswdsScanner({ logger, getCSSRequests }, page)(response),
     buildLoginResult(response),
-    buildCloudDotGovPagesResult(response),
     buildCmsResult(response),
     buildRequiredLinksResult(response),
     buildSearchResult(page),
@@ -79,7 +76,6 @@ const primaryScan = async (
     cookieScan,
     uswdsScan,
     loginScan,
-    cloudDotGovPagesScan,
     cmsScan,
     requiredLinksScan,
     searchScan,
