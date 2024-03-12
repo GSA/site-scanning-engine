@@ -196,7 +196,7 @@ export class CoreScannerService
           input,
         ),
       );
-      console.log(result);
+
       return {
         status: ScanStatus.Completed,
         result: {
