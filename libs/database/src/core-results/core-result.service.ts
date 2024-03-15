@@ -86,6 +86,54 @@ export class CoreResultService {
       coreResult.pageTitle = result.seoScan.pageTitle;
       coreResult.metaDescriptionContent = result.seoScan.metaDescriptionContent;
       coreResult.hreflangCodes = result.seoScan.hreflangCodes;
+      /**
+       * The following fields are experimental and were added in March 2024 for
+       * prototyping purposes. They are not yet used in the application and may be
+       * removed in the future.
+       */
+      coreResult.metaKeywordsContent = result.seoScan.metaKeywordsContent;
+      coreResult.metaRobotsContent = result.seoScan.metaRobotsContent;
+      coreResult.metaArticleSectionContent =
+        result.seoScan.metaArticleSectionContent;
+      coreResult.metaArticleTagContent = result.seoScan.metaArticleTagContent;
+      coreResult.ogImageFinalUrl = result.seoScan.ogImageFinalUrl;
+      coreResult.dctermsKeywordsContent = result.seoScan.dctermsKeywordsContent;
+      coreResult.dcSubjectContent = result.seoScan.dcSubjectContent;
+      coreResult.dctermsSubjectContent = result.seoScan.dctermsSubjectContent;
+      coreResult.dctermsAudienceContent = result.seoScan.dctermsAudienceContent;
+      coreResult.dcTypeContent = result.seoScan.dcTypeContent;
+      coreResult.dctermsTypeContent = result.seoScan.dctermsTypeContent;
+      coreResult.dcDateContent = result.seoScan.dcDateContent;
+      coreResult.dcDateCreatedContent = result.seoScan.dcDateCreatedContent;
+      coreResult.dctermsCreatedContent = result.seoScan.dctermsCreatedContent;
+      coreResult.ogLocaleContent = result.seoScan.ogLocaleContent;
+      coreResult.ogSiteNameContent = result.seoScan.ogSiteNameContent;
+      coreResult.ogTypeContent = result.seoScan.ogTypeContent;
+      coreResult.ogUrlContent = result.seoScan.ogUrlContent;
+      coreResult.ogImageAltContent = result.seoScan.ogImageAltContent;
+      coreResult.revisedContent = result.seoScan.revisedContent;
+      coreResult.lastModifiedContent = result.seoScan.lastModifiedContent;
+      coreResult.languageContent = result.seoScan.languageContent;
+      coreResult.dateContent = result.seoScan.dateContent;
+      coreResult.subjectContent = result.seoScan.subjectContent;
+      coreResult.ownerContent = result.seoScan.ownerContent;
+      coreResult.pagenameContent = result.seoScan.pagenameContent;
+      coreResult.dcTitleContent = result.seoScan.dcTitleContent;
+      coreResult.ogSiteName = result.seoScan.ogSiteName;
+      coreResult.itemTypeContent = result.seoScan.itemTypeContent;
+      coreResult.itemScopeContent = result.seoScan.itemScopeContent;
+      coreResult.itemPropContent = result.seoScan.itemPropContent;
+      coreResult.vocabContent = result.seoScan.vocabContent;
+      coreResult.typeOfContent = result.seoScan.typeOfContent;
+      coreResult.propertyContent = result.seoScan.propertyContent;
+      coreResult.contextContent = result.seoScan.contextContent;
+      coreResult.typeContent = result.seoScan.typeContent;
+      coreResult.htmlLangContent = result.seoScan.htmlLangContent;
+      coreResult.hrefLangContent = result.seoScan.hrefLangContent;
+      coreResult.meContent = result.seoScan.meContent;
+      /**
+       * End experimental fields.
+       */
 
       // Third-party scan
       coreResult.thirdPartyServiceCount =
@@ -181,6 +229,54 @@ export class CoreResultService {
       coreResult.searchDetected = null;
       coreResult.searchgov = null;
       coreResult.viewportMetaTag = null;
+      /**
+       * #852
+       * The following fields are experimental and were added in March 2024 for
+       * prototyping purposes. They are not yet used in the application and may be
+       * removed in the future.
+       */
+      coreResult.metaKeywordsContent = null;
+      coreResult.metaRobotsContent = null;
+      coreResult.metaArticleSectionContent = null;
+      coreResult.metaArticleTagContent = null;
+      coreResult.ogImageFinalUrl = null;
+      coreResult.dctermsKeywordsContent = null;
+      coreResult.dcSubjectContent = null;
+      coreResult.dctermsSubjectContent = null;
+      coreResult.dctermsAudienceContent = null;
+      coreResult.dcTypeContent = null;
+      coreResult.dctermsTypeContent = null;
+      coreResult.dcDateContent = null;
+      coreResult.dcDateCreatedContent = null;
+      coreResult.dctermsCreatedContent = null;
+      coreResult.ogLocaleContent = null;
+      coreResult.ogSiteNameContent = null;
+      coreResult.ogTypeContent = null;
+      coreResult.ogUrlContent = null;
+      coreResult.ogImageAltContent = null;
+      coreResult.revisedContent = null;
+      coreResult.lastModifiedContent = null;
+      coreResult.languageContent = null;
+      coreResult.dateContent = null;
+      coreResult.subjectContent = null;
+      coreResult.ownerContent = null;
+      coreResult.pagenameContent = null;
+      coreResult.dcTitleContent = null;
+      coreResult.ogSiteName = null;
+      coreResult.itemTypeContent = null;
+      coreResult.itemScopeContent = null;
+      coreResult.itemPropContent = null;
+      coreResult.vocabContent = null;
+      coreResult.typeOfContent = null;
+      coreResult.propertyContent = null;
+      coreResult.contextContent = null;
+      coreResult.typeContent = null;
+      coreResult.htmlLangContent = null;
+      coreResult.hrefLangContent = null;
+      coreResult.meContent = null;
+      /**
+       * End experimental fields.
+       */
     }
   }
 
