@@ -30,6 +30,47 @@ export type SeoScan = {
   pageTitle: string;
   metaDescriptionContent: string;
   hreflangCodes: string;
+  // #852 Begin March 2024 experimental fields
+  metaKeywordsContent: string;
+  metaRobotsContent: string;
+  metaArticleSectionContent: string;
+  metaArticleTagContent: string;
+  ogImageFinalUrl: string;
+  dctermsKeywordsContent: string;
+  dcSubjectContent: string;
+  dctermsSubjectContent: string;
+  dctermsAudienceContent: string;
+  dcTypeContent: string;
+  dctermsTypeContent: string;
+  dcDateContent: string;
+  dcDateCreatedContent: string;
+  dctermsCreatedContent: string;
+  ogLocaleContent: string;
+  ogSiteNameContent: string;
+  ogTypeContent: string;
+  ogUrlContent: string;
+  ogImageAltContent: string;
+  revisedContent: string;
+  lastModifiedContent: string;
+  languageContent: string;
+  dateContent: string;
+  subjectContent: string;
+  ownerContent: string;
+  pagenameContent: string;
+  dcTitleContent: string;
+  ogSiteName: string;
+  itemTypeContent: string;
+  itemScopeContent: string;
+  itemPropContent: string;
+  vocabContent: string;
+  typeOfContent: string;
+  propertyContent: string;
+  contextContent: string;
+  typeContent: string;
+  htmlLangContent: string;
+  hrefLangContent: string;
+  meContent: string;
+  // End March 2024 experimental fields
 };
 
 export type ThirdPartyScan = {
