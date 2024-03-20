@@ -112,7 +112,7 @@ describe('primary scanner', () => {
           uswdsCount: 197,
         },
         loginScan: { loginDetected: null, loginProvider: null },
-        cmsScan: { cms: null },
+        cmsScan: { cms: 'cloud.gov Pages' },
         requiredLinksScan: {
           requiredLinksUrl: 'about,foia,privacy,usa.gov',
           requiredLinksText:
