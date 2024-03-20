@@ -47,7 +47,7 @@ const getHeaderMatches = async (response: HTTPResponse) => {
   const formattedActualHeaders = _.transform(
     actualHeaders,
     function (result, val, key) {
-      result[key.toLowerCase()] = val;
+      result[key.toLowerCase()] = val.toLowerCase();
     },
   );
 
