@@ -365,7 +365,6 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'accessibility_scan_status' })
-  @Exclude()
   accessibilityScanStatus?: string;
 
   @Column({ nullable: true })
@@ -411,7 +410,6 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'performance_scan_status' })
-  @Exclude()
   performanceScanStatus?: string;
 
   @Column({ nullable: true, type: 'decimal' })
