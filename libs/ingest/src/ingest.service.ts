@@ -53,16 +53,24 @@ export class IngestService {
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
     })
-      .transform(
-        (data: SubdomainRow): CreateWebsiteDto => ({
+      .transform((data: SubdomainRow): CreateWebsiteDto => {
+        let ombIdeaPublic = null;
+
+        if (data.ombIdeaPublic.toLowerCase() === 'true') {
+          ombIdeaPublic = true;
+        } else if (data.ombIdeaPublic.toLowerCase() === 'false') {
+          ombIdeaPublic = false;
+        }
+
+        return {
           ...data,
           website: data.targetUrl.toLowerCase(),
           agencyCode: data.agencyCode ? parseInt(data.agencyCode) : null,
           bureauCode: data.bureauCode ? parseInt(data.bureauCode) : null,
           sourceList: this.getSourceList(data),
-          ombIdeaPublic: data.ombIdeaPublic.toLowerCase() === 'true',
-        }),
-      )
+          ombIdeaPublic,
+        };
+      })
       .on('error', (error) => {
         hasParsingError = true;
         this.logger.error(error.message, error.stack);
