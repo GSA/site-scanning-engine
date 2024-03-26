@@ -120,40 +120,48 @@ export class SnapshotService {
       'uswds_count',
     ];
 
-    const allWebsites = await this.websiteService.findAllSnapshotResults();
-    this.logger.log(
-      `Total number of all websites retrieved for snapshot: ${allWebsites.length}`,
-    );
+    await this.liveSnapshot(priorDate, liveColumnOrder);
+    await this.allSnapshot(priorDate, liveColumnOrder);
+  }
 
-    const allSnapshot = new Snapshot(
-      this.storageService,
-      [new JsonSerializer(liveColumnOrder), new CsvSerializer(liveColumnOrder)],
-      allWebsites,
-      priorDate,
-      this.fileNameAll,
-    );
-
-    const liveWebsites = await this.websiteService.findLiveSnapshotResults();
+  async liveSnapshot(date: string, columns: string[]): Promise<void> {
+    let liveWebsites = await this.websiteService.findLiveSnapshotResults();
     this.logger.log(
       `Total number of live websites retrieved for snapshot: ${liveWebsites.length}`,
     );
 
     const liveSnapshot = new Snapshot(
       this.storageService,
-      [new JsonSerializer(liveColumnOrder), new CsvSerializer(liveColumnOrder)],
+      [new JsonSerializer(columns), new CsvSerializer(columns)],
       liveWebsites,
-      priorDate,
+      date,
       this.fileNameLive,
     );
 
     await Promise.all([liveSnapshot.archiveExisting(), liveSnapshot.saveNew()]);
 
-    this.logger.log('Live snapshot archived and saved.');
+    liveWebsites = null;
 
-    await Promise.all([
-      await allSnapshot.archiveExisting(),
-      await allSnapshot.saveNew(),
-    ]);
+    this.logger.log('Live snapshot archived and saved.');
+  }
+
+  async allSnapshot(date: string, columns: string[]) {
+    let allWebsites = await this.websiteService.findAllSnapshotResults();
+    this.logger.log(
+      `Total number of all websites retrieved for snapshot: ${allWebsites.length}`,
+    );
+
+    const allSnapshot = new Snapshot(
+      this.storageService,
+      [new JsonSerializer(columns), new CsvSerializer(columns)],
+      allWebsites,
+      date,
+      this.fileNameAll,
+    );
+
+    await Promise.all([allSnapshot.archiveExisting(), allSnapshot.saveNew()]);
+
+    allWebsites = null;
 
     this.logger.log('All snapshot archived and saved.');
   }
