@@ -146,11 +146,15 @@ export class SnapshotService {
       this.fileNameLive,
     );
 
+    await Promise.all([liveSnapshot.archiveExisting(), liveSnapshot.saveNew()]);
+
+    this.logger.log('Live snapshot archived and saved.');
+
     await Promise.all([
       await allSnapshot.archiveExisting(),
       await allSnapshot.saveNew(),
-      await liveSnapshot.archiveExisting(),
-      await liveSnapshot.saveNew(),
     ]);
+
+    this.logger.log('All snapshot archived and saved.');
   }
 }
