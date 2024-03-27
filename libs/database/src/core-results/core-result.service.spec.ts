@@ -206,8 +206,8 @@ describe('CoreResultService', () => {
         status: scanStatus,
         result: {
           accessibilityScan: {
-            accessibilityViolations: '',
-            accessibilityViolationsList: '',
+            accessibilityResults: '',
+            accessibilityResultsList: '',
           },
         },
       },

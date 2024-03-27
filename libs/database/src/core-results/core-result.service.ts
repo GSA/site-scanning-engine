@@ -322,18 +322,18 @@ export class CoreResultService {
     coreResult.accessibilityScanStatus = pages.accessibility.status;
 
     if (pages.accessibility.status === ScanStatus.Completed) {
-      coreResult.accessibilityViolations =
-        pages.accessibility.result.accessibilityScan.accessibilityViolations;
-      coreResult.accessibilityViolationsList =
-        pages.accessibility.result.accessibilityScan.accessibilityViolationsList;
+      coreResult.accessibilityResults =
+        pages.accessibility.result.accessibilityScan.accessibilityResults;
+      coreResult.accessibilityResultsList =
+        pages.accessibility.result.accessibilityScan.accessibilityResultsList;
     } else {
       logger.error({
         msg: pages.accessibility.error,
         page: 'accessibility',
       });
 
-      coreResult.accessibilityViolations = null;
-      coreResult.accessibilityViolationsList = null;
+      coreResult.accessibilityResults = null;
+      coreResult.accessibilityResultsList = null;
     }
   }
 

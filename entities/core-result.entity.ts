@@ -368,12 +368,12 @@ export class CoreResult {
   accessibilityScanStatus?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'accessibility_violations' })
+  @Expose({ name: 'accessibility_results' })
   @Exclude()
-  accessibilityViolations?: string;
+  accessibilityResults?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'accessibility_violations_list' })
+  @Expose({ name: 'accessibility_results_list' })
   @Exclude()
   @Transform((value: string) => {
     if (value) {
@@ -382,7 +382,7 @@ export class CoreResult {
       return null;
     }
   })
-  accessibilityViolationsList?: string;
+  accessibilityResultsList?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'viewport_meta_tag' })
