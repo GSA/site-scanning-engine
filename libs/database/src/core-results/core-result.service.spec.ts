@@ -114,54 +114,12 @@ describe('CoreResultService', () => {
             pageTitle: null,
             metaDescriptionContent: null,
             hreflangCodes: null,
-            /**
-             * #852
-             * The following fields are experimental and were added in March 2024 for
-             * prototyping purposes. They are not yet used in the application and may be
-             * removed in the future.
-             */
             metaKeywordsContent: null,
-            metaRobotsContent: null,
-            metaArticleSectionContent: null,
-            metaArticleTagContent: null,
-            ogImageFinalUrl: null,
-            dctermsKeywordsContent: null,
-            dcSubjectContent: null,
-            dctermsSubjectContent: null,
-            dctermsAudienceContent: null,
-            dcTypeContent: null,
-            dctermsTypeContent: null,
-            dcDateContent: null,
-            dcDateCreatedContent: null,
-            dctermsCreatedContent: null,
-            ogLocaleContent: null,
-            ogSiteNameContent: null,
+            ogImageContent: null,
             ogTypeContent: null,
             ogUrlContent: null,
-            ogImageAltContent: null,
-            revisedContent: null,
-            lastModifiedContent: null,
-            languageContent: null,
-            dateContent: null,
-            subjectContent: null,
-            ownerContent: null,
-            pagenameContent: null,
-            dcTitleContent: null,
-            ogSiteName: null,
-            itemTypeContent: null,
-            itemScopeContent: null,
-            itemPropContent: null,
-            vocabContent: null,
-            typeOfContent: null,
-            propertyContent: null,
-            contextContent: null,
-            typeContent: null,
             htmlLangContent: null,
             hrefLangContent: null,
-            meContent: null,
-            /**
-             * End experimental fields.
-             */
           },
           thirdPartyScan: {
             thirdPartyServiceDomains: null,

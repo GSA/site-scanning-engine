@@ -31,88 +31,12 @@ export const buildSeoResult = async (
     (await findHrefLangCodes(page)) ??
     (await extractHrefLangValues(response)) ??
     null;
-
-  /**
-   * #852
-   * The following fields are experimental and were added in March 2024 for
-   * prototyping purposes. They are not yet used in the application and may be
-   * removed in the future.
-   */
   const metaKeywordsContent = await findMetaContent(page, 'name', 'keywords');
-  const metaRobotsContent = await findMetaContent(page, 'name', 'robots');
-  const metaArticleSectionContent = await findMetaContent(
-    page,
-    'name',
-    'article:section',
-  );
-  const metaArticleTagContent = await findMetaContent(
-    page,
-    'name',
-    'article:tag',
-  );
-  const ogImageFinalUrl = await findOpenGraphTag(page, 'og:image');
-  const dctermsKeywordsContent = await findMetaContent(
-    page,
-    'name',
-    'dcterms.keywords',
-  );
-  const dcSubjectContent = await findMetaContent(page, 'name', 'dc.subject');
-  const dctermsSubjectContent = await findMetaContent(
-    page,
-    'name',
-    'dcterms.subject',
-  );
-  const dctermsAudienceContent = await findMetaContent(
-    page,
-    'name',
-    'dcterms.audience',
-  );
-  const dcTypeContent = await findMetaContent(page, 'name', 'dc.type');
-  const dctermsTypeContent = await findMetaContent(
-    page,
-    'name',
-    'dcterms.type',
-  );
-  const dcDateContent = await findMetaContent(page, 'name', 'dc.date');
-  const dcDateCreatedContent = await findMetaContent(
-    page,
-    'name',
-    'dc.date.created',
-  );
-  const dctermsCreatedContent = await findMetaContent(
-    page,
-    'name',
-    'dcterms.created',
-  );
-  const ogLocaleContent = await findOpenGraphTag(page, 'og:locale');
-  const ogSiteNameContent = await findOpenGraphTag(page, 'og:site_name');
+  const ogImageContent = await findOpenGraphTag(page, 'og:image');
   const ogTypeContent = await findOpenGraphTag(page, 'og:type');
   const ogUrlContent = await findOpenGraphTag(page, 'og:url');
-  const ogImageAltContent = await findOpenGraphTag(page, 'og:image:alt');
-  const revisedContent = await findMetaContent(page, 'name', 'revised');
-  const lastModifiedContent = await findMetaContent(
-    page,
-    'http-equiv',
-    'last-modified',
-  );
-  const languageContent = await findMetaContent(page, 'name', 'language');
-  const dateContent = await findMetaContent(page, 'name', 'date');
-  const subjectContent = await findMetaContent(page, 'name', 'subject');
-  const ownerContent = await findMetaContent(page, 'name', 'owner');
-  const pagenameContent = await findMetaContent(page, 'name', 'pagename');
-  const dcTitleContent = await findMetaContent(page, 'name', 'DC.title');
-  const ogSiteName = await findMetaContent(page, 'name', 'og:site_name');
-  const itemTypeContent = await findAttributeContent(page, 'itemtype');
-  const itemScopeContent = await findAttributeContent(page, 'itemscope');
-  const itemPropContent = await findAttributeContent(page, 'itemprop');
-  const vocabContent = await findAttributeContent(page, 'vocab');
-  const typeOfContent = await findAttributeContent(page, 'typeof');
-  const propertyContent = await findAttributeContent(page, 'property');
-  const contextContent = await findAttributeContent(page, 'context');
-  const typeContent = await findTypeContent(page);
   const htmlLangContent = await findAttributeContent(page, 'lang');
   const hrefLangContent = await getHreflangContent(page, 'hreflang');
-  const meContent = await getMeContent(page);
 
   return {
     ogTitleFinalUrl,
@@ -124,47 +48,12 @@ export const buildSeoResult = async (
     pageTitle,
     metaDescriptionContent,
     hreflangCodes,
-    // Beging March 2024 experimental fields
     metaKeywordsContent,
-    metaRobotsContent,
-    metaArticleSectionContent,
-    metaArticleTagContent,
-    ogImageFinalUrl,
-    dctermsKeywordsContent,
-    dcSubjectContent,
-    dctermsSubjectContent,
-    dctermsAudienceContent,
-    dcTypeContent,
-    dctermsTypeContent,
-    dcDateContent,
-    dcDateCreatedContent,
-    dctermsCreatedContent,
-    ogLocaleContent,
-    ogSiteNameContent,
+    ogImageContent,
     ogTypeContent,
     ogUrlContent,
-    ogImageAltContent,
-    revisedContent,
-    lastModifiedContent,
-    languageContent,
-    dateContent,
-    subjectContent,
-    ownerContent,
-    pagenameContent,
-    dcTitleContent,
-    ogSiteName,
-    itemTypeContent,
-    itemScopeContent,
-    itemPropContent,
-    vocabContent,
-    typeOfContent,
-    propertyContent,
-    contextContent,
-    typeContent,
     htmlLangContent,
     hrefLangContent,
-    meContent,
-    // End March 2024 experimental fields
   };
 };
 
@@ -355,38 +244,6 @@ const getHreflangContent = async (
 
     return hreflangValues.join(',');
   }, attribute);
-
-  return content;
-};
-
-const findTypeContent = async (page: Page): Promise<string> => {
-  const content = await page.evaluate(() => {
-    const typeElements = document.querySelectorAll('link[type]');
-
-    const typeValues = Array.from(
-      new Set(
-        Array.from(typeElements).map((el) => {
-          return el.getAttribute('type').trim().toLowerCase();
-        }),
-      ),
-    );
-
-    return typeValues.join(',');
-  });
-
-  return content;
-};
-
-const getMeContent = async (page: Page): Promise<string> => {
-  const content = await page.evaluate(() => {
-    const meLink = document.querySelector('link[rel="me"]');
-
-    if (meLink && meLink.hasAttribute('value')) {
-      return meLink.getAttribute('value').trim();
-    }
-
-    return null;
-  });
 
   return content;
 };

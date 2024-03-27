@@ -26,50 +26,13 @@ describe('seo scan', () => {
         metaDescriptionContent: '',
 
         hreflangCodes: '',
-        // #852 Begin March 2024 experimental fields
-        contextContent: null,
-        dateContent: null,
-        dcDateContent: null,
-        dcDateCreatedContent: null,
-        dcSubjectContent: null,
-        dcTitleContent: null,
-        dcTypeContent: null,
-        dctermsAudienceContent: null,
-        dctermsCreatedContent: null,
-        dctermsKeywordsContent: null,
-        dctermsSubjectContent: null,
-        dctermsTypeContent: null,
         hrefLangContent: '',
         htmlLangContent: 'en-US',
-        itemPropContent: null,
-        itemScopeContent: null,
-        itemTypeContent: null,
-        languageContent: null,
-        lastModifiedContent: null,
-        meContent: null,
-        metaArticleSectionContent: null,
-        metaArticleTagContent: null,
         metaKeywordsContent: null,
-        metaRobotsContent:
-          'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-        ogImageAltContent: null,
-        ogImageFinalUrl:
+        ogImageContent:
           'https://www.arc.gov/wp-content/uploads/2020/08/48982308566_5ce274f0ab_o-washington-scaled.jpg',
-        ogLocaleContent: 'en_US',
-        ogSiteName: null,
-        ogSiteNameContent: 'Appalachian Regional Commission',
         ogTypeContent: 'website',
         ogUrlContent: 'https://www.arc.gov/',
-        ownerContent: null,
-        pagenameContent: null,
-        propertyContent: 'og:locale',
-        revisedContent: null,
-        subjectContent: null,
-        typeContent:
-          'text/css,application/rss+xml,application/json,application/rsd+xml,application/wlwmanifest+xml,application/json+oembed,text/xml+oembed',
-        typeOfContent: null,
-        vocabContent: null,
-        // End March 2024 experimental fields
       });
     }, 'arc_gov_dump.mht');
   });

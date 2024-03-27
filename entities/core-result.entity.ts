@@ -420,212 +420,127 @@ export class CoreResult {
   @Expose({ name: 'cumulative_layout_shift' })
   cumulativeLayoutShift?: number;
 
-  /**
-   * #852
-   * The following fields are experimental and were added in March 2024 for
-   * prototyping purposes. They are not yet used in the application and may be
-   * removed in the future.
-   */
   @Column({ nullable: true })
-  @Expose({ name: 'meta_keywords_content' })
+  @Expose({ name: 'keywords' })
   @Exclude()
   metaKeywordsContent?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'meta_robots_content' })
+  @Expose({ name: 'og_image' })
   @Exclude()
-  metaRobotsContent?: string;
+  ogImageContent?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'meta_article_section_content' })
-  @Exclude()
-  metaArticleSectionContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'meta_article_tag_content' })
-  @Exclude()
-  metaArticleTagContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'og_image_final_url' })
-  @Exclude()
-  ogImageFinalUrl?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dcterms_keywords_content' })
-  @Exclude()
-  dctermsKeywordsContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dc_subject_content' })
-  @Exclude()
-  dcSubjectContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dcterms_subject_content' })
-  @Exclude()
-  dctermsSubjectContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dcterms_audience_content' })
-  @Exclude()
-  dctermsAudienceContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dc_type_content' })
-  @Exclude()
-  dcTypeContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dcterms_type_content' })
-  @Exclude()
-  dctermsTypeContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dc_date_content' })
-  @Exclude()
-  dcDateContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dc_date_created_content' })
-  @Exclude()
-  dcDateCreatedContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dcterms_created_content' })
-  @Exclude()
-  dctermsCreatedContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'og_locale_content' })
-  @Exclude()
-  ogLocaleContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'og_site_name_content' })
-  @Exclude()
-  ogSiteNameContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'og_type_content' })
+  @Expose({ name: 'og_type' })
   @Exclude()
   ogTypeContent?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'og_url_content' })
+  @Expose({ name: 'og_url' })
   @Exclude()
   ogUrlContent?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'og_image_alt_content' })
-  @Exclude()
-  ogImageAltContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'revised_content' })
-  @Exclude()
-  revisedContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'last_modified_content' })
-  @Exclude()
-  lastModifiedContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'language_content' })
-  @Exclude()
-  languageContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'date_content' })
-  @Exclude()
-  dateContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'subject_content' })
-  @Exclude()
-  subjectContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'owner_content' })
-  @Exclude()
-  ownerContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'pagename_content' })
-  @Exclude()
-  pagenameContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'dc_title_content' })
-  @Exclude()
-  dcTitleContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'og_site_name' })
-  @Exclude()
-  ogSiteName?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'item_type_content' })
-  @Exclude()
-  itemTypeContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'item_scope_content' })
-  @Exclude()
-  itemScopeContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'item_prop_content' })
-  @Exclude()
-  itemPropContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'vocab_content' })
-  @Exclude()
-  vocabContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'type_of_content' })
-  @Exclude()
-  typeOfContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'propertyContent' })
-  @Exclude()
-  propertyContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'context_content' })
-  @Exclude()
-  contextContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'type_content' })
-  @Exclude()
-  typeContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'html_lang_content' })
+  @Expose({ name: 'language' })
   @Exclude()
   htmlLangContent?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'hreflang_content' })
+  @Expose({ name: 'language_link' })
   @Exclude()
   hrefLangContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'me_content' })
-  @Exclude()
-  meContent?: string;
-  /**
-   * End experimental fields.
-   */
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
   }
+
+  static snapshotColumnOrder = [
+    'target_url',
+    'target_url_domain',
+    'target_url_top_level_domain',
+    'target_url_redirects',
+    'final_url',
+    'final_url_domain',
+    'final_url_top_level_domain',
+    'final_url_website',
+    'final_url_live',
+    'final_url_status_code',
+    'final_url_media_type',
+    'final_url_same_domain',
+    'final_url_same_website',
+    'target_url_agency_owner',
+    'target_url_bureau_owner',
+    'target_url_branch',
+    'target_url_404_test',
+    'source_list',
+    'public',
+    'scan_date',
+    'primary_scan_status',
+    'accessibility_scan_status',
+    'dns_scan_status',
+    'not_found_scan_status',
+    'performance_scan_status',
+    'robots_txt_scan_status',
+    'sitemap_xml_scan_status',
+    'ipv6',
+    'hostname',
+    'cms',
+    'login_provider',
+    'login',
+    'site_search',
+    'search_dot_gov',
+    'dap',
+    'dap_parameters',
+    'third_party_service_domains',
+    'third_party_service_count',
+    'cookie_domains',
+    'viewport_meta_tag',
+    'cumulative_layout_shift',
+    'largest_contentful_paint',
+    'required_links_url',
+    'required_links_text',
+    'title',
+    'description',
+    'keywords',
+    'og_title',
+    'og_description',
+    'og_article_published',
+    'og_article_modified',
+    'og_image',
+    'og_type',
+    'og_url',
+    'canonical_link',
+    'language',
+    'language_link',
+    'main_element_present',
+    'robots_txt_detected',
+    'robots_txt_target_url_redirects',
+    'robots_txt_final_url',
+    'robots_txt_final_url_live',
+    'robots_txt_final_url_status_code',
+    'robots_txt_final_url_media_type',
+    'robots_txt_final_url_filesize',
+    'robots_txt_crawl_delay',
+    'robots_txt_sitemap_locations',
+    'sitemap_xml_detected',
+    'sitemap_xml_target_url_redirects',
+    'sitemap_xml_final_url',
+    'sitemap_xml_final_url_live',
+    'sitemap_xml_final_url_status_code',
+    'sitemap_xml_final_url_media_type',
+    'sitemap_xml_final_url_filesize',
+    'sitemap_xml_count',
+    'sitemap_xml_pdf_count',
+    'uswds_favicon',
+    'uswds_favicon_in_css',
+    'uswds_publicsans_font',
+    'uswds_inpage_css',
+    'uswds_usa_classes',
+    'uswds_string',
+    'uswds_string_in_css',
+    'uswds_semantic_version',
+    'uswds_version',
+    'uswds_count',
+  ];
 }
