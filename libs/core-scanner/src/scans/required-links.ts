@@ -14,6 +14,10 @@ export const buildRequiredLinksResult = async (
     'inspector',
     'privacy',
     'usa.gov',
+    'spanish',
+    'espanol',
+    'español',
+    '/es',
   ]
     .filter((string) => hasStringInHref(html, string))
     .join(',');
@@ -29,6 +33,10 @@ export const buildRequiredLinksResult = async (
     'privacy policy',
     'vulnerability disclosure',
     'usa.gov',
+    'espanol',
+    'español',
+    'espa&ntilde;ol',
+    'spanish',
   ]
     .filter((string) => hasStringInLinkText(html, string))
     .join(',');
@@ -41,18 +49,22 @@ export const buildRequiredLinksResult = async (
 
 const hasStringInHref = (html: string, string: string): boolean => {
   const hrefs = html.match(/href=['"](.*?)['"]/gi);
+
   if (!hrefs) return false;
   const matchingHrefs = hrefs.filter((href) =>
-    href.toLowerCase().includes(string),
+    href.toLowerCase().includes(string.toLowerCase()),
   );
-  return matchingHrefs.length > 0 ? true : false;
+
+  return matchingHrefs.length > 0;
 };
 
 const hasStringInLinkText = (html: string, string: string): boolean => {
   const linkTexts = html.match(/(?<=<a\b[^>]*>)([\s\S]*?)(?=<\/a>)/gi);
+
   if (!linkTexts) return false;
   const matchingLinkTexts = linkTexts.filter((linkText) =>
-    linkText.toLowerCase().includes(string),
+    linkText.toLowerCase().includes(string.toLowerCase()),
   );
-  return matchingLinkTexts.length > 0 ? true : false;
+
+  return matchingLinkTexts.length > 0;
 };
