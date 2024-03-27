@@ -113,8 +113,8 @@ export type SearchScan = {
 };
 
 export type AccessibilityScan = {
-  accessibilityViolations: string;
-  accessibilityViolationsList: string;
+  accessibilityResults: string;
+  accessibilityResultsList: string;
 };
 
 export type MobileScan = {

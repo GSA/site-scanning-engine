@@ -1,0 +1,40 @@
+[
+  {
+    "id": "html-has-lang",
+    "impact": "serious",
+    "tags": [
+      "cat.language",
+      "wcag2a",
+      "wcag311",
+      "TTv5",
+      "TT11.a",
+      "EN-301-549",
+      "EN-9.3.1.1",
+      "ACT"
+    ],
+    "description": "Ensures every HTML document has a lang attribute",
+    "help": "<html> element must have a lang attribute",
+    "helpUrl": "https://dequeuniversity.com/rules/axe/4.8/html-has-lang?application=axe-puppeteer",
+    "nodes": [
+      {
+        "any": [
+          {
+            "id": "has-lang",
+            "data": {
+              "messageKey": "noLang"
+            },
+            "relatedNodes": [],
+            "impact": "serious",
+            "message": "The <html> element does not have a lang attribute"
+          }
+        ],
+        "all": [],
+        "none": [],
+        "impact": "serious",
+        "html": "<html>",
+        "target": ["html"],
+        "failureSummary": "Fix any of the following:\n  The <html> element does not have a lang attribute"
+      }
+    ]
+  }
+]

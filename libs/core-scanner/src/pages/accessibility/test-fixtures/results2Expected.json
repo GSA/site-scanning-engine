@@ -1,0 +1,102 @@
+{
+  "resultsSummary": {
+    "contrast": 1,
+    "images": 1
+  },
+  "resultsList": [
+    {
+      "id": "color-contrast",
+      "tags": [
+        "cat.color",
+        "wcag2aa",
+        "wcag143",
+        "TTv5",
+        "TT13.c",
+        "EN-301-549",
+        "EN-9.1.4.3",
+        "ACT"
+      ],
+      "description": "Ensures the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.8/color-contrast?application=axe-puppeteer",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "relatedNodes": [
+                {
+                  "html": "<div style=\"background-color:#E4E0EF;padding-bottom:25px\"><div class=\" md:w-4/5 mx-auto my-auto\"><p class=\"text-right text-sm text-gray-500\">Last Modified: <!-- -->12/13/2023</p></div></div>",
+                  "target": ["div:nth-child(14)"]
+                }
+              ],
+              "impact": "serious",
+              "message": "Element has insufficient color contrast of 3.73 (foreground color: #6b7280, background color: #e4e0ef, font size: 9.8pt (13.125px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "serious",
+          "html": "<p class=\"text-right text-sm text-gray-500\">Last Modified: <!-- -->12/13/2023</p>"
+        }
+      ]
+    },
+    {
+      "id": "image-alt",
+      "tags": [
+        "cat.text-alternatives",
+        "wcag2a",
+        "wcag111",
+        "section508",
+        "section508.22.a",
+        "TTv5",
+        "TT7.a",
+        "TT7.b",
+        "EN-301-549",
+        "EN-9.1.1.1",
+        "ACT"
+      ],
+      "description": "Ensures <img> elements have alternate text or a role of none or presentation",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.8/image-alt?application=axe-puppeteer",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "has-alt",
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Element does not have an alt attribute"
+            },
+            {
+              "id": "aria-label",
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-label attribute does not exist or is empty"
+            },
+            {
+              "id": "aria-labelledby",
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty"
+            },
+            {
+              "id": "non-empty-title",
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Element has no title attribute"
+            },
+            {
+              "id": "presentational-role",
+              "relatedNodes": [],
+              "impact": "critical",
+              "message": "Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": "critical",
+          "html": "<img src=\"https://pstrapiubntstorage.blob.core.windows.net/strapib/assets/image_a36152c73a.png\">"
+        }
+      ]
+    }
+  ]
+}

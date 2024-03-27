@@ -201,8 +201,8 @@ export class CoreScannerService
         status: ScanStatus.Completed,
         result: {
           accessibilityScan: {
-            accessibilityViolations: result.accessibilityViolations,
-            accessibilityViolationsList: result.accessibilityViolationsList,
+            accessibilityResults: result.accessibilityResults,
+            accessibilityResultsList: result.accessibilityResultsList,
           },
         },
         error: null,
