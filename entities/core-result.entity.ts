@@ -422,32 +422,26 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'keywords' })
-  @Exclude()
   metaKeywordsContent?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'og_image' })
-  @Exclude()
   ogImageContent?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'og_type' })
-  @Exclude()
   ogTypeContent?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'og_url' })
-  @Exclude()
   ogUrlContent?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'language' })
-  @Exclude()
   htmlLangContent?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'language_link' })
-  @Exclude()
   hrefLangContent?: string;
 
   static getColumnNames(): string[] {
