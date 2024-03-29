@@ -28,7 +28,11 @@ type NodeResultSubset = {
 type CheckResultSubset = {
   id: string;
   message: string;
-  relatedNodes?: RelatedNode[];
+  relatedNodes?: RelatedNodeSubset[];
+};
+
+type RelatedNodeSubset = {
+  html: string;
 };
 
 type AggregatedResults = {
@@ -131,6 +135,14 @@ function getCheckResultSubset(checks: CheckResult[]): CheckResultSubset[] {
   return checks.map((check) => ({
     id: check.id,
     message: check.message,
-    relatedNodes: check.relatedNodes,
+    relatedNodes: getRelatedNodeSubset(check.relatedNodes),
+  }));
+}
+
+function getRelatedNodeSubset(
+  relatedNodes: RelatedNode[],
+): RelatedNodeSubset[] {
+  return relatedNodes.map((relatedNode) => ({
+    html: relatedNode.html,
   }));
 }

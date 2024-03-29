@@ -22,7 +22,11 @@
           "any": [
             {
               "id": "has-lang",
-              "relatedNodes": [],
+              "relatedNodes": [
+                {
+                  "html": "<article class=\"post-717 page type-page status-publish has-post-thumbnail entry\" itemscope=\"\" itemtype=\"https://schema.org/CreativeWork\">"
+                }
+              ],
               "message": "The <html> element does not have a lang attribute"
             }
           ],

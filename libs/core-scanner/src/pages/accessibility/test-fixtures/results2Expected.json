@@ -25,8 +25,7 @@
               "id": "color-contrast",
               "relatedNodes": [
                 {
-                  "html": "<div style=\"background-color:#E4E0EF;padding-bottom:25px\"><div class=\" md:w-4/5 mx-auto my-auto\"><p class=\"text-right text-sm text-gray-500\">Last Modified: <!-- -->12/13/2023</p></div></div>",
-                  "target": ["div:nth-child(14)"]
+                  "html": "<div style=\"background-color:#E4E0EF;padding-bottom:25px\"><div class=\" md:w-4/5 mx-auto my-auto\"><p class=\"text-right text-sm text-gray-500\">Last Modified: <!-- -->12/13/2023</p></div></div>"
                 }
               ],
               "message": "Element has insufficient color contrast of 3.73 (foreground color: #6b7280, background color: #e4e0ef, font size: 9.8pt (13.125px), font weight: normal). Expected contrast ratio of 4.5:1"
