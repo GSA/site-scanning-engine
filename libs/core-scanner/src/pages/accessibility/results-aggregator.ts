@@ -3,7 +3,6 @@ import {
   NodeResult,
   CheckResult,
   TagValue,
-  ImpactValue,
   UnlabelledFrameSelector,
   RelatedNode,
 } from 'axe-core';
@@ -18,7 +17,6 @@ type ResultSubset = {
 
 type NodeResultSubset = {
   html: string;
-  impact?: ImpactValue;
   xpath?: string[];
   ancestry?: UnlabelledFrameSelector;
   any: CheckResultSubset[];
@@ -29,7 +27,6 @@ type NodeResultSubset = {
 
 type CheckResultSubset = {
   id: string;
-  impact: string;
   message: string;
   relatedNodes?: RelatedNode[];
 };
@@ -121,7 +118,6 @@ function getResultsListSubset(results: Result[]): ResultSubset[] {
 function getNodeResultsSubset(nodes: NodeResult[]): NodeResultSubset[] {
   return nodes.map((node) => ({
     html: node.html,
-    impact: node.impact,
     xpath: node.xpath,
     ancestry: node.ancestry,
     any: getCheckResultSubset(node.any),
@@ -134,7 +130,6 @@ function getNodeResultsSubset(nodes: NodeResult[]): NodeResultSubset[] {
 function getCheckResultSubset(checks: CheckResult[]): CheckResultSubset[] {
   return checks.map((check) => ({
     id: check.id,
-    impact: check.impact,
     message: check.message,
     relatedNodes: check.relatedNodes,
   }));

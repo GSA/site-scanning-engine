@@ -23,13 +23,11 @@
             {
               "id": "has-lang",
               "relatedNodes": [],
-              "impact": "serious",
               "message": "The <html> element does not have a lang attribute"
             }
           ],
           "all": [],
           "none": [],
-          "impact": "serious",
           "html": "<html>"
         }
       ]
