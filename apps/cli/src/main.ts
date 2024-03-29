@@ -8,6 +8,7 @@ import { IngestController } from './ingest.controller';
 import { QueueController } from './queue.controller';
 import { ScanController } from './scan.controller';
 import { SnapshotController } from './snapshot.controller';
+import { SecurityDataController } from './security-data.controller';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule, {
@@ -77,6 +78,16 @@ async function scanSite(cmdObj) {
   await nestApp.close();
 }
 
+async function securityData() {
+  const nestApp = await bootstrap();
+  const controller = nestApp.get(SecurityDataController);
+  console.log('fetching and saving security data');
+
+  await controller.fetchAndSaveSecurityData();
+  printMemoryUsage();
+  await nestApp.close();
+}
+
 async function main() {
   const program = new Command();
   program.version('0.0.1');
@@ -129,6 +140,14 @@ async function main() {
     )
     .option('--url <string>', 'URL to scan')
     .action(scanSite);
+
+  // security-data
+  program
+    .command('security-data')
+    .description(
+      'security-data fetches security data from a CSV and saves it to disk',
+    )
+    .action(securityData);
 
   await program.parseAsync(process.argv);
 }

@@ -144,7 +144,9 @@
       "@app/datetime/(.*)": "<rootDir>/libs/datetime/src/$1",
       "@app/datetime": "<rootDir>/libs/datetime/src",
       "@app/queue": "<rootDir>/libs/queue/src",
-      "@app/queue/(.*)": "<rootDir>/libs/queue/src/$1"
+      "@app/queue/(.*)": "<rootDir>/libs/queue/src/$1",
+      "@app/security-data/(.*)": "<rootDir>/libs/security-data/src/$1",
+      "@app/security-data": "<rootDir>/libs/security-data/src"
     }
   }
 }
