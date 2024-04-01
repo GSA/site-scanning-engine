@@ -37,6 +37,7 @@ export class CoreResultService {
     this.updateDnsScanResults(coreResult, pages, logger);
     this.updateAccessibilityScanResults(coreResult, pages, logger);
     this.updatePerformanceScanResults(coreResult, pages, logger);
+    this.updateSecurityScanResults(coreResult, pages, logger);
 
     return this.create(coreResult);
   }
@@ -358,6 +359,29 @@ export class CoreResultService {
 
       coreResult.largestContentfulPaint = null;
       coreResult.cumulativeLayoutShift = null;
+    }
+  }
+
+  private updateSecurityScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.securityScanStatus = pages.security.status;
+
+    if (pages.security.status === ScanStatus.Completed) {
+      coreResult.httpsEnforced =
+        pages.security.result.securityScan.httpsEnforced;
+      coreResult.hstsPreloaded =
+        pages.security.result.securityScan.hstsPreloaded;
+    } else {
+      logger.error({
+        msg: pages.security.error,
+        page: 'security',
+      });
+
+      coreResult.httpsEnforced = null;
+      coreResult.hstsPreloaded = null;
     }
   }
 }

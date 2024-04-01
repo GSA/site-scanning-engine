@@ -32,12 +32,6 @@ export class CoreScannerService
     const scanLogger = this.logger.logger.child(input);
 
     return await this.browserService.useBrowser(async (browser) => {
-      const securityResult = await this.securityDataService.getSecurityResults(
-        input.url,
-      );
-
-      console.log(securityResult);
-
       const result = {
         base: {
           targetUrlBaseDomain: getBaseDomain(getHttpsUrl(input.url)),
@@ -53,6 +47,7 @@ export class CoreScannerService
           scanLogger,
         ),
         performance: await this.runPerformanceScan(browser, input, scanLogger),
+        security: await this.securityDataService.getSecurityResults(input.url),
       };
 
       scanLogger.info({ result }, 'solutions scan results');

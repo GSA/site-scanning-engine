@@ -5,11 +5,8 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import { parseString } from 'fast-csv';
 import { fetchSecurityData } from './data-fetcher';
-
-type SecurityScanResult = {
-  httpsEnforced: boolean;
-  hstsPreloaded: boolean;
-};
+import { SecurityPageScan } from 'entities/scan-page.entity';
+import { ScanStatus } from 'entities/scan-status';
 
 @Injectable()
 export class SecurityDataService {
@@ -25,7 +22,7 @@ export class SecurityDataService {
     this.filePath = join(this.dirPath, 'security-data.csv');
   }
 
-  async getSecurityResults(url: string): Promise<SecurityScanResult | null> {
+  async getSecurityResults(url: string): Promise<SecurityPageScan> {
     this.logger.log(`Getting security results for ${url}`);
 
     if (!existsSync(this.filePath)) {
@@ -52,8 +49,12 @@ export class SecurityDataService {
     });
 
     if (!matchingRow) {
-      this.logger.log('No matching domain found in CSV');
-      return null;
+      const errorMessage = 'No matching domain found in security data CSV';
+      this.logger.log(errorMessage);
+      return {
+        status: ScanStatus.UnknownError,
+        error: errorMessage,
+      };
     }
 
     const httpsEnforced =
@@ -66,8 +67,13 @@ export class SecurityDataService {
     );
 
     return {
-      httpsEnforced,
-      hstsPreloaded,
+      status: ScanStatus.Completed,
+      result: {
+        securityScan: {
+          httpsEnforced,
+          hstsPreloaded,
+        },
+      },
     };
   }
 

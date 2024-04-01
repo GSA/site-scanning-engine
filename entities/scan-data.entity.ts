@@ -125,3 +125,8 @@ export type PerformanceScan = {
   largestContentfulPaint: number;
   cumulativeLayoutShift: number;
 };
+
+export type SecurityScan = {
+  httpsEnforced: boolean;
+  hstsPreloaded: boolean;
+};

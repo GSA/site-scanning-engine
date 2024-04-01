@@ -59,3 +59,9 @@ export type PerformanceScans = {
 };
 
 export type PerformancePageScan = PageScan<PerformanceScans>;
+
+export type SecurityScans = {
+  securityScan: ScanData.SecurityScan;
+};
+
+export type SecurityPageScan = PageScan<SecurityScans>;
