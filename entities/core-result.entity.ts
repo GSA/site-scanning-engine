@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 
 import * as ScanPage from 'entities/scan-page.entity';
+import { SecurityScans } from 'entities/scan-page.entity';
 import { BaseScan } from './scan-data.entity';
 import { Website } from './website.entity';
 
@@ -23,6 +24,7 @@ export type CoreResultPages = {
   dns: ScanPage.DnsPageScan;
   accessibility: ScanPage.AccessibilityPageScan;
   performance: ScanPage.PerformancePageScan;
+  security: ScanPage.SecurityPageScan;
 };
 
 @Entity()
@@ -443,6 +445,21 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'language_link' })
   hrefLangContent?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'accessibility_scan_status' })
+  @Exclude()
+  securityScanStatus?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'https_enforced' })
+  @Exclude()
+  httpsEnforced?: boolean;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'hsts_preloaded' })
+  @Exclude()
+  hstsPreloaded?: boolean;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names

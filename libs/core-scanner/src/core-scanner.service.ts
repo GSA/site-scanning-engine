@@ -5,6 +5,7 @@ import { Logger } from 'pino';
 import { Browser } from 'puppeteer';
 
 import { BrowserService } from '@app/browser';
+import { SecurityDataService } from '@app/security-data';
 
 import { parseBrowserError, ScanStatus } from 'entities/scan-status';
 import { Scanner } from 'libs/scanner.interface';
@@ -22,6 +23,7 @@ export class CoreScannerService
   constructor(
     private browserService: BrowserService,
     private httpService: HttpService,
+    private securityDataService: SecurityDataService,
     @InjectPinoLogger(CoreScannerService.name)
     private readonly logger: PinoLogger,
   ) {}
@@ -45,6 +47,7 @@ export class CoreScannerService
           scanLogger,
         ),
         performance: await this.runPerformanceScan(browser, input, scanLogger),
+        security: await this.securityDataService.getSecurityResults(input.url),
       };
 
       scanLogger.info({ result }, 'solutions scan results');

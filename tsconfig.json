@@ -30,7 +30,9 @@
       "@app/snapshot": ["libs/snapshot/src"],
       "@app/snapshot/*": ["libs/snapshot/src/*"],
       "@app/storage": ["libs/storage/src"],
-      "@app/storage/*": ["libs/storage/src/*"]
+      "@app/storage/*": ["libs/storage/src/*"],
+      "@app/security-data": ["libs/security-data/src"],
+      "@app/security-data/*": ["libs/security-data/src/*"]
     }
   }
 }

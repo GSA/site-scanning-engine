@@ -220,6 +220,15 @@ describe('CoreResultService', () => {
           },
         },
       },
+      security: {
+        status: scanStatus,
+        result: {
+          securityScan: {
+            httpsEnforced: null,
+            hstsPreloaded: null,
+          },
+        },
+      },
     };
     const logger = mock<Logger>();
 

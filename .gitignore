@@ -42,3 +42,6 @@ mega-linter.log
 
 # don't include Python virtual environment
 venv/
+
+# data for security scan
+/security-data

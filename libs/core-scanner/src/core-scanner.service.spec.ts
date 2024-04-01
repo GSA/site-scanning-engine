@@ -6,8 +6,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from 'pino';
 
 import { BrowserService } from '@app/browser';
+import { SecurityDataService } from '@app/security-data';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreScannerService } from './core-scanner.service';
+import { ScanStatus } from 'entities/scan-status';
 
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
@@ -19,6 +21,7 @@ describe('CoreScannerService', () => {
   let mockHttpService: MockProxy<HttpService>;
   let mockLogger: DeepMockProxy<PinoLogger>;
   let mockChildLogger: DeepMockProxy<Logger>;
+  let mockSecurityDataService: MockProxy<SecurityDataService>;
   const finalUrl = 'https://18f.gsa.gov';
 
   beforeEach(async () => {
@@ -30,6 +33,7 @@ describe('CoreScannerService', () => {
     mockHttpService = mock<HttpService>();
     mockLogger = mockDeep<PinoLogger>();
     mockChildLogger = mockDeep<Logger>();
+    mockSecurityDataService = mock<SecurityDataService>();
 
     redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
     mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
@@ -41,7 +45,17 @@ describe('CoreScannerService', () => {
     mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
     mockPage.url.calledWith().mockReturnValue(finalUrl);
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
-
+    mockSecurityDataService.getSecurityResults
+      .calledWith(finalUrl)
+      .mockResolvedValue({
+        status: ScanStatus.Completed,
+        result: {
+          securityScan: {
+            httpsEnforced: true,
+            hstsPreloaded: true,
+          },
+        },
+      });
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CoreScannerService,
@@ -55,6 +69,10 @@ describe('CoreScannerService', () => {
         {
           provide: HttpService,
           useValue: mockHttpService,
+        },
+        {
+          provide: SecurityDataService,
+          useValue: mockSecurityDataService,
         },
         {
           provide: getLoggerToken(CoreScannerService.name),
@@ -89,5 +107,8 @@ describe('CoreScannerService', () => {
     expect(result).toHaveProperty('robotsTxt');
     expect(result).toHaveProperty('sitemapXml');
     expect(result).toHaveProperty('dns');
+    expect(result).toHaveProperty('accessibility');
+    expect(result).toHaveProperty('performance');
+    expect(result).toHaveProperty('security');
   });
 });
