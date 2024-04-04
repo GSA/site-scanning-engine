@@ -94,29 +94,28 @@ export class SnapshotService {
   }
 
   async accessibilityResultsSnapshot() {
-    // call websiteService to fetch a list of all websites with accessibility
-    // details included.
+    this.logger.log(
+      'Fetching a list of all websites with accessibility details included',
+    );
     const websites =
       await this.websiteService.findAccessibilityResultsSnapshotResults();
 
-    // Back up previous snapshot.
+    this.logger.log('Backing up previous snapshot');
     const date = this.datetimeService.now();
     date.setDate(date.getDate() - 7);
     const priorDate = date.toISOString();
     const newFileName = `archive/json/${this.fileNameAccessibility}-${priorDate}.json`;
     this.storageService.copy(`${this.fileNameAccessibility}.json`, newFileName);
 
-    // Serialize and upload new snapshot.
-    const serializedWebsitesWithDetailsOnly = websites
-      .map((website) => website.serialized())
-      .map((serializedWebsite) => {
-        return {
-          targetUrl: serializedWebsite.url,
-          accessibilityDetails:
-            serializedWebsite.coreResult.accessibilityResultsList,
-        };
-      });
+    this.logger.log('Serializing new snapshot');
+    const serializedWebsitesWithDetailsOnly = websites.map((website) => {
+      return {
+        target_url: website.url,
+        accessibility_details: website.coreResult.accessibilityResultsList,
+      };
+    });
 
+    this.logger.log('Uploading new snapshot');
     await this.storageService.upload(
       `${this.fileNameAccessibility}.json`,
       JSON.stringify(serializedWebsitesWithDetailsOnly),
