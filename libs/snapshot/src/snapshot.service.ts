@@ -122,7 +122,7 @@ export class SnapshotService {
     );
     await this.storageService.upload(
       `${this.fileNameAccessibility}.json`,
-      JSON.stringify(serializedWebsitesWithDetailsOnly),
+      JSON.stringify(serializedWebsitesWithDetailsOnly, null, 2),
     );
   }
 }
