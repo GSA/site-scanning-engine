@@ -453,12 +453,10 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'https_enforced' })
-  @Exclude()
   httpsEnforced?: boolean;
 
   @Column({ nullable: true })
   @Expose({ name: 'hsts_preloaded' })
-  @Exclude()
   hstsPreloaded?: boolean;
 
   static getColumnNames(): string[] {
@@ -511,6 +509,8 @@ export class CoreResult {
     'largest_contentful_paint',
     'required_links_url',
     'required_links_text',
+    'https_enforced',
+    'hsts_preloaded',
     'title',
     'description',
     'keywords',
