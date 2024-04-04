@@ -57,12 +57,13 @@ export class SnapshotService {
     );
 
     await liveSnapshot.archiveExisting();
+    this.logger.log('Live snapshot archived.');
+
     await liveSnapshot.saveNew();
+    this.logger.log('Live snapshot saved.');
 
     liveWebsites = null;
     liveSnapshot = null;
-
-    this.logger.log('Live snapshot archived and saved.');
   }
 
   async allSnapshot(date: string, columns: string[]) {
@@ -80,11 +81,12 @@ export class SnapshotService {
     );
 
     await allSnapshot.archiveExisting();
+    this.logger.log('All snapshot archived.');
+
     await allSnapshot.saveNew();
+    this.logger.log('All snapshot saved.');
 
     allWebsites = null;
     allSnapshot = null;
-
-    this.logger.log('All snapshot archived and saved.');
   }
 }

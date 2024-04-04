@@ -1,6 +1,7 @@
 import { StorageService } from '@app/storage';
 import { Website } from 'entities/website.entity';
 import { Serializer } from './serializers/serializer';
+import { Logger } from 'nestjs-pino';
 
 export class Snapshot {
   storageService: StorageService;
@@ -40,17 +41,15 @@ export class Snapshot {
   }
 
   async saveNew(): Promise<void> {
-    const operations = [];
+    for (const serializer of this.serializers) {
+      let serializedData = serializer.serialize(this.websites);
 
-    this.serializers.forEach((serializer) => {
-      operations.push(
-        this.storageService.upload(
-          `${this.fileName}.${serializer.fileExtension}`,
-          serializer.serialize(this.websites),
-        ),
+      await this.storageService.upload(
+        `${this.fileName}.${serializer.fileExtension}`,
+        serializedData,
       );
-    });
 
-    await Promise.all(operations);
+      serializedData = null;
+    }
   }
 }
