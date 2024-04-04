@@ -48,7 +48,7 @@ export class SnapshotService {
       `Total number of live websites retrieved for snapshot: ${liveWebsites.length}`,
     );
 
-    const liveSnapshot = new Snapshot(
+    let liveSnapshot = new Snapshot(
       this.storageService,
       [new JsonSerializer(columns), new CsvSerializer(columns)],
       liveWebsites,
@@ -56,9 +56,11 @@ export class SnapshotService {
       this.fileNameLive,
     );
 
-    await Promise.all([liveSnapshot.archiveExisting(), liveSnapshot.saveNew()]);
+    await liveSnapshot.archiveExisting();
+    await liveSnapshot.saveNew();
 
     liveWebsites = null;
+    liveSnapshot = null;
 
     this.logger.log('Live snapshot archived and saved.');
   }
@@ -69,7 +71,7 @@ export class SnapshotService {
       `Total number of all websites retrieved for snapshot: ${allWebsites.length}`,
     );
 
-    const allSnapshot = new Snapshot(
+    let allSnapshot = new Snapshot(
       this.storageService,
       [new JsonSerializer(columns), new CsvSerializer(columns)],
       allWebsites,
@@ -77,9 +79,11 @@ export class SnapshotService {
       this.fileNameAll,
     );
 
-    await Promise.all([allSnapshot.archiveExisting(), allSnapshot.saveNew()]);
+    await allSnapshot.archiveExisting();
+    await allSnapshot.saveNew();
 
     allWebsites = null;
+    allSnapshot = null;
 
     this.logger.log('All snapshot archived and saved.');
   }
