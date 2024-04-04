@@ -28,5 +28,5 @@ jobs:
           cf_command: |
             run-task site-scanner-consumer
             -c "node dist/apps/cli/main.js create-snapshot"
-            -k 2G -m 2G
+            -k 4G -m 4G
             --name github-action-create-snapshot-${{ github.run_id }}
