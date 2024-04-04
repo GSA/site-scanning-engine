@@ -111,7 +111,9 @@ export class SnapshotService {
     const serializedWebsitesWithDetailsOnly = websites.map((website) => {
       return {
         target_url: website.url,
-        accessibility_details: website.coreResult.accessibilityResultsList,
+        accessibility_details: JSON.parse(
+          website.coreResult.accessibilityResultsList,
+        ),
       };
     });
 
