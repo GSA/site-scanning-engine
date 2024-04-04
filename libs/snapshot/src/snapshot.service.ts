@@ -115,7 +115,9 @@ export class SnapshotService {
       };
     });
 
-    this.logger.log('Uploading new snapshot');
+    this.logger.log(
+      `Uploading new snapshot to S3 as ${this.fileNameAccessibility}.json`,
+    );
     await this.storageService.upload(
       `${this.fileNameAccessibility}.json`,
       JSON.stringify(serializedWebsitesWithDetailsOnly),
