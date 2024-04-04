@@ -9,6 +9,7 @@ import {
   Pagination,
 } from 'nestjs-typeorm-paginate';
 import { FilterWebsiteDto } from 'apps/api/src/website/filter-website.dto';
+import { ScanStatus } from 'entities/scan-status';
 
 @Injectable()
 export class WebsiteService {
@@ -59,6 +60,26 @@ export class WebsiteService {
     }
 
     return result;
+  }
+
+  async findAccessibilityResultsSnapshotResults(): Promise<Website[]> {
+    const queryBuilder = this.website
+      .createQueryBuilder('website')
+      .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
+      .andWhere('coreResult.accessibilityScanStatus = :completed', {
+        completed: ScanStatus.Completed,
+      })
+      .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
+        mimeTypes: [
+          'application/xhtml+xml',
+          'application/xml',
+          'application/json',
+          'text/xml',
+        ],
+      });
+
+    return await queryBuilder.getMany();
   }
 
   async paginatedFilter(

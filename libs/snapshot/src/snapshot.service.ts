@@ -21,6 +21,9 @@ export class SnapshotService {
 
   private fileNameLive = this.configService.get<string>('fileNameLive');
   private fileNameAll = this.configService.get<string>('fileNameAll');
+  private fileNameAccessibility = this.configService.get<string>(
+    'fileNameAccessibility',
+  );
   /**
    * weeklySnapshot is meant to be called weekly. It takes three snapshots:
    * - weekly-snapshot-all: contains all Website and CoreResults
@@ -88,5 +91,35 @@ export class SnapshotService {
 
     allWebsites = null;
     allSnapshot = null;
+  }
+
+  async accessibilityResultsSnapshot() {
+    // call websiteService to fetch a list of all websites with accessibility
+    // details included.
+    const websites =
+      await this.websiteService.findAccessibilityResultsSnapshotResults();
+
+    // Back up previous snapshot.
+    const date = this.datetimeService.now();
+    date.setDate(date.getDate() - 7);
+    const priorDate = date.toISOString();
+    const newFileName = `archive/json/${this.fileNameAccessibility}-${priorDate}.json`;
+    this.storageService.copy(`${this.fileNameAccessibility}.json`, newFileName);
+
+    // Serialize and upload new snapshot.
+    const serializedWebsitesWithDetailsOnly = websites
+      .map((website) => website.serialized())
+      .map((serializedWebsite) => {
+        return {
+          targetUrl: serializedWebsite.url,
+          accessibilityDetails:
+            serializedWebsite.coreResult.accessibilityResultsList,
+        };
+      });
+
+    await this.storageService.upload(
+      `${this.fileNameAccessibility}.json`,
+      JSON.stringify(serializedWebsitesWithDetailsOnly),
+    );
   }
 }

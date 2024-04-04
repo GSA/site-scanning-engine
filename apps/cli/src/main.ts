@@ -68,6 +68,16 @@ async function createSnapshot() {
   await nestApp.close();
 }
 
+async function createAccessibilityResultsSnapshot() {
+  const nestApp = await bootstrap();
+  const controller = nestApp.get(SnapshotController);
+  console.log('creating a11y results snapshot');
+
+  await controller.accessibilityResultsSnapshot();
+  printMemoryUsage();
+  await nestApp.close();
+}
+
 async function scanSite(cmdObj) {
   const nestApp = await bootstrap();
   const controller = nestApp.get(ScanController);
@@ -131,6 +141,14 @@ async function main() {
       'create-snapshot writes a CSV and JSON of the current scans to S3',
     )
     .action(createSnapshot);
+
+  // create-a11y-snapshot
+  program
+    .command('create-a11y-snapshot')
+    .description(
+      'create-a11y-snapshot writes a JSON of the current a11y scan result details to S3',
+    )
+    .action(createAccessibilityResultsSnapshot);
 
   // scan-site
   program

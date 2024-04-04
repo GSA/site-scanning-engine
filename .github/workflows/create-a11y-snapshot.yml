@@ -1,0 +1,32 @@
+---
+name: Create a11y S3 snapshot
+
+# yamllint disable-line rule:truthy
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+
+  workflow_dispatch:
+    inputs:
+      cf_space:
+        description: deployed cloud.gov space
+        required: true
+        default: prod
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run create-a11y-snapshot cli job in chosen space
+        uses: cloud-gov/cg-cli-tools@main
+        with:
+          cf_api: https://api.fr.cloud.gov
+          cf_username: ${{ secrets.CF_USERNAME }}
+          cf_password: ${{ secrets.CF_PASSWORD }}
+          cf_org: gsatts-sitescan
+          cf_space: ${{ github.event.inputs.cf_space || 'prod' }}
+          cf_command: |
+            run-task site-scanner-consumer
+            -c "node dist/apps/cli/main.js create-a11y-snapshot"
+            -k 2G -m 2G
+            --name github-action-create-a11y-snapshot-${{ github.run_id }}
