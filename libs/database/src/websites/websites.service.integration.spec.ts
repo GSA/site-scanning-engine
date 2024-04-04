@@ -157,6 +157,17 @@ describe('AnalysisService', () => {
     secondWebsite.sourceList = 'gov';
     secondWebsite.ombIdeaPublic = false;
 
+    const thirdWebsite = new Website();
+    thirdWebsite.url = 'https://fake.gov';
+    thirdWebsite.topLevelDomain = 'gov';
+    thirdWebsite.branch = 'Federal Agency - Executive';
+    thirdWebsite.agency = 'Fake Agency';
+    thirdWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
+    thirdWebsite.agencyCode = 10;
+    thirdWebsite.bureauCode = 10;
+    thirdWebsite.sourceList = 'gov';
+    thirdWebsite.ombIdeaPublic = false;
+
     const firstCoreResult = new CoreResult();
     firstCoreResult.website = firstWebsite;
     firstCoreResult.finalUrlIsLive = true;
@@ -218,6 +229,18 @@ describe('AnalysisService', () => {
     secondCoreResult.finalUrlMIMEType = 'text/html';
     secondCoreResult.accessibilityScanStatus = ScanStatus.UnknownError;
     secondCoreResult.accessibilityResultsList = '';
+
+    const thirdCoreResult = new CoreResult();
+    thirdCoreResult.website = secondWebsite;
+    thirdCoreResult.finalUrlIsLive = false;
+    thirdCoreResult.notFoundScanStatus = 'complete';
+    thirdCoreResult.primaryScanStatus = 'complete';
+    thirdCoreResult.robotsTxtScanStatus = 'complete';
+    thirdCoreResult.sitemapXmlScanStatus = 'complete';
+    thirdCoreResult.targetUrlBaseDomain = 'complete';
+    thirdCoreResult.finalUrlMIMEType = 'text/html';
+    thirdCoreResult.accessibilityScanStatus = ScanStatus.Completed;
+    thirdCoreResult.accessibilityResultsList = '';
 
     await websiteRepository.insert(firstWebsite);
     await coreResultRepository.insert(firstCoreResult);

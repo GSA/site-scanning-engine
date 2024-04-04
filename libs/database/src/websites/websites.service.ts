@@ -70,6 +70,10 @@ export class WebsiteService {
       .andWhere('coreResult.accessibilityScanStatus = :completed', {
         completed: ScanStatus.Completed,
       })
+      .andWhere(
+        'coreResult.accessibilityResultsList IS NOT NULL AND coreResult.accessibilityResultsList <> :emptyString',
+        { emptyString: '' },
+      )
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
         mimeTypes: [
           'application/xhtml+xml',
