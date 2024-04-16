@@ -13,6 +13,8 @@ This repository is for the Site Scanning engine itself, the codebase that actual
 For more detailed documentation about the Site Scanning program, including **who it's for**, **what it does**, **long-term goals**, etc. please visit the 
 [Site Scanning program website](https://digital.gov/site-scanning), especially the [Technical Details page](https://digital.gov/guides/site-scanning/technical-details/).  
 
+The project's issue tracker and other relevant repositories and links [can be found here](https://github.com/GSA/site-scanning?tab=readme-ov-file#site-scanning).  
+
 ## Table of Contents
 
 - [Site Scanning Engine](#site-scanning-engine)
