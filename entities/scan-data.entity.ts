@@ -29,7 +29,6 @@ export type SeoScan = {
   canonicalLink: string;
   pageTitle: string;
   metaDescriptionContent: string;
-  hreflangCodes: string;
   metaKeywordsContent: string;
   ogImageContent: string;
   ogTypeContent: string;

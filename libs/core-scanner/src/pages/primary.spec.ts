@@ -49,7 +49,6 @@ describe('primary scanner', () => {
           pageTitle: '18F: Digital service delivery | Home',
           metaDescriptionContent:
             '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
-          hreflangCodes: '',
           hrefLangContent: '',
           htmlLangContent: 'en-US',
           metaKeywordsContent: null,

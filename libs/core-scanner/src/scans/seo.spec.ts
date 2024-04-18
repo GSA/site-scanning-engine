@@ -25,7 +25,6 @@ describe('seo scan', () => {
           "Investing in Appalachia's economic future. - Appalachian Regional Commission",
         metaDescriptionContent: '',
 
-        hreflangCodes: '',
         hrefLangContent: '',
         htmlLangContent: 'en-US',
         metaKeywordsContent: null,
