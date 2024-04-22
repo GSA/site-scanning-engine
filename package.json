@@ -39,7 +39,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.414.0",
     "@axe-core/puppeteer": "^4.8.5",
-    "@nestjs/axios": "^2.0.0",
+    "@nestjs/axios": "^3.0.2",
     "@nestjs/bull": "^10.1.1",
     "@nestjs/common": "^10.3.8",
     "@nestjs/config": "^2.3.1",
