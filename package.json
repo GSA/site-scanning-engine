@@ -59,7 +59,7 @@
     "http-status-codes": "^2.2.0",
     "json2csv": "^5.0.7",
     "lodash": "^4.17.21",
-    "nestjs-pino": "^3.1.2",
+    "nestjs-pino": "^4.0.0",
     "nestjs-typeorm-paginate": "^4.0.3",
     "pg": "^8.7.3",
     "pino-http": "^6.6.0",
