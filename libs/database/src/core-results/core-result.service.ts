@@ -86,7 +86,6 @@ export class CoreResultService {
       coreResult.canonicalLink = result.seoScan.canonicalLink;
       coreResult.pageTitle = result.seoScan.pageTitle;
       coreResult.metaDescriptionContent = result.seoScan.metaDescriptionContent;
-      coreResult.hreflangCodes = result.seoScan.hreflangCodes;
       coreResult.metaKeywordsContent = result.seoScan.metaKeywordsContent;
       coreResult.ogImageContent = result.seoScan.ogImageContent;
       coreResult.ogTypeContent = result.seoScan.ogTypeContent;

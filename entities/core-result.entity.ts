@@ -399,18 +399,6 @@ export class CoreResult {
   metaDescriptionContent?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'hreflang_codes' })
-  @Exclude()
-  @Transform((value: string) => {
-    if (value) {
-      return value.split(',');
-    } else {
-      return null;
-    }
-  })
-  hreflangCodes?: string;
-
-  @Column({ nullable: true })
   @Expose({ name: 'performance_scan_status' })
   performanceScanStatus?: string;
 

@@ -113,7 +113,6 @@ describe('CoreResultService', () => {
             canonicalLink: null,
             pageTitle: null,
             metaDescriptionContent: null,
-            hreflangCodes: null,
             metaKeywordsContent: null,
             ogImageContent: null,
             ogTypeContent: null,

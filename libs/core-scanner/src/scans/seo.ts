@@ -27,16 +27,12 @@ export const buildSeoResult = async (
     null;
   const pageTitle = await findPageTitleText(page);
   const metaDescriptionContent = await findMetaDescriptionContent(page);
-  const hreflangCodes =
-    (await findHrefLangCodes(page)) ??
-    (await extractHrefLangValues(response)) ??
-    null;
   const metaKeywordsContent = await findMetaContent(page, 'name', 'keywords');
   const ogImageContent = await findOpenGraphTag(page, 'og:image');
   const ogTypeContent = await findOpenGraphTag(page, 'og:type');
   const ogUrlContent = await findOpenGraphTag(page, 'og:url');
-  const htmlLangContent = await findAttributeContent(page, 'lang');
-  const hrefLangContent = await getHreflangContent(page, 'hreflang');
+  const htmlLangContent = await findHtmlLangContent(page);
+  const hrefLangContent = await findHreflangContent(page);
 
   return {
     ogTitleFinalUrl,
@@ -47,7 +43,6 @@ export const buildSeoResult = async (
     canonicalLink,
     pageTitle,
     metaDescriptionContent,
-    hreflangCodes,
     metaKeywordsContent,
     ogImageContent,
     ogTypeContent,
@@ -156,38 +151,6 @@ const findMetaDescriptionContent = async (
   return content;
 };
 
-const findHrefLangCodes = async (page: Page): Promise<string> => {
-  const languageCodes = await page.evaluate(() => {
-    const hreflangElements = document.querySelectorAll(
-      'link[rel="alternate"][hreflang]',
-    );
-
-    const hreflangValues = Array.from(hreflangElements).map((el) => {
-      return el.getAttribute('hreflang').trim().toLowerCase();
-    });
-
-    return hreflangValues;
-  });
-
-  return languageCodes.join(',');
-};
-
-function extractHrefLangValues(response: HTTPResponse): string | null {
-  const linkHeader = response.headers()['link'];
-  if (!linkHeader) {
-    return null;
-  }
-
-  const hrefLangRegex = /hreflang="([^"]+)"/g;
-
-  const matches = linkHeader.match(hrefLangRegex);
-  if (!matches || matches.length === 0) {
-    return null;
-  }
-
-  return matches.map((match) => match.split('"')[1]).join(',');
-}
-
 const findMetaContent = async (
   page: Page,
   attribute: string,
@@ -212,38 +175,32 @@ const findMetaContent = async (
   return content;
 };
 
-const findAttributeContent = async (
-  page: Page,
-  attribute: string,
-): Promise<string> => {
-  const content = await page.evaluate((attribute: string) => {
-    const element = document.querySelector(`[${attribute}]`);
+const findHtmlLangContent = async (page: Page): Promise<string> => {
+  const content = await page.evaluate(() => {
+    const element = document.querySelector('[lang]');
 
-    if (element && element.hasAttribute(attribute)) {
-      return element.getAttribute(attribute).trim();
+    if (element && element.hasAttribute('lang')) {
+      return element.getAttribute('lang').trim();
     }
 
     return null;
-  }, attribute);
+  });
 
   return content;
 };
 
-const getHreflangContent = async (
-  page: Page,
-  attribute: string,
-): Promise<string> => {
-  const content = await page.evaluate((attribute: string) => {
+const findHreflangContent = async (page: Page): Promise<string> => {
+  const content = await page.evaluate(() => {
     const hreflangElements = document.querySelectorAll(
-      `link[rel="alternate"][${attribute}]`,
+      'link[rel="alternate"][hreflang]',
     );
 
     const hreflangValues = Array.from(hreflangElements).map((el) => {
-      return el.getAttribute(attribute).trim().toLowerCase();
+      return el.getAttribute('hreflang').trim().toLowerCase();
     });
 
     return hreflangValues.join(',');
-  }, attribute);
+  });
 
   return content;
 };
