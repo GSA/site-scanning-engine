@@ -42,7 +42,7 @@
     "@nestjs/axios": "^3.0.2",
     "@nestjs/bull": "^10.1.1",
     "@nestjs/common": "^10.3.8",
-    "@nestjs/config": "^2.3.1",
+    "@nestjs/config": "^3.2.2",
     "@nestjs/core": "^10.3.7",
     "@nestjs/platform-express": "^10.3.7",
     "@nestjs/schedule": "^2.2.0",
