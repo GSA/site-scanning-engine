@@ -1,6 +1,13 @@
 import { Logger } from '@nestjs/common';
 
-export async function fetchSecurityData(url: string, logger: Logger) {
+/**
+ * "Humble" function that fetches security data from a given URL.
+ * https://martinfowler.com/bliki/HumbleObject.html
+ */
+export async function fetchSecurityData(
+  url: string,
+  logger: Logger,
+): Promise<string> {
   try {
     const response = await fetch(url);
     if (!response.ok) {
