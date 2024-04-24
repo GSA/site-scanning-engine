@@ -4,7 +4,7 @@ import { promises as fs } from 'fs';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { parseString } from 'fast-csv';
-import { fetchSecurityData } from './data-fetcher';
+import { fetchSecurityData } from './fetch-security-data';
 import { SecurityPageScan } from 'entities/scan-page.entity';
 import { ScanStatus } from 'entities/scan-status';
 
@@ -29,32 +29,41 @@ export class SecurityDataService {
       this.logger.log(
         `No file found for path ${this.filePath} -- fetching data`,
       );
-      await this.fetchAndSaveSecurityData();
+      try {
+        await this.fetchAndSaveSecurityData();
+      } catch (error) {
+        return this.handleScanError(
+          `An error occurred fetching security data: ${error.message}`,
+        );
+      }
     }
-
-    const csvString = await fs.readFile(this.filePath, 'utf8');
 
     let matchingRow: { [key: string]: string } | null = null;
 
-    await new Promise((resolve, reject) => {
-      parseString(csvString, { headers: true })
-        .on('data', (row: { [key: string]: string }) => {
-          if (row.domain === url) {
-            matchingRow = row;
-            resolve(null);
-          }
-        })
-        .on('end', resolve)
-        .on('error', reject);
-    });
+    try {
+      const csvString = await fs.readFile(this.filePath, 'utf8');
+
+      await new Promise((resolve, reject) => {
+        parseString(csvString, { headers: true })
+          .on('data', (row: { [key: string]: string }) => {
+            if (row.domain === url) {
+              matchingRow = row;
+              resolve(null);
+            }
+          })
+          .on('end', resolve)
+          .on('error', reject);
+      });
+    } catch (error) {
+      return this.handleScanError(
+        `An error occurred parsing security data: ${error.message}`,
+      );
+    }
 
     if (!matchingRow) {
-      const errorMessage = 'No matching domain found in security data CSV';
-      this.logger.log(errorMessage);
-      return {
-        status: ScanStatus.UnknownError,
-        error: errorMessage,
-      };
+      return this.handleScanError(
+        'No matching domain found in security data CSV',
+      );
     }
 
     const httpsEnforced =
@@ -80,17 +89,31 @@ export class SecurityDataService {
   async fetchAndSaveSecurityData(): Promise<void> {
     this.logger.log(`Fetching security data from ${this.securityDataCsvUrl}`);
 
-    const csvData = await fetchSecurityData(
-      this.securityDataCsvUrl,
-      this.logger,
-    );
+    let csvData: string | null = null;
+
+    csvData = await fetchSecurityData(this.securityDataCsvUrl, this.logger);
 
     if (csvData) {
-      await fs.mkdir(this.dirPath, { recursive: true });
-      await fs.writeFile(this.filePath, csvData, 'utf8');
-      this.logger.log(`Security data saved to ${this.filePath}`);
+      try {
+        await fs.mkdir(this.dirPath, { recursive: true });
+        await fs.writeFile(this.filePath, csvData, 'utf8');
+        this.logger.log(`Security data saved to ${this.filePath}`);
+      } catch (error) {
+        const err = error as Error;
+        this.logger.error(
+          `An error occurred saving security data: ${err.message}`,
+        );
+      }
     } else {
       this.logger.error('No CSV data was fetched');
     }
+  }
+
+  private handleScanError(errorMessage: string): SecurityPageScan {
+    this.logger.error(errorMessage);
+    return {
+      status: ScanStatus.UnknownError,
+      error: errorMessage,
+    };
   }
 }
