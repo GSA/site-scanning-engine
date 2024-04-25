@@ -94,9 +94,13 @@ export function aggregateResults(results: Result[]): AggregatedResults {
   results.forEach((result) => {
     for (const categorys in resultCategoryMapping) {
       if (resultCategoryMapping[categorys].includes(result.id)) {
-        resultsSummary[categorys] = resultsSummary[categorys]
-          ? resultsSummary[categorys] + 1
-          : 1;
+        // Get the total number of NodeResult objects for each violation category
+        if (!resultsSummary[categorys]) {
+          resultsSummary[categorys] = result.nodes.length;
+        } else {
+          resultsSummary[categorys] += result.nodes.length;
+        }
+
         rawResultsList.push(result);
         break;
       }
