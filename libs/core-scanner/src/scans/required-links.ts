@@ -1,70 +1,75 @@
-import { HTTPResponse } from 'puppeteer';
+import { Page } from 'puppeteer';
 
 import { RequiredLinksScan } from 'entities/scan-data.entity';
 
 export const buildRequiredLinksResult = async (
-  mainResponse: HTTPResponse,
+  page: Page,
 ): Promise<RequiredLinksScan> => {
-  const html = await mainResponse.text();
+  const requiredLinksResults = await page.evaluate(() => {
+    const requiredLinksUrlContents = [
+      'about',
+      'fear',
+      'foia',
+      'inspector',
+      'privacy',
+      'usa.gov',
+      'spanish',
+      'espanol',
+      'español',
+      '/es',
+    ];
 
-  const requiredLinksUrl = [
-    'about',
-    'fear',
-    'foia',
-    'inspector',
-    'privacy',
-    'usa.gov',
-    'spanish',
-    'espanol',
-    'español',
-    '/es',
-  ]
-    .filter((string) => hasStringInHref(html, string))
-    .join(',');
+    const requiredLinksUrl = requiredLinksUrlContents
+      .filter((string) => {
+        let stringDetected = false;
 
-  const requiredLinksText = [
-    'about us',
-    'accessibility',
-    'budget and performance',
-    'no fear act',
-    'foia',
-    'freedom of information act',
-    'inspector general',
-    'privacy policy',
-    'vulnerability disclosure',
-    'usa.gov',
-    'espanol',
-    'español',
-    'espa&ntilde;ol',
-    'spanish',
-  ]
-    .filter((string) => hasStringInLinkText(html, string))
-    .join(',');
+        document.querySelectorAll('a').forEach((el) => {
+          const href = el.getAttribute('href');
+          if (href && href.toLowerCase().includes(string)) {
+            stringDetected = true;
+          }
+        });
 
-  return {
-    requiredLinksUrl,
-    requiredLinksText,
-  };
-};
+        return stringDetected;
+      })
+      .join(',');
 
-const hasStringInHref = (html: string, string: string): boolean => {
-  const hrefs = html.match(/href=['"](.*?)['"]/gi);
+    const requiredLinksTextContents = [
+      'about us',
+      'accessibility',
+      'budget and performance',
+      'no fear act',
+      'foia',
+      'freedom of information act',
+      'inspector general',
+      'privacy policy',
+      'vulnerability disclosure',
+      'usa.gov',
+      'espanol',
+      'español',
+      'espa&ntilde;ol',
+      'spanish',
+    ];
 
-  if (!hrefs) return false;
-  const matchingHrefs = hrefs.filter((href) =>
-    href.toLowerCase().includes(string.toLowerCase()),
-  );
+    const requiredLinksText = requiredLinksTextContents
+      .filter((string) => {
+        let stringDetected = false;
 
-  return matchingHrefs.length > 0;
-};
+        document.querySelectorAll('a').forEach((el) => {
+          if (el.textContent.toLowerCase().includes(string)) {
+            stringDetected = true;
+          }
+        });
 
-const hasStringInLinkText = (html: string, string: string): boolean => {
-  const linkTexts = html.match(/(?<=<a\b[^>]*>)([\s\S]*?)(?=<\/a>)/gi);
+        return stringDetected;
+      })
+      .join(',');
 
-  if (!linkTexts) return false;
-  const matchingLinkTexts = linkTexts.filter((linkText) =>
-    linkText.toLowerCase().includes(string.toLowerCase()),
-  );
+    return {
+      requiredLinksUrl,
+      requiredLinksText,
+    };
+  });
 
-  return matchingLinkTexts.length > 0;
+  return requiredLinksResults;
 };

@@ -62,7 +62,7 @@ const primaryScan = async (
     createUswdsScanner({ logger, getCSSRequests }, page)(response),
     buildLoginResult(response),
     buildCmsResult(response),
-    buildRequiredLinksResult(response),
+    buildRequiredLinksResult(page),
     buildSearchResult(page),
     buildMobileResult(logger, page),
   ]);
