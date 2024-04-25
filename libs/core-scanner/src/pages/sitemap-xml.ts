@@ -42,7 +42,7 @@ const buildSitemapResult = async (
   const sitemapLive = isLive(sitemapResponse);
 
   const sitemapXmlDetected =
-    sitemapUrl.pathname === '/sitemap.xml' && sitemapLive;
+    sitemapUrl.pathname.endsWith('/sitemap.xml') && sitemapLive;
 
   return {
     sitemapXmlFinalUrl: sitemapUrl.toString(),
