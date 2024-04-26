@@ -75,7 +75,7 @@ describe('SecurityDataService', () => {
       result: {
         securityScan: {
           httpsEnforced: true,
-          hstsPreloaded: true,
+          hsts: true,
         },
       },
     });

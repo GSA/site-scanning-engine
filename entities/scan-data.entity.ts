@@ -127,5 +127,5 @@ export type PerformanceScan = {
 
 export type SecurityScan = {
   httpsEnforced: boolean;
-  hstsPreloaded: boolean;
+  hsts: boolean;
 };

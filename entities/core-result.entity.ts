@@ -444,8 +444,8 @@ export class CoreResult {
   httpsEnforced?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'hsts_preloaded' })
-  hstsPreloaded?: boolean;
+  @Expose({ name: 'hsts' })
+  hsts?: boolean;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names
