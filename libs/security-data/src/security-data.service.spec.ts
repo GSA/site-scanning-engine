@@ -59,13 +59,13 @@ describe('SecurityDataService', () => {
     expect(spyFetchAndSave).toHaveBeenCalled();
   });
 
-  it('should return correct security results for a matching domain', async () => {
+  it('should return correct security results for a matching domain with hsts_base_domain_preloaded set to "true"', async () => {
     const url = 'example.com';
     jest.spyOn(fs, 'existsSync').mockReturnValue(true);
     jest
       .spyOn(fs.promises, 'readFile')
       .mockResolvedValue(
-        `domain,domain_enforces_https,hsts_base_domain_preloaded\nexample.com,true,true`,
+        `domain,domain_enforces_https,domain_uses_strong_hsts,hsts_base_domain_preloaded\n${url},true,false,true`,
       );
 
     const result = await service.getSecurityResults(url);
@@ -76,6 +76,50 @@ describe('SecurityDataService', () => {
         securityScan: {
           httpsEnforced: true,
           hsts: true,
+        },
+      },
+    });
+  });
+
+  it('should return correct security results for a matching domain with domain_uses_strong_hsts set to "true"', async () => {
+    const url = 'example.com';
+    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
+    jest
+      .spyOn(fs.promises, 'readFile')
+      .mockResolvedValue(
+        `domain,domain_enforces_https,domain_uses_strong_hsts,hsts_base_domain_preloaded\n${url},true,true,false`,
+      );
+
+    const result = await service.getSecurityResults(url);
+
+    expect(result).toEqual({
+      status: ScanStatus.Completed,
+      result: {
+        securityScan: {
+          httpsEnforced: true,
+          hsts: true,
+        },
+      },
+    });
+  });
+
+  it('should return correct security results for a matching domain with both hsts fields set to "false"', async () => {
+    const url = 'example.com';
+    jest.spyOn(fs, 'existsSync').mockReturnValue(true);
+    jest
+      .spyOn(fs.promises, 'readFile')
+      .mockResolvedValue(
+        `domain,domain_enforces_https,domain_uses_strong_hsts,hsts_base_domain_preloaded\n${url},true,false,false`,
+      );
+
+    const result = await service.getSecurityResults(url);
+
+    expect(result).toEqual({
+      status: ScanStatus.Completed,
+      result: {
+        securityScan: {
+          httpsEnforced: true,
+          hsts: false,
         },
       },
     });
