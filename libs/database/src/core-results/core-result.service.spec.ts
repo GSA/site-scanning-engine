@@ -224,7 +224,7 @@ describe('CoreResultService', () => {
         result: {
           securityScan: {
             httpsEnforced: null,
-            hstsPreloaded: null,
+            hsts: null,
           },
         },
       },

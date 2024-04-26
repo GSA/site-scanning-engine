@@ -371,8 +371,7 @@ export class CoreResultService {
     if (pages.security.status === ScanStatus.Completed) {
       coreResult.httpsEnforced =
         pages.security.result.securityScan.httpsEnforced;
-      coreResult.hstsPreloaded =
-        pages.security.result.securityScan.hstsPreloaded;
+      coreResult.hsts = pages.security.result.securityScan.hsts;
     } else {
       logger.error({
         msg: pages.security.error,
@@ -380,7 +379,7 @@ export class CoreResultService {
       });
 
       coreResult.httpsEnforced = null;
-      coreResult.hstsPreloaded = null;
+      coreResult.hsts = null;
     }
   }
 }

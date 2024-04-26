@@ -66,22 +66,16 @@ export class SecurityDataService {
       );
     }
 
-    const httpsEnforced =
-      matchingRow.domain_enforces_https.toLowerCase() === 'true';
-    const hstsPreloaded =
-      matchingRow.hsts_base_domain_preloaded.toLowerCase() === 'true';
+    const securityScan = this.getScanResult(matchingRow);
 
     this.logger.log(
-      `Security results for ${url}: httpsEnforced=${httpsEnforced}, hstsPreloaded=${hstsPreloaded}`,
+      `Security results for ${url}: httpsEnforced=${securityScan.httpsEnforced}, hstsPreloaded=${securityScan.hsts}`,
     );
 
     return {
       status: ScanStatus.Completed,
       result: {
-        securityScan: {
-          httpsEnforced,
-          hstsPreloaded,
-        },
+        securityScan,
       },
     };
   }
@@ -107,6 +101,18 @@ export class SecurityDataService {
     } else {
       this.logger.error('No CSV data was fetched');
     }
+  }
+
+  private getScanResult(row: { [key: string]: string }): {
+    httpsEnforced: boolean;
+    hsts: boolean;
+  } {
+    return {
+      httpsEnforced: row.domain_enforces_https.toLowerCase() === 'true',
+      hsts:
+        row.hsts_base_domain_preloaded.toLowerCase() === 'true' ||
+        row.domain_uses_strong_hsts.toLowerCase() === 'true',
+    };
   }
 
   private handleScanError(errorMessage: string): SecurityPageScan {
