@@ -498,7 +498,7 @@ export class CoreResult {
     'required_links_url',
     'required_links_text',
     'https_enforced',
-    'hsts_preloaded',
+    'hsts',
     'title',
     'description',
     'keywords',
