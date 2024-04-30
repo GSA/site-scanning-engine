@@ -435,8 +435,7 @@ export class CoreResult {
   hrefLangContent?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'accessibility_scan_status' })
-  @Exclude()
+  @Expose({ name: 'security_scan_status' })
   securityScanStatus?: string;
 
   @Column({ nullable: true })
@@ -479,6 +478,7 @@ export class CoreResult {
     'not_found_scan_status',
     'performance_scan_status',
     'robots_txt_scan_status',
+    'security_scan_status',
     'sitemap_xml_scan_status',
     'ipv6',
     'hostname',
