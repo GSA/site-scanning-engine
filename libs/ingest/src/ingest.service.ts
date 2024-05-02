@@ -162,7 +162,7 @@ export class IngestService {
     }
 
     if (row.sourceListEotw.toLowerCase() === 'true') {
-      sourceList.push('2020_eotw');
+      sourceList.push('2020_eot');
     }
 
     if (row.sourceListUsagov.toLowerCase() === 'true') {
