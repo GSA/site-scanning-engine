@@ -111,7 +111,10 @@ const cmsData = [
   },
   {
     cms: 'Drupal',
-    html: '<(?:link|style)[^>]+"/sites/(?:default|all)/(?:themes|modules)/',
+    html: [
+      '<(?:link|style)[^>]+"/sites/(?:default|all)/(?:themes|modules)/',
+      '<meta[^>]*name="Generator"[^>]*content="[^"]*drupal[^"]*"[^>]*>',
+    ],
     headers: [
       { key: 'X-Drupal-Cache', value: '' },
       { key: 'X-Generator', value: '^Drupal(?:\\s([\\d.]+))?\\;version:\\1' },
