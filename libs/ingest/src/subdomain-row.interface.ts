@@ -18,5 +18,6 @@ export interface SubdomainRow {
   sourceListOira: string;
   sourceListOther: string;
   ombIdeaPublic: string;
-  sourceListMil: string;
+  sourceListMil1: string;
+  sourceListMil2: string;
 }

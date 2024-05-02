@@ -48,7 +48,8 @@ export class IngestService {
         'sourceListOira',
         'sourceListOther',
         'ombIdeaPublic',
-        'sourceListMil',
+        'sourceListMil1',
+        'sourceListMil2',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
@@ -161,7 +162,7 @@ export class IngestService {
     }
 
     if (row.sourceListEotw.toLowerCase() === 'true') {
-      sourceList.push('eotw');
+      sourceList.push('2020_eotw');
     }
 
     if (row.sourceListUsagov.toLowerCase() === 'true') {
@@ -184,8 +185,12 @@ export class IngestService {
       sourceList.push('other');
     }
 
-    if (row.sourceListMil.toLowerCase() === 'true') {
-      sourceList.push('mil');
+    if (row.sourceListMil1.toLowerCase() === 'true') {
+      sourceList.push('mil-sites1');
+    }
+
+    if (row.sourceListMil2.toLowerCase() === 'true') {
+      sourceList.push('mil-sites2');
     }
 
     return sourceList.join(',');
