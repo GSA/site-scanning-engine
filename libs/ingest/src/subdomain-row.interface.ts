@@ -14,7 +14,7 @@ export interface SubdomainRow {
   sourceListEotw: string;
   sourceListUsagov: string;
   sourceListGovMan: string;
-  sourceListUsacourts: string;
+  sourceListUscourts: string;
   sourceListOira: string;
   sourceListOther: string;
   ombIdeaPublic: string;

@@ -44,7 +44,7 @@ export class IngestService {
         'sourceListEotw',
         'sourceListUsagov',
         'sourceListGovMan',
-        'sourceListUsacourts',
+        'sourceListUscourts',
         'sourceListOira',
         'sourceListOther',
         'ombIdeaPublic',
@@ -172,8 +172,8 @@ export class IngestService {
       sourceList.push('gov_man');
     }
 
-    if (row.sourceListUsacourts.toLowerCase() === 'true') {
-      sourceList.push('usacourts');
+    if (row.sourceListUscourts.toLowerCase() === 'true') {
+      sourceList.push('uscourts');
     }
 
     if (row.sourceListOira.toLowerCase() === 'true') {
