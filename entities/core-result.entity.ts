@@ -448,7 +448,6 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'uswds_usa_class_list' })
-  @Exclude()
   @Transform((value: string) => {
     if (value) {
       return value.split(',');
@@ -547,6 +546,7 @@ export class CoreResult {
     'uswds_favicon_in_css',
     'uswds_publicsans_font',
     'uswds_inpage_css',
+    'uswds_usa_class_list',
     'uswds_usa_classes',
     'uswds_string',
     'uswds_string_in_css',
