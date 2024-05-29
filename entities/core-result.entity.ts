@@ -446,6 +446,18 @@ export class CoreResult {
   @Expose({ name: 'hsts' })
   hsts?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'uswds_usa_class_list' })
+  @Exclude()
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  usaClassesUsed?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

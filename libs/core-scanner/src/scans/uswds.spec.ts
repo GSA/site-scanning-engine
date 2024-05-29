@@ -17,6 +17,8 @@ describe('uswds scan', () => {
       const result = await scanUswds(response);
       expect(result).toEqual({
         usaClasses: 55,
+        usaClassesUsed:
+          'usa-accordion,usa-banner,usa-button,usa-card,usa-card-group,usa-footer,usa-header,usa-hero,usa-identifier,usa-input,usa-link,usa-logo,usa-logo-img,usa-media-block,usa-menu-btn,usa-nav,usa-nav-container,usa-navbar,usa-overlay,usa-search,usa-section,usa-skipnav,usa-social-link,usa-sr-only',
         uswdsString: 103,
         uswdsInlineCss: 2214,
         uswdsUsFlag: 20,

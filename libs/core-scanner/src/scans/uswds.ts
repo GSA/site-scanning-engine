@@ -31,6 +31,7 @@ export const buildUswdsResult = async (
   const uswdsVersionScoreAdjustment = 100;
   const result = {
     usaClasses: await usaClassesCount(page),
+    usaClassesUsed: await usaClassesUsed(page),
     uswdsString: uswdsInHtml(logger, htmlText),
     uswdsInlineCss: inlineUsaCssCount(htmlText),
     uswdsUsFlag: uswdsFlagDetected(htmlText),
@@ -68,6 +69,25 @@ const usaClassesCount = async (page: Page) => {
   });
 
   return usaClassesCount;
+};
+
+const usaClassesUsed = async (page: Page) => {
+  return await page.evaluate(() => {
+    const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
+
+    const classList = usaClasses
+      .map((element) => [...element.classList])
+      .reduce((acc, classes) => acc.concat(classes), []);
+
+    const filteredClasses = classList.filter(
+      (cls) =>
+        cls.startsWith('usa-') && !cls.includes('--') && !cls.includes('__'),
+    );
+
+    const uniqueClasses = [...new Set(filteredClasses)].sort().join(',');
+
+    return uniqueClasses;
+  });
 };
 
 const uswdsInHtml = (logger: Logger, htmlText: string) => {

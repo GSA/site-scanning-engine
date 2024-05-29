@@ -116,6 +116,7 @@ export class CoreResultService {
 
       // USWDS scan
       coreResult.usaClasses = result.uswdsScan.usaClasses;
+      coreResult.usaClassesUsed = result.uswdsScan.usaClassesUsed;
       coreResult.uswdsString = result.uswdsScan.uswdsString;
       coreResult.uswdsInlineCss = result.uswdsScan.uswdsInlineCss;
       coreResult.uswdsUsFlag = result.uswdsScan.uswdsUsFlag;
@@ -170,6 +171,7 @@ export class CoreResultService {
       coreResult.finalUrlStatusCode = null;
       coreResult.targetUrlRedirects = null;
       coreResult.usaClasses = null;
+      coreResult.usaClassesUsed = null;
       coreResult.uswdsString = null;
       coreResult.uswdsInlineCss = null;
       coreResult.uswdsUsFlag = null;
