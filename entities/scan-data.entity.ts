@@ -48,6 +48,7 @@ export type CookieScan = {
 
 export type UswdsScan = {
   usaClasses: number;
+  usaClassesUsed: string;
   uswdsString: number;
   uswdsInlineCss: number;
   uswdsUsFlag: number;

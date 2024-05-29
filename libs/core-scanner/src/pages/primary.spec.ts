@@ -64,6 +64,8 @@ describe('primary scanner', () => {
         cookieScan: { domains: '.18f.gsa.gov,.gsa.gov' },
         uswdsScan: {
           usaClasses: 50,
+          usaClassesUsed:
+            'usa-accordion,usa-banner,usa-button,usa-card,usa-card-group,usa-header,usa-identifier,usa-link,usa-list,usa-logo,usa-logo-img,usa-menu-btn,usa-nav,usa-nav-container,usa-navbar,usa-overlay,usa-section,usa-skipnav',
           uswdsString: 7,
           uswdsInlineCss: 0,
           uswdsUsFlag: 20,

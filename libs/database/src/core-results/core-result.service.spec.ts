@@ -130,6 +130,7 @@ describe('CoreResultService', () => {
           },
           uswdsScan: {
             usaClasses: null,
+            usaClassesUsed: null,
             uswdsString: null,
             uswdsInlineCss: null,
             uswdsUsFlag: null,
