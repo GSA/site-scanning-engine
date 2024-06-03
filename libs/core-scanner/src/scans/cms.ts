@@ -28,13 +28,13 @@ const getHtmlMatches = async (response: HTTPResponse) => {
       if (Array.isArray(obj.html)) {
         return (
           obj.html.filter((html) => {
-            if (actualHtml.match(new RegExp(html))) {
+            if (actualHtml.match(new RegExp(html, 'i'))) {
               return obj;
             }
           }).length > 0
         );
       } else {
-        if (actualHtml.match(new RegExp(obj.html))) {
+        if (actualHtml.match(new RegExp(obj.html, 'i'))) {
           return obj;
         }
       }
@@ -56,9 +56,9 @@ const getHeaderMatches = async (response: HTTPResponse) => {
       return obj.headers.some((header) => {
         const formattedKey = header.key.toLowerCase();
         if (Object.keys(formattedActualHeaders).includes(formattedKey)) {
-          const actualValue = formattedActualHeaders[formattedKey];
+          const formattedValue = formattedActualHeaders[formattedKey];
           if (
-            actualValue.match(new RegExp(header.value)) ||
+            formattedValue.match(new RegExp(header.value, 'i')) ||
             header.value === ''
           ) {
             return header;
@@ -73,9 +73,17 @@ const cmsData = [
   {
     cms: 'Adobe Experience Manager',
     html: [
-      '<div class="[^"]*parbase',
+      'class="[^"]*parbase',
       '<div[^>]+data-component-path="[^"+]jcr:',
-      '<div class="[^"]*aem-Grid',
+      'class="[^"]*aem-Grid',
+      'href="[^"]*clientlib[^"]*"',
+      'class="[^"]*cmp-name[^"]*"',
+      'data-wcm-mode',
+    ],
+    headers: [
+      { key: 'Dispatcher', value: '' },
+      { key: 'CQ-Action', value: '' },
+      { key: 'CQ-Handle', value: '' },
     ],
   },
   {
@@ -102,7 +110,12 @@ const cmsData = [
   },
   {
     cms: 'DNN',
-    html: ['<!-- by DotNetNuke Corporation', '<!-- DNN Platform'],
+    html: [
+      '<!-- by DotNetNuke Corporation',
+      '<!-- DNN Platform',
+      '<meta[^>]*content="[^"]*DotNetNuke[^"]*"[^>]*>',
+      'class="[^"]*DnnModule[^"]*"',
+    ],
     headers: [
       { key: 'Cookie', value: 'dnn_IsMobile=' },
       { key: 'DNNOutputCache', value: '' },
@@ -154,6 +167,7 @@ const cmsData = [
     html: [
       '(?:<div[^>]+id="wrapper_r"|<(?:link|script)[^>]+(?:feed|components)/com_|<table[^>]+class="pill)\\;confidence:50',
       '<meta +[^>]*content=["\'][^"\']*Joomla[^"\']*["\'][^>]*>',
+      '<meta[^>]*name="Generator"[^>]*content="[^"]*Joomla[^"]*"[^>]*>',
     ],
     headers: [
       { key: 'X-Content-Encoded-By', value: 'Joomla! ([\\d.]+)\\;version:\\1' },
@@ -205,6 +219,9 @@ const cmsData = [
   { cms: 'Methode', html: '<!-- Methode uuid: "[a-f\\d]+" ?-->' },
   {
     cms: 'Microsoft Sharepoint',
+    html: [
+      '<meta[^>]*name="Generator"[^>]*content="[^"]*sharepoint[^"]*"[^>]*>',
+    ],
     headers: [
       { key: 'MicrosoftSharePointTeamServices', value: '^(.+)$\\;version:\\1' },
       { key: 'SPRequestGuid', value: '' },
