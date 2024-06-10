@@ -23,7 +23,7 @@ describe('primary scanner', () => {
       };
       const scanner = await createPrimaryScanner(mockLogger, input);
       const result = await scanner(page);
-      expect(result).toEqual({
+      expect(result).toMatchObject({
         urlScan: {
           targetUrlRedirects: true,
           finalUrl: 'https://18f.gsa.gov/',

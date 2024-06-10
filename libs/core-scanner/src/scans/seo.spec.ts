@@ -32,6 +32,7 @@ describe('seo scan', () => {
           'https://www.arc.gov/wp-content/uploads/2020/08/48982308566_5ce274f0ab_o-washington-scaled.jpg',
         ogTypeContent: 'website',
         ogUrlContent: 'https://www.arc.gov/',
+        lastModifiedHeaderValue: null,
       });
     }, 'arc_gov_dump.mht');
   });

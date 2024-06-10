@@ -92,6 +92,8 @@ export class CoreResultService {
       coreResult.ogUrlContent = result.seoScan.ogUrlContent;
       coreResult.htmlLangContent = result.seoScan.htmlLangContent;
       coreResult.hrefLangContent = result.seoScan.hrefLangContent;
+      coreResult.lastModifiedHeaderValue =
+        result.seoScan.lastModifiedHeaderValue;
 
       // Third-party scan
       coreResult.thirdPartyServiceCount =
@@ -195,6 +197,7 @@ export class CoreResultService {
       coreResult.ogUrlContent = null;
       coreResult.htmlLangContent = null;
       coreResult.hrefLangContent = null;
+      coreResult.lastModifiedHeaderValue = null;
     }
   }
 
