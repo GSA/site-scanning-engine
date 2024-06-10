@@ -457,6 +457,10 @@ export class CoreResult {
   })
   usaClassesUsed?: string;
 
+  @Column({ nullable: true })
+  @Exclude()
+  lastModifiedHeaderValue?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

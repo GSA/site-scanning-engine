@@ -35,6 +35,7 @@ export type SeoScan = {
   ogUrlContent: string;
   htmlLangContent: string;
   hrefLangContent: string;
+  lastModifiedHeaderValue: string;
 };
 
 export type ThirdPartyScan = {
