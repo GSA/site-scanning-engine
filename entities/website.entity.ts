@@ -45,17 +45,9 @@ export class Website {
   @Expose({ name: 'target_url_agency_owner' })
   agency: string;
 
-  @Column({ nullable: true })
-  @Exclude()
-  agencyCode?: number;
-
   @Column()
   @Expose({ name: 'target_url_bureau_owner' })
   bureau: string;
-
-  @Column({ nullable: true })
-  @Exclude()
-  bureauCode?: number;
 
   @Column({ nullable: true })
   @Expose({ name: 'source_list' })

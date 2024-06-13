@@ -84,8 +84,6 @@ describe('IngestService', () => {
     website.branch = 'Executive';
     website.agency = 'General Services Administration';
     website.bureau = 'GSA, TTS';
-    website.agencyCode = 10;
-    website.bureauCode = 10;
     website.sourceList = 'gov';
 
     jest

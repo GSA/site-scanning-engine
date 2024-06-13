@@ -34,9 +34,7 @@ export class IngestService {
         'topLevelDomain',
         'branch',
         'agency',
-        'agencyCode',
         'bureau',
-        'bureauCode',
         'sourceListFederalDomains',
         'sourceListDap',
         'sourceListPulse',
@@ -66,8 +64,6 @@ export class IngestService {
         return {
           ...data,
           website: data.targetUrl.toLowerCase(),
-          agencyCode: data.agencyCode ? parseInt(data.agencyCode) : null,
-          bureauCode: data.bureauCode ? parseInt(data.bureauCode) : null,
           sourceList: this.getSourceList(data),
           ombIdeaPublic,
         };
