@@ -6,9 +6,7 @@ export class CreateWebsiteDto {
   topLevelDomain: string;
   branch: string;
   agency: string;
-  agencyCode?: number;
   bureau: string;
-  bureauCode?: number;
   sourceList: string;
   ombIdeaPublic: boolean;
 }

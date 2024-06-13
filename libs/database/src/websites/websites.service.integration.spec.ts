@@ -42,8 +42,6 @@ describe('AnalysisService', () => {
     firstWebsite.branch = 'Federal Agency - Executive';
     firstWebsite.agency = 'General Services Administration';
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
-    firstWebsite.agencyCode = 10;
-    firstWebsite.bureauCode = 10;
     firstWebsite.sourceList = 'gov';
     firstWebsite.ombIdeaPublic = false;
 
@@ -53,8 +51,6 @@ describe('AnalysisService', () => {
     secondWebsite.branch = 'Federal Agency - Executive';
     secondWebsite.agency = 'Fake Agency';
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
-    secondWebsite.agencyCode = 10;
-    secondWebsite.bureauCode = 10;
     secondWebsite.sourceList = 'gov';
     secondWebsite.ombIdeaPublic = false;
 
@@ -64,8 +60,6 @@ describe('AnalysisService', () => {
     thirdWebsite.branch = 'Federal Agency - Executive';
     thirdWebsite.agency = 'Fake Agency';
     thirdWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
-    thirdWebsite.agencyCode = 10;
-    thirdWebsite.bureauCode = 10;
     thirdWebsite.sourceList = 'gov';
     thirdWebsite.ombIdeaPublic = false;
 
@@ -75,8 +69,6 @@ describe('AnalysisService', () => {
     fourthWebsite.agency = 'Fake Agency';
     fourthWebsite.branch = 'fake';
     fourthWebsite.bureau = 'fake';
-    fourthWebsite.agencyCode = 10;
-    fourthWebsite.bureauCode = 10;
     fourthWebsite.sourceList = 'mil';
     fourthWebsite.ombIdeaPublic = false;
 
@@ -141,8 +133,6 @@ describe('AnalysisService', () => {
     firstWebsite.branch = 'Federal Agency - Executive';
     firstWebsite.agency = 'General Services Administration';
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
-    firstWebsite.agencyCode = 10;
-    firstWebsite.bureauCode = 10;
     firstWebsite.sourceList = 'gov';
     firstWebsite.ombIdeaPublic = false;
 
@@ -152,8 +142,6 @@ describe('AnalysisService', () => {
     secondWebsite.branch = 'Federal Agency - Executive';
     secondWebsite.agency = 'Fake Agency';
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
-    secondWebsite.agencyCode = 10;
-    secondWebsite.bureauCode = 10;
     secondWebsite.sourceList = 'gov';
     secondWebsite.ombIdeaPublic = false;
 
@@ -163,8 +151,6 @@ describe('AnalysisService', () => {
     thirdWebsite.branch = 'Federal Agency - Executive';
     thirdWebsite.agency = 'Fake Agency';
     thirdWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
-    thirdWebsite.agencyCode = 10;
-    thirdWebsite.bureauCode = 10;
     thirdWebsite.sourceList = 'gov';
     thirdWebsite.ombIdeaPublic = false;
 

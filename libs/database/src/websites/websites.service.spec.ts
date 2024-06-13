@@ -71,8 +71,6 @@ describe('WebsiteService', () => {
       branch: 'Federal Agency - Executive',
       agency: 'General Services Administration',
       bureau: 'GSA,FAS,Technology Transformation Service',
-      agencyCode: 10,
-      bureauCode: 10,
       sourceList: 'gov',
       ombIdeaPublic: false,
     };
@@ -83,8 +81,6 @@ describe('WebsiteService', () => {
     website.branch = createWebsiteDto.branch;
     website.agency = createWebsiteDto.agency;
     website.bureau = createWebsiteDto.bureau;
-    website.agencyCode = 10;
-    website.bureauCode = 10;
     website.sourceList = 'gov';
     (website.ombIdeaPublic = false), await service.upsert(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
