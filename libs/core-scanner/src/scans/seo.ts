@@ -57,7 +57,7 @@ export const buildSeoResult = async (
 const findOpenGraphTag = async (page: Page, target: string) => {
   const openGraphResult = await page.evaluate((target: string) => {
     const ogTag = document.querySelector<Element>(
-      `head > meta[property="${target}"]`,
+      `head > meta[property="${target}"], head > meta[name="${target}"]`,
     );
 
     let result: string | null = null;
