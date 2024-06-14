@@ -131,3 +131,9 @@ export type SecurityScan = {
   httpsEnforced: boolean;
   hsts: boolean;
 };
+
+export type ClientRedirectScan = {
+  hasClientRedirect: boolean;
+  usesJsRedirect: boolean;
+  usesMetaRefresh: boolean;
+};

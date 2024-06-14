@@ -65,3 +65,9 @@ export type SecurityScans = {
 };
 
 export type SecurityPageScan = PageScan<SecurityScans>;
+
+export type ClientRedirectScans = {
+  clientRedirectScan: ScanData.ClientRedirectScan;
+};
+
+export type ClientRedirectPageScan = PageScan<ClientRedirectScans>;
