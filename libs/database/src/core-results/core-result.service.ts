@@ -38,6 +38,7 @@ export class CoreResultService {
     this.updateAccessibilityScanResults(coreResult, pages, logger);
     this.updatePerformanceScanResults(coreResult, pages, logger);
     this.updateSecurityScanResults(coreResult, pages, logger);
+    this.updateClientRedirectScanResults(coreResult, pages, logger);
 
     return this.create(coreResult);
   }
@@ -385,6 +386,32 @@ export class CoreResultService {
 
       coreResult.httpsEnforced = null;
       coreResult.hsts = null;
+    }
+  }
+
+  private updateClientRedirectScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.clientRedirectScanStatus = pages.clientRedirect.status;
+
+    if (pages.clientRedirect.status === ScanStatus.Completed) {
+      coreResult.hasClientRedirect =
+        pages.clientRedirect.result.clientRedirectScan.hasClientRedirect;
+      coreResult.usesMetaRefresh =
+        pages.clientRedirect.result.clientRedirectScan.usesMetaRefresh;
+      coreResult.usesJsRedirect =
+        pages.clientRedirect.result.clientRedirectScan.usesJsRedirect;
+    } else {
+      logger.error({
+        msg: pages.clientRedirect.error,
+        page: 'client redirect',
+      });
+
+      coreResult.hasClientRedirect = null;
+      coreResult.usesMetaRefresh = null;
+      coreResult.usesJsRedirect = null;
     }
   }
 }

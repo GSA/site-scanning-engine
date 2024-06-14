@@ -48,9 +48,12 @@ export class CoreScannerService
         ),
         performance: await this.runPerformanceScan(browser, input, scanLogger),
         security: await this.securityDataService.getSecurityResults(input.url),
+        clientRedirect: await this.runClientRedirectScan(
+          browser,
+          input,
+          scanLogger,
+        ),
       };
-
-      scanLogger.info({ result }, 'solutions scan results');
 
       return result;
     });
@@ -238,6 +241,39 @@ export class CoreScannerService
           performanceScan: {
             largestContentfulPaint: result.largestContentfulPaint,
             cumulativeLayoutShift: result.cumulativeLayoutShift,
+          },
+        },
+        error: null,
+      };
+    } catch (error) {
+      return {
+        status: this.getScanStatus(error, input.url, logger),
+        result: null,
+        error,
+      };
+    }
+  }
+
+  private async runClientRedirectScan(
+    browser: Browser,
+    input: CoreInputDto,
+    logger: Logger,
+  ): Promise<ScanPage.ClientRedirectPageScan> {
+    try {
+      const result = await this.browserService.processPage(
+        browser,
+        pages.createClientRedirectScanner(
+          logger.child({ page: 'performance' }),
+          input,
+        ),
+      );
+      return {
+        status: ScanStatus.Completed,
+        result: {
+          clientRedirectScan: {
+            hasClientRedirect: result.hasClientRedirect,
+            usesJsRedirect: result.usesJsRedirect,
+            usesMetaRefresh: result.usesMetaRefresh,
           },
         },
         error: null,

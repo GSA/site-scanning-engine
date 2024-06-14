@@ -230,6 +230,16 @@ describe('CoreResultService', () => {
           },
         },
       },
+      clientRedirect: {
+        status: scanStatus,
+        result: {
+          clientRedirectScan: {
+            hasClientRedirect: null,
+            usesJsRedirect: null,
+            usesMetaRefresh: null,
+          },
+        },
+      },
     };
     const logger = mock<Logger>();
 

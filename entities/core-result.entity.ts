@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 
 import * as ScanPage from 'entities/scan-page.entity';
-import { SecurityScans } from 'entities/scan-page.entity';
 import { BaseScan } from './scan-data.entity';
 import { Website } from './website.entity';
 
@@ -25,6 +24,7 @@ export type CoreResultPages = {
   accessibility: ScanPage.AccessibilityPageScan;
   performance: ScanPage.PerformancePageScan;
   security: ScanPage.SecurityPageScan;
+  clientRedirect: ScanPage.ClientRedirectPageScan;
 };
 
 @Entity()
@@ -456,6 +456,22 @@ export class CoreResult {
     }
   })
   usaClassesUsed?: string;
+
+  @Column({ nullable: true })
+  @Exclude()
+  clientRedirectScanStatus: string;
+
+  @Column({ nullable: true })
+  @Exclude()
+  hasClientRedirect?: boolean;
+
+  @Column({ nullable: true })
+  @Exclude()
+  usesJsRedirect?: boolean;
+
+  @Column({ nullable: true })
+  @Exclude()
+  usesMetaRefresh?: boolean;
 
   @Column({ nullable: true })
   @Exclude()
