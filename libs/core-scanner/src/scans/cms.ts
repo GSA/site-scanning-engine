@@ -350,12 +350,14 @@ const cmsData = [
   {
     cms: 'WordPress',
     html: [
+      'wp-content',
       `<link rel=["']stylesheet["'] [^>]+/wp-(?:content|includes)/`,
       '<link[^>]+s\\d+\\.wp\\.com',
     ],
     headers: [
       { key: 'X-Pingback', value: '/xmlrpc\\.php$' },
       { key: 'link', value: 'rel="https://api\\.w\\.org/"' },
+      { key: 'link', value: 'wp-json' },
     ],
   },
   {
