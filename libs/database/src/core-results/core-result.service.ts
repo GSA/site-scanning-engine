@@ -39,6 +39,7 @@ export class CoreResultService {
     this.updatePerformanceScanResults(coreResult, pages, logger);
     this.updateSecurityScanResults(coreResult, pages, logger);
     this.updateClientRedirectScanResults(coreResult, pages, logger);
+    this.updateWwwScanResults(coreResult, pages, logger);
 
     return this.create(coreResult);
   }
@@ -412,6 +413,33 @@ export class CoreResultService {
       coreResult.hasClientRedirect = null;
       coreResult.usesMetaRefresh = null;
       coreResult.usesJsRedirect = null;
+    }
+  }
+
+  private updateWwwScanResults(
+    coreResult: CoreResult,
+    pages: CoreResultPages,
+    logger: Logger,
+  ) {
+    coreResult.wwwScanStatus = pages.www.status;
+
+    if (pages.www.status === ScanStatus.Completed) {
+      coreResult.wwwFinalUrl = pages.www.result.wwwScan.wwwFinalUrl;
+      coreResult.wwwStatusCode = pages.www.result.wwwScan.wwwStatusCode;
+      coreResult.wwwSame = pages.www.result.wwwScan.wwwSame;
+    } else if (pages.www.status === ScanStatus.NotApplicable) {
+      coreResult.wwwFinalUrl = null;
+      coreResult.wwwStatusCode = null;
+      coreResult.wwwSame = null;
+    } else {
+      logger.error({
+        msg: pages.www.error,
+        page: 'www',
+      });
+
+      coreResult.wwwFinalUrl = null;
+      coreResult.wwwStatusCode = null;
+      coreResult.wwwSame = null;
     }
   }
 }

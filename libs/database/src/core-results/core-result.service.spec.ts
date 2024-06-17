@@ -240,6 +240,16 @@ describe('CoreResultService', () => {
           },
         },
       },
+      www: {
+        status: scanStatus,
+        result: {
+          wwwScan: {
+            wwwFinalUrl: null,
+            wwwStatusCode: null,
+            wwwSame: null,
+          },
+        },
+      },
     };
     const logger = mock<Logger>();
 
