@@ -6,3 +6,4 @@ export * from './sitemap-xml';
 export * from './accessibility';
 export * from './performance';
 export * from './client-redirect';
+export * from './www';

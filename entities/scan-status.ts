@@ -15,6 +15,7 @@ export enum ScanStatus {
   ExecutionContextDestroyed = 'execution_context_destroyed',
   PageFrameNotReady = 'page_frame_not_ready',
   EvaluationFailed = 'evaluation_failed',
+  NotApplicable = 'not_applicable',
 }
 
 export const parseBrowserError = (err: Error): ScanStatus => {

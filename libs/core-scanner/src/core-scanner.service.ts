@@ -53,6 +53,7 @@ export class CoreScannerService
           input,
           scanLogger,
         ),
+        www: await this.runWwwScan(browser, input, scanLogger),
       };
 
       return result;
@@ -276,6 +277,39 @@ export class CoreScannerService
             usesMetaRefresh: result.usesMetaRefresh,
           },
         },
+        error: null,
+      };
+    } catch (error) {
+      return {
+        status: this.getScanStatus(error, input.url, logger),
+        result: null,
+        error,
+      };
+    }
+  }
+
+  private async runWwwScan(
+    browser: Browser,
+    input: CoreInputDto,
+    logger: Logger,
+  ) {
+    try {
+      const result = await this.browserService.processPage(
+        browser,
+        pages.createWwwScanner(logger.child({ page: 'www' }), input),
+      );
+
+      // determine scan status based on the results of the scan
+      const { wwwFinalUrl, wwwStatusCode, wwwSame } = result.wwwScan;
+      const notApplicable =
+        wwwFinalUrl === null && wwwStatusCode === null && wwwSame === null;
+      const status = notApplicable
+        ? ScanStatus.NotApplicable
+        : ScanStatus.Completed;
+
+      return {
+        status,
+        result,
         error: null,
       };
     } catch (error) {

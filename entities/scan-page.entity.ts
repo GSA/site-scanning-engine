@@ -71,3 +71,9 @@ export type ClientRedirectScans = {
 };
 
 export type ClientRedirectPageScan = PageScan<ClientRedirectScans>;
+
+export type wwwScans = {
+  wwwScan: ScanData.wwwScan;
+};
+
+export type wwwPageScan = PageScan<wwwScans>;
