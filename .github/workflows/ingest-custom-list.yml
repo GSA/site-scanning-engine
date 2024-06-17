@@ -1,6 +1,6 @@
 ---
-# Ingest an arbitrary target url list in dev environment
-name: Ingest Dev
+# Ingest an arbitrary target url list
+name: Ingest Custom List
 
 # yamllint disable-line rule:truthy
 on:
@@ -21,7 +21,7 @@ jobs:
           cf_username: ${{ secrets.CF_USERNAME }}
           cf_password: ${{ secrets.CF_PASSWORD }}
           cf_org: gsatts-sitescan
-          cf_space: dev
+          cf_space: prod
           cf_command: |
             run-task site-scanner-consumer
             --command "node dist/apps/cli/main.js ingest --federalSubdomainsUrl ${{ github.event.inputs.federalSubdomainsUrl}}"
