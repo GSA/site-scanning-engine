@@ -24,6 +24,6 @@ jobs:
           cf_space: prod
           cf_command: |
             run-task site-scanner-consumer
-            --command "node dist/apps/cli/main.js ingest --federalSubdomainsUrl ${{ github.event.inputs.federalSubdomainsUrl}}"
+            --command "node dist/apps/cli/main.js ingest --federalSubdomainsUrl=${{ github.event.inputs.federalSubdomainsUrl}}"
             -k 1G -m 1G
             --name github-action-ingest-${{ github.run_id }}
