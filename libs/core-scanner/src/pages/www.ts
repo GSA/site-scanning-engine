@@ -6,15 +6,6 @@ import { wwwScan } from 'entities/scan-data.entity';
 
 export const createWwwScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page: Page) => {
-    const ineligibleUrl =
-      input.url.startsWith('www.') || hasSubDomain(input.url);
-
-    if (ineligibleUrl) {
-      return {
-        wwwScan: { wwwFinalUrl: null, wwwStatusCode: null, wwwSame: null },
-      };
-    }
-
     const wwwUrl = getHttpsUrl(`www.${input.url}`);
 
     const wwwResponse = await page.goto(wwwUrl.toString(), {
@@ -48,8 +39,3 @@ const buildWwwResult = async (
     wwwSame,
   };
 };
-
-function hasSubDomain(url: string): boolean {
-  const domainRegex = /^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/;
-  return !domainRegex.test(url) || url.split('.').length !== 2;
-}
