@@ -63,7 +63,7 @@
     "nestjs-typeorm-paginate": "^4.0.3",
     "pg": "^8.7.3",
     "pino-http": "^6.6.0",
-    "puppeteer": "^13.2.0",
+    "puppeteer": "^22.11.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.2",
     "swagger-ui-express": "^4.3.0",
