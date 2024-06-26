@@ -45,9 +45,9 @@ export class IngestService {
         'sourceListUscourts',
         'sourceListOira',
         'sourceListOther',
-        'ombIdeaPublic',
         'sourceListMil1',
         'sourceListMil2',
+        'ombIdeaPublic',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,

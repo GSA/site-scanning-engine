@@ -61,7 +61,7 @@ describe('primary scanner', () => {
             'dap.digitalgov.gov,search.usa.gov,www.google-analytics.com,www.googletagmanager.com',
           thirdPartyServiceCount: 4,
         },
-        cookieScan: { domains: '.18f.gsa.gov,.gsa.gov' },
+        cookieScan: { domains: '.gsa.gov' },
         uswdsScan: {
           usaClasses: 50,
           usaClassesUsed:

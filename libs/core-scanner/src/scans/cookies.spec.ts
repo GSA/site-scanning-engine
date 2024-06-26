@@ -11,7 +11,7 @@ describe('cookie scan', () => {
       const result = await buildCookieResult(page);
 
       expect(result).toEqual({
-        domains: '.18f.gsa.gov,.gsa.gov',
+        domains: '.gsa.gov',
       });
     });
   });
