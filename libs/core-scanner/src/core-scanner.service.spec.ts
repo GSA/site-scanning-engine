@@ -11,10 +11,18 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreScannerService } from './core-scanner.service';
 import { ScanStatus } from 'entities/scan-status';
 
+jest.mock('libs/core-scanner/src/pages/client-redirect', () => ({
+  scanForClientRedirect: jest.fn().mockResolvedValue({
+    hasClientRedirect: false,
+    usesJsRedirect: false,
+    usesMetaRefresh: false,
+  }),
+}));
+
 describe('CoreScannerService', () => {
   let service: CoreScannerService;
   let mockBrowser: MockProxy<Browser>;
-  let mockPage: MockProxy<Page>;
+  let mockPage: DeepMockProxy<Page>;
   let mockResponse: MockProxy<HTTPResponse>;
   let mockRequest: MockProxy<HTTPRequest>;
   let redirectRequest: MockProxy<HTTPRequest>;
@@ -26,7 +34,7 @@ describe('CoreScannerService', () => {
 
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
-    mockPage = mock<Page>();
+    mockPage = mockDeep<Page>();
     mockResponse = mock<HTTPResponse>();
     mockRequest = mock<HTTPRequest>();
     redirectRequest = mock<HTTPRequest>();
@@ -56,14 +64,17 @@ describe('CoreScannerService', () => {
           },
         },
       });
+
+    jest.mock('libs/core-scanner/src/pages/client-redirect');
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CoreScannerService,
         {
           provide: BrowserService,
           useValue: {
-            useBrowser: (handler) => handler(mockBrowser),
-            processPage: (page, handler) => handler(page),
+            useBrowser: async (handler) => await handler(mockBrowser),
+            processPage: async (page, handler) => await handler(page),
           },
         },
         {
