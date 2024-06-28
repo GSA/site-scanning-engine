@@ -20,38 +20,51 @@ export const createClientRedirectScanner = (
   };
 };
 
-async function scanForClientRedirect(logger: Logger, page: Page, url: string) {
-  await page.goto(url, { waitUntil: 'load' });
+type ClientRedirectResults = {
+  hasClientRedirect: boolean;
+  usesJsRedirect: boolean;
+  usesMetaRefresh: boolean;
+};
 
-  const { usesMetaRefresh, usesJsRedirect } = await page.evaluate(() => {
-    const meta = document.querySelector('meta[http-equiv="refresh"]');
-    const usesMetaRefresh = !!meta;
+async function scanForClientRedirect(
+  logger: Logger,
+  page: Page,
+  url: string,
+): Promise<ClientRedirectResults> {
+  let firstResponseHandled = false;
 
-    let usesJsRedirect = false;
-    Array.from(document.scripts).some((script) => {
-      const content = script.textContent || script.src;
-      usesJsRedirect =
-        /location\s*=\s*['"]/.test(content) ||
-        /location\.replace\s*\(/.test(content) ||
-        /location\.href\s*=\s*['"]/.test(content) ||
-        /window\.location\s*=\s*['"]/.test(content) ||
-        /window\.location\.replace\s*\(/.test(content) ||
-        /window\.location\.href\s*=\s*['"]/.test(content) ||
-        /window\.history\.pushState\s*\(/.test(content);
-      return usesJsRedirect;
+  const firstResponseResult = new Promise<ClientRedirectResults>((resolve) => {
+    page.on('response', async (response) => {
+      if (!firstResponseHandled) {
+        firstResponseHandled = true;
+        const text = await response.text();
+
+        const usesMetaRefresh = /<meta\s+http-equiv="refresh"/i.test(text);
+
+        const usesJsRedirect =
+          /location\s*=\s*['"]/.test(text) ||
+          /location\.replace\s*\(/.test(text) ||
+          /location\.href\s*=\s*['"]/.test(text) ||
+          /window\.location\s*=\s*['"]/.test(text) ||
+          /window\.location\.replace\s*\(/.test(text) ||
+          /window\.location\.href\s*=\s*['"]/.test(text) ||
+          /window\.history\.pushState\s*\(/.test(text);
+
+        logger.debug(`Uses Meta Refresh: ${usesMetaRefresh}`);
+        logger.debug(`Uses JavaScript Redirect: ${usesJsRedirect}`);
+
+        const hasClientRedirect = usesMetaRefresh || usesJsRedirect;
+
+        resolve({
+          hasClientRedirect,
+          usesJsRedirect,
+          usesMetaRefresh,
+        });
+      }
     });
-
-    return { usesMetaRefresh, usesJsRedirect };
   });
 
-  logger.debug(`Uses Meta Refresh: ${usesMetaRefresh}`);
-  logger.debug(`Uses JavaScript Redirect: ${usesJsRedirect}`);
+  await page.goto(url, { waitUntil: 'load' });
 
-  const hasClientRedirect = usesMetaRefresh || usesJsRedirect;
-
-  return {
-    hasClientRedirect,
-    usesJsRedirect,
-    usesMetaRefresh,
-  };
+  return await firstResponseResult;
 }
