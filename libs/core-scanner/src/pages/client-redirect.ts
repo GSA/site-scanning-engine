@@ -7,7 +7,7 @@ export const createClientRedirectScanner = (
   logger: Logger,
   input: CoreInputDto,
 ) => {
-  return async (page) => {
+  return async (page: Page) => {
     const url = getHttpsUrl(input.url);
     const { hasClientRedirect, usesJsRedirect, usesMetaRefresh } =
       await scanForClientRedirect(logger, page, url);
@@ -35,7 +35,7 @@ async function scanForClientRedirect(
 
   const firstResponseResult = new Promise<ClientRedirectResults>((resolve) => {
     page.on('response', async (response) => {
-      if (!firstResponseHandled) {
+      if (!firstResponseHandled && !response.request().redirectChain().length) {
         firstResponseHandled = true;
         const text = await response.text();
 
