@@ -26,7 +26,7 @@ describe('uswds scan', () => {
         uswdsUsFlagInCss: 0,
         uswdsPublicSansFont: 0,
         uswdsCount: 2392,
-        uswdsSemanticVersion: undefined,
+        uswdsSemanticVersion: null,
         uswdsVersion: 0,
         heresHowYouKnowBanner: true,
       });
