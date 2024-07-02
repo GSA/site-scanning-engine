@@ -28,6 +28,7 @@ describe('uswds scan', () => {
         uswdsCount: 2392,
         uswdsSemanticVersion: undefined,
         uswdsVersion: 0,
+        heresHowYouKnowBanner: true,
       });
     });
   });

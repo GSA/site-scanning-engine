@@ -494,6 +494,10 @@ export class CoreResult {
   @Exclude()
   wwwSame?: boolean;
 
+  @Column({ nullable: true })
+  @Exclude()
+  heresHowYouKnowBanner?: boolean;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

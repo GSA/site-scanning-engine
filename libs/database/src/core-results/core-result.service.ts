@@ -130,6 +130,7 @@ export class CoreResultService {
       coreResult.uswdsSemanticVersion = result.uswdsScan.uswdsSemanticVersion;
       coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
       coreResult.uswdsCount = result.uswdsScan.uswdsCount;
+      coreResult.heresHowYouKnowBanner = result.uswdsScan.heresHowYouKnowBanner;
 
       // Login scan
       coreResult.loginDetected = result.loginScan.loginDetected;
@@ -185,6 +186,7 @@ export class CoreResultService {
       coreResult.uswdsSemanticVersion = null;
       coreResult.uswdsVersion = null;
       coreResult.uswdsCount = null;
+      coreResult.heresHowYouKnowBanner = null;
       coreResult.loginDetected = null;
       coreResult.loginProvider = null;
       coreResult.cms = null;
