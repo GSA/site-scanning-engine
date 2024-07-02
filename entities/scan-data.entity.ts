@@ -59,6 +59,7 @@ export type UswdsScan = {
   uswdsSemanticVersion: string;
   uswdsVersion: number;
   uswdsCount: number;
+  heresHowYouKnowBanner: boolean;
 };
 
 export type RobotsTxtScan = {

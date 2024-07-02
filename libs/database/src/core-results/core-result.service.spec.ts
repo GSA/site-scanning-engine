@@ -141,6 +141,7 @@ describe('CoreResultService', () => {
             uswdsSemanticVersion: null,
             uswdsVersion: null,
             uswdsCount: null,
+            heresHowYouKnowBanner: null,
           },
           loginScan: {
             loginDetected: null,
