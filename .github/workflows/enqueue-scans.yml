@@ -3,8 +3,8 @@ name: Enqueue scans
 
 # yamllint disable-line rule:truthy
 on:
-  schedule:
-    - cron: '10 0 * * *'
+  # schedule:
+  #   - cron: '10 0 * * *'
 
   workflow_dispatch:
     inputs:
