@@ -24,8 +24,6 @@ export type CoreResultPages = {
   accessibility: ScanPage.AccessibilityPageScan;
   performance: ScanPage.PerformancePageScan;
   security: ScanPage.SecurityPageScan;
-  clientRedirect: ScanPage.ClientRedirectPageScan;
-  www: ScanPage.wwwPageScan;
 };
 
 @Entity()
@@ -460,39 +458,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Exclude()
-  clientRedirectScanStatus: string;
-
-  @Column({ nullable: true })
-  @Exclude()
-  hasClientRedirect?: boolean;
-
-  @Column({ nullable: true })
-  @Exclude()
-  usesJsRedirect?: boolean;
-
-  @Column({ nullable: true })
-  @Exclude()
-  usesMetaRefresh?: boolean;
-
-  @Column({ nullable: true })
-  @Exclude()
   lastModifiedHeaderValue?: string;
-
-  @Column({ nullable: true })
-  @Exclude()
-  wwwScanStatus?: string;
-
-  @Column({ nullable: true })
-  @Exclude()
-  wwwFinalUrl?: string;
-
-  @Column({ nullable: true })
-  @Exclude()
-  wwwStatusCode?: number;
-
-  @Column({ nullable: true })
-  @Exclude()
-  wwwSame?: boolean;
 
   @Column({ nullable: true })
   @Exclude()
