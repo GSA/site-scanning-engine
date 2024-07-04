@@ -48,12 +48,6 @@ export class CoreScannerService
         ),
         performance: await this.runPerformanceScan(browser, input, scanLogger),
         security: await this.securityDataService.getSecurityResults(input.url),
-        clientRedirect: await this.runClientRedirectScan(
-          browser,
-          input,
-          scanLogger,
-        ),
-        www: await this.runWwwScan(browser, input, scanLogger),
       };
 
       return result;
@@ -244,72 +238,6 @@ export class CoreScannerService
             cumulativeLayoutShift: result.cumulativeLayoutShift,
           },
         },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, input.url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private async runClientRedirectScan(
-    browser: Browser,
-    input: CoreInputDto,
-    logger: Logger,
-  ): Promise<ScanPage.ClientRedirectPageScan> {
-    try {
-      const result = await this.browserService.processPage(
-        browser,
-        pages.createClientRedirectScanner(
-          logger.child({ page: 'performance' }),
-          input,
-        ),
-      );
-      return {
-        status: ScanStatus.Completed,
-        result: {
-          clientRedirectScan: {
-            hasClientRedirect: result.hasClientRedirect,
-            usesJsRedirect: result.usesJsRedirect,
-            usesMetaRefresh: result.usesMetaRefresh,
-          },
-        },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, input.url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private async runWwwScan(
-    browser: Browser,
-    input: CoreInputDto,
-    logger: Logger,
-  ) {
-    try {
-      const result = await this.browserService.processPage(
-        browser,
-        pages.createWwwScanner(logger.child({ page: 'www' }), input),
-      );
-
-      // determine scan status based on the results of the scan
-      const { wwwFinalUrl, wwwStatusCode, wwwSame } = result.wwwScan;
-      const notApplicable =
-        wwwFinalUrl === null && wwwStatusCode === null && wwwSame === null;
-      const status = notApplicable
-        ? ScanStatus.NotApplicable
-        : ScanStatus.Completed;
-
-      return {
-        status,
-        result,
         error: null,
       };
     } catch (error) {
