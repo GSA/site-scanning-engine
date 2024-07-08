@@ -7,7 +7,7 @@ export const buildThirdPartyResult = async (
   mainResponse: HTTPResponse,
   outboundRequests: HTTPRequest[],
 ): Promise<ThirdPartyScan> => {
-  const url = mainResponse.url();
+  const url = mainResponse && mainResponse.url();
   const thirdPartyResult = await thirdPartyServices(outboundRequests, url);
   return {
     thirdPartyServiceDomains: thirdPartyResult.domains,
@@ -26,7 +26,7 @@ const thirdPartyServices = (
   const thirdPartyDomains = [];
 
   for (const request of outboundRequests) {
-    const url = new URL(request.url());
+    const url = request && new URL(request.url());
     if (parsedUrl.hostname != url.hostname && !request.isNavigationRequest()) {
       thirdPartyDomains.push(url.hostname);
     }

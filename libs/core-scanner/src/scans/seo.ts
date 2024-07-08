@@ -134,7 +134,10 @@ const findCanonicalLInkInResponseHeaders = async (
 };
 
 const findPageTitleText = async (page: Page): Promise<string> => {
-  return await page.evaluate(() => document.title.trim());
+  return await page.evaluate(() => {
+    const title = document.title;
+    return typeof title === 'string' ? title.trim() : '';
+  });
 };
 
 const findMetaDescriptionContent = async (

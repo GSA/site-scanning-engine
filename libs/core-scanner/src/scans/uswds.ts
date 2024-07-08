@@ -34,11 +34,24 @@ export const buildUswdsResult = async (
     const classList = usaClasses
       .map((element) => [...element.classList])
       .reduce((acc, classes) => acc.concat(classes), []);
-    const filteredClasses = classList.filter(
-      (cls) =>
-        cls.startsWith('usa-') && !cls.includes('--') && !cls.includes('__'),
-    );
-    const uniqueClasses = [...new Set(filteredClasses)].sort().join(',');
+
+    const filteredClasses =
+      classList &&
+      classList.filter(
+        (cls) =>
+          cls.startsWith('usa-') && !cls.includes('--') && !cls.includes('__'),
+      );
+
+    const uniqueClassesObj =
+      filteredClasses &&
+      filteredClasses.reduce((acc, cls) => {
+        if (!acc[cls]) {
+          acc[cls] = true;
+        }
+        return acc;
+      }, {});
+
+    const uniqueClasses = Object.keys(uniqueClassesObj).sort().join(',');
 
     const hasHeresHowYouKnowBanner = [
       ...document.querySelectorAll('.usa-banner__button-text'),
@@ -120,10 +133,13 @@ const uswdsPublicSansFont = (cssPages: string[]) => {
 
 const uswdsSemVer = (logger: Logger, cssPages: string[]): string | null => {
   const re = /uswds v?[0-9.]*/i;
-  const versions = cssPages
-    .map((page) => page.match(re))
-    .filter(Boolean)
-    .map((match) => match[0].split(' ')[1]);
+
+  const versions =
+    cssPages &&
+    cssPages
+      .map((page) => page.match(re))
+      .filter(Boolean)
+      .map((match) => match[0].split(' ')[1]);
   const uniqueVersions = uniq(versions);
 
   if (uniqueVersions.length > 1) {
