@@ -51,16 +51,16 @@ export const getWithSubdomain = (url: string): string | null => {
 };
 
 export const getTopLevelDomain = (url: string): string | null => {
-  const domainPattern = /^(?:https?:\/\/)?(?:www\.)?([^\/]+)(?:\/|$)/;
-  const tldPattern = /\.([a-z0-9\-]+)(?:\/|$)$/i;
+  const domainPattern = /^(?:https?:\/\/)?(?:www\.)?([^\/:]+)(?:[:\/]|$)/;
+  const tldPattern = /\.([a-z0-9\-]+)$/i;
 
   const domainMatch = url.match(domainPattern);
   if (!domainMatch) return null;
 
-  const domain = domainMatch[1];
-  const tldMatch = domain.match(tldPattern);
+  const domainParts = domainMatch[1].split('.');
+  const tld = domainParts[domainParts.length - 1];
 
-  return tldMatch ? tldMatch[1] : null;
+  return tldPattern.test('.' + tld) ? tld : null;
 };
 
 export const isLive = (res: HTTPResponse): boolean => {

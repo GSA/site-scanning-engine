@@ -108,4 +108,13 @@ describe('core-scanner util', () => {
       expect(result).toBe('gov');
     });
   });
+
+  describe('getTopLevelDomain', () => {
+    it('returns the top-level domain for a url with a port specified', () => {
+      const url =
+        'https://poena.inl.gov:7004/console-selfservice/SelfService.do';
+      const result = getTopLevelDomain(url);
+      expect(result).toBe('gov');
+    });
+  });
 });
