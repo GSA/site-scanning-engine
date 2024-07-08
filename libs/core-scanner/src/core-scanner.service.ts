@@ -97,6 +97,7 @@ export class CoreScannerService
         error: null,
       };
     } catch (error) {
+      console.log('error caught when running primary scan', error);
       return {
         status: this.getScanStatus(error, input.url, logger),
         result: null,
