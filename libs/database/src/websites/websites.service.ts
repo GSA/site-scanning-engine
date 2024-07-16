@@ -62,6 +62,16 @@ export class WebsiteService {
     return result;
   }
 
+  async findWebsitesWithCoreResultUpdatedBeforeToday(): Promise<Website[]> {
+    const today = new Date();
+    const queryBuilder = this.website
+      .createQueryBuilder('website')
+      .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .where('coreResult.updated < :today', { today: today });
+
+    return await queryBuilder.getMany();
+  }
+
   async findAccessibilityResultsSnapshotResults(): Promise<Website[]> {
     const queryBuilder = this.website
       .createQueryBuilder('website')

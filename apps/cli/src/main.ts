@@ -98,6 +98,16 @@ async function securityData() {
   await nestApp.close();
 }
 
+async function requeueStaleScans() {
+  const nestApp = await bootstrap();
+  const controller = nestApp.get(QueueController);
+  console.log('enqueueing scan jobs for stale results');
+
+  await controller.queueStaleScans();
+  printMemoryUsage();
+  await nestApp.close();
+}
+
 async function main() {
   const program = new Command();
   program.version('0.0.1');
@@ -166,6 +176,14 @@ async function main() {
       'security-data fetches security data from a CSV and saves it to disk',
     )
     .action(securityData);
+
+  // requeue stale scans
+  program
+    .command('requeue-stale-scans')
+    .description(
+      'enqueue all websites with core results that were last updated prior to the current date',
+    )
+    .action(requeueStaleScans);
 
   await program.parseAsync(process.argv);
 }
