@@ -50,4 +50,32 @@ export class QueueController {
       this.logger.error(err.message, err.stack);
     }
   }
+
+  async queueStaleScans() {
+    this.logger.log('starting to enqueue stale scans...');
+
+    try {
+      const websites =
+        await this.websiteService.findWebsitesWithCoreResultUpdatedBeforeToday();
+
+      this.logger.log(
+        `adding ${websites.length} websites with stale scan results to the queue`,
+      );
+
+      for (const website of websites) {
+        const coreInput: CoreInputDto = {
+          websiteId: website.id,
+          url: website.url,
+          scanId: cuid(),
+        };
+        await this.queueService.addCoreJob(coreInput);
+      }
+
+      const queueStatus = await this.queueService.getQueueStatus();
+      this.logger.log({ msg: 'successfully added to queue', queueStatus });
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(err.message, err.stack);
+    }
+  }
 }
