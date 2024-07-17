@@ -20,9 +20,10 @@ export enum ScanStatus {
 
 export const parseBrowserError = (err: Error): ScanStatus => {
   if (
-    err.name === 'TimeoutError' ||
-    err.message.startsWith('net::ERR_CONNECTION_TIMED_OUT') ||
-    err.message.startsWith('connect ETIMEDOUT')
+    (err.name && err.name === 'TimeoutError') ||
+    (err.message &&
+      (err.message.startsWith('net::ERR_CONNECTION_TIMED_OUT') ||
+        err.message.startsWith('connect ETIMEDOUT')))
   ) {
     return ScanStatus.Timeout;
   }
