@@ -62,12 +62,17 @@ export class WebsiteService {
     return result;
   }
 
-  async findWebsitesWithCoreResultUpdatedBeforeToday(): Promise<Website[]> {
+  async findWebsitesWithStaleCoreResults(): Promise<Website[]> {
     const today = new Date();
+    const threeDaysAgo = new Date(today);
+    threeDaysAgo.setDate(today.getDate() - 3);
+
     const queryBuilder = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
-      .where('coreResult.updated < :today', { today: today });
+      .where('coreResult.updated < :threeDaysAgo', {
+        threeDaysAgo: threeDaysAgo,
+      });
 
     return await queryBuilder.getMany();
   }
