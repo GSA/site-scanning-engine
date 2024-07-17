@@ -56,7 +56,7 @@ export class QueueController {
 
     try {
       const websites =
-        await this.websiteService.findWebsitesWithCoreResultUpdatedBeforeToday();
+        await this.websiteService.findWebsitesWithStaleCoreResults();
 
       this.logger.log(
         `adding ${websites.length} websites with stale scan results to the queue`,
