@@ -461,7 +461,7 @@ export class CoreResult {
   lastModifiedHeaderValue?: string;
 
   @Column({ nullable: true })
-  @Exclude()
+  @Expose({ name: 'uswds_banner_heres_how' })
   heresHowYouKnowBanner?: boolean;
 
   static getColumnNames(): string[] {
@@ -554,6 +554,7 @@ export class CoreResult {
     'uswds_publicsans_font',
     'uswds_inpage_css',
     'uswds_usa_class_list',
+    'uswds_banner_heres_how',
     'uswds_usa_classes',
     'uswds_string',
     'uswds_string_in_css',
