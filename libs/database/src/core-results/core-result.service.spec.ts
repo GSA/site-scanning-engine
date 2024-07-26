@@ -119,7 +119,6 @@ describe('CoreResultService', () => {
             ogUrlContent: null,
             htmlLangContent: null,
             hrefLangContent: null,
-            lastModifiedHeaderValue: null,
           },
           thirdPartyScan: {
             thirdPartyServiceDomains: null,
