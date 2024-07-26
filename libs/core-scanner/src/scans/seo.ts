@@ -33,7 +33,6 @@ export const buildSeoResult = async (
   const ogUrlContent = await findOpenGraphTag(page, 'og:url');
   const htmlLangContent = await findHtmlLangContent(page);
   const hrefLangContent = await findHreflangContent(page);
-  const lastModifiedHeaderValue = await findLastModifiedHeaderValue(response);
 
   return {
     ogTitleFinalUrl,
@@ -50,7 +49,6 @@ export const buildSeoResult = async (
     ogUrlContent,
     htmlLangContent,
     hrefLangContent,
-    lastModifiedHeaderValue,
   };
 };
 
@@ -208,18 +206,4 @@ const findHreflangContent = async (page: Page): Promise<string> => {
   });
 
   return content;
-};
-
-const findLastModifiedHeaderValue = async (
-  response: HTTPResponse,
-): Promise<string> => {
-  const headers = await response.headers();
-
-  for (const key in headers) {
-    if (key.toLowerCase() === 'last-modified') {
-      return headers[key];
-    }
-  }
-
-  return null;
 };

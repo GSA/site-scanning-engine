@@ -457,10 +457,6 @@ export class CoreResult {
   usaClassesUsed?: string;
 
   @Column({ nullable: true })
-  @Exclude()
-  lastModifiedHeaderValue?: string;
-
-  @Column({ nullable: true })
   @Expose({ name: 'uswds_banner_heres_how' })
   heresHowYouKnowBanner?: boolean;
 
