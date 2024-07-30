@@ -29,6 +29,7 @@
     "start:concurrent-scan-engine": "wait-on http://localhost:3000/api-json && nest start scan-engine",
     "start:all": "concurrently \"npm run start:api\" \"npm run start:concurrent-scan-engine\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "tdd": "jest --testPathIgnorePatterns e2e-spec --watch",
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns e2e-spec",
     "test:e2e": "jest e2e-spec",
