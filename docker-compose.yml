@@ -21,32 +21,32 @@ services:
     networks:
       - webnet
 
-  storage:
-    container_name: minio
-    image: minio/minio
-    volumes:
-      - ./storage/:/storage
-    env_file:
-      - .env
-    command: server /storage
-    ports:
-      - '9000:9000'
-
-  createbuckets:
-    image: minio/mc
-    depends_on:
-      - storage
-    env_file:
-      - .env
-    entrypoint: >
-      /bin/sh -c "
-      until (/usr/bin/mc config host add myminio http://storage:9000 \
-      \$MINIO_ACCESS_KEY \$MINIO_SECRET_KEY) do echo '...waiting...' \
-      && sleep 1; done;
-      /usr/bin/mc mb myminio/site-scanning-snapshot;
-      /usr/bin/mc policy set download myminio/site-scanning-snapshot;
-      exit 0;
-      "
+#  storage:
+#    container_name: minio
+#    image: minio/minio
+#    volumes:
+#      - ./storage/:/storage
+#    env_file:
+#      - .env
+#    command: server /storage
+#    ports:
+#      - '9000:9000'
+#
+#  createbuckets:
+#    image: minio/mc
+#    depends_on:
+#      - storage
+#    env_file:
+#      - .env
+#    entrypoint: >
+#      /bin/sh -c "
+#      until (/usr/bin/mc config host add myminio http://storage:9000 \
+#      \$MINIO_ACCESS_KEY \$MINIO_SECRET_KEY) do echo '...waiting...' \
+#      && sleep 1; done;
+#      /usr/bin/mc mb myminio/site-scanning-snapshot;
+#      /usr/bin/mc policy set download myminio/site-scanning-snapshot;
+#      exit 0;
+#      "
 
   # cli:
   #   build:
