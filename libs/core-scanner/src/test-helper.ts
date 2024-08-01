@@ -32,6 +32,12 @@ const newPage = async (handler: (page: puppeteer.Page) => Promise<void>) => {
   });
 };
 
+/**
+ * Creates a Puppeteer page and a Puppeteer response based on a local, mock, .mht file.
+ *
+ * @param handler
+ * @param dumpFileName
+ */
 export const newTestPage = async (
   handler: (ctx: {
     page: puppeteer.Page;
@@ -47,5 +53,38 @@ export const newTestPage = async (
       waitUntil: 'networkidle2',
     });
     await handler({ page, response, sourceUrl });
+  });
+};
+
+/**
+ * Creates a Puppeteer page based on provided BODY HTML.
+ *
+ * @param handler
+ * @param body
+ */
+export const newTestPageFromBody = async (
+    handler: (ctx: {
+      page: puppeteer.Page;
+    }) => Promise<void>,
+    body
+) => {
+  await newPage(async (page) => {
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Test Page</title>
+      </head>
+      <body>    
+          ${body}
+      </body>
+      </html>
+      `;
+
+    await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
+
+    await handler({ page });
   });
 };
