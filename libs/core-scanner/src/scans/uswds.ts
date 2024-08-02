@@ -54,7 +54,7 @@ export const buildUswdsResult = async (
     const uniqueClasses = Object.keys(uniqueClassesObj).sort().join(',');
 
     const hasHeresHowYouKnowBanner = [
-      ...document.querySelectorAll('.usa-banner__button-text'),
+      ...document.querySelectorAll('.usa-banner__button-text, .usa-banner-button-text'),
     ]
       .map((el) => el.textContent.replace(/’/g, "'"))
       .some((text) => text.includes("Here's how you know"));
