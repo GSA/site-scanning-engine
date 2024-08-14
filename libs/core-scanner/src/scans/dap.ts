@@ -2,45 +2,77 @@ import { Logger } from 'pino';
 import { HTTPRequest } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
 
+type DapDetectionResult = {
+  detected: boolean,
+  request: HTTPRequest | null
+}
+
+type DapParameterResults = {
+  dapParameters: string | null,
+  request: HTTPRequest | null
+}
+
 export const buildDapResult = async (
   logger: Logger,
   outboundRequests: HTTPRequest[],
 ): Promise<DapScan> => {
-  const dapParameters = getDapParameters(outboundRequests);
-  const dapDetected =
-    getDapDetected(outboundRequests) || dapParameters !== null;
+  const dapParameterResults = getDapParameters(outboundRequests);
+  const dapDetectionResult = getDapDetected(outboundRequests);
+  const hasDapParameters = dapParameterResults.dapParameters !== null;
+  const isDapDetected = dapDetectionResult.detected || hasDapParameters;
+  let dapVersion = '';
+  let dapScriptResponse = null;
+
+  if (isDapDetected) {
+    dapScriptResponse = dapDetectionResult.request !== null ? dapDetectionResult.request.response() : dapParameterResults.request.response();
+  }
+
+  if (dapScriptResponse) {
+    const dapScriptText = await dapScriptResponse.text();
+    dapVersion = getDapVersion(dapScriptText);
+  }
 
   logger.info({
     msg: 'dapParameters result:',
-    dapParameters,
+    dapParameters: dapParameterResults.dapParameters,
   });
 
   logger.info({
     msg: 'dapDetected result:',
-    dapDetected,
+    dapDetected: dapDetectionResult,
+  });
+
+  logger.info({
+    msg: 'dapVersion result:',
+    dapDetected: dapVersion,
   });
 
   return {
-    dapDetected,
-    dapParameters,
+    dapDetected: isDapDetected,
+    dapParameters: dapParameterResults.dapParameters,
+    dapVersion,
   };
 };
 
-const getDapParameters = (outboundRequests: HTTPRequest[]): string | null => {
+const getDapParameters = (outboundRequests: HTTPRequest[]): DapParameterResults => {
   const dapScript = 'Universal-Federated-Analytics-Min.js';
-  let parameters: string;
+  let parameterResult: DapParameterResults = {
+    dapParameters: null,
+    request: null
+  };
 
   for (const request of outboundRequests) {
     const requestUrl = request.url();
 
     if (requestUrl.includes(dapScript)) {
       const parsedUrl = new URL(requestUrl);
-      parameters = parsedUrl.searchParams.toString();
+      parameterResult.dapParameters = parsedUrl.searchParams.toString();
+      parameterResult.request = request;
       break;
     }
   }
 
-  return typeof parameters === 'undefined' ? null : parameters;
+  return parameterResult;
 };
 
 /**
@@ -49,14 +81,18 @@ const getDapParameters = (outboundRequests: HTTPRequest[]): string | null => {
  * It works by looking for the Google Analytics UA Identifier in either the URL or Post Data.
  * @param outboundRequests
  */
-const getDapDetected = (outboundRequests: HTTPRequest[]): boolean => {
+const getDapDetected = (outboundRequests: HTTPRequest[]): DapDetectionResult => {
   const dapIds = ['UA-33523145-1', 'G-9TNNMGP8WJ', 'G-CSLL4ZEK4L'];
-  let detected = false;
+  let detectionResult: DapDetectionResult = {
+    detected: false,
+    request: null
+  };
 
   for (const request of outboundRequests) {
     const urlIncludesId = dapIds.some((id) => request.url().includes(id));
     if (urlIncludesId) {
-      detected = true;
+      detectionResult.detected = true;
+      detectionResult.request = request;
       break;
     }
 
@@ -65,7 +101,8 @@ const getDapDetected = (outboundRequests: HTTPRequest[]): boolean => {
         request.postData().includes(id),
       );
       if (postDataIncludesId) {
-        detected = true;
+        detectionResult.detected = true;
+        detectionResult.request = request;
         break;
       }
     } catch (error) {
@@ -73,5 +110,11 @@ const getDapDetected = (outboundRequests: HTTPRequest[]): boolean => {
     }
   }
 
-  return detected;
+  return detectionResult;
+};
+
+export function getDapVersion(dapScriptText: string): string {
+  const versionRegex = /VERSION\s*:\s*['"]([^'"]+)['"]/;
+  const match = dapScriptText.match(versionRegex);
+  return match ? match[1] : '';
 };
