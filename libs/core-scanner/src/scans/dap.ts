@@ -12,46 +12,79 @@ type DapParameterResults = {
   request: HTTPRequest | null
 }
 
+type DapScriptCandidate = {
+  url: string,
+  parameters: string,
+  body: string,
+}
+
 export const buildDapResult = async (
   logger: Logger,
   outboundRequests: HTTPRequest[],
 ): Promise<DapScan> => {
-  const dapParameterResults = getDapParameters(outboundRequests);
-  const dapDetectionResult = getDapDetected(outboundRequests);
-  const hasDapParameters = dapParameterResults.dapParameters !== null;
-  const isDapDetected = dapDetectionResult.detected || hasDapParameters;
-  let dapVersion = '';
-  let dapScriptResponse = null;
 
-  if (isDapDetected) {
-    dapScriptResponse = dapDetectionResult.request !== null ? dapDetectionResult.request.response() : dapParameterResults.request.response();
+  const dapScriptCandidateRequests: HTTPRequest[] = getDapScriptCandidateRequests(outboundRequests);
+
+  // We eliminate the puppeteer-specific objects as quickly as possible to
+  // me the subsequent code more testable.
+  const dapScriptCandidates: DapScriptCandidate[] = getDapScriptCandidates(dapScriptCandidateRequests);
+
+  // Find the best candidate.
+  const dapScript: DapScriptCandidate | null = getBestCandidate(dapScriptCandidates);
+
+  // Exit early
+  if(dapScript === null) {
+    return {
+      dapDetected: false,
+      dapParameters: "",
+      dapVersion: ""
+    };
   }
 
-  if (dapScriptResponse) {
-    const dapScriptText = await dapScriptResponse.text();
-    dapVersion = getDapVersion(dapScriptText);
-  }
+  // Get the parameters
 
-  logger.info({
-    msg: 'dapParameters result:',
-    dapParameters: dapParameterResults.dapParameters,
-  });
+  // Get the version
 
-  logger.info({
-    msg: 'dapDetected result:',
-    dapDetected: dapDetectionResult,
-  });
+  // Return the stuff
 
-  logger.info({
-    msg: 'dapVersion result:',
-    dapDetected: dapVersion,
-  });
+  // --
 
-  return {
-    dapDetected: isDapDetected,
-    dapParameters: dapParameterResults.dapParameters,
-    dapVersion,
-  };
+  // const dapParameterResults = getDapParameters(outboundRequests);
+  // const dapDetectionResult = getDapDetected(outboundRequests);
+  // const hasDapParameters = dapParameterResults.dapParameters !== null;
+  // const isDapDetected = dapDetectionResult.detected || hasDapParameters;
+  // let dapVersion = '';
+  // let dapScriptResponse = null;
+  //
+  // if (isDapDetected) {
+  //   dapScriptResponse = dapDetectionResult.request !== null ? dapDetectionResult.request.response() : dapParameterResults.request.response();
+  // }
+  //
+  // if (dapScriptResponse) {
+  //   const dapScriptText = await dapScriptResponse.text();
+  //   dapVersion = getDapVersion(dapScriptText);
+  // }
+  //
+  // logger.info({
+  //   msg: 'dapParameters result:',
+  //   dapParameters: dapParameterResults.dapParameters,
+  // });
+  //
+  // logger.info({
+  //   msg: 'dapDetected result:',
+  //   dapDetected: dapDetectionResult,
+  // });
+  //
+  // logger.info({
+  //   msg: 'dapVersion result:',
+  //   dapDetected: dapVersion,
+  // });
+  //
+  // return {
+  //   dapDetected: isDapDetected,
+  //   dapParameters: dapParameterResults.dapParameters,
+  //   dapVersion,
+  // };
 };
 
 const getDapParameters = (outboundRequests: HTTPRequest[]): DapParameterResults => {
@@ -82,7 +115,7 @@ const getDapParameters = (outboundRequests: HTTPRequest[]): DapParameterResults 
  * @param outboundRequests
  */
 const getDapDetected = (outboundRequests: HTTPRequest[]): DapDetectionResult => {
-  const dapIds = ['UA-33523145-1', 'G-9TNNMGP8WJ', 'G-CSLL4ZEK4L'];
+  const dapIds = ['G-CSLL4ZEK4L'];
   let detectionResult: DapDetectionResult = {
     detected: false,
     request: null
@@ -118,3 +151,17 @@ export function getDapVersion(dapScriptText: string): string {
   const match = dapScriptText.match(versionRegex);
   return match ? match[1] : '';
 };
+
+
+/*
+
+ Identify all possible DAP scripts
+ Narrow that list down to the most likely dap script
+
+ if none are found -> dap is not detected
+
+ if one is found
+ - extract the version
+ - extract the paramters
+
+ */
