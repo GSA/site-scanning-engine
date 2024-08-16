@@ -16,7 +16,11 @@ type DapScriptCandidate = {
   url: string,
   parameters: string,
   body: string,
+  version?: string | null;
 }
+
+const DAP_SCRIPT_NAME = 'Universal-Federated-Analytics-Min.js';
+const DAP_GA_PROPERTY_IDS = ['G-CSLL4ZEK4L'];
 
 export const buildDapResult = async (
   logger: Logger,
@@ -28,8 +32,15 @@ export const buildDapResult = async (
   // We eliminate the puppeteer-specific objects as quickly as possible to
   // me the subsequent code more testable.
   const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(dapScriptCandidateRequests);
+  // ^ do version check in here
 
   // Find the best candidate.
+  // 1. Exact name match AND version is detected
+  // 2. Property ID match (in url OR post body) AND version detected
+  // 3. Anything with verion detected
+  // 4. Exact name match without version
+  // 5. Any match
+
   const dapScript: DapScriptCandidate | null = getBestCandidate(dapScriptCandidates);
 
   // Exit early
@@ -89,7 +100,6 @@ export const buildDapResult = async (
 };
 
 const getDapParameters = (outboundRequests: HTTPRequest[]): DapParameterResults => {
-  const dapScript = 'Universal-Federated-Analytics-Min.js';
   let parameterResult: DapParameterResults = {
     dapParameters: null,
     request: null
@@ -98,7 +108,7 @@ const getDapParameters = (outboundRequests: HTTPRequest[]): DapParameterResults 
   for (const request of outboundRequests) {
     const requestUrl = request.url();
 
-    if (requestUrl.includes(dapScript)) {
+    if (requestUrl.includes(DAP_SCRIPT_NAME)) {
       const parsedUrl = new URL(requestUrl);
       parameterResult.dapParameters = parsedUrl.searchParams.toString();
       parameterResult.request = request;
@@ -151,43 +161,52 @@ export function getDapVersion(dapScriptText: string): string {
   const versionRegex = /VERSION\s*:\s*['"]([^'"]+)['"]/;
   const match = dapScriptText.match(versionRegex);
   return match ? match[1] : '';
-};
+}
+
+// --------------------
 
 export function getDapScriptCandidateRequests(outboundRequests: HTTPRequest[]): HTTPRequest[] {
-  const dapIds = ['G-CSLL4ZEK4L'];
-  const dapScript = 'Universal-Federated-Analytics-Min.js';
   let returnCandidates: HTTPRequest[] = [];
 
   for (const request of outboundRequests) {
     const requestUrl = request.url();
-    const urlIncludesId = dapIds.some((id) => requestUrl.includes(id));
+    const postData = request.postData();
 
-    if (requestUrl.includes(dapScript)) {
-      const parsedUrl = new URL(requestUrl);
-      returnCandidates.push(request);
-      break;
-    }
-    
-    if (urlIncludesId) {
-      returnCandidates.push(request);
-      break;
-    }
+    const isExactScriptMatch = checkUrlForScriptNameMatch(requestUrl);
+    const isPropertyIdMatch = checkUrlForPropertyIdMatch(requestUrl);
+    const isPostDataMatch = checkPostDataForPropertyIdMatch(postData);
 
-    try {
-      const postDataIncludesId = dapIds.some((id) =>
-        request.postData().includes(id),
-      );
-      if (postDataIncludesId) {
-        returnCandidates.push(request);
-        break;
-      }
-    } catch (error) {
-      // fine to ignore if there's no post body.
+    if( isExactScriptMatch || isPropertyIdMatch || isPostDataMatch ) {
+      returnCandidates.push(request);
     }
   }
 
   return returnCandidates;
 }
+
+/**
+ * Checks a provided URL to see if the exact, known, script name is within it.
+ *
+ * @param url The URL to check
+ * @returns TRUE if the the script name found; FALSE otherwise.
+ */
+export function checkUrlForScriptNameMatch(url: string): boolean {
+  return url.includes(DAP_SCRIPT_NAME);
+}
+
+export function checkUrlForPropertyIdMatch(url: string): boolean {
+  return DAP_GA_PROPERTY_IDS.some((id) => url.includes(id));
+}
+
+export function checkPostDataForPropertyIdMatch(postData: string): boolean {
+  try {
+    return DAP_GA_PROPERTY_IDS.some((id) => postData.includes(id));
+  } catch () {
+    return false;
+  }
+}
+
+// ------------------
 
 export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPRequest[]): Promise<DapScriptCandidate[]> {
   let returnCandidates: DapScriptCandidate[] = [];
@@ -216,6 +235,7 @@ export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPReq
 }
 
 export function getBestCandidate(dapScriptCandidates: DapScriptCandidate[]): DapScriptCandidate {
+
   let returnCandidate: DapScriptCandidate = null;
 
   return returnCandidate;
