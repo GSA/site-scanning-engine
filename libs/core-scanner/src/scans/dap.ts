@@ -27,7 +27,7 @@ export const buildDapResult = async (
 
   // We eliminate the puppeteer-specific objects as quickly as possible to
   // me the subsequent code more testable.
-  const dapScriptCandidates: DapScriptCandidate[] = getDapScriptCandidates(dapScriptCandidateRequests);
+  const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(dapScriptCandidateRequests);
 
   // Find the best candidate.
   const dapScript: DapScriptCandidate | null = getBestCandidate(dapScriptCandidates);
@@ -48,6 +48,7 @@ export const buildDapResult = async (
   // Return the stuff
 
   // --
+
 
   // const dapParameterResults = getDapParameters(outboundRequests);
   // const dapDetectionResult = getDapDetected(outboundRequests);
@@ -151,6 +152,74 @@ export function getDapVersion(dapScriptText: string): string {
   const match = dapScriptText.match(versionRegex);
   return match ? match[1] : '';
 };
+
+export function getDapScriptCandidateRequests(outboundRequests: HTTPRequest[]): HTTPRequest[] {
+  const dapIds = ['G-CSLL4ZEK4L'];
+  const dapScript = 'Universal-Federated-Analytics-Min.js';
+  let returnCandidates: HTTPRequest[] = [];
+
+  for (const request of outboundRequests) {
+    const requestUrl = request.url();
+    const urlIncludesId = dapIds.some((id) => requestUrl.includes(id));
+
+    if (requestUrl.includes(dapScript)) {
+      const parsedUrl = new URL(requestUrl);
+      returnCandidates.push(request);
+      break;
+    }
+    
+    if (urlIncludesId) {
+      returnCandidates.push(request);
+      break;
+    }
+
+    try {
+      const postDataIncludesId = dapIds.some((id) =>
+        request.postData().includes(id),
+      );
+      if (postDataIncludesId) {
+        returnCandidates.push(request);
+        break;
+      }
+    } catch (error) {
+      // fine to ignore if there's no post body.
+    }
+  }
+
+  return returnCandidates;
+}
+
+export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPRequest[]): Promise<DapScriptCandidate[]> {
+  let returnCandidates: DapScriptCandidate[] = [];
+
+  for (const request of dapScriptCandidateRequests) {
+    const requestUrl = request.url();
+    let returnCandidate: DapScriptCandidate;
+    returnCandidate.url = requestUrl;
+
+    const parsedUrl = new URL(requestUrl);
+    returnCandidate.parameters = parsedUrl.searchParams.toString();
+
+    const response = request.response();
+    returnCandidate.body = await response.text();
+
+    returnCandidates.push(returnCandidate);
+  }
+
+
+  // type DapScriptCandidate = {
+  //   url: string,
+  //   parameters: string,
+  //   body: string,
+  // }
+  return returnCandidates;
+}
+
+export function getBestCandidate(dapScriptCandidates: DapScriptCandidate[]): DapScriptCandidate {
+  let returnCandidate: DapScriptCandidate = null;
+
+  return returnCandidate;
+}
 
 
 /*
