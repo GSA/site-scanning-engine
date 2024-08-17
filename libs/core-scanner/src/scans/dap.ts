@@ -1,7 +1,6 @@
 import { Logger } from 'pino';
 import { HTTPRequest } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
-import {empty} from "rxjs";
 
 export type DapScriptCandidate = {
   url: string,
@@ -21,7 +20,7 @@ export const buildDapResult = async (
   const emptyResponse = {
     dapDetected: false,
     dapParameters: "",
-    dapVersion: ""
+    dapVersion: "",
   };
 
   if(outboundRequests.length === 0) {
@@ -45,12 +44,10 @@ export const buildDapResult = async (
   return {
     dapDetected: true,
     dapParameters: dapScript.parameters,
-    dapVersion: dapScript.version
+    dapVersion: dapScript.version,
   };  
 
 };
-
-// --
 
 /**
  * Filters a list of HTTPRequests to only include requests that contain DAP
@@ -97,12 +94,19 @@ export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPReq
     const parsedUrl = new URL(url);
 
     const candidate: DapScriptCandidate = {
-      body: await request.response()?.text() || "",
+      //body: await request.response()?.text() || "",
+      body: null,
       parameters: parsedUrl.searchParams.toString() || '',
       postData: null,
       url: request.url(),
-      version: ""
+      version: "",
     };
+
+    try {
+      candidate.body = await request.response().text();
+    } catch {
+      candidate.body = '';
+    }
 
     candidate.version = candidate.body !== null ? getDapVersion(candidate.body) : '';
 
@@ -123,43 +127,74 @@ export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPReq
  * @returns The best DAP candidate based on a series of checks
  */
 export function getBestCandidate(dapScriptCandidates: DapScriptCandidate[]): DapScriptCandidate {
+  const checks = [
+    (candidate: DapScriptCandidate) => checkCandidateForScriptAndVersion(candidate) === true,
+    (candidate: DapScriptCandidate) => checkCandidateForPropertyAndVersion(candidate) === true,
+    (candidate: DapScriptCandidate) => candidate.version !== null,
+    (candidate: DapScriptCandidate) => checkUrlForScriptNameMatch(candidate.url) === true,
+    (candidate: DapScriptCandidate) => checkCandidateForAnyDapMatch(candidate) === true,
+  ];
 
-  for( const candidate of dapScriptCandidates ) {
-    const hasVersion = candidate.version !== "";
+  let bestCandidate = null;
+  let bestMatchLevel = 5;
+  for (const candidate of dapScriptCandidates) {
+    let matchLevel = -1;
 
-    const isExactScriptMatch = checkUrlForScriptNameMatch(candidate.url);
-    const isPropertyIdMatch = checkUrlForPropertyIdMatch(candidate.url);
-    const isPostDataMatch = checkPostDataForPropertyIdMatch(candidate.postData);
-
-    // 1. Exact name match AND version is detected
-    if( isExactScriptMatch && hasVersion) {
-      return candidate;
+    for (let i = 0; i < checks.length; i++) {
+      if (checks[i](candidate)) {
+          matchLevel = i;
+          break;
+      }
     }
 
-    // 2. Property ID match (in url OR post body) AND version detected
-    if( (isPropertyIdMatch || isPostDataMatch) && hasVersion) {
-      return candidate;
+    if (matchLevel < bestMatchLevel) {
+      bestCandidate = candidate;
+        bestMatchLevel = matchLevel;
     }
 
-    // 3. Anything with version detected
-    if( hasVersion ) {
-      return candidate;
-    }
-
-    // 4. Exact name match without version
-    if( isExactScriptMatch ) {
-      return candidate;
-    }
-
-    // 5. Any match
-    if( isPropertyIdMatch || isPostDataMatch || isExactScriptMatch || hasVersion ) {
-      return candidate;
-    }
   }
 
+  return bestCandidate;
 }
 
-// --
+/**
+ * Check to see if the DapScriptCandidate contains the exact script URL and a version
+ * 
+ * @param candidate a DapScriptCandidate
+ * @returns TRUE if the DapScriptCandidate contains the exact dap script URL and a version, FALSE otherwise
+ */
+export function checkCandidateForScriptAndVersion(candidate: DapScriptCandidate): boolean {
+  const isExactScriptMatch = checkUrlForScriptNameMatch(candidate.url);
+  const hasVersion = candidate.version !== null;
+  return !!isExactScriptMatch && hasVersion;
+}
+
+/**
+ * Check to see if the DapScriptCandidate URL contains GA properties and a version
+ * 
+ * @param candidate a DapScriptCandidate
+ * @returns TRUE if the DapScriptCandidate URL contains GA properties and a version, FALSE otherwise
+ */
+export function checkCandidateForPropertyAndVersion(candidate: DapScriptCandidate): boolean {
+  const isPropertyIdMatch = checkUrlForPropertyIdMatch(candidate.url);
+  const isPostDataMatch = checkPostDataForPropertyIdMatch(candidate.postData);
+  const hasVersion = candidate.version !== null;
+  return !!(isPropertyIdMatch || isPostDataMatch)  && hasVersion;
+}
+
+/**
+ * Check to see if the DapScriptCandidate contains any criteria that would consider it a DAP candidate
+ * 
+ * @param candidate a DapScriptCandidate
+ * @returns TRUE if the DapScriptCandidate caontains any criteria that would consider it a DAP candidate, FALSE otherwise
+ */
+export function checkCandidateForAnyDapMatch(candidate: DapScriptCandidate): boolean {
+  const hasVersion = candidate.version !== "";
+  const isExactScriptMatch = checkUrlForScriptNameMatch(candidate.url);
+  const isPropertyIdMatch = checkUrlForPropertyIdMatch(candidate.url);
+  const isPostDataMatch = checkPostDataForPropertyIdMatch(candidate.postData);
+  return !!isPropertyIdMatch || isPostDataMatch || isExactScriptMatch || hasVersion;
+}
 
 /**
  * Check to see if we can get a response from the HTTPRequest
@@ -211,5 +246,8 @@ export function getDapVersion(dapScriptText: string): string {
  * @returns TRUE if the POST data contains at least one DAP property id; FALSE otherwise
  */
 export function checkPostDataForPropertyIdMatch(postData: string): boolean {
+  if ( postData ===null || postData === undefined ) {
+    return false;
+  }
   return DAP_GA_PROPERTY_IDS.some((id) => postData.includes(id));
 }

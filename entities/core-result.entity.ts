@@ -171,7 +171,7 @@ export class CoreResult {
   dapParameters?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'dap_version' })
+  @Exclude()
   dapVersion?: string;
 
   @Column({ nullable: true })
