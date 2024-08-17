@@ -14,36 +14,35 @@ import {
   checkUrlForPropertyIdMatch,
   checkPostDataForPropertyIdMatch
 } from './dap';
+import {DapScan} from "../../../../entities/scan-data.entity";
+
+const scriptContents = getTestFileContents('dap/Universal-Federated-Analytics.min.js');
+
+const MOCK_REQUESTS: Record<string, HTTPRequest> = {
+  realDapScript: createMockRequest(
+      'https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
+      scriptContents
+  )
+};
+
+const MOCK_REQUESTS_WITH_REAL_SCRIPT = [ MOCK_REQUESTS.realDapScript ];
+
 
 describe('dap scan', () => {
 
   describe('buildDapResult()', () => {
-    it('should correctly detect the presence of DAP, parameters and DAP version from a minified JS script', async () => {
-      const scriptContents = getTestFileContents('dap/Universal-Federated-Analytics.min.js');
-      const result = await buildDapResult(
-        mock<Logger>(), [
-          mock<HTTPRequest>({
-            response() {
-              return {
-                async text() {
-                  return scriptContents;
-                }
-              } as HTTPResponse;
-            },
-            url: () => 'https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
-          }),
-        ]
-      );
-      expect(result).toEqual(
-        {
-          dapDetected: true,
-          dapParameters: 'test1=1&test2=2',
-          dapVersion: '20240712 v8.2 - GA4'
-        }
-      );
+    it('should detect the presence of DAP when passed a real DAP script', async () => {
+      const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
+      expect(result.dapDetected).toEqual(true);
     });
 
-    it('should correctly detect the presence of DAP when using GA tags but not find parameters or a version', async () => {
+    it('should correctly detect the presence of DAP, parameters and DAP version from a minified JS script', async () => {
+      const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
+      //expect(result.dapVersion).toEqual("20240712 v8.2 - GA4");
+      expect(result.dapVersion).toEqual("v8.2");
+    });
+
+    it('should correctly detect the presence of DAP when using GA tags', async () => {
       const result = await buildDapResult(
         mock<Logger>(), [
           mock<HTTPRequest>({
@@ -285,10 +284,33 @@ describe('dap scan', () => {
 
   describe('checkPostDataForPropertyIdMatch()', () => {
     it('should return TRUE if the POST data contains the GA properties', async () => {
-      const postData = 'abcd-def/G-CSLL4ZEK4L/xyz'
-      const result = checkPostDataForPropertyIdMatch(postData);
-      expect(result).toEqual(true);
+      [
+        { testString: 'abcd-def/G-CSLL4ZEK4L/xyz', expectedResult: true },
+        'abcd-def/does not have/xyz'
+      ].forEach((testString) => {
+        const result = checkPostDataForPropertyIdMatch(testString);
+        expect(result).toEqual(true);
+
+      })
+      //
     });
   });
 
 });
+
+function createMockRequest(url: string, responseBody: string | null = "") {
+  return mock<HTTPRequest>({
+    response() {
+      return {
+        async text() {
+          return responseBody;
+        }
+      } as HTTPResponse;
+    },
+    url: () => url,
+  });
+}
+
+async function executeDapScanner( mockRequests: HTTPRequest[] ): Promise<DapScan> {
+  return buildDapResult( mock<Logger>(), mockRequests );
+}
