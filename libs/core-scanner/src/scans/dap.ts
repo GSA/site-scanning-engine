@@ -94,7 +94,6 @@ export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPReq
     const parsedUrl = new URL(url);
 
     const candidate: DapScriptCandidate = {
-      //body: await request.response()?.text() || "",
       body: null,
       parameters: parsedUrl.searchParams.toString() || '',
       postData: null,
