@@ -6,6 +6,8 @@ import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { ScanStatus } from 'entities/scan-status';
 
+const E2E_TEST_TIMEOUT = 30 * 1000; // 30 sec
+
 describe('CoreScanner (e2e)', () => {
   let service: CoreScannerService;
   let moduleFixture: TestingModule;
@@ -22,7 +24,7 @@ describe('CoreScanner (e2e)', () => {
     await moduleFixture.close();
   });
 
-  it('returns results for 18f.gov', async () => {
+  it('should return results for 18f.gov', async () => {
     const input: CoreInputDto = {
       websiteId: 1,
       url: '18f.gov',
@@ -55,7 +57,7 @@ describe('CoreScanner (e2e)', () => {
         status: ScanStatus.Completed,
       },
     });
-  });
+  }, E2E_TEST_TIMEOUT);
 
   it('returns results for poolsafety.gov', async () => {
     const input: CoreInputDto = {
@@ -90,5 +92,5 @@ describe('CoreScanner (e2e)', () => {
         status: ScanStatus.Completed,
       },
     });
-  });
+  }, E2E_TEST_TIMEOUT);
 });

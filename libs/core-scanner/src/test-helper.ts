@@ -1,5 +1,7 @@
 import { join } from 'path';
 import * as puppeteer from 'puppeteer';
+import { readFileSync } from 'fs';
+
 
 // This should map to the directory containing the package.json.
 // By convention, assume that the originating process was run from the root
@@ -47,7 +49,7 @@ export const newTestPage = async (
   dumpFileName = '18f_gov_dump.mht',
 ) => {
   await newPage(async (page) => {
-    const path = join(PROJECT_ROOT, 'libs/core-scanner/test', dumpFileName);
+    const path = getTestFilePath(dumpFileName);
     const sourceUrl = `file://${path}`;
     const response = await page.goto(sourceUrl, {
       waitUntil: 'networkidle2',
@@ -55,6 +57,15 @@ export const newTestPage = async (
     await handler({ page, response, sourceUrl });
   });
 };
+
+export function getTestFilePath(testFileName: string): string {
+  return join(PROJECT_ROOT, 'libs/core-scanner/test', testFileName);
+}
+
+export function getTestFileContents(testFileName: string): string {
+  const testFilePath = getTestFilePath(testFileName);
+  return readFileSync(testFilePath, 'utf-8');
+}
 
 /**
  * Creates a Puppeteer page based on provided BODY HTML.

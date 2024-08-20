@@ -18,6 +18,7 @@ export type UrlScan = {
 export type DapScan = {
   dapDetected: boolean;
   dapParameters: string;
+  dapVersion: string;
 };
 
 export type SeoScan = {
