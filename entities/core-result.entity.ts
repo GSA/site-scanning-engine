@@ -171,6 +171,10 @@ export class CoreResult {
   dapParameters?: string;
 
   @Column({ nullable: true })
+  @Exclude()
+  dapVersion?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'og_title' })
   ogTitleFinalUrl?: string;
 
