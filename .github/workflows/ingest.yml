@@ -5,7 +5,7 @@ name: Ingest
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: '0 21 * * 4'
+    - cron: '15 22 * * *'
 
   workflow_dispatch:
 

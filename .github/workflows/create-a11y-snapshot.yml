@@ -4,7 +4,7 @@ name: Create a11y S3 snapshot
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: '15 0 * * 0'
+    - cron: '15 12 * * *'
 
   workflow_dispatch:
     inputs:
