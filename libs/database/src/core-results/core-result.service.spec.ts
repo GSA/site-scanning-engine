@@ -73,6 +73,11 @@ describe('CoreResultService', () => {
   it('should create a CoreResult from CoreResultPages', async () => {
     const websiteId = 1;
     const scanStatus: ScanStatus = ScanStatus['Completed'];
+
+    // Fixme: This test is very brittle. Any changes to any scan will basically
+    //        cause this mock object to type mismatch. If our test is only looking
+    //        for a single `.insert()` call, then why does the mock object need to
+    //        be so precise? - LC 08/19/2024
     const pages = {
       base: {
         targetUrlBaseDomain: 'df.gov',
@@ -103,6 +108,7 @@ describe('CoreResultService', () => {
           dapScan: {
             dapDetected: null,
             dapParameters: null,
+            dapVersion: "",
           },
           seoScan: {
             ogTitleFinalUrl: null,

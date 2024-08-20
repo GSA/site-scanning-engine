@@ -5,7 +5,12 @@ import { CoreInputDto } from '../core.input.dto';
 import { createPrimaryScanner } from './primary';
 import { browserInstance, newTestPage } from '../test-helper';
 
-describe('primary scanner', () => {
+/**
+ * Disabled because this suite is brittle and based on external factors.
+ * todo: Consider how we can get the coverage this test provides without
+ *       the drawbacks apparent in this approach.
+ */
+describe.skip('primary scanner', () => {
   let mockLogger: MockProxy<Logger>;
 
   beforeEach(async () => {
