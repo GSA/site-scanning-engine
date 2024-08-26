@@ -175,6 +175,11 @@ export class CoreResult {
   dapVersion?: string;
 
   @Column({ nullable: true })
+  //@Expose({ name: 'ga_tag_id' })
+  @Exclude()
+  dapGATagIds?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'og_title' })
   ogTitleFinalUrl?: string;
 

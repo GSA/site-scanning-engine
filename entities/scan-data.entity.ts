@@ -19,6 +19,7 @@ export type DapScan = {
   dapDetected: boolean;
   dapParameters: string;
   dapVersion: string;
+  dapGATagIds: string;
 };
 
 export type SeoScan = {

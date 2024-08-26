@@ -15,9 +15,13 @@ import {
   checkPostDataForPropertyIdMatch,
   checkCandidateForScriptAndVersion,
   checkCandidateForPropertyAndVersion,
-  checkCandidateForAnyDapMatch
+  checkCandidateForAnyDapMatch,
+  getAllGAPropertyTags,
+  getG4Tag,
+  getUATag,
+  removeDuplicates,
 } from './dap';
-import {DapScan} from "../../../../entities/scan-data.entity";
+import {DapScan} from '../../../../entities/scan-data.entity';
 
 const minifiedScriptContents = getTestFileContents('dap/Universal-Federated-Analytics.min.js');
 const nonMinifiedScriptContents = getTestFileContents('dap/Universal-Federated-Analytics.js');
@@ -39,6 +43,32 @@ const MOCK_REQUESTS: Record<string, HTTPRequest> = {
   doesNotContainDap: createMockRequest(
     'https://no-dap/here',
     null,
+  ),
+  notRealGATagFirst: createMockRequest(
+    'https://abcd-def/G-PI9UT7YUAT/xyz',
+    null,
+  ),
+  notRealGATagSecond: createMockRequest(
+    'https://abcd-def/G-QNT3KRC6EB/xyz',
+    null,
+  ),
+  notRealGATagInPostResponse: createMockRequest(
+    'https://test.gov',
+    null,
+    'abcd-def/G-QNT3FIU6EB/xyz',
+  ),
+  notRealUniversalGATagFirst: createMockRequest(
+    'https://abcd-def/UA-33523145-1/xyz',
+    null,
+  ),
+  notRealUniversalGATagSecond: createMockRequest(
+    'https://abcd-def/UA-842976-1/xyz',
+    null,
+  ),
+  notRealUniversalGATagInPostResponse: createMockRequest(
+    'https://test.gov',
+    null,
+    'abcd-def/UA-8427660-1/xyz',
   ),
   
 };
@@ -85,8 +115,31 @@ const MOCK_DAP_SCRIPT_CANDIDATES: Record<string, DapScriptCandidate> = {
     parameters: null,
     body: null,
     version: null,
-  }
+  },
 }
+
+const MOCK_GA_TAGS = [
+  'G-CSLL4ZEK4L',
+  'G-CSLL4ZEK4L',
+  'G-PI9UT7YUAT',
+  'G-QNT3KRC6EB',
+  'UA-33523145-1',
+  'UA-33523145-1',
+  'UA-842976-1',
+  'G-QNT3FIU6EB',
+  'G-QNT3FIU6EB',
+  'UA-8427660-1',
+];
+
+const EXPECTED_GA_TAGS = [
+  'G-CSLL4ZEK4L',
+  'G-PI9UT7YUAT',
+  'G-QNT3KRC6EB',
+  'UA-33523145-1',
+  'UA-842976-1',
+  'G-QNT3FIU6EB',
+  'UA-8427660-1',
+];
 
 const MOCK_REQUESTS_WITH_DAP = [
   MOCK_REQUESTS.realDapScript,
@@ -98,6 +151,16 @@ const ALL_MOCK_REQUESTS = [
   MOCK_REQUESTS.gaTagsNoResponse,
   MOCK_REQUESTS.gaTagsInPostResponse,
   MOCK_REQUESTS.doesNotContainDap,
+];
+const MOCK_REQUESTS_WITH_GA_TAGS = [
+  MOCK_REQUESTS.gaTagsNoResponse,
+  MOCK_REQUESTS.gaTagsInPostResponse,
+  MOCK_REQUESTS.notRealGATagFirst,
+  MOCK_REQUESTS.notRealGATagSecond,
+  MOCK_REQUESTS.notRealUniversalGATagFirst,
+  MOCK_REQUESTS.notRealUniversalGATagSecond,
+  MOCK_REQUESTS.notRealGATagInPostResponse,
+  MOCK_REQUESTS.notRealUniversalGATagInPostResponse,
 ];
 
 const ALL_DAP_SCRIPT_CANDIDATES = [
@@ -123,12 +186,12 @@ describe('dap scan', () => {
 
     it('should detect the DAP version from a minified JS script', async () => {
       const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
-      expect(result.dapVersion).toEqual("20240712 v8.2 - GA4");
+      expect(result.dapVersion).toEqual('20240712 v8.2 - GA4');
     });
 
     it('should detect the DAP parameters from a minified JS script', async () => {
       const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
-      expect(result.dapParameters).toEqual("test1=1&test2=2");
+      expect(result.dapParameters).toEqual('test1=1&test2=2');
     });
 
     it('should detect the presence of DAP when using GA tags', async () => {
@@ -152,6 +215,13 @@ describe('dap scan', () => {
     it('should correctly extract the version from a non-minified DAP script', async () => {
       const result = getDapVersion(MOCK_DAP_SCRIPT_CANDIDATES.realNonMinifiedScript.body);
       expect(result).toEqual('20240524 v7.05 - Dual Tracking');
+    });
+  });
+
+  describe('getAllGAPropertyIds()', () => {
+    it('should return an comma delimited list of GA property IDs', async () => {
+      const result = getAllGAPropertyTags(MOCK_REQUESTS_WITH_GA_TAGS);
+      expect(result).toEqual('G-CSLL4ZEK4L,G-PI9UT7YUAT,G-QNT3KRC6EB,UA-33523145-1,UA-842976-1,G-QNT3FIU6EB,UA-8427660-1');
     });
   });
 
@@ -263,9 +333,38 @@ describe('dap scan', () => {
     });
   });
 
+  describe('getG4Tag()', () => {
+    it('should return the G4 tag contained in the url, empty string otherwise', async () => {
+      const result = getG4Tag('https://abcd-def/G-CSLL4ZEK4L/xyz');
+      expect(result).toEqual('G-CSLL4ZEK4L');
+    });
+    it('should return the an empty string if a G4 tag is not contained in the url', async () => {
+      const result = getG4Tag('https://abcd-def/no-tag-here/xyz');
+      expect(result).toEqual('');
+    });
+  });
+
+  describe('getUATag()', () => {
+    it('should return the G4 tag contained in the url, empty string otherwise', async () => {
+      const result = getUATag('https://abcd-def/UA-33523145-1/xyz');
+      expect(result).toEqual('UA-33523145-1');
+    });
+    it('should return the an empty string if a G4 tag is not contained in the url', async () => {
+      const result = getUATag('https://abcd-def/no-tag-here/xyz');
+      expect(result).toEqual('');
+    });
+  });
+
+  describe('removeDuplicates()', () => {
+    it('should remove duplicates from an array', async () => {
+      const result = removeDuplicates(MOCK_GA_TAGS );
+      expect(result).toEqual(EXPECTED_GA_TAGS);
+    });
+  });
+
 });
 
-function createMockRequest(url: string, responseBody: string | null = "", postData: string | null = null) {
+function createMockRequest(url: string, responseBody: string | null = '', postData: string | null = null) {
   return mock<HTTPRequest>({
     response() {
       return {

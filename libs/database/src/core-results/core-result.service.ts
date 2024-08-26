@@ -75,6 +75,7 @@ export class CoreResultService {
       coreResult.dapDetected = result.dapScan.dapDetected;
       coreResult.dapParameters = result.dapScan.dapParameters;
       coreResult.dapVersion = result.dapScan.dapVersion;
+      coreResult.dapGATagIds = result.dapScan.dapGATagIds;
 
       // SEO scan
       coreResult.mainElementFinalUrl = result.seoScan.mainElementFinalUrl;

@@ -21,6 +21,7 @@ export const buildDapResult = async (
     dapDetected: false,
     dapParameters: "",
     dapVersion: "",
+    dapGATagIds: "",
   };
 
   if(outboundRequests.length === 0) {
@@ -32,6 +33,8 @@ export const buildDapResult = async (
   if(dapScriptCandidateRequests.length === 0) {
     return emptyResponse;
   }
+
+  const allGAPropertyIds: string = getAllGAPropertyTags(outboundRequests);
 
   const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(dapScriptCandidateRequests);
 
@@ -45,9 +48,80 @@ export const buildDapResult = async (
     dapDetected: true,
     dapParameters: dapScript.parameters,
     dapVersion: dapScript.version,
+    dapGATagIds: allGAPropertyIds,
   };  
 
 };
+
+/**
+ * Returns a comma delimited string of all GA Property IDs found in the given requests
+ * 
+ * @param allRequests An object containing all HTTPRequests made from the page
+ * @returns A comma delimited string of all GA Property IDs found in the requests
+ */
+export function getAllGAPropertyTags(allRequests: HTTPRequest[]): string {
+  const allGAPropertyIds: string[] = [];
+
+  for (const request of allRequests) {
+    const requestUrl = request.url();
+    const postData = request.postData();
+
+    if( getG4Tag(requestUrl) ) {
+      allGAPropertyIds.push(getG4Tag(requestUrl));
+      continue;
+    }
+    if( getUATag(requestUrl) ) {
+      allGAPropertyIds.push(getUATag(requestUrl));
+      continue;
+    }
+    if ( !postData ) {
+      continue;
+    }
+    if ( getG4Tag(postData) ) {
+      allGAPropertyIds.push(getG4Tag(postData));
+      continue;
+    }
+    if ( getUATag(postData) ) {
+      allGAPropertyIds.push(getUATag(postData));
+      continue;
+    }
+  }
+
+  const uniqueGAPropertyIds = removeDuplicates(allGAPropertyIds);
+  return uniqueGAPropertyIds.join(',');
+}
+
+/**
+ * 
+ * @param stringToSearch The string that may contain a G4 tag
+ * @returns Returns the G4 tag if found, otherwise an empty string
+ */
+export function getG4Tag(stringToSearch: string): string {
+  const g4TagRegex = /G-[a-zA-Z\d]{4,15}/;
+  const match = stringToSearch.match(g4TagRegex);
+  return match ? match[0] : '';
+}
+
+/**
+ * 
+ * @param requestUrl The string that may contain a UA tag
+ * @returns Returns the UA tag if found, otherwise an empty string
+ */
+export function getUATag(stringToSearch: string): string {
+  const uATagRegex = /UA-\d{4,}-\d/;
+  const match = stringToSearch.match(uATagRegex);
+  return match ? match[0] : '';
+}
+
+/**
+ * Removes duplicate values from an array
+ * 
+ * @param arr An array of strings
+ * @returns A new array with duplicate values removed
+ */
+export function removeDuplicates(arr: string[]): string[] {
+  return arr.filter((value, index, self) => self.indexOf(value) === index);
+}
 
 /**
  * Filters a list of HTTPRequests to only include requests that contain DAP
