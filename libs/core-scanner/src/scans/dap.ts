@@ -61,30 +61,26 @@ export const buildDapResult = async (
  * @returns A comma delimited string of all GA Property IDs found in the requests
  */
 export function getAllGAPropertyTags(allRequests: HTTPRequest[]): string {
-  const allGAPropertyIds: string[] = [];
+  let allGAPropertyIds: string[] = [];
 
   for (const request of allRequests) {
     const requestUrl = request.url();
     const postData = request.postData();
-
-    if( getG4Tag(requestUrl) ) {
-      allGAPropertyIds.push(getG4Tag(requestUrl));
-      continue;
+    
+    if( getG4Tag(requestUrl).length !== 0 ) {
+      allGAPropertyIds = allGAPropertyIds.concat(getG4Tag(requestUrl));
     }
-    if( getUATag(requestUrl) ) {
-      allGAPropertyIds.push(getUATag(requestUrl));
-      continue;
+    if( getUATag(requestUrl).length !== 0 ) {
+      allGAPropertyIds = allGAPropertyIds.concat(getUATag(requestUrl));
     }
     if ( !postData ) {
       continue;
     }
-    if ( getG4Tag(postData) ) {
-      allGAPropertyIds.push(getG4Tag(postData));
-      continue;
+    if ( getG4Tag(postData).length !== 0 ) {
+      allGAPropertyIds = allGAPropertyIds.concat(getG4Tag(postData));
     }
-    if ( getUATag(postData) ) {
-      allGAPropertyIds.push(getUATag(postData));
-      continue;
+    if ( getUATag(postData).length !== 0 ) {
+      allGAPropertyIds = allGAPropertyIds.concat(getUATag(postData));
     }
   }
 
@@ -97,10 +93,10 @@ export function getAllGAPropertyTags(allRequests: HTTPRequest[]): string {
  * @param stringToSearch The string that may contain a G4 tag
  * @returns Returns the G4 tag if found, otherwise an empty string
  */
-export function getG4Tag(stringToSearch: string): string {
-  const g4TagRegex = /G-[a-zA-Z\d]{4,15}/;
+export function getG4Tag(stringToSearch: string): string[] {
+  const g4TagRegex = /G-[a-zA-Z\d]{4,15}/g;
   const match = stringToSearch.match(g4TagRegex);
-  return match ? match[0] : '';
+  return match ? match : [];
 }
 
 /**
@@ -108,10 +104,11 @@ export function getG4Tag(stringToSearch: string): string {
  * @param requestUrl The string that may contain a UA tag
  * @returns Returns the UA tag if found, otherwise an empty string
  */
-export function getUATag(stringToSearch: string): string {
-  const uATagRegex = /UA-\d{4,}-\d/;
+export function getUATag(stringToSearch: string): string[] {
+  // const uATagRegex = /UA-\d{4,}-\d/;
+  const uATagRegex = /UA-\d{4,}-\d/g;
   const match = stringToSearch.match(uATagRegex);
-  return match ? match[0] : '';
+  return match ? match : [];
 }
 
 /**

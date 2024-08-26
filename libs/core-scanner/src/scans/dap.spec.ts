@@ -69,7 +69,10 @@ const MOCK_REQUESTS: Record<string, HTTPRequest> = {
     null,
     'abcd-def/UA-8427660-1/xyz',
   ),
-  
+  notRealBothTags: createMockRequest(
+    'https://abcd-def/UA-842645-1/G-QNT2XPC6EB/xyz',
+    null,
+  ),
 };
 
 const MOCK_DAP_SCRIPT_CANDIDATES: Record<string, DapScriptCandidate> = {
@@ -137,6 +140,7 @@ const MOCK_REQUESTS_WITH_GA_TAGS = [
   MOCK_REQUESTS.notRealUniversalGATagSecond,
   MOCK_REQUESTS.notRealGATagInPostResponse,
   MOCK_REQUESTS.notRealUniversalGATagInPostResponse,
+  MOCK_REQUESTS.notRealBothTags,
 ];
 
 const ALL_DAP_SCRIPT_CANDIDATES = [
@@ -197,7 +201,7 @@ describe('dap scan', () => {
   describe('getAllGAPropertyIds()', () => {
     it('should return an comma delimited list of GA property IDs', async () => {
       const result = getAllGAPropertyTags(MOCK_REQUESTS_WITH_GA_TAGS);
-      expect(result).toEqual('G-CSLL4ZEK4L,G-PI9UT7YUAT,G-QNT3KRC6EB,UA-33523145-1,UA-842976-1,G-QNT3FIU6EB,UA-8427660-1');
+      expect(result).toEqual('G-CSLL4ZEK4L,G-PI9UT7YUAT,G-QNT3KRC6EB,UA-33523145-1,UA-842976-1,G-QNT3FIU6EB,UA-8427660-1,G-QNT2XPC6EB,UA-842645-1');
     });
   });
 
@@ -312,22 +316,30 @@ describe('dap scan', () => {
   describe('getG4Tag()', () => {
     it('should return the G4 tag contained in the url, empty string otherwise', async () => {
       const result = getG4Tag('https://abcd-def/G-CSLL4ZEK4L/xyz');
-      expect(result).toEqual('G-CSLL4ZEK4L');
+      expect(result).toEqual(['G-CSLL4ZEK4L']);
+    });
+    it('should return multiple G4 tags contained in the url, empty string otherwise', async () => {
+      const result = getG4Tag('https://abcd-def/G-CSLL4ZEK4L/G-CSLLYBUS4L/xyz');
+      expect(result).toEqual(['G-CSLL4ZEK4L','G-CSLLYBUS4L']);
     });
     it('should return the an empty string if a G4 tag is not contained in the url', async () => {
       const result = getG4Tag('https://abcd-def/no-tag-here/xyz');
-      expect(result).toEqual('');
+      expect(result).toEqual([]);
     });
   });
 
   describe('getUATag()', () => {
-    it('should return the G4 tag contained in the url, empty string otherwise', async () => {
+    it('should return the UA tag contained in the url, empty string otherwise', async () => {
       const result = getUATag('https://abcd-def/UA-33523145-1/xyz');
-      expect(result).toEqual('UA-33523145-1');
+      expect(result).toEqual(['UA-33523145-1']);
     });
-    it('should return the an empty string if a G4 tag is not contained in the url', async () => {
+    it('should return multiple UA tags contained in the url, empty string otherwise', async () => {
+      const result = getUATag('https://abcd-def/UA-33523145-1/UA-33523145-2/xyz');
+      expect(result).toEqual(['UA-33523145-1','UA-33523145-2']);
+    });
+    it('should return the an empty string if a UA tag is not contained in the url', async () => {
       const result = getUATag('https://abcd-def/no-tag-here/xyz');
-      expect(result).toEqual('');
+      expect(result).toEqual([]);
     });
   });
 });
