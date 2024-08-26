@@ -177,7 +177,7 @@ export class CoreResult {
   @Column({ nullable: true })
   //@Expose({ name: 'ga_tag_id' })
   @Exclude()
-  dapGATagIds?: string;
+  gaTagIds?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'og_title' })

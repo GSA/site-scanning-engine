@@ -1,4 +1,5 @@
 import { Logger } from 'pino';
+import { uniq } from 'lodash';
 import { HTTPRequest } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
 
@@ -21,7 +22,7 @@ export const buildDapResult = async (
     dapDetected: false,
     dapParameters: "",
     dapVersion: "",
-    dapGATagIds: "",
+    gaTagIds: "",
   };
 
   if(outboundRequests.length === 0) {
@@ -48,7 +49,7 @@ export const buildDapResult = async (
     dapDetected: true,
     dapParameters: dapScript.parameters,
     dapVersion: dapScript.version,
-    dapGATagIds: allGAPropertyIds,
+    gaTagIds: allGAPropertyIds,
   };  
 
 };
@@ -87,7 +88,7 @@ export function getAllGAPropertyTags(allRequests: HTTPRequest[]): string {
     }
   }
 
-  const uniqueGAPropertyIds = removeDuplicates(allGAPropertyIds);
+  const uniqueGAPropertyIds = uniq(allGAPropertyIds);
   return uniqueGAPropertyIds.join(',');
 }
 
@@ -111,16 +112,6 @@ export function getUATag(stringToSearch: string): string {
   const uATagRegex = /UA-\d{4,}-\d/;
   const match = stringToSearch.match(uATagRegex);
   return match ? match[0] : '';
-}
-
-/**
- * Removes duplicate values from an array
- * 
- * @param arr An array of strings
- * @returns A new array with duplicate values removed
- */
-export function removeDuplicates(arr: string[]): string[] {
-  return arr.filter((value, index, self) => self.indexOf(value) === index);
 }
 
 /**

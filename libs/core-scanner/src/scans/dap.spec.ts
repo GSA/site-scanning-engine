@@ -19,7 +19,6 @@ import {
   getAllGAPropertyTags,
   getG4Tag,
   getUATag,
-  removeDuplicates,
 } from './dap';
 import {DapScan} from '../../../../entities/scan-data.entity';
 
@@ -117,29 +116,6 @@ const MOCK_DAP_SCRIPT_CANDIDATES: Record<string, DapScriptCandidate> = {
     version: null,
   },
 }
-
-const MOCK_GA_TAGS = [
-  'G-CSLL4ZEK4L',
-  'G-CSLL4ZEK4L',
-  'G-PI9UT7YUAT',
-  'G-QNT3KRC6EB',
-  'UA-33523145-1',
-  'UA-33523145-1',
-  'UA-842976-1',
-  'G-QNT3FIU6EB',
-  'G-QNT3FIU6EB',
-  'UA-8427660-1',
-];
-
-const EXPECTED_GA_TAGS = [
-  'G-CSLL4ZEK4L',
-  'G-PI9UT7YUAT',
-  'G-QNT3KRC6EB',
-  'UA-33523145-1',
-  'UA-842976-1',
-  'G-QNT3FIU6EB',
-  'UA-8427660-1',
-];
 
 const MOCK_REQUESTS_WITH_DAP = [
   MOCK_REQUESTS.realDapScript,
@@ -354,14 +330,6 @@ describe('dap scan', () => {
       expect(result).toEqual('');
     });
   });
-
-  describe('removeDuplicates()', () => {
-    it('should remove duplicates from an array', async () => {
-      const result = removeDuplicates(MOCK_GA_TAGS );
-      expect(result).toEqual(EXPECTED_GA_TAGS);
-    });
-  });
-
 });
 
 function createMockRequest(url: string, responseBody: string | null = '', postData: string | null = null) {
