@@ -171,7 +171,7 @@ export class CoreResult {
   dapParameters?: string;
 
   @Column({ nullable: true })
-  @Exclude()
+  @Expose({ name: 'dap_version' })
   dapVersion?: string;
 
   @Column({ nullable: true })
@@ -507,6 +507,7 @@ export class CoreResult {
     'search_dot_gov',
     'dap',
     'dap_parameters',
+    'dap_version',
     'third_party_service_domains',
     'third_party_service_count',
     'cookie_domains',
