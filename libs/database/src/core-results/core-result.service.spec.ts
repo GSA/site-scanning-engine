@@ -109,6 +109,7 @@ describe('CoreResultService', () => {
             dapDetected: null,
             dapParameters: null,
             dapVersion: "",
+            gaTagIds: "",
           },
           seoScan: {
             ogTitleFinalUrl: null,

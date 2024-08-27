@@ -1,4 +1,5 @@
 import { Logger } from 'pino';
+import { uniq } from 'lodash';
 import { HTTPRequest } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
 
@@ -21,6 +22,7 @@ export const buildDapResult = async (
     dapDetected: false,
     dapParameters: "",
     dapVersion: "",
+    gaTagIds: "",
   };
 
   if(outboundRequests.length === 0) {
@@ -32,6 +34,8 @@ export const buildDapResult = async (
   if(dapScriptCandidateRequests.length === 0) {
     return emptyResponse;
   }
+
+  const allGAPropertyIds: string = getAllGAPropertyTags(outboundRequests);
 
   const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(dapScriptCandidateRequests);
 
@@ -45,9 +49,67 @@ export const buildDapResult = async (
     dapDetected: true,
     dapParameters: dapScript.parameters,
     dapVersion: dapScript.version,
+    gaTagIds: allGAPropertyIds,
   };  
 
 };
+
+/**
+ * Returns a comma delimited string of all GA Property IDs found in the given requests
+ * 
+ * @param allRequests An object containing all HTTPRequests made from the page
+ * @returns A comma delimited string of all GA Property IDs found in the requests
+ */
+export function getAllGAPropertyTags(allRequests: HTTPRequest[]): string {
+  let allGAPropertyIds: string[] = [];
+
+  for (const request of allRequests) {
+    const requestUrl = request.url();
+    const postData = request.postData();
+    
+    if( getG4Tag(requestUrl).length !== 0 ) {
+      allGAPropertyIds = allGAPropertyIds.concat(getG4Tag(requestUrl));
+    }
+    if( getUATag(requestUrl).length !== 0 ) {
+      allGAPropertyIds = allGAPropertyIds.concat(getUATag(requestUrl));
+    }
+    if ( !postData ) {
+      continue;
+    }
+    if ( getG4Tag(postData).length !== 0 ) {
+      allGAPropertyIds = allGAPropertyIds.concat(getG4Tag(postData));
+    }
+    if ( getUATag(postData).length !== 0 ) {
+      allGAPropertyIds = allGAPropertyIds.concat(getUATag(postData));
+    }
+  }
+
+  const uniqueGAPropertyIds = uniq(allGAPropertyIds);
+  return uniqueGAPropertyIds.join(',');
+}
+
+/**
+ * 
+ * @param stringToSearch The string that may contain a G4 tag
+ * @returns Returns the G4 tag if found, otherwise an empty string
+ */
+export function getG4Tag(stringToSearch: string): string[] {
+  const g4TagRegex = /G-[a-zA-Z\d]{4,15}/g;
+  const match = stringToSearch.match(g4TagRegex);
+  return match ? match : [];
+}
+
+/**
+ * 
+ * @param requestUrl The string that may contain a UA tag
+ * @returns Returns the UA tag if found, otherwise an empty string
+ */
+export function getUATag(stringToSearch: string): string[] {
+  // const uATagRegex = /UA-\d{4,}-\d/;
+  const uATagRegex = /UA-\d{4,}-\d/g;
+  const match = stringToSearch.match(uATagRegex);
+  return match ? match : [];
+}
 
 /**
  * Filters a list of HTTPRequests to only include requests that contain DAP
