@@ -184,6 +184,16 @@ describe('dap scan', () => {
       expect(result.dapDetected).toEqual(true);
     });
 
+    it('should return GA tags', async () => {
+      const result = await executeDapScanner([ MOCK_REQUESTS.notRealBothTags ]);
+      expect(result.gaTagIds).toEqual('G-QNT2XPC6EB,UA-842645-1');
+    });
+
+    it('should not detect the presence of DAP', async () => {
+      const result = await executeDapScanner([ MOCK_REQUESTS.notRealBothTags ]);
+      expect(result.dapDetected).toEqual(false);
+    });
+
   });
 
   describe('getDapVersion()', () => {

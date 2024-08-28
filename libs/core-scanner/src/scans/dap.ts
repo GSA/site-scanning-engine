@@ -29,13 +29,22 @@ export const buildDapResult = async (
     return emptyResponse;
   }
 
+  const allGAPropertyIds: string = getAllGAPropertyTags(outboundRequests);
+
   const dapScriptCandidateRequests: HTTPRequest[] = getDapScriptCandidateRequests(outboundRequests);
 
-  if(dapScriptCandidateRequests.length === 0) {
+  if(dapScriptCandidateRequests.length === 0 && allGAPropertyIds === '') {
     return emptyResponse;
   }
-
-  const allGAPropertyIds: string = getAllGAPropertyTags(outboundRequests);
+  
+  if(dapScriptCandidateRequests.length === 0 && allGAPropertyIds != '') {
+    return {
+      dapDetected: false,
+      dapParameters: "",
+      dapVersion: "",
+      gaTagIds: allGAPropertyIds,
+    };
+  }
 
   const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(dapScriptCandidateRequests);
 
