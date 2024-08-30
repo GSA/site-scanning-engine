@@ -512,6 +512,7 @@ export class CoreResult {
     'dap',
     'dap_parameters',
     'dap_version',
+    'ga_tag_id',
     'third_party_service_domains',
     'third_party_service_count',
     'cookie_domains',
