@@ -70,10 +70,10 @@
     "swagger-ui-express": "^4.3.0",
     "typeorm": "^0.3.14",
     "uuid": "^8.3.2",
-    "webpack": ">=5.76.0"
+    "webpack": ">=5.94.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^9.2.0",
+    "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^7.3.1",
     "@nestjs/testing": "^10.3.7",
     "@types/bull": "^3.15.7",
