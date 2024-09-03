@@ -120,7 +120,7 @@ function getResultsListSubset(results: Result[]): ResultSubset[] {
     id: result.id,
     tags: result.tags,
     nodes: getNodeResultsSubset(result.nodes),
-    scanDate: new Date().toISOString(),
+    scanDate: result.scanDate ? result.scanDate : new Date().toISOString(),
   }));
 }
 

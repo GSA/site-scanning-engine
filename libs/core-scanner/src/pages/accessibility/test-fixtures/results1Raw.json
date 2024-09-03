@@ -40,6 +40,7 @@
         "target": ["html"],
         "failureSummary": "Fix any of the following:\n  The <html> element does not have a lang attribute"
       }
-    ]
+    ],
+    "scanDate": "2024-09-03T19:27:36.732Z"
   }
 ]
