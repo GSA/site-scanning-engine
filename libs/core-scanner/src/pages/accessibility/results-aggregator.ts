@@ -106,7 +106,7 @@ export function aggregateResults(results: Result[]): AggregatedResults {
       }
     }
   });
-console.log('#######RawResults', getResultsListSubset(rawResultsList));
+
   return {
     resultsSummary,
     resultsList: getResultsListSubset(rawResultsList),
