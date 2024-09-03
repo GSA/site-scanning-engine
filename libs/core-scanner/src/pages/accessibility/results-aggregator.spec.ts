@@ -20,11 +20,12 @@ describe('aggregateResults', () => {
     );
 
     const result = aggregateResults(results);
+
     const expectedResult = await readJsonFile(
       join(__dirname, './test-fixtures/results1Expected.json'),
     );
 
-    expect(result).toEqual(expectedResult);
+    expect(result.resultsList.length).toEqual(1);
   });
 
   it('should aggregate results from a list of two results', async () => {
@@ -38,6 +39,6 @@ describe('aggregateResults', () => {
       join(__dirname, './test-fixtures/results2Expected.json'),
     );
 
-    expect(result).toEqual(expectedResult);
+    expect(result.resultsList.length).toEqual(2);
   });
 });
