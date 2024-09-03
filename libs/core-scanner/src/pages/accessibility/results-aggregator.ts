@@ -13,6 +13,7 @@ type ResultSubset = {
   id: string;
   tags: TagValue[];
   nodes: NodeResultSubset[];
+  scanDate: string;
 };
 
 type NodeResultSubset = {
@@ -100,7 +101,6 @@ export function aggregateResults(results: Result[]): AggregatedResults {
         } else {
           resultsSummary[categorys] += result.nodes.length;
         }
-
         rawResultsList.push(result);
         break;
       }
@@ -120,6 +120,7 @@ function getResultsListSubset(results: Result[]): ResultSubset[] {
     id: result.id,
     tags: result.tags,
     nodes: getNodeResultsSubset(result.nodes),
+    scanDate: new Date().toISOString(),
   }));
 }
 

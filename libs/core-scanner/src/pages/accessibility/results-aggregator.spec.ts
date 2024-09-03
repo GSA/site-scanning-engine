@@ -20,7 +20,6 @@ describe('aggregateResults', () => {
     );
 
     const result = aggregateResults(results);
-
     const expectedResult = await readJsonFile(
       join(__dirname, './test-fixtures/results1Expected.json'),
     );
