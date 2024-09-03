@@ -13,7 +13,7 @@ type ResultSubset = {
   id: string;
   tags: TagValue[];
   nodes: NodeResultSubset[];
-  scan_date: string;
+  scanDate: string;
 };
 
 type NodeResultSubset = {
@@ -120,7 +120,7 @@ function getResultsListSubset(results: Result[]): ResultSubset[] {
     id: result.id,
     tags: result.tags,
     nodes: getNodeResultsSubset(result.nodes),
-    scan_date: new Date().toISOString(),
+    scanDate: new Date().toISOString(),
   }));
 }
 
