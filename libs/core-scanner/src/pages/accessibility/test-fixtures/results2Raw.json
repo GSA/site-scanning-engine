@@ -46,8 +46,7 @@
         "target": [".text-right"],
         "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.73 (foreground color: #6b7280, background color: #e4e0ef, font size: 9.8pt (13.125px), font weight: normal). Expected contrast ratio of 4.5:1"
       }
-    ],
-    "scanDate": "2024-09-03T19:27:36.732Z"
+    ]
   },
   {
     "id": "image-alt",
@@ -116,7 +115,6 @@
         "target": [".image > img"],
         "failureSummary": "Fix any of the following:\n  Element does not have an alt attribute\n  aria-label attribute does not exist or is empty\n  aria-labelledby attribute does not exist, references elements that do not exist or references elements that are empty\n  Element has no title attribute\n  Element's default semantics were not overridden with role=\"none\" or role=\"presentation\""
       }
-    ],
-    "scanDate": "2024-09-03T19:27:36.732Z"
+    ]
   }
 ]
