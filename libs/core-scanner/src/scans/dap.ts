@@ -26,18 +26,21 @@ export const buildDapResult = async (
   };
 
   if(outboundRequests.length === 0) {
+    logger.info({funcion: 'buildDapResult'}, 'No outbound requests found');
     return emptyResponse;
   }
 
-  const allGAPropertyIds: string = getAllGAPropertyTags(outboundRequests);
+  const allGAPropertyIds: string = getAllGAPropertyTags(logger, outboundRequests);
 
-  const dapScriptCandidateRequests: HTTPRequest[] = getDapScriptCandidateRequests(outboundRequests);
+  const dapScriptCandidateRequests: HTTPRequest[] = getDapScriptCandidateRequests(logger, outboundRequests);
 
   if(dapScriptCandidateRequests.length === 0 && allGAPropertyIds === '') {
+    logger.info({funcion: 'buildDapResult'}, 'No GA property Ids or DAP script candidates found');
     return emptyResponse;
   }
   
   if(dapScriptCandidateRequests.length === 0 && allGAPropertyIds != '') {
+    logger.info({funcion: 'buildDapResult'}, 'GA property Ids have been found but no DAP script candidates found');
     return {
       dapDetected: false,
       dapParameters: "",
@@ -46,9 +49,9 @@ export const buildDapResult = async (
     };
   }
 
-  const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(dapScriptCandidateRequests);
+  const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(logger, dapScriptCandidateRequests);
 
-  const dapScript: DapScriptCandidate | null = getBestCandidate(dapScriptCandidates);
+  const dapScript: DapScriptCandidate | null = getBestCandidate(logger, dapScriptCandidates);
 
   if(dapScript === null) {
     return emptyResponse;
@@ -66,16 +69,21 @@ export const buildDapResult = async (
 /**
  * Returns a comma delimited string of all GA Property IDs found in the given requests
  * 
+ * @param logger A logger object
  * @param allRequests An object containing all HTTPRequests made from the page
  * @returns A comma delimited string of all GA Property IDs found in the requests
  */
-export function getAllGAPropertyTags(allRequests: HTTPRequest[]): string {
+export function getAllGAPropertyTags(logger: Logger, allRequests: HTTPRequest[]): string {
   let allGAPropertyIds: string[] = [];
 
   for (const request of allRequests) {
     const requestUrl = request.url();
     const postData = request.postData();
     
+    if ( !requestUrl ) {
+      continue;
+    }
+    logger.info({funcion: 'getAllGAPropertyTags'}, 'Checking request for GA tags in requestUrl', { requestUrl });
     if( getG4Tag(requestUrl).length !== 0 ) {
       allGAPropertyIds = allGAPropertyIds.concat(getG4Tag(requestUrl));
     }
@@ -85,6 +93,7 @@ export function getAllGAPropertyTags(allRequests: HTTPRequest[]): string {
     if ( !postData ) {
       continue;
     }
+    logger.info({funcion: 'getAllGAPropertyTags'}, 'Checking request for GA tags in post data', { postData });
     if ( getG4Tag(postData).length !== 0 ) {
       allGAPropertyIds = allGAPropertyIds.concat(getG4Tag(postData));
     }
@@ -94,6 +103,7 @@ export function getAllGAPropertyTags(allRequests: HTTPRequest[]): string {
   }
 
   const uniqueGAPropertyIds = uniq(allGAPropertyIds);
+  logger.info({funcion: 'getAllGAPropertyTags'}, 'Unique GA Property IDs found', { uniqueGAPropertyIds });
   return uniqueGAPropertyIds.join(',');
 }
 
@@ -127,9 +137,10 @@ export function getUATag(stringToSearch: string): string[] {
  * @param allRequests An object containing all HTTPRequests made from the page
  * @returns A pruned down lust of HTTPRequests that contain DAP related tags or scripts
  */
-export function getDapScriptCandidateRequests(allRequests: HTTPRequest[]): HTTPRequest[] {
+export function getDapScriptCandidateRequests(logger: Logger, allRequests: HTTPRequest[]): HTTPRequest[] {
   const candidates: HTTPRequest[] = [];
 
+  logger.info({funcion: 'getDapScriptCandidateRequests'}, 'Checking all requests for DAP script candidates');
   for (const request of allRequests) {
     if(!checkForResponse(request)) {
       continue;
@@ -142,6 +153,7 @@ export function getDapScriptCandidateRequests(allRequests: HTTPRequest[]): HTTPR
     const isPostDataMatch = checkPostDataForPropertyIdMatch(postData);
 
     if( isExactScriptMatch || isPropertyIdMatch || isPostDataMatch ) {
+      logger.info({funcion: 'getDapScriptCandidateRequests'}, 'Request is a DAP script candidate', { requestUrl });
       candidates.push(request);
     }
   }
@@ -157,7 +169,7 @@ export function getDapScriptCandidateRequests(allRequests: HTTPRequest[]): HTTPR
  * @param dapScriptCandidateRequests An array of Puppeteer.HTTPRequest objects
  * @returns The requests passed in, but transformed into DapScriptCandidate objects.
  */
-export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPRequest[]): Promise<DapScriptCandidate[]> {
+export async function getDapScriptCandidates(logger: Logger, dapScriptCandidateRequests: HTTPRequest[]): Promise<DapScriptCandidate[]> {
   const candidates: DapScriptCandidate[] = [];
 
   for (const request of dapScriptCandidateRequests) {
@@ -173,20 +185,26 @@ export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPReq
     };
 
     try {
+      logger.info({funcion: 'getDapScriptCandidates'}, 'Getting response body for DAP script candidate', { url });
       candidate.body = await request.response().text();
-    } catch {
+    } catch (err) {
+      logger.info({funcion: 'getDapScriptCandidates'}, 'Error getting response body for DAP script candidate', { url, err });
       candidate.body = '';
     }
 
     candidate.version = candidate.body !== null ? getDapVersion(candidate.body) : '';
 
     try {
+      logger.info({funcion: 'getDapScriptCandidates'}, 'Getting post data for DAP script candidate', { url });
       candidate.postData = request.postData();
-    } catch {}
+    } catch (err) {
+      logger.info({funcion: 'getDapScriptCandidates'}, 'Error getting post data for DAP script candidate', { url, err });
+    }
 
     candidates.push(candidate);
   }
 
+  logger.info({funcion: 'getDapScriptCandidates'}, 'DAP script candidates found', { candidates });
   return candidates;
 }
 
@@ -196,7 +214,7 @@ export async function getDapScriptCandidates(dapScriptCandidateRequests: HTTPReq
  * @param dapScriptCandidates A list of DapScriptCandidates that will be analyzed to determine best option
  * @returns The best DAP candidate based on a series of checks
  */
-export function getBestCandidate(dapScriptCandidates: DapScriptCandidate[]): DapScriptCandidate {
+export function getBestCandidate(logger: Logger, dapScriptCandidates: DapScriptCandidate[]): DapScriptCandidate {
   const checks = [
     (candidate: DapScriptCandidate) => checkCandidateForScriptAndVersion(candidate) === true,
     (candidate: DapScriptCandidate) => checkCandidateForPropertyAndVersion(candidate) === true,
@@ -210,20 +228,24 @@ export function getBestCandidate(dapScriptCandidates: DapScriptCandidate[]): Dap
   for (const candidate of dapScriptCandidates) {
     let matchLevel = -1;
 
+    logger.info({funcion: 'getBestCandidate'}, 'Checking DAP script candidate', { candidate });
     for (let i = 0; i < checks.length; i++) {
       if (checks[i](candidate)) {
+          logger.info({funcion: 'getBestCandidate'}, 'DAP script candidate passed check', { candidate, check: i });
           matchLevel = i;
           break;
       }
     }
 
     if (matchLevel < bestMatchLevel) {
+      logger.info({funcion: 'getBestCandidate'}, 'DAP script candidate is the best match so far', { candidate });
       bestCandidate = candidate;
-        bestMatchLevel = matchLevel;
+      bestMatchLevel = matchLevel;
     }
 
   }
 
+  logger.info({funcion: 'getBestCandidate'}, 'Best DAP script candidate found', { bestCandidate });
   return bestCandidate;
 }
 

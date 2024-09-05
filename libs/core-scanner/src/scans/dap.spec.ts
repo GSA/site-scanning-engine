@@ -210,37 +210,37 @@ describe('dap scan', () => {
 
   describe('getAllGAPropertyIds()', () => {
     it('should return an comma delimited list of GA property IDs', async () => {
-      const result = getAllGAPropertyTags(MOCK_REQUESTS_WITH_GA_TAGS);
+      const result = getAllGAPropertyTags(mock<Logger>(), MOCK_REQUESTS_WITH_GA_TAGS);
       expect(result).toEqual('G-CSLL4ZEK4L,G-PI9UT7YUAT,G-QNT3KRC6EB,UA-33523145-1,UA-842976-1,G-QNT3FIU6EB,UA-8427660-1,G-QNT2XPC6EB,UA-842645-1');
     });
   });
 
   describe('getDapScriptCandidateRequests()', () => {
     it('should include all requests containing DAP', async () => {
-      const result = getDapScriptCandidateRequests(MOCK_REQUESTS_WITH_DAP);
+      const result = getDapScriptCandidateRequests(mock<Logger>(), MOCK_REQUESTS_WITH_DAP);
       expect(result.length).toEqual(3);
     });
 
     it('should only include the requests that contain DAP and filter out non DAP requests', async () => {
-      const result = getDapScriptCandidateRequests(ALL_MOCK_REQUESTS);
+      const result = getDapScriptCandidateRequests(mock<Logger>(), ALL_MOCK_REQUESTS);
       expect(result.length).toEqual(3);
     });
   });
 
   describe('getDapScriptCandidates()', () => {
     it('should return an array of DapCandidateScripts', async () => {
-      const result = await getDapScriptCandidates(MOCK_REQUESTS_WITH_DAP);
+      const result = await getDapScriptCandidates(mock<Logger>(), MOCK_REQUESTS_WITH_DAP);
       expect(result.length).toEqual(3);
     });
   });
 
   describe('getBestCandidate()', () => {
     it('should return the candidate that contains the exact script match and version', async () => {
-      const result = getBestCandidate(ALL_DAP_SCRIPT_CANDIDATES);
+      const result = getBestCandidate(mock<Logger>(), ALL_DAP_SCRIPT_CANDIDATES);
       expect(result.url).toEqual('https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
     });
     it('should return a candidate that best matches the criteria', async () => {
-      const result = getBestCandidate(DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT);
+      const result = getBestCandidate(mock<Logger>(), DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT);
       expect(result.version).toEqual('20240712 v8.2 - GA4');
     });
   });
