@@ -148,6 +148,7 @@
       "@app/queue/(.*)": "<rootDir>/libs/queue/src/$1",
       "@app/security-data/(.*)": "<rootDir>/libs/security-data/src/$1",
       "@app/security-data": "<rootDir>/libs/security-data/src"
-    }
+    },
+    "setupFilesAfterEnv": ["<rootDir>/test/jest.setup.ts"]
   }
 }

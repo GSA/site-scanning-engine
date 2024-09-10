@@ -9,13 +9,14 @@ export type DapScriptCandidate = {
   body: string,
   postData?: string | null;
   version?: string;
+  dapDetected: boolean;
 }
 
 const DAP_SCRIPT_NAME = 'Universal-Federated-Analytics-Min.js';
 const DAP_GA_PROPERTY_IDS = ['G-CSLL4ZEK4L'];
 
 export const buildDapResult = async (
-  logger: Logger,
+  parentLogger: Logger,
   outboundRequests: HTTPRequest[],
 ): Promise<DapScan> => {
   const emptyResponse = {
@@ -25,11 +26,11 @@ export const buildDapResult = async (
     gaTagIds: "",
   };
 
-  const logMeta = {function: 'buildDapResult'};
+  const logger = parentLogger.child({ function: 'buildDapResult' });
 
   const hasOutboundRequests = outboundRequests.length === 0;
   if(hasOutboundRequests) {
-    logger.info({...logMeta}, 'No outbound requests found.');
+    logger.info('No outbound requests found.');
     return emptyResponse;
   }
 
@@ -40,12 +41,12 @@ export const buildDapResult = async (
   const hasDapScriptCandidateRequests = dapScriptCandidateRequests.length === 0;
   const hasGaPropertyIds = allGAPropertyIds === '';
   if(hasDapScriptCandidateRequests && hasGaPropertyIds) {
-    logger.info({ ...logMeta }, 'Unable to locate dap script candidates or GA property IDs.');
+    logger.info('Unable to locate dap script candidates or GA property IDs.');
     return emptyResponse;
   }
   
   if(hasDapScriptCandidateRequests && !hasGaPropertyIds) {
-    logger.info({ ...logMeta }, `No DAP script candidates found, but the following GA property IDs were detected: ${allGAPropertyIds}`);
+    logger.info(`No DAP script candidates found, but the following GA property IDs were detected: ${allGAPropertyIds}`);
     return {
       dapDetected: false,
       dapParameters: "",
@@ -59,7 +60,7 @@ export const buildDapResult = async (
   const dapScript: DapScriptCandidate = getBestCandidate(logger, dapScriptCandidates);
 
   return {
-    dapDetected: true,
+    dapDetected: dapScript.dapDetected,
     dapParameters: dapScript.parameters,
     dapVersion: dapScript.version,
     gaTagIds: allGAPropertyIds,
@@ -74,15 +75,15 @@ export const buildDapResult = async (
  * @param allRequests An object containing all HTTPRequests made from the page
  * @returns A comma delimited string of all GA Property IDs found in the requests
  */
-export function getAllGAPropertyTags(logger: Logger, allRequests: HTTPRequest[]): string {
+export function getAllGAPropertyTags(parentLogger: Logger, allRequests: HTTPRequest[]): string {
   let allGAPropertyIds: string[] = [];
 
-  const logMeta = {function: 'getAllGAPropertyTags'};
+  const logger = parentLogger.child({ function: 'getAllGAPropertyTags' });
 
   for (const request of allRequests) {
     const requestUrl = request.url();
     const postData = request.postData();
-    
+
     if ( !requestUrl ) {
       continue;
     }
@@ -105,7 +106,7 @@ export function getAllGAPropertyTags(logger: Logger, allRequests: HTTPRequest[])
   }
 
   const uniqueGAPropertyIds = uniq(allGAPropertyIds);
-  logger.info({ ...logMeta }, 'GA Property IDs found: %s', JSON.stringify(uniqueGAPropertyIds));
+  logger.info('GA Property IDs found: %s', JSON.stringify(uniqueGAPropertyIds));
   return uniqueGAPropertyIds.join(',');
 }
 
@@ -139,9 +140,9 @@ export function getUATag(stringToSearch: string): string[] {
  * @param allRequests An object containing all HTTPRequests made from the page
  * @returns A pruned down lust of HTTPRequests that contain DAP related tags or scripts
  */
-export function getDapScriptCandidateRequests(logger: Logger, allRequests: HTTPRequest[]): HTTPRequest[] {
+export function getDapScriptCandidateRequests(parentLogger: Logger, allRequests: HTTPRequest[]): HTTPRequest[] {
   const candidates: HTTPRequest[] = [];
-  const logMeta = {function: 'getDapScriptCandidateRequests'};
+  const logger = parentLogger.child({ function: 'getDapScriptCandidateRequests' });
 
   for (const request of allRequests) {
     if(!checkForResponse(request)) {
@@ -155,7 +156,7 @@ export function getDapScriptCandidateRequests(logger: Logger, allRequests: HTTPR
     const isPostDataMatch = checkPostDataForPropertyIdMatch(postData);
 
     if( isExactScriptMatch || isPropertyIdMatch || isPostDataMatch ) {
-      logger.info({ ...logMeta }, `Dap script candidate found: ${requestUrl}`);
+      logger.info(`Dap script candidate found: ${requestUrl}`);
       candidates.push(request);
     }
   }
@@ -171,9 +172,9 @@ export function getDapScriptCandidateRequests(logger: Logger, allRequests: HTTPR
  * @param dapScriptCandidateRequests An array of Puppeteer.HTTPRequest objects
  * @returns The requests passed in, but transformed into DapScriptCandidate objects.
  */
-export async function getDapScriptCandidates(logger: Logger, dapScriptCandidateRequests: HTTPRequest[]): Promise<DapScriptCandidate[]> {
+export async function getDapScriptCandidates(parentLogger: Logger, dapScriptCandidateRequests: HTTPRequest[]): Promise<DapScriptCandidate[]> {
   const candidates: DapScriptCandidate[] = [];
-  const logMeta = {function: 'getDapScriptCandidates'};
+  const logger = parentLogger.child({ function: 'getDapScriptCandidates' });
 
   for (const request of dapScriptCandidateRequests) {
     const url = request.url();
@@ -185,12 +186,18 @@ export async function getDapScriptCandidates(logger: Logger, dapScriptCandidateR
       postData: null,
       url: request.url(),
       version: "",
+      dapDetected: false,
+    };
+
+    if( checkPostDataForPropertyIdMatch(request.postData()) || checkUrlForPropertyIdMatch(request.url()) ) {
+      logger.debug('DAP script candidate found');
+      candidate.dapDetected = true;
     };
 
     try {
       candidate.body = await request.response().text();
     } catch (err) {
-      logger.info({...logMeta, error: err}, `Error getting response from candidate body: ${url}`);
+      logger.info({error: err},`Error getting response from candidate body: ${url}`);
       candidate.body = '';
     }
 
@@ -199,10 +206,10 @@ export async function getDapScriptCandidates(logger: Logger, dapScriptCandidateR
     try {
       candidate.postData = request.postData();
     } catch (err) {
-      logger.info({...logMeta, error: err}, `Error getting post data for DAP script candidate: ${url}`);
+      logger.info({error: err}, `Error getting post data for DAP script candidate: ${url}`);
     }
 
-    logger.info({ ...logMeta }, `DAP script candidate found: ${ candidate.url }`);
+    logger.info(`DAP script candidate found: ${ candidate.url }`);
     candidates.push(candidate);
   }
 
@@ -215,8 +222,8 @@ export async function getDapScriptCandidates(logger: Logger, dapScriptCandidateR
  * @param dapScriptCandidates A list of DapScriptCandidates that will be analyzed to determine best option
  * @returns The best DAP candidate based on a series of checks
  */
-export function getBestCandidate(logger: Logger, dapScriptCandidates: DapScriptCandidate[]): DapScriptCandidate {
-  const logMeta = {function: 'getBestCandidate'};
+export function getBestCandidate(parentLogger: Logger, dapScriptCandidates: DapScriptCandidate[]): DapScriptCandidate {
+  const logger = parentLogger.child({ function: 'getBestCandidate' });
   const checks = [
     {
       name: 'Script and Version',
@@ -247,21 +254,21 @@ export function getBestCandidate(logger: Logger, dapScriptCandidates: DapScriptC
 
     for (let i = 0; i < checks.length; i++) {
       if (checks[i].check(candidate)) {
-          logger.debug({ ...logMeta }, `DAP script candidate passed check: ${checks[i].name}`);
+          logger.debug(`DAP script candidate passed check: ${checks[i].name}`);
           matchLevel = i;
           break;
       }
     }
 
     if (matchLevel < bestMatchLevel) {
-      logger.debug({ ...logMeta }, `DAP script candidate is the best match so far: ${candidate.url}`);
+      logger.debug(`DAP script candidate is the best match so far: ${candidate.url}`);
       bestCandidate = candidate;
       bestMatchLevel = matchLevel;
     }
 
   }
 
-  logger.info({ ...logMeta }, `Best DAP script candidate found: ${ bestCandidate.url }`);
+  logger.info(`Best DAP script candidate found: ${ bestCandidate.url }`);
   return bestCandidate;
 }
 

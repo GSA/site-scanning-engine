@@ -2,7 +2,6 @@ import { join } from 'path';
 import * as puppeteer from 'puppeteer';
 import { readFileSync } from 'fs';
 
-
 // This should map to the directory containing the package.json.
 // By convention, assume that the originating process was run from the root
 // directory.
