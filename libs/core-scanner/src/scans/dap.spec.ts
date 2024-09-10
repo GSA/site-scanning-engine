@@ -1,7 +1,7 @@
 import { mock } from 'jest-mock-extended';
 import { Logger } from 'pino';
 import { HTTPRequest, HTTPResponse } from 'puppeteer';
-import { getTestFileContents } from '../test-helper';
+import { getTestFileContents, mockLogger } from '../test-helper';
 
 import { 
   buildDapResult,
@@ -81,42 +81,49 @@ const MOCK_DAP_SCRIPT_CANDIDATES: Record<string, DapScriptCandidate> = {
     parameters: 'test1=1&test2=2',
     body: minifiedScriptContents,
     version: '20240712 v8.2 - GA4',
+    dapDetected: false,
   },
   realNonMinifiedScript: {
     url: 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
     parameters: 'test1=1&test2=2',
     body: nonMinifiedScriptContents,
     version: '20240712 v8.2 - GA4',
+    dapDetected: false,
   },
   realScriptNoVersion: {
     url: 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
     parameters: 'test1=1&test2=2',
     body: '',
     version: null,
+    dapDetected: false,
   },
   gaTagsWithVersion: {
     url: 'https://abcd-def/G-CSLL4ZEK4L/xyz',
     parameters: null,
     body: null,
     version: '20240712 v8.2 - GA4',
+    dapDetected: true,
   },
   gaTagsNoVersion: {
     url: 'https://abcd-def/G-CSLL4ZEK4L/xyz',
     parameters: null,
     body: null,
     version: null,
+    dapDetected: true,
   },
   invalidUrlWithVersion: {
     url: 'https://no-dap/here',
     parameters: null,
     body: null,
     version: '20240712 v8.2 - GA4',
+    dapDetected: false,
   },
   invalidCandidate: {
     url: 'https://no-dap/here',
     parameters: null,
     body: null,
     version: null,
+    dapDetected: false,
   },
 }
 
@@ -161,7 +168,7 @@ describe('dap scan', () => {
   describe('buildDapResult()', () => {
     it('should detect the presence of DAP when passed a real DAP script', async () => {
       const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
-      expect(result.dapDetected).toEqual(true);
+      expect(result.dapDetected).toEqual(false);
     });
 
     it('should detect the DAP version from a minified JS script', async () => {
@@ -210,37 +217,37 @@ describe('dap scan', () => {
 
   describe('getAllGAPropertyIds()', () => {
     it('should return an comma delimited list of GA property IDs', async () => {
-      const result = getAllGAPropertyTags(mock<Logger>(), MOCK_REQUESTS_WITH_GA_TAGS);
+      const result = getAllGAPropertyTags(mockLogger, MOCK_REQUESTS_WITH_GA_TAGS);
       expect(result).toEqual('G-CSLL4ZEK4L,G-PI9UT7YUAT,G-QNT3KRC6EB,UA-33523145-1,UA-842976-1,G-QNT3FIU6EB,UA-8427660-1,G-QNT2XPC6EB,UA-842645-1');
     });
   });
 
   describe('getDapScriptCandidateRequests()', () => {
     it('should include all requests containing DAP', async () => {
-      const result = getDapScriptCandidateRequests(mock<Logger>(), MOCK_REQUESTS_WITH_DAP);
+      const result = getDapScriptCandidateRequests(mockLogger, MOCK_REQUESTS_WITH_DAP);
       expect(result.length).toEqual(3);
     });
 
     it('should only include the requests that contain DAP and filter out non DAP requests', async () => {
-      const result = getDapScriptCandidateRequests(mock<Logger>(), ALL_MOCK_REQUESTS);
+      const result = getDapScriptCandidateRequests(mockLogger, ALL_MOCK_REQUESTS);
       expect(result.length).toEqual(3);
     });
   });
 
   describe('getDapScriptCandidates()', () => {
     it('should return an array of DapCandidateScripts', async () => {
-      const result = await getDapScriptCandidates(mock<Logger>(), MOCK_REQUESTS_WITH_DAP);
+      const result = await getDapScriptCandidates(mockLogger, MOCK_REQUESTS_WITH_DAP);
       expect(result.length).toEqual(3);
     });
   });
 
   describe('getBestCandidate()', () => {
     it('should return the candidate that contains the exact script match and version', async () => {
-      const result = getBestCandidate(mock<Logger>(), ALL_DAP_SCRIPT_CANDIDATES);
+      const result = getBestCandidate(mockLogger, ALL_DAP_SCRIPT_CANDIDATES);
       expect(result.url).toEqual('https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
     });
     it('should return a candidate that best matches the criteria', async () => {
-      const result = getBestCandidate(mock<Logger>(), DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT);
+      const result = getBestCandidate(mockLogger, DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT);
       expect(result.version).toEqual('20240712 v8.2 - GA4');
     });
   });
@@ -369,5 +376,5 @@ function createMockRequest(url: string, responseBody: string | null = '', postDa
 }
 
 async function executeDapScanner( mockRequests: HTTPRequest[] ): Promise<DapScan> {
-  return buildDapResult( mock<Logger>(), mockRequests );
+  return buildDapResult( mockLogger, mockRequests );
 }

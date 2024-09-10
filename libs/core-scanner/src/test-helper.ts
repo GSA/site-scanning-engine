@@ -2,7 +2,6 @@ import { join } from 'path';
 import * as puppeteer from 'puppeteer';
 import { readFileSync } from 'fs';
 
-
 // This should map to the directory containing the package.json.
 // By convention, assume that the originating process was run from the root
 // directory.
@@ -99,3 +98,14 @@ export const newTestPageFromBody = async (
     await handler({ page });
   });
 };
+
+// Creates a mock pino logger
+const mockLoggerFunctions = {
+  info: jest.fn(),
+  error: jest.fn(),
+  warn: jest.fn(),
+  debug: jest.fn(),
+  child: jest.fn(() => mockLoggerFunctions),
+};
+jest.mock('pino', () => () => mockLoggerFunctions);
+export const mockLogger = require('pino')();
