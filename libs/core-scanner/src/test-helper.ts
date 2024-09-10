@@ -98,14 +98,3 @@ export const newTestPageFromBody = async (
     await handler({ page });
   });
 };
-
-// Creates a mock pino logger
-const mockLoggerFunctions = {
-  info: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  debug: jest.fn(),
-  child: jest.fn(() => mockLoggerFunctions),
-};
-jest.mock('pino', () => () => mockLoggerFunctions);
-export const mockLogger = require('pino')();

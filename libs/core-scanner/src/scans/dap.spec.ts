@@ -1,7 +1,7 @@
+import pino from 'pino';
 import { mock } from 'jest-mock-extended';
-import { Logger } from 'pino';
 import { HTTPRequest, HTTPResponse } from 'puppeteer';
-import { getTestFileContents, mockLogger } from '../test-helper';
+import { getTestFileContents } from '../test-helper';
 
 import { 
   buildDapResult,
@@ -22,6 +22,7 @@ import {
 } from './dap';
 import {DapScan} from '../../../../entities/scan-data.entity';
 
+const mockLogger = pino();
 const minifiedScriptContents = getTestFileContents('dap/Universal-Federated-Analytics.min.js');
 const nonMinifiedScriptContents = getTestFileContents('dap/Universal-Federated-Analytics.js');
 
