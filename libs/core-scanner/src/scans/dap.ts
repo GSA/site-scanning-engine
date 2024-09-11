@@ -9,7 +9,6 @@ export type DapScriptCandidate = {
   body: string,
   postData?: string | null;
   version?: string;
-  dapDetected: boolean;
 }
 
 const DAP_SCRIPT_NAME = 'Universal-Federated-Analytics-Min.js';
@@ -60,7 +59,7 @@ export const buildDapResult = async (
   const dapScript: DapScriptCandidate = getBestCandidate(logger, dapScriptCandidates);
 
   return {
-    dapDetected: dapScript.dapDetected,
+    dapDetected: true,
     dapParameters: dapScript.parameters,
     dapVersion: dapScript.version,
     gaTagIds: allGAPropertyIds,
@@ -123,7 +122,7 @@ export function getG4Tag(stringToSearch: string): string[] {
 
 /**
  * 
- * @param requestUrl The string that may contain a UA tag
+ * @param stringToSearch The string that may contain a UA tag
  * @returns Returns the UA tag if found, otherwise an empty string
  */
 export function getUATag(stringToSearch: string): string[] {
@@ -137,6 +136,7 @@ export function getUATag(stringToSearch: string): string[] {
  * Filters a list of HTTPRequests to only include requests that contain DAP
  * related tags or scripts.
  * 
+ * @param parentLogger A logger object
  * @param allRequests An object containing all HTTPRequests made from the page
  * @returns A pruned down lust of HTTPRequests that contain DAP related tags or scripts
  */
@@ -169,6 +169,7 @@ export function getDapScriptCandidateRequests(parentLogger: Logger, allRequests:
  * in order to promote compute efficiency and promote testability of the other functions
  * in this process.
  *
+ * @param parentLogger A logger object
  * @param dapScriptCandidateRequests An array of Puppeteer.HTTPRequest objects
  * @returns The requests passed in, but transformed into DapScriptCandidate objects.
  */
@@ -186,12 +187,6 @@ export async function getDapScriptCandidates(parentLogger: Logger, dapScriptCand
       postData: null,
       url: request.url(),
       version: "",
-      dapDetected: false,
-    };
-
-    if( checkPostDataForPropertyIdMatch(request.postData()) || checkUrlForPropertyIdMatch(request.url()) ) {
-      logger.debug('DAP script candidate found');
-      candidate.dapDetected = true;
     };
 
     try {
@@ -219,6 +214,7 @@ export async function getDapScriptCandidates(parentLogger: Logger, dapScriptCand
 /**
  * This will return the best candidate for providing proper DAP analysis
  *
+ * @param parentLogger A logger object
  * @param dapScriptCandidates A list of DapScriptCandidates that will be analyzed to determine best option
  * @returns The best DAP candidate based on a series of checks
  */

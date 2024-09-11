@@ -82,49 +82,42 @@ const MOCK_DAP_SCRIPT_CANDIDATES: Record<string, DapScriptCandidate> = {
     parameters: 'test1=1&test2=2',
     body: minifiedScriptContents,
     version: '20240712 v8.2 - GA4',
-    dapDetected: false,
   },
   realNonMinifiedScript: {
     url: 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
     parameters: 'test1=1&test2=2',
     body: nonMinifiedScriptContents,
     version: '20240712 v8.2 - GA4',
-    dapDetected: false,
   },
   realScriptNoVersion: {
     url: 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
     parameters: 'test1=1&test2=2',
     body: '',
     version: null,
-    dapDetected: false,
   },
   gaTagsWithVersion: {
     url: 'https://abcd-def/G-CSLL4ZEK4L/xyz',
     parameters: null,
     body: null,
     version: '20240712 v8.2 - GA4',
-    dapDetected: true,
   },
   gaTagsNoVersion: {
     url: 'https://abcd-def/G-CSLL4ZEK4L/xyz',
     parameters: null,
     body: null,
     version: null,
-    dapDetected: true,
   },
   invalidUrlWithVersion: {
     url: 'https://no-dap/here',
     parameters: null,
     body: null,
     version: '20240712 v8.2 - GA4',
-    dapDetected: false,
   },
   invalidCandidate: {
     url: 'https://no-dap/here',
     parameters: null,
     body: null,
     version: null,
-    dapDetected: false,
   },
 }
 
@@ -169,7 +162,7 @@ describe('dap scan', () => {
   describe('buildDapResult()', () => {
     it('should detect the presence of DAP when passed a real DAP script', async () => {
       const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
-      expect(result.dapDetected).toEqual(false);
+      expect(result.dapDetected).toEqual(true);
     });
 
     it('should detect the DAP version from a minified JS script', async () => {
