@@ -42,6 +42,7 @@ export type SeoScan = {
 export type ThirdPartyScan = {
   thirdPartyServiceDomains: string;
   thirdPartyServiceCount: number;
+  thirdPartyServiceUrls: string;
 };
 
 export type CookieScan = {

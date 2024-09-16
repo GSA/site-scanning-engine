@@ -56,7 +56,7 @@ const primaryScan = async (
     mobileScan,
   ] = await promiseAll([
     buildDapResult(logger, getOutboundRequests()),
-    buildThirdPartyResult(response, getOutboundRequests()),
+    buildThirdPartyResult(logger, response, getOutboundRequests()),
     buildCookieResult(page),
     buildSeoResult(logger, page, response),
     createUswdsScanner({ logger, getCSSRequests }, page)(response),

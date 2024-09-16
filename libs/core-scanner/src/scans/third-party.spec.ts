@@ -1,12 +1,16 @@
 import { mock } from 'jest-mock-extended';
 import { HTTPRequest, HTTPResponse } from 'puppeteer';
+import pino from 'pino';
 
 import { buildThirdPartyResult } from './third-party';
+
+const mockLogger = pino();
 
 describe('third-party scan', () => {
   it('non-navigation different domains treated as third-parties', async () => {
     expect(
       await buildThirdPartyResult(
+        mockLogger,
         mock<HTTPResponse>({
           url: () => 'https://www.18f.gov/',
         }),
@@ -40,6 +44,7 @@ describe('third-party scan', () => {
     ).toEqual({
       thirdPartyServiceCount: 2,
       thirdPartyServiceDomains: 'google.com,test.com',
+      thirdPartyServiceUrls: 'https://google.com/,https://test.com/',
     });
   });
 });
