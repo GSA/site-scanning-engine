@@ -289,6 +289,18 @@ export class CoreResult {
   thirdPartyServiceDomains?: string;
 
   @Column({ nullable: true })
+  //@Expose({ name: 'third_party_service_urls' })
+  @Exclude()
+  @Transform((value: string) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return 'null';
+    }
+  })
+  thirdPartyServiceUrls?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'third_party_service_count' })
   thirdPartyServiceCount?: number;
 

@@ -100,6 +100,8 @@ export class CoreResultService {
         result.thirdPartyScan.thirdPartyServiceCount;
       coreResult.thirdPartyServiceDomains =
         result.thirdPartyScan.thirdPartyServiceDomains;
+      coreResult.thirdPartyServiceUrls =
+        result.thirdPartyScan.thirdPartyServiceUrls;
 
       // Cookie scan
       coreResult.cookieDomains = result.cookieScan.domains;
@@ -163,6 +165,7 @@ export class CoreResultService {
       coreResult.canonicalLink = null;
       coreResult.thirdPartyServiceCount = null;
       coreResult.thirdPartyServiceDomains = null;
+      coreResult.thirdPartyServiceUrls = null;
       coreResult.finalUrl = null;
       coreResult.finalUrlBaseDomain = null;
       coreResult.finalUrlWebsite = null;

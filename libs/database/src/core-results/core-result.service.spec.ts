@@ -131,6 +131,7 @@ describe('CoreResultService', () => {
             thirdPartyServiceDomains: null,
             thirdPartyServiceCount: null,
             cookieDomains: null,
+            thirdPartyServiceUrls: null,
           },
           cookieScan: {
             domains: '',
