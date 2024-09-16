@@ -10,7 +10,7 @@ export const buildThirdPartyResult = async (
   mainResponse: HTTPResponse,
   outboundRequests: HTTPRequest[],
 ): Promise<ThirdPartyScan> => {
-  const logger = parentLogger.child({ scan: 'third-party' });
+  const logger = parentLogger.child({ scan: 'third-party-scan' });
   const timer = logTimer(logger);
   const url = mainResponse && mainResponse.url();
   const thirdPartyResult = await thirdPartyServices(logger, outboundRequests, url);
