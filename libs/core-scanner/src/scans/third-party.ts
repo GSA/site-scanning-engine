@@ -15,7 +15,7 @@ export const buildThirdPartyResult = async (
   const url = mainResponse && mainResponse.url();
   const thirdPartyResult = await thirdPartyServices(logger, outboundRequests, url);
   const thirdPartyUrlResult = await thirdPartyServicesUrls(logger, outboundRequests, url);
-  timer.log({}, 'third-party-scan.timer', `Third-party scan completed in [{metricValue}ms]`);
+  timer.log({}, 'scanner.page.primary.scan.third-party.duration.total', `Third-party scan completed in [{metricValue}ms]`);
   return {
     thirdPartyServiceDomains: thirdPartyResult.domains,
     thirdPartyServiceCount: thirdPartyResult.count,
@@ -35,7 +35,7 @@ export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTT
     }
   }
   const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
-  logCount(logger, { thirdPartyServiceCount: deduped.length }, 'third-party-services.id', 'Third-party services count: {metricValue}');
+  logCount(logger, { thirdPartyServicesCount: deduped.length }, 'scanner.page.primary.scan.third-party.unique_external_domains.count', 'Third-party services count: {metricValue}');
   return {
     domains: deduped.join(','),
     count: deduped.length,
@@ -57,11 +57,14 @@ export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests:
     const url = request && new URL(request.url());
     if (parsedUrl.hostname != url.hostname && !request.isNavigationRequest()) {
       const fullUrl = removeQueryParameters(url.toString());
-      thirdPartyDomains.push(fullUrl);
+      const isFileLoad = fullUrl.startsWith('data:') || fullUrl.startsWith('blob:');
+      if( !isFileLoad) {
+        thirdPartyDomains.push(fullUrl);
+      }
     }
   }
   const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
-  logCount(logger, { thirdPartyServicesUrls: deduped.length }, 'third-party-services-url.id', 'Third-party services url count: {metricValue}');
+  logCount(logger, { thirdPartyServicesUrlsCount: deduped.length }, 'scanner.page.primary.scan.third-party.unique_external_urls.count', 'Third-party services url count: {metricValue}');
   return deduped.join(',')
 };
 
