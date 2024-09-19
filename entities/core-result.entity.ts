@@ -289,13 +289,12 @@ export class CoreResult {
   thirdPartyServiceDomains?: string;
 
   @Column({ nullable: true })
-  //@Expose({ name: 'third_party_service_urls' })
-  @Exclude()
+  @Expose({ name: 'third_party_service_urls' })
   @Transform((value: string) => {
     if (value) {
       return value.split(',');
     } else {
-      return 'null';
+      return null;
     }
   })
   thirdPartyServiceUrls?: string;
@@ -526,6 +525,7 @@ export class CoreResult {
     'dap_version',
     'ga_tag_id',
     'third_party_service_domains',
+    'third_party_service_urls',
     'third_party_service_count',
     'cookie_domains',
     'viewport_meta_tag',
