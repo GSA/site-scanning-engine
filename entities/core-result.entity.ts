@@ -294,7 +294,7 @@ export class CoreResult {
     if (value) {
       return value.split(',');
     } else {
-      return 'null';
+      return null;
     }
   })
   thirdPartyServiceUrls?: string;
