@@ -57,8 +57,8 @@ export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests:
     const url = request && new URL(request.url());
     if (parsedUrl.hostname != url.hostname && !request.isNavigationRequest()) {
       const fullUrl = removeQueryParameters(url.toString());
-      const isFileLoad = fullUrl.startsWith('data:') || fullUrl.startsWith('blob:');
-      if( !isFileLoad) {
+      const isFileLoad = fullUrl.startsWith('http') || fullUrl.startsWith('https');
+      if( isFileLoad) {
         thirdPartyDomains.push(fullUrl);
       }
     }
