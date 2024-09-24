@@ -4,7 +4,7 @@
 export default () => {
   if (process.env.VCAP_SERVICES) {
     const vcap = JSON.parse(process.env.VCAP_SERVICES);
-    const rds = vcap['aws-rds'][0];
+    const rds = vcap['aws-rds'][1];
     return {
       database: {
         url: rds.credentials.uri,
