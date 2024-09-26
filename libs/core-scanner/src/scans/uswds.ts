@@ -1,6 +1,7 @@
 import { sum, uniq } from 'lodash';
 import { Logger } from 'pino';
 import { Page, HTTPResponse } from 'puppeteer';
+import { logCount, logTimer } from '../metric-utils';
 
 import { UswdsScan } from 'entities/scan-data.entity';
 
@@ -22,11 +23,12 @@ export const createUswdsScanner = (
 };
 
 export const buildUswdsResult = async (
-  logger: Logger,
+  parentLogger: Logger,
   cssPages: string[],
   htmlText: string,
   page: Page,
 ): Promise<UswdsScan> => {
+  const logger = parentLogger.child({ function: 'buildUswdsResult', pageUrl: page.url() });
   const pageResults = await page.evaluate(() => {
     const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
     const usaClassesCount = Math.round(Math.sqrt(usaClasses.length)) * 5;
@@ -53,18 +55,33 @@ export const buildUswdsResult = async (
 
     const uniqueClasses = Object.keys(uniqueClassesObj).sort().join(',');
 
-    const hasHeresHowYouKnowBanner = [
+    const selectorResults = [
       ...document.querySelectorAll('.usa-banner__button-text, .usa-banner-button-text'),
     ]
-      .map((el) => el.textContent.replace(/’/g, "'"))
-      .some((text) => text.includes("Here's how you know"));
+      .map((el) => el.textContent.replace(/’/g, "'"));
+
+    const hasHeresHowYouKnowBannerEnglish = selectorResults.some((text) => text.includes("Here's how you know"));
+    const hasHeresHowYouKnowBannerSpanish = selectorResults.some((text) => text.includes("Así es como usted puede verificarlo"));
+    const hasHeresHowYouKnowBanner = hasHeresHowYouKnowBannerEnglish || hasHeresHowYouKnowBannerSpanish;
 
     return {
       usaClassesCount,
       uniqueClasses,
+      hasHeresHowYouKnowBannerEnglish,
+      hasHeresHowYouKnowBannerSpanish,
       hasHeresHowYouKnowBanner,
     };
   });
+
+  if (pageResults.hasHeresHowYouKnowBannerEnglish) {
+    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBanner', 'Found English "Here\'s how you know" banner');
+  };
+  if (pageResults.hasHeresHowYouKnowBannerSpanish) {
+    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBanner', 'Found Spanish "Here\'s how you know" banner');
+  };
+  if (!pageResults.hasHeresHowYouKnowBanner) {
+    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBanner', '"Here\'s how you know" banner not found');
+  };
 
   const uswdsSemanticVersion = uswdsSemVer(logger, cssPages);
   const uswdsVersionScoreAdjustment = 100;

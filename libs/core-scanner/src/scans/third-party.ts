@@ -35,7 +35,6 @@ export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTT
     }
   }
   const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
-  logCount(logger, { thirdPartyServicesCount: deduped.length }, 'scanner.page.primary.scan.third-party.unique_external_domains.count', 'Third-party services count: {metricValue}');
   return {
     domains: deduped.join(','),
     count: deduped.length,
