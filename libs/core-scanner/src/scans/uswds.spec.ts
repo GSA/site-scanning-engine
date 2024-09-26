@@ -1,9 +1,12 @@
-import { Logger } from 'pino';
+import pino from 'pino';
 import { mock } from 'jest-mock-extended';
 
 import { browserInstance, newTestPage, newTestPageFromBody } from '../test-helper';
 import { createUswdsScanner, buildUswdsResult } from './uswds';
 import { UswdsScan } from "../../../../entities/scan-data.entity";
+
+
+const mockLogger = pino();
 
 describe('Scan: USWDS', () => {
 
@@ -17,7 +20,7 @@ describe('Scan: USWDS', () => {
       await newTestPage(async ({ page, response }) => {
         const scanUswds = createUswdsScanner(
             {
-              logger: mock<Logger>(),
+              logger: pino(),
               getCSSRequests: () => [],
             },
             page,
@@ -44,7 +47,7 @@ describe('Scan: USWDS', () => {
   });
 
   describe(".heresHowYouKnowBanner", () => {
-    it('should return TRUE when the page contains ".usa-banner__button-text" with the appropriate text contents', async () => {
+    it('should return TRUE when the page contains ".usa-banner__button-text" with the appropriate English text contents', async () => {
       const body = `<span class="usa-banner__button-text">Here's how you know</span>`;
 
       await newUswdsScanResult(
@@ -55,8 +58,30 @@ describe('Scan: USWDS', () => {
       );
     });
 
-    it('should return TRUE when the page contains ".usa-banner-button-text" with the appropriate text contents', async () => {
+    it('should return TRUE when the page contains ".usa-banner-button-text" with the appropriate English text contents', async () => {
       const body = `<span class="usa-banner-button-text">Here's how you know</span>`;
+
+      await newUswdsScanResult(
+          (result) => {
+            expect(result.heresHowYouKnowBanner).toEqual(true);
+          },
+          body
+      );
+    });
+
+    it('should return TRUE when the page contains ".usa-banner__button-text" with the appropriate Spanish text contents', async () => {
+      const body = `<span class="usa-banner__button-text">Así es como usted puede verificarlo</span>`;
+
+      await newUswdsScanResult(
+        (result) => {
+          expect(result.heresHowYouKnowBanner).toEqual(true);
+        },
+        body
+      );
+    });
+
+    it('should return TRUE when the page contains ".usa-banner-button-text" with the appropriate Spanish text contents', async () => {
+      const body = `<span class="usa-banner-button-text">Así es como usted puede verificarlo</span>`;
 
       await newUswdsScanResult(
           (result) => {
@@ -119,7 +144,7 @@ async function newUswdsScanResult(
 ): Promise<void> {
   await newTestPageFromBody(async ({ page }) => {
     const result = await buildUswdsResult(
-      mock<Logger>(),
+      mockLogger,
       [],
       await page.content(),
       page
