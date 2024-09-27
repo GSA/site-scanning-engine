@@ -74,13 +74,13 @@ export const buildUswdsResult = async (
   });
 
   if (pageResults.hasHeresHowYouKnowBannerEnglish) {
-    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBanner', 'Found English "Here\'s how you know" banner');
+    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerEnglish', 'Found English "Here\'s how you know" banner');
   };
   if (pageResults.hasHeresHowYouKnowBannerSpanish) {
-    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBanner', 'Found Spanish "Here\'s how you know" banner');
+    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerSpanish', 'Found Spanish "Here\'s how you know" banner');
   };
   if (!pageResults.hasHeresHowYouKnowBanner) {
-    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBanner', '"Here\'s how you know" banner not found');
+    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerNotFound', '"Here\'s how you know" banner not found');
   };
 
   const uswdsSemanticVersion = uswdsSemVer(logger, cssPages);
