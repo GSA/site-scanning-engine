@@ -1,11 +1,11 @@
 import { Logger } from 'pino';
 
-export function logCount( logger: Logger, metadata: any, metricId: string, logMessage: string ) {
+export function logCount( logger: Logger, metadata: any, metricId: string, logMessage: string, metricValue = 1 ) {
     if( !metadata ) {
         metadata = {};
     }
     const metaDefaults = {
-        metricValue: 1,
+        metricValue,
         metricUnit: "count",
     };
     const finalMetadata = {

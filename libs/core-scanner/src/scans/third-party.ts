@@ -11,11 +11,9 @@ export const buildThirdPartyResult = async (
   outboundRequests: HTTPRequest[],
 ): Promise<ThirdPartyScan> => {
   const logger = parentLogger.child({ scan: 'third-party-scan' });
-  const timer = logTimer(logger);
   const url = mainResponse && mainResponse.url();
   const thirdPartyResult = await thirdPartyServices(logger, outboundRequests, url);
   const thirdPartyUrlResult = await thirdPartyServicesUrls(logger, outboundRequests, url);
-  timer.log({}, 'scanner.page.primary.scan.third-party.duration.total', `Third-party scan completed in [{metricValue}ms]`);
   return {
     thirdPartyServiceDomains: thirdPartyResult.domains,
     thirdPartyServiceCount: thirdPartyResult.count,
@@ -35,6 +33,7 @@ export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTT
     }
   }
   const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
+  logCount( logger, { thirdPartyServicesDomainsCount: deduped.length }, `scanner.page.primary.scan.third-party.domainCount`, `${deduped.length} third party domains collected.`, deduped.length );
   return {
     domains: deduped.join(','),
     count: deduped.length,
@@ -56,14 +55,14 @@ export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests:
     const url = request && new URL(request.url());
     if (parsedUrl.hostname != url.hostname && !request.isNavigationRequest()) {
       const fullUrl = removeQueryParameters(url.toString());
-      const isFileLoad = fullUrl.startsWith('http') || fullUrl.startsWith('https');
-      if( isFileLoad) {
+      const isPageLoad = fullUrl.startsWith('http') || fullUrl.startsWith('https');
+      if( isPageLoad) {
         thirdPartyDomains.push(fullUrl);
       }
     }
   }
   const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
-  logCount(logger, { thirdPartyServicesUrlsCount: deduped.length }, 'scanner.page.primary.scan.third-party.unique_external_urls.count', 'Third-party services url count: {metricValue}');
+  logCount(logger, { thirdPartyServicesUrlsCount: deduped.length }, 'scanner.page.primary.scan.third-party.unique_external_urls.count', `${deduped.length} unique external URLs collected.`, deduped.length);
   return deduped.join(',')
 };
 
