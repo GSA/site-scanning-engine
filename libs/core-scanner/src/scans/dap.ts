@@ -15,7 +15,7 @@ const DAP_SCRIPT_NAME = 'Universal-Federated-Analytics-Min.js';
 const DAP_GA_PROPERTY_IDS = ['G-CSLL4ZEK4L'];
 
 export const buildDapResult = async (
-  parentLogger: Logger,
+  logger: Logger,
   outboundRequests: HTTPRequest[],
 ): Promise<DapScan> => {
   const emptyResponse = {
@@ -24,8 +24,6 @@ export const buildDapResult = async (
     dapVersion: "",
     gaTagIds: "",
   };
-
-  const logger = parentLogger.child({ function: 'buildDapResult' });
 
   const hasOutboundRequests = outboundRequests.length === 0;
   if(hasOutboundRequests) {
