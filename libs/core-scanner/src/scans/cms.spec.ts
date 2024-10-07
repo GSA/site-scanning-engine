@@ -3,6 +3,10 @@ import { HTTPResponse } from 'puppeteer';
 
 import { buildCmsResult } from './cms';
 
+import pino from 'pino';
+
+const mockLogger = pino();
+
 describe('cms scan', () => {
   it('Detects if the site does not use a cms', async () => {
     const html = `
@@ -12,6 +16,7 @@ describe('cms scan', () => {
     `;
     expect(
       await buildCmsResult(
+        mockLogger,
         mock<HTTPResponse>({
           headers: () => {
             return {};
@@ -28,6 +33,7 @@ describe('cms scan', () => {
     `;
     expect(
       await buildCmsResult(
+        mockLogger,
         mock<HTTPResponse>({
           headers: () => {
             return {};
@@ -41,6 +47,7 @@ describe('cms scan', () => {
   it('Detects if the site uses a cms by way of http response headers with a given value', async () => {
     expect(
       await buildCmsResult(
+        mockLogger,
         mock<HTTPResponse>({
           headers: () => {
             return { 'X-Pingback': '/xmlrpc.php' };
@@ -54,6 +61,7 @@ describe('cms scan', () => {
   it('Detects if the site uses a cms by way of http response headers with a given key', async () => {
     expect(
       await buildCmsResult(
+        mockLogger,
         mock<HTTPResponse>({
           headers: () => {
             return { DNNOutputCache: 'yadda' };

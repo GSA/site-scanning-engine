@@ -53,7 +53,7 @@ const primaryScan = async (
   const wrappedThirdPartyResult = runScan(logger, buildThirdPartyResult, 'ThirdPartyScan', url);
   const wrappedCookieResult = runScan(logger, buildCookieResult, 'CookieScan', url);
   const wrappedSeoResult = runScan(logger, buildSeoResult, 'SEOScan', url);
-  const wrappedUswdsScanner = runScan(logger, createUswdsScanner({ logger, getCSSRequests }, page), 'USWDSScan', url);
+  const wrappedUswdsScanner = runScan(logger, createUswdsScanner( getCSSRequests, page), 'USWDSScan', url);
   const wrappedLoginResult = runScan(logger, buildLoginResult, 'LoginScan', url);
   const wrappedCmsResult = runScan(logger, buildCmsResult, 'CMSScan', url);
   const wrappedRequiredLinksResult = runScan(logger, buildRequiredLinksResult, 'Required LinksScan', url);
@@ -72,16 +72,16 @@ const primaryScan = async (
     searchScan,
     mobileScan,
   ] = await promiseAll([
-    wrappedDapResult(logger, getOutboundRequests()),
-    wrappedThirdPartyResult(logger, response, getOutboundRequests()),
+    wrappedDapResult(getOutboundRequests()),
+    wrappedThirdPartyResult(response, getOutboundRequests()),
     wrappedCookieResult(page),
-    wrappedSeoResult(logger, page, response),
+    wrappedSeoResult(page, response),
     wrappedUswdsScanner(response),
     wrappedLoginResult(response),
     wrappedCmsResult(response),
     wrappedRequiredLinksResult(page),
     wrappedSearchResult(page),
-    wrappedMobileResult(logger, page),
+    wrappedMobileResult(page),
   ]);
   const urlScan = buildUrlScanResult(input, page, response);
 
@@ -106,7 +106,7 @@ const primaryScan = async (
       const timer = logTimer(logger);
 
       try {
-        const toReturn = await fn(...args);
+        const toReturn = await fn(logger, ...args);
         timer.log({}, `scanner.page.primary.scan.${scanName}.duration.total`, `${scanName} completed in [{metricValue}ms]`);
         logCount( logger, {}, `${scanName}.succeeded.count`, `${scanName} completed successfully for site '${siteUrl}'.` );
         return toReturn;

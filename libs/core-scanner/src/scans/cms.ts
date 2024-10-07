@@ -3,9 +3,9 @@ import { HTTPResponse } from 'puppeteer';
 
 import { CmsScan } from 'entities/scan-data.entity';
 
-export const buildCmsResult = async (
-  mainResponse: HTTPResponse,
-): Promise<CmsScan> => {
+import { Logger } from 'pino';
+
+export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<CmsScan> {
   const htmlMatches = await getHtmlMatches(mainResponse);
   const headerMatches = await getHeaderMatches(mainResponse);
 

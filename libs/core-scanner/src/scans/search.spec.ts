@@ -1,10 +1,13 @@
 import { buildSearchResult } from './search';
 import { browserInstance, newTestPage } from '../test-helper';
+import pino from 'pino';
+
+const mockLogger = pino();
 
 describe('search scan', () => {
   it('detect if a page contains a search form', async () => {
     await newTestPage(async ({ page }) => {
-      expect(await buildSearchResult(page)).toEqual({
+      expect(await buildSearchResult(mockLogger, page)).toEqual({
         searchDetected: true,
         searchgov: true,
       });

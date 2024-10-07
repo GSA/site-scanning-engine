@@ -1,9 +1,10 @@
 import { uniq } from 'lodash';
 import { Page } from 'puppeteer';
+import { Logger } from 'pino';
 
 import { CookieScan } from 'entities/scan-data.entity';
 
-export const buildCookieResult = async (page: Page): Promise<CookieScan> => {
+export const buildCookieResult = async (parentLogger: Logger, page: Page): Promise<CookieScan> => {
   return {
     domains: await cookieDomains(page),
   };

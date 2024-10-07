@@ -1,5 +1,8 @@
 import { buildCookieResult } from './cookies';
 import { browserInstance, newTestPage } from '../test-helper';
+import pino from 'pino';
+
+const mockLogger = pino();
 
 describe('cookie scan', () => {
   it('detects if cookies are present', async () => {
@@ -8,7 +11,7 @@ describe('cookie scan', () => {
       // so this is more so an integration test than a unit test per se.
       await page.goto('https://18f.gsa.gov/');
 
-      const result = await buildCookieResult(page);
+      const result = await buildCookieResult(mockLogger, page);
 
       expect(result).toEqual({
         domains: '.gsa.gov',
@@ -18,7 +21,7 @@ describe('cookie scan', () => {
 
   it('detects if no cookies are present', async () => {
     await newTestPage(async ({ page }) => {
-      const result = await buildCookieResult(page);
+      const result = await buildCookieResult(mockLogger, page);
 
       expect(result).toEqual({
         domains: '',

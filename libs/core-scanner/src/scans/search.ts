@@ -2,7 +2,9 @@ import { Page } from 'puppeteer';
 
 import { SearchScan } from 'entities/scan-data.entity';
 
-export const buildSearchResult = async (page: Page): Promise<SearchScan> => {
+import { Logger } from 'pino';
+
+export async function buildSearchResult ( parentLogger: Logger, page: Page ): Promise<SearchScan> {
   const searchScanResults = await page.evaluate(() => {
     const formElements = [...document.querySelectorAll('form')];
     const inputElements = [...document.querySelectorAll('input')];
