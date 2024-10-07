@@ -2,9 +2,9 @@ import { Page } from 'puppeteer';
 
 import { RequiredLinksScan } from 'entities/scan-data.entity';
 
-export const buildRequiredLinksResult = async (
-  page: Page,
-): Promise<RequiredLinksScan> => {
+import { Logger } from 'pino';
+
+export async function buildRequiredLinksResult( parentLogger: Logger, page: Page ): Promise<RequiredLinksScan> {
   const requiredLinksResults = await page.evaluate(() => {
     const requiredLinksUrlContents = [
       'about',

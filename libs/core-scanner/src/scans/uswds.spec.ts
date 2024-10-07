@@ -18,14 +18,9 @@ describe('Scan: USWDS', () => {
     //       consideration and see if we can reduce/mitigate the cumulative delay.
     it('should return the expected results based on a local mock', async () => {
       await newTestPage(async ({ page, response }) => {
-        const scanUswds = createUswdsScanner(
-            {
-              logger: pino(),
-              getCSSRequests: () => [],
-            },
-            page,
+        const scanUswds = createUswdsScanner( () => [], page,
         );
-        const result = await scanUswds(response);
+        const result = await scanUswds(pino(), response);
         expect(result).toEqual({
           usaClasses: 55,
           usaClassesUsed:

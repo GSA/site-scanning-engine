@@ -3,6 +3,10 @@ import { HTTPResponse } from 'puppeteer';
 
 import { buildLoginResult } from './login';
 
+import pino from 'pino';
+
+const mockLogger = pino();
+
 describe('login scan', () => {
   it('Detects login strings', async () => {
     const html = `
@@ -13,6 +17,7 @@ describe('login scan', () => {
 
     expect(
       await buildLoginResult(
+        mockLogger,
         mock<HTTPResponse>({
           text: async () => html,
         }),
@@ -30,6 +35,7 @@ describe('login scan', () => {
 
     expect(
       await buildLoginResult(
+        mockLogger,
         mock<HTTPResponse>({
           text: async () => html,
         }),
@@ -44,6 +50,7 @@ describe('login scan', () => {
 
     expect(
       await buildLoginResult(
+        mockLogger,
         mock<HTTPResponse>({
           text: async () => html,
         }),
@@ -58,6 +65,7 @@ describe('login scan', () => {
 
     expect(
       await buildLoginResult(
+        mockLogger,
         mock<HTTPResponse>({
           text: async () => html,
         }),

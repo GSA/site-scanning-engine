@@ -2,6 +2,8 @@ import { HTTPResponse } from 'puppeteer';
 
 import { LoginScan } from 'entities/scan-data.entity';
 
+import { Logger } from 'pino';
+
 const loginDetectedStrings = [
   'type="password"',
   '>Sign In<',
@@ -33,9 +35,7 @@ const loginProviderStrings = [
   'secureauth',
 ];
 
-export const buildLoginResult = async (
-  mainResponse: HTTPResponse,
-): Promise<LoginScan> => {
+export async function buildLoginResult ( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<LoginScan> {
   const html = await mainResponse.text();
   const htmlLower = html.toLowerCase();
 

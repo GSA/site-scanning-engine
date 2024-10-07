@@ -5,14 +5,8 @@ import { logCount, logTimer } from '../metric-utils';
 
 import { UswdsScan } from 'entities/scan-data.entity';
 
-export const createUswdsScanner = (
-  {
-    logger,
-    getCSSRequests,
-  }: { logger: Logger; getCSSRequests: () => string[] },
-  page: Page,
-) => {
-  return async (response: HTTPResponse) => {
+export function createUswdsScanner( getCSSRequests: () => string[] , page: Page, ) {
+  return async (logger: Logger, response: HTTPResponse) => {
     return buildUswdsResult(
       logger,
       getCSSRequests(),
@@ -22,12 +16,7 @@ export const createUswdsScanner = (
   };
 };
 
-export const buildUswdsResult = async (
-  parentLogger: Logger,
-  cssPages: string[],
-  htmlText: string,
-  page: Page,
-): Promise<UswdsScan> => {
+export async function buildUswdsResult( parentLogger: Logger, cssPages: string[], htmlText: string, page: Page, ): Promise<UswdsScan> {
   const logger = parentLogger.child({ function: 'buildUswdsResult', pageUrl: page.url() });
   const pageResults = await page.evaluate(() => {
     const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
