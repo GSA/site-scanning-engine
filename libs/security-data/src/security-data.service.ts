@@ -1,12 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { promises as fs } from 'fs';
-import { existsSync } from 'fs';
+import { existsSync, promises as fs } from 'fs';
 import { join } from 'path';
 import { parseString } from 'fast-csv';
 import { fetchSecurityData } from './fetch-security-data';
-import { SecurityPageScan } from 'entities/scan-page.entity';
-import { ScanStatus } from 'entities/scan-status';
+import { SecurityScans } from 'entities/scan-page.entity';
 
 @Injectable()
 export class SecurityDataService {
@@ -22,7 +20,7 @@ export class SecurityDataService {
     this.filePath = join(this.dirPath, 'security-data.csv');
   }
 
-  async getSecurityResults(url: string): Promise<SecurityPageScan> {
+  async getSecurityResults(url: string): Promise<SecurityScans> {
     this.logger.log(`Getting security results for ${url}`);
 
     if (!existsSync(this.filePath)) {
@@ -32,9 +30,7 @@ export class SecurityDataService {
       try {
         await this.fetchAndSaveSecurityData();
       } catch (error) {
-        return this.handleScanError(
-          `An error occurred fetching security data: ${error.message}`,
-        );
+        this.wrapErrorAndRethrow("An error occurred fetching security data", error);
       }
     }
 
@@ -44,7 +40,7 @@ export class SecurityDataService {
       const csvString = await fs.readFile(this.filePath, 'utf8');
 
       await new Promise((resolve, reject) => {
-        parseString(csvString, { headers: true })
+        parseString(csvString, {headers: true})
           .on('data', (row: { [key: string]: string }) => {
             if (row.domain === url) {
               matchingRow = row;
@@ -55,15 +51,11 @@ export class SecurityDataService {
           .on('error', reject);
       });
     } catch (error) {
-      return this.handleScanError(
-        `An error occurred parsing security data: ${error.message}`,
-      );
+      this.wrapErrorAndRethrow("An error occurred parsing security data", error);
     }
 
     if (!matchingRow) {
-      return this.handleScanError(
-        'No matching domain found in security data CSV',
-      );
+      throw new Error('No matching domain found in security data CSV');
     }
 
     const securityScan = this.getScanResult(matchingRow);
@@ -73,23 +65,18 @@ export class SecurityDataService {
     );
 
     return {
-      status: ScanStatus.Completed,
-      result: {
-        securityScan,
-      },
+      securityScan,
     };
   }
 
   async fetchAndSaveSecurityData(): Promise<void> {
     this.logger.log(`Fetching security data from ${this.securityDataCsvUrl}`);
 
-    let csvData: string | null = null;
-
-    csvData = await fetchSecurityData(this.securityDataCsvUrl, this.logger);
+    const csvData: string = await fetchSecurityData(this.securityDataCsvUrl, this.logger);
 
     if (csvData) {
       try {
-        await fs.mkdir(this.dirPath, { recursive: true });
+        await fs.mkdir(this.dirPath, {recursive: true});
         await fs.writeFile(this.filePath, csvData, 'utf8');
         this.logger.log(`Security data saved to ${this.filePath}`);
       } catch (error) {
@@ -115,11 +102,7 @@ export class SecurityDataService {
     };
   }
 
-  private handleScanError(errorMessage: string): SecurityPageScan {
-    this.logger.error(errorMessage);
-    return {
-      status: ScanStatus.UnknownError,
-      error: errorMessage,
-    };
+  private wrapErrorAndRethrow(message: string, error: Error): void {
+    throw new Error(`${message}: ${error.message}`);
   }
 }

@@ -1,7 +1,7 @@
 import { sum, uniq } from 'lodash';
 import { Logger } from 'pino';
-import { Page, HTTPResponse } from 'puppeteer';
-import { logCount, logTimer } from '../metric-utils';
+import { HTTPResponse, Page } from 'puppeteer';
+import { logCount } from '../../../logging/src/metric-utils';
 
 import { UswdsScan } from 'entities/scan-data.entity';
 
@@ -14,7 +14,7 @@ export function createUswdsScanner( getCSSRequests: () => string[] , page: Page,
       page,
     );
   };
-};
+}
 
 export async function buildUswdsResult( parentLogger: Logger, cssPages: string[], htmlText: string, page: Page, ): Promise<UswdsScan> {
   const logger = parentLogger.child({ function: 'buildUswdsResult', pageUrl: page.url() });
@@ -64,13 +64,13 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
 
   if (pageResults.hasHeresHowYouKnowBannerEnglish) {
     logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerEnglish', 'Found English "Here\'s how you know" banner');
-  };
+  }
   if (pageResults.hasHeresHowYouKnowBannerSpanish) {
     logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerSpanish', 'Found Spanish "Here\'s how you know" banner');
-  };
+  }
   if (!pageResults.hasHeresHowYouKnowBanner) {
     logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerNotFound', '"Here\'s how you know" banner not found');
-  };
+  }
 
   const uswdsSemanticVersion = uswdsSemVer(logger, cssPages);
   const uswdsVersionScoreAdjustment = 100;
@@ -100,7 +100,7 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
     result.uswdsVersion,
   ]);
   return result;
-};
+}
 
 const uswdsInHtml = (logger: Logger, htmlText: string) => {
   const re = /uswds/g;

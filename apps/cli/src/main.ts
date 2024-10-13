@@ -10,6 +10,15 @@ import { ScanController } from './scan.controller';
 import { SnapshotController } from './snapshot.controller';
 import { SecurityDataController } from './security-data.controller';
 
+import pino from 'pino';
+import { getRootLogger } from '../../../libs/logging/src';
+import { logCount } from "../../../libs/logging/src/metric-utils";
+
+function createCommandLogger(commandName: string, options = undefined): pino.Logger {
+  const appLogger = getRootLogger();
+  return appLogger.child({ cliCommand: commandName, context: 'Cli.Main', cliOptions: options });
+}
+
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule, {
     bufferLogs: true,
@@ -19,92 +28,108 @@ async function bootstrap() {
   return app;
 }
 
-function printMemoryUsage() {
+function printMemoryUsage(logger: pino.Logger) {
   const used = process.memoryUsage();
   for (const key in used) {
-    console.log(
-      `${key} ${Math.round((used[key] / 1024 / 1024) * 100) / 100} MB`,
+    const valueMb = Math.round((used[key] / 1024 / 1024) * 100) / 100;
+    logCount(logger, {
+        metricUnit: 'megabytes',
+      },
+      `scanner.core.memory.used.${key}.mb`,
+      `Memory used: ${key}: ${valueMb} MB`,
+      valueMb
     );
   }
 }
 
 async function ingest(cmdObj) {
   const nestApp = await bootstrap();
+  const logger = createCommandLogger('ingest', { limit: cmdObj.limit, federalSubdomainsUrl: cmdObj.federalSubdomainsUrl });
   const controller = nestApp.get(IngestController);
-  console.log('ingesting target urls');
+  logger.info('ingesting target urls');
 
   await controller.refreshUrls(cmdObj.limit, cmdObj.federalSubdomainsUrl);
-  printMemoryUsage();
+  printMemoryUsage(logger);
   await nestApp.close();
 }
 
 async function clearQueue() {
   const nestApp = await bootstrap();
+  const logger = createCommandLogger('clear-queue');
   const controller = nestApp.get(QueueController);
-  console.log('clearing queue');
+  logger.info('clearing queue');
 
   await controller.clearQueue();
-  printMemoryUsage();
+  printMemoryUsage(logger);
   await nestApp.close();
 }
 
 async function enqueueScans() {
   const nestApp = await bootstrap();
+  const logger = createCommandLogger('enqueue-scans');
   const controller = nestApp.get(QueueController);
-  console.log('enqueueing scan jobs');
+  logger.info('enqueueing scan jobs');
 
   await controller.queueScans();
-  printMemoryUsage();
+  printMemoryUsage(logger);
   await nestApp.close();
 }
 
 async function createSnapshot() {
   const nestApp = await bootstrap();
+  const logger = createCommandLogger('create-snapshot');
   const controller = nestApp.get(SnapshotController);
-  console.log('creating snapshot');
+  logger.info('creating snapshot');
 
   await controller.weeklySnapshot();
-  printMemoryUsage();
+  printMemoryUsage(logger);
   await nestApp.close();
 }
 
 async function createAccessibilityResultsSnapshot() {
   const nestApp = await bootstrap();
+  const logger = createCommandLogger('create-a11y-snapshot');
   const controller = nestApp.get(SnapshotController);
-  console.log('creating a11y results snapshot');
+  logger.info('creating a11y results snapshot');
 
   await controller.accessibilityResultsSnapshot();
-  printMemoryUsage();
+  printMemoryUsage(logger);
   await nestApp.close();
 }
 
 async function scanSite(cmdObj) {
   const nestApp = await bootstrap();
+  const logger = createCommandLogger('scan-site', { url: cmdObj.url, page: cmdObj.page, scan: cmdObj.scan });
   const controller = nestApp.get(ScanController);
-  console.log(`scanning site: ${cmdObj.url}`);
 
-  await controller.scanSite(cmdObj.url);
-  printMemoryUsage();
+  logger.info(
+    `Scanning site: ${cmdObj.url}, page: ${cmdObj.page ?? 'ALL'}, scan: ${cmdObj.scan ?? 'ALL'}`
+  );
+
+  await controller.scanSite(cmdObj.url, cmdObj.page, cmdObj.scan);
+  printMemoryUsage(logger);
   await nestApp.close();
 }
 
 async function securityData() {
   const nestApp = await bootstrap();
+  const logger = createCommandLogger('security-data');
   const controller = nestApp.get(SecurityDataController);
-  console.log('fetching and saving security data');
+  logger.info('fetching and saving security data');
 
   await controller.fetchAndSaveSecurityData();
-  printMemoryUsage();
+  printMemoryUsage(logger);
   await nestApp.close();
 }
 
 async function requeueStaleScans() {
   const nestApp = await bootstrap();
+  const logger = createCommandLogger('requeue-stale-scans');
   const controller = nestApp.get(QueueController);
-  console.log('enqueueing scan jobs for stale results');
+  logger.info('enqueueing scan jobs for stale results');
 
   await controller.queueStaleScans();
-  printMemoryUsage();
+  printMemoryUsage(logger);
   await nestApp.close();
 }
 
@@ -128,7 +153,7 @@ async function main() {
       '--federalSubdomainsUrl <string>',
       'URL pointing to CSV of federal subdomains',
     )
-    .action(ingest);
+    .action((cmdObj) => ingest(cmdObj));
 
   // clear-queue
   program
@@ -164,9 +189,11 @@ async function main() {
   program
     .command('scan-site')
     .description(
-      'scan-site scans a given URL, which is expected to exist in the website table',
+      'scan-site scans a given URL, which MUST exist in the website table'
     )
     .option('--url <string>', 'URL to scan')
+    .option('--page <string>', 'Page to scan (optional)')
+    .option('--scan <string>', 'Scan type (optional)')
     .action(scanSite);
 
   // security-data

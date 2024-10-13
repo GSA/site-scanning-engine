@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { Module } from '@nestjs/common';
-import { LoggerModule } from 'nestjs-pino';
 
 import { CoreScannerModule } from '@app/core-scanner';
 import { DatabaseModule } from '@app/database';
@@ -13,18 +14,14 @@ import { QueueController } from './queue.controller';
 import { ScanController } from './scan.controller';
 import { SnapshotController } from './snapshot.controller';
 import { SecurityDataController } from './security-data.controller';
+import { injectLoggerModule } from "../../../libs/logging/src";
 
 @Module({
   imports: [
     CoreScannerModule,
     DatabaseModule,
     IngestModule,
-    LoggerModule.forRoot({
-      pinoHttp: {
-        name: 'cli',
-        level: process.env.NODE_ENV !== 'production' ? 'debug' : 'info',
-      },
-    }),
+    injectLoggerModule({ applicationName: "cli" }),
     QueueModule,
     SnapshotModule,
     SecurityDataModule,

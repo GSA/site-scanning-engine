@@ -44,6 +44,22 @@ export const buildDapResult = async (
   
   if(hasDapScriptCandidateRequests && !hasGaPropertyIds) {
     logger.info(`No DAP script candidates found, but the following GA property IDs were detected: ${allGAPropertyIds}`);
+
+    /*
+      msg: "DAP detected for site 'xyz.ggg'"
+      msg: "DAP not detected for site 'xyz.ggg'"
+      {
+        scanResult: {
+          name: "dapDetected",
+          value: JSON.stringify( _any_value_here )
+        }
+      }
+      // app.scanResult.name
+      // app.scanResult.value
+
+     */
+
+
     return {
       dapDetected: false,
       dapParameters: "",
@@ -66,11 +82,11 @@ export const buildDapResult = async (
 };
 
 /**
- * Returns a comma delimited string of all GA Property IDs found in the given requests
+ * Returns a comma-delimited string of all GA Property IDs found in the given requests
  * 
- * @param logger A logger object
+ * @param parentLogger A logger object
  * @param allRequests An object containing all HTTPRequests made from the page
- * @returns A comma delimited string of all GA Property IDs found in the requests
+ * @returns A comma-delimited string of all GA Property IDs found in the requests
  */
 export function getAllGAPropertyTags(parentLogger: Logger, allRequests: HTTPRequest[]): string {
   let allGAPropertyIds: string[] = [];

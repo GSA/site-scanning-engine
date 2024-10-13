@@ -12,9 +12,10 @@ export const createAccessibilityScanner = (
 ) => {
   logger.info('Starting a11y scan...');
 
+
   return async (page: Page): Promise<AccessibilityScan> => {
-    page.on('console', (message) => console.log('PAGE LOG:', message.text()));
-    page.on('error', (error) => console.log('ERROR LOG:', error));
+    page.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
+    page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
 
     await page.goto(getHttpsUrl(input.url));
 

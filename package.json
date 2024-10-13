@@ -9,33 +9,39 @@
     "node": "18.x.x"
   },
   "scripts": {
-    "rmdist": "rimraf dist",
     "build": "nest build",
-    "build:api": "nest build api",
-    "build:scan-engine": "nest build scan-engine",
-    "build:cli": "nest build cli",
     "build:all": "concurrently \"npm run build:api\" \"npm run build scan-engine\" \"npm run build cli\"",
+    "build:api": "nest build api",
+    "build:cli": "nest build cli",
+    "build:scan-engine": "nest build scan-engine",
     "format": "prettier --write \"apps/**\" \"libs/**\"",
     "ingest": "nest start cli -- ingest",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "rmdist": "rimraf dist",
     "scan": "nest start cli -- scan-site --url supremecourt.gov",
+    "scan:dap": "nest start cli --watch -- scan-site --url supremecourt.gov --page primary --scan dap",
+    "scan:dev": "npm run scan:dev:scourt",
+    "scan:dev:scourt": "nest start cli --watch -- scan-site --url supremecourt.gov",
+    "scan:dev:rdcp": "nest start cli --watch -- scan-site --url rdcp.cdc.gov",
+    "scan:badlogs": "nest start cli --watch -- scan-site --url rdcp.cdc.gov | grep -v '\"project\":\"site-scanning\"'",
+    "scan:badurl": "nest start cli --watch -- scan-site --url an.unknown.url",
     "snapshot": "nest start cli -- create-snapshot",
     "start": "nest start",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
+    "start:all": "concurrently \"npm run start:api\" \"npm run start:concurrent-scan-engine\"",
     "start:api": "nest start api",
-    "start:scan-engine": "nest start scan-engine",
+    "start:concurrent-scan-engine": "wait-on http://localhost:3000/api-json && nest start scan-engine",
+    "start:debug": "nest start --debug --watch",
+    "start:dev": "nest start --watch",
     "start:prod:api": "node dist/apps/api/main.js",
     "start:prod:scan-engine": "node dist/apps/scan-engine/main.js",
-    "start:concurrent-scan-engine": "wait-on http://localhost:3000/api-json && nest start scan-engine",
-    "start:all": "concurrently \"npm run start:api\" \"npm run start:concurrent-scan-engine\"",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "start:scan-engine": "nest start scan-engine",
     "tdd": "jest --testPathIgnorePatterns e2e-spec --watch",
     "test": "jest",
-    "test:unit": "jest --testPathIgnorePatterns e2e-spec",
-    "test:e2e": "jest e2e-spec",
-    "test:watch": "jest --watch --testPathIgnorePatterns e2e-spec",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest e2e-spec",
+    "test:unit": "jest --testPathIgnorePatterns e2e-spec",
+    "test:watch": "jest --watch --testPathIgnorePatterns e2e-spec"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.621.0",
@@ -149,6 +155,8 @@
       "@app/security-data/(.*)": "<rootDir>/libs/security-data/src/$1",
       "@app/security-data": "<rootDir>/libs/security-data/src"
     },
-    "setupFilesAfterEnv": ["<rootDir>/test/jest.setup.ts"]
+    "setupFilesAfterEnv": [
+      "<rootDir>/test/jest.setup.ts"
+    ]
   }
 }

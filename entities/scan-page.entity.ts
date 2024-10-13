@@ -1,17 +1,19 @@
-import { ScanStatus } from 'entities/scan-status';
+import { AnyFailureStatus, AnySuccessfulStatus } from 'entities/scan-status';
 import * as ScanData from './scan-data.entity';
 
+export type PageScanSuccess<T> = {
+  status: AnySuccessfulStatus;
+  result: T;
+  error?: null;
+}
+
+export type PageScanFailure = {
+  status: AnyFailureStatus;
+  error: string;
+}
+
 // A page scan includes scan data and a status of "completed", or a non-completed status.
-type PageScan<T> =
-  | {
-      status: ScanStatus.Completed;
-      result: T;
-      error?: null;
-    }
-  | {
-      status: Exclude<ScanStatus, ScanStatus.Completed>;
-      error: string;
-    };
+export type PageScan<T> = PageScanSuccess<T> | PageScanFailure;
 
 export type PrimaryScans = {
   urlScan: ScanData.UrlScan;

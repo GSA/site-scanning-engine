@@ -28,4 +28,16 @@ export class CoreInputDto {
    */
   @IsString()
   scanId: string;
+
+  /**
+   * page is an optional string that represents a specific page on a website to scan.
+   */
+  @IsString()
+  page?: string;
+
+  /**
+   * scan is an optional string that represents a specific scan type to run.
+   */
+  @IsString()
+  scan?: string;
 }

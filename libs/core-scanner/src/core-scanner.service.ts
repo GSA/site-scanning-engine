@@ -1,259 +1,234 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { PinoLogger, InjectPinoLogger } from 'nestjs-pino';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Logger } from 'pino';
 import { Browser } from 'puppeteer';
 
 import { BrowserService } from '@app/browser';
 import { SecurityDataService } from '@app/security-data';
 
-import { parseBrowserError, ScanStatus } from 'entities/scan-status';
+import { AnyFailureStatus, parseBrowserError, ScanStatus } from 'entities/scan-status';
 import { Scanner } from 'libs/scanner.interface';
 
 import { CoreInputDto } from './core.input.dto';
 import * as pages from './pages';
-import * as ScanPage from 'entities/scan-page.entity';
+import { Page } from './pages';
+import { PageScan, PageScanFailure, PageScanSuccess } from 'entities/scan-page.entity';
 import { getBaseDomain, getHttpsUrl } from './util';
 import { CoreResultPages } from 'entities/core-result.entity';
+import { logCount, logTimer } from "../../logging/src/metric-utils";
+import { DurationLogTimer } from "../../logging/src";
 
 @Injectable()
 export class CoreScannerService
-  implements Scanner<CoreInputDto, CoreResultPages>
-{
+  implements Scanner<CoreInputDto, CoreResultPages> {
   constructor(
     private browserService: BrowserService,
     private httpService: HttpService,
     private securityDataService: SecurityDataService,
     @InjectPinoLogger(CoreScannerService.name)
     private readonly logger: PinoLogger,
-  ) {}
+  ) {
+  }
 
   async scan(input: CoreInputDto): Promise<CoreResultPages> {
-    const scanLogger = this.logger.logger.child(input);
+    const scanLogger = this.initScanLogger(input);
+
+    const timer = logTimer(scanLogger);
+    scanLogger.info(`Starting scan for ${input.url}`);
+
+    if (input.page) {
+      scanLogger.warn(`Page filtering enabled! Only '${input.page}' will be executed. This should never be used in production!`);
+    }
+
+    if (input.scan) {
+      scanLogger.warn(`Scan filtering enabled! Only '${input.scan}' will be executed. This should never be used in production!`);
+    }
 
     return await this.browserService.useBrowser(async (browser) => {
-      const result = {
-        base: {
-          targetUrlBaseDomain: getBaseDomain(getHttpsUrl(input.url)),
-        },
-        notFound: await this.runNotFoundScan(input.url, scanLogger),
-        primary: await this.runPrimaryScan(browser, input, scanLogger),
-        robotsTxt: await this.runRobotsTxtScan(browser, input, scanLogger),
-        sitemapXml: await this.runSitemapXmlScan(browser, input, scanLogger),
-        dns: await this.runDnsScan(input.url, scanLogger),
-        accessibility: await this.runAccessibilityScan(
-          browser,
-          input,
-          scanLogger,
-        ),
-        performance: await this.runPerformanceScan(browser, input, scanLogger),
-        security: await this.securityDataService.getSecurityResults(input.url),
-      };
+      const result = this.initResultObject(input);
 
-      return result;
+      // Iterate over the Page enum and run the scan for each page vis this.runPage()
+      for (const page in Page) {
+        if (Object.prototype.hasOwnProperty.call(Page, page)) {
+          const pageName = Page[page];
+          result[pageName] = await this.runPage(pageName, input, scanLogger, browser);
+        }
+      }
+
+      this.logCoreScannerCompletion(timer, input, scanLogger);
+      return result as CoreResultPages;
     });
   }
 
-  private async runNotFoundScan(
-    url: string,
-    logger: Logger,
-  ): Promise<ScanPage.NotFoundPageScan> {
+  private initScanLogger(input: CoreInputDto): Logger {
+    return this.logger.logger.child({
+      context: 'CoreScannerService',
+      scanId: input.scanId,
+      scanUrl: input.url,
+      url: input.url,
+      websiteId: input.websiteId,
+    });
+  }
+
+  private initResultObject(input: CoreInputDto): Partial<CoreResultPages> {
+    return {
+      base: {
+        targetUrlBaseDomain: getBaseDomain(getHttpsUrl(input.url)),
+      }
+    };
+  }
+
+  private shouldRunPage(page: string, input: CoreInputDto, pageLogger: Logger): boolean {
+    if (!input.page) {
+      return true;
+    }
+    if (page.toLowerCase().includes(input.page.toLowerCase())) {
+      pageLogger.info(`Page '${page}' includes page filter '${input.page}'; running page.`);
+      return true;
+    }
+    pageLogger.warn(`Page '${page}' does not include page filter '${input.page}'; skipping page.`);
+  }
+
+  private createSkippedResult(): PageScanFailure {
+    return {
+      status: ScanStatus.Skipped,
+      error: 'This page was skipped by input parameters',
+    }
+  }
+
+  private createErrorResult(error: Error, input: CoreInputDto, logger: Logger): PageScanFailure {
+    return {
+      error: error.message,
+      status: this.getScanStatus(error, input.url, logger),
+    };
+  }
+
+  private createSuccessResult(result: any): PageScanSuccess<any> {
+    return {
+      status: ScanStatus.Completed,
+      result,
+    };
+  }
+
+  private initPageLogger(page: Page, scanLogger: Logger): Logger {
+    return scanLogger.child({
+      context: `Page.${page}`,
+      page
+    });
+  }
+
+  private async runPage(page: Page, input: CoreInputDto, scanLogger: Logger, browser: Browser): Promise<PageScan<any>> {
+    const pageLogger = this.initPageLogger(page, scanLogger);
+
+    if (!this.shouldRunPage(page, input, pageLogger)) {
+      return this.createSkippedResult();
+    }
+
+    const timer = logTimer(pageLogger);
+    pageLogger.info(`Executing '${page}' page...`);
+
     try {
-      return {
-        status: ScanStatus.Completed,
-        result: {
+      const pageResult = await this.getPageResult(page, input, pageLogger, browser);
+      this.logPageSuccess(timer, page, input, pageLogger);
+      return this.createSuccessResult(pageResult);
+    } catch (error) {
+      this.logPageFailure(timer, page, input, pageLogger, error);
+      return this.createErrorResult(error, input, pageLogger);
+    }
+  }
+
+  private logPageSuccess(timer: DurationLogTimer, page: Page, input: CoreInputDto, pageLogger: Logger): void {
+    timer.log({}, `scanner.page.${page}.overall.duration.total`, `Page '${page}' completed successfully for site '${input.url}' in [{metricValue}ms]`);
+    logCount(pageLogger, {}, `scanner.page.${page}.succeeded.count`, `Counting successful page '${page}' completion for site '${input.url}'.`);
+  }
+
+  private logPageFailure(timer: DurationLogTimer, page: Page, input: CoreInputDto, pageLogger: Logger, error: Error): void {
+    timer.log({}, `scanner.page.${page}.overall.duration.total`, `Page '${page}' failed for site '${input.url}' after [{metricValue}ms]`);
+    logCount(pageLogger, {}, `scanner.page.${page}.failed.count`, `Counting page '${page}' failure for site '${input.url}'.`);
+    pageLogger.error({error}, `Error running '${page}' page: ${error.message}`);
+  }
+
+  private logCoreScannerCompletion(timer: DurationLogTimer, input: CoreInputDto, scanLogger: Logger): void {
+    timer.log({}, 'scanner.core.site.duration.total', `Scan completed for site '${input.url}' in [{metricValue}ms]`);
+    logCount(scanLogger, {}, 'scanner.core.site.scanned.count', `Counting successful scan completion for site '${input.url}'.`);
+  }
+
+  private async getPageResult(page: Page, input: CoreInputDto, pageLogger: Logger, browser: Browser): Promise<any> {
+    switch (page) {
+      case Page.NOT_FOUND:
+        return {
           notFoundScan: {
             targetUrl404Test: await pages.createNotFoundScanner(
               this.httpService,
-              url,
+              input.url,
             ),
           },
-        },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, url, logger),
-        result: null,
-        error,
-      };
+        };
+
+      case Page.PRIMARY:
+        return this.browserService.processPage(
+          browser,
+          pages.createPrimaryScanner(pageLogger, input),
+        );
+
+      case Page.ROBOTS_TXT:
+        return this.browserService.processPage(
+          browser,
+          pages.createRobotsTxtScanner(
+            pageLogger,
+            input,
+          ),
+        );
+
+      case Page.SITEMAP_XML:
+        return this.browserService.processPage(
+          browser,
+          pages.createSitemapXmlScanner(
+            pageLogger,
+            input,
+          ),
+        );
+
+      case Page.DNS:
+        return {
+          dnsScan: await pages.dnsScan(pageLogger, input.url)
+        };
+
+      case Page.ACCESSIBILITY:
+        return {
+          accessibilityScan: await this.browserService.processPage(
+            browser,
+            pages.createAccessibilityScanner(
+              pageLogger,
+              input,
+            ),
+          ),
+        };
+
+      case Page.PERFORMANCE:
+        return {
+          performanceScan: await this.browserService.processPage(
+            browser,
+            pages.createPerformanceScanner(
+              pageLogger,
+              input,
+            ),
+          ),
+        };
+
+      case Page.SECURITY:
+        return await this.securityDataService.getSecurityResults(input.url);
+
     }
   }
 
-  private async runPrimaryScan(
-    browser: Browser,
-    input: CoreInputDto,
-    logger: Logger,
-  ): Promise<ScanPage.PrimaryScan> {
-    try {
-      const result = await this.browserService.processPage(
-        browser,
-        pages.createPrimaryScanner(logger.child({ page: 'primary' }), input),
-      );
-
-      return {
-        status: ScanStatus.Completed,
-        result,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, input.url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private async runRobotsTxtScan(
-    browser: Browser,
-    input: CoreInputDto,
-    logger: Logger,
-  ): Promise<ScanPage.RobotsTxtPageScan> {
-    try {
-      const result = await this.browserService.processPage(
-        browser,
-        pages.createRobotsTxtScanner(
-          logger.child({ page: 'robots.txt' }),
-          input,
-        ),
-      );
-      return {
-        status: ScanStatus.Completed,
-        result,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, input.url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private async runSitemapXmlScan(
-    browser: Browser,
-    input: CoreInputDto,
-    logger: Logger,
-  ): Promise<ScanPage.SitemapXmlPageScan> {
-    try {
-      const result = await this.browserService.processPage(
-        browser,
-        pages.createSitemapXmlScanner(
-          logger.child({ page: 'sitemap.xml' }),
-          input,
-        ),
-      );
-      return {
-        status: ScanStatus.Completed,
-        result,
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, input.url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private async runDnsScan(
-    url: string,
-    logger: Logger,
-  ): Promise<ScanPage.DnsPageScan> {
-    try {
-      const result = await pages.dnsScan(logger, url);
-      return {
-        status: ScanStatus.Completed,
-        result: {
-          dnsScan: {
-            ipv6: result.ipv6,
-            dnsHostname: result.dnsHostname,
-          },
-        },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private async runAccessibilityScan(
-    browser: Browser,
-    input: CoreInputDto,
-    logger: Logger,
-  ): Promise<ScanPage.AccessibilityPageScan> {
-    try {
-      const result = await this.browserService.processPage(
-        browser,
-        pages.createAccessibilityScanner(
-          logger.child({ page: 'accessibility' }),
-          input,
-        ),
-      );
-
-      return {
-        status: ScanStatus.Completed,
-        result: {
-          accessibilityScan: {
-            accessibilityResults: result.accessibilityResults,
-            accessibilityResultsList: result.accessibilityResultsList,
-          },
-        },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, input.url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private async runPerformanceScan(
-    browser: Browser,
-    input: CoreInputDto,
-    logger: Logger,
-  ): Promise<ScanPage.PerformancePageScan> {
-    try {
-      const result = await this.browserService.processPage(
-        browser,
-        pages.createPerformanceScanner(
-          logger.child({ page: 'performance' }),
-          input,
-        ),
-      );
-      return {
-        status: ScanStatus.Completed,
-        result: {
-          performanceScan: {
-            largestContentfulPaint: result.largestContentfulPaint,
-            cumulativeLayoutShift: result.cumulativeLayoutShift,
-          },
-        },
-        error: null,
-      };
-    } catch (error) {
-      return {
-        status: this.getScanStatus(error, input.url, logger),
-        result: null,
-        error,
-      };
-    }
-  }
-
-  private getScanStatus(error: Error, url: string, logger: Logger) {
+  private getScanStatus(error: Error, url: string, logger: Logger): AnyFailureStatus {
     const scanStatus = parseBrowserError(error);
     if (scanStatus === ScanStatus.UnknownError) {
       logger.warn(`Unknown Error calling ${url}: ${error.message}`);
     }
+    logCount(logger, {}, `scanner.core.status.error.${scanStatus}.count`, `Counting failed Scan Status ('${scanStatus}') for site '${url}'.`);
     return scanStatus;
   }
 }

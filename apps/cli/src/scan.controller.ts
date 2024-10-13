@@ -4,6 +4,7 @@ import * as cuid from 'cuid';
 import { CoreScannerService } from '@app/core-scanner';
 import { WebsiteService } from '@app/database/websites/websites.service';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
+import { CoreInputDto } from "@app/core-scanner/core.input.dto";
 
 @Controller()
 export class ScanController {
@@ -15,23 +16,35 @@ export class ScanController {
     private readonly websiteService: WebsiteService,
   ) {}
 
-  async scanSite(url: string) {
+  async scanSite(url: string, page?: string | null, scan?: string | null) {
     const website = await this.websiteService.findByUrl(url);
     if (!website) {
-      this.logger.log(`URL not found in database: ${url}`);
+      this.logger.error({ scanUrl: url }, `Error: Target Scan URL not found in website database: '${url}'`);
       return;
     }
 
-    const results = await this.coreScannerService.scan({
+    const scanConfig: CoreInputDto = {
       websiteId: website.id,
       url: website.url,
       scanId: cuid(),
-    });
+    };
+
+    if (page) {
+      scanConfig.page = page;
+    }
+
+    if (scan) {
+      scanConfig.scan = scan;
+    }
+
+    const results = await this.coreScannerService.scan(scanConfig);
+
     await this.coreResultService.createFromCoreResultPages(
       website.id,
       results,
       this.logger,
     );
-    this.logger.log({ msg: 'Got results', results });
+
+    this.logger.log({ msg: 'Got results', results }, `Results compiled for '${url}'`);
   }
 }
