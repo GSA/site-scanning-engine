@@ -15,7 +15,7 @@ export function logCount(logger: Logger, metadata: any, metricId: string, logMes
     metricId,
   };
   logger.info(finalMetadata, logMessage);
-}
+};
 
 export function logTimer(logger: Logger): DurationLogTimer {
   const timer = {
@@ -39,4 +39,18 @@ export function logTimer(logger: Logger): DurationLogTimer {
     }
   };
   return timer;
-}
+};
+
+export function logScanResult( logger: Logger, metadata: any, name: string, value: any, message: string ) {
+  if( !metadata ) {
+    metadata = {};
+  }
+  const finalMetadata = {
+    ...metadata,
+    scanResult: {
+      name,
+      value: JSON.stringify( value ),
+    },
+  };
+  logger.info( finalMetadata, message );
+};

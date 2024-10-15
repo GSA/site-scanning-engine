@@ -2,6 +2,8 @@ import { Logger } from 'pino';
 import { uniq } from 'lodash';
 import { HTTPRequest } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
+import { getTruncatedUrl } from '../util';
+import { logScanResult } from 'libs/logging/src/metric-utils';
 
 export type DapScriptCandidate = {
   url: string,
@@ -15,7 +17,7 @@ const DAP_SCRIPT_NAME = 'Universal-Federated-Analytics-Min.js';
 const DAP_GA_PROPERTY_IDS = ['G-CSLL4ZEK4L'];
 
 export const buildDapResult = async (
-  logger: Logger,
+  parentLogger: Logger,
   outboundRequests: HTTPRequest[],
 ): Promise<DapScan> => {
   const emptyResponse = {
@@ -25,6 +27,8 @@ export const buildDapResult = async (
     gaTagIds: "",
   };
 
+  const logger = parentLogger.child({ function: 'buildDapResult' });
+
   const hasOutboundRequests = outboundRequests.length === 0;
   if(hasOutboundRequests) {
     logger.info('No outbound requests found.');
@@ -32,45 +36,41 @@ export const buildDapResult = async (
   }
 
   const allGAPropertyIds: string = getAllGAPropertyTags(logger, outboundRequests);
+  const hasGaPropertyIds = allGAPropertyIds != '';
+  if( hasGaPropertyIds ) {
+    logScanResult(logger, {}, 'gaTagIds', allGAPropertyIds, 'GA Property IDs found');
+  };
 
   const dapScriptCandidateRequests: HTTPRequest[] = getDapScriptCandidateRequests(logger, outboundRequests);
+  const hasDapScriptCandidateRequests = dapScriptCandidateRequests.length != 0;
+  if( !hasDapScriptCandidateRequests ) {
+    logScanResult(logger, {}, 'dapDetected', false, 'DAP Not Detected');
+  };
 
-  const hasDapScriptCandidateRequests = dapScriptCandidateRequests.length === 0;
-  const hasGaPropertyIds = allGAPropertyIds === '';
-  if(hasDapScriptCandidateRequests && hasGaPropertyIds) {
+  if(!hasDapScriptCandidateRequests && !hasGaPropertyIds) {
     logger.info('Unable to locate dap script candidates or GA property IDs.');
     return emptyResponse;
-  }
+  };
   
-  if(hasDapScriptCandidateRequests && !hasGaPropertyIds) {
+  if(!hasDapScriptCandidateRequests && hasGaPropertyIds) {
     logger.info(`No DAP script candidates found, but the following GA property IDs were detected: ${allGAPropertyIds}`);
-
-    /*
-      msg: "DAP detected for site 'xyz.ggg'"
-      msg: "DAP not detected for site 'xyz.ggg'"
-      {
-        scanResult: {
-          name: "dapDetected",
-          value: JSON.stringify( _any_value_here )
-        }
-      }
-      // app.scanResult.name
-      // app.scanResult.value
-
-     */
-
-
     return {
       dapDetected: false,
       dapParameters: "",
       dapVersion: "",
       gaTagIds: allGAPropertyIds,
     };
-  }
+  };
 
   const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(logger, dapScriptCandidateRequests);
 
   const dapScript: DapScriptCandidate = getBestCandidate(logger, dapScriptCandidates);
+  const hasDapScript = dapScript !== null;
+  if( hasDapScript ) {
+    logScanResult(logger, {}, 'dapDetected', true, 'DAP Detected');
+    logScanResult(logger, {}, 'dapParameters', dapScript.parameters, `DAP Parameters found: ${dapScript.parameters}`);
+    logScanResult(logger, {}, 'dapVersion', dapScript.version, `DAP Version found: ${dapScript.version}`);
+  };
 
   return {
     dapDetected: true,
@@ -168,9 +168,10 @@ export function getDapScriptCandidateRequests(parentLogger: Logger, allRequests:
     const isExactScriptMatch = checkUrlForScriptNameMatch(requestUrl);
     const isPropertyIdMatch = checkUrlForPropertyIdMatch(requestUrl);
     const isPostDataMatch = checkPostDataForPropertyIdMatch(postData);
+    const truncatedUrl = getTruncatedUrl(requestUrl, 40);
 
     if( isExactScriptMatch || isPropertyIdMatch || isPostDataMatch ) {
-      logger.info(`Dap script candidate found: ${requestUrl}`);
+      logger.info(`Dap script candidate found: ${truncatedUrl}`);
       candidates.push(request);
     }
   }
@@ -194,6 +195,7 @@ export async function getDapScriptCandidates(parentLogger: Logger, dapScriptCand
   for (const request of dapScriptCandidateRequests) {
     const url = request.url();
     const parsedUrl = new URL(url);
+    const truncatedUrl = getTruncatedUrl(url, 40);
 
     const candidate: DapScriptCandidate = {
       body: null,
@@ -218,7 +220,7 @@ export async function getDapScriptCandidates(parentLogger: Logger, dapScriptCand
       logger.info({error: err}, `Error getting post data for DAP script candidate: ${url}`);
     }
 
-    logger.info(`DAP script candidate found: ${ candidate.url }`);
+    logger.info(`DAP script candidate found: ${ truncatedUrl }`);
     candidates.push(candidate);
   }
 
@@ -261,6 +263,7 @@ export function getBestCandidate(parentLogger: Logger, dapScriptCandidates: DapS
   let bestMatchLevel = 5;
   for (const candidate of dapScriptCandidates) {
     let matchLevel = -1;
+    const truncatedUrl = getTruncatedUrl(candidate.url, 40);
 
     for (let i = 0; i < checks.length; i++) {
       if (checks[i].check(candidate)) {
@@ -271,14 +274,15 @@ export function getBestCandidate(parentLogger: Logger, dapScriptCandidates: DapS
     }
 
     if (matchLevel < bestMatchLevel) {
-      logger.debug(`DAP script candidate is the best match so far: ${candidate.url}`);
+      logger.debug(`DAP script candidate is the best match so far: ${truncatedUrl}`);
       bestCandidate = candidate;
       bestMatchLevel = matchLevel;
     }
 
   }
 
-  logger.info(`Best DAP script candidate found: ${ bestCandidate.url }`);
+  const truncatedBestCandidateUrl = getTruncatedUrl(bestCandidate.url, 40);
+  logger.info(`Best DAP script candidate found: ${ truncatedBestCandidateUrl }`);
   return bestCandidate;
 }
 

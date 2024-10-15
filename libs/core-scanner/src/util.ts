@@ -67,3 +67,7 @@ export const isLive = (res: HTTPResponse): boolean => {
   const http200FamilyCodes = [200, 201, 202, 203, 204, 205, 206];
   return _.includes(http200FamilyCodes, res.status());
 };
+
+export function getTruncatedUrl(url: string, length: number): string {
+  return url.length > length ? url.slice(0, length) + '...' : url;
+}
