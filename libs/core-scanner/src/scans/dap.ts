@@ -1,5 +1,5 @@
 import { Logger } from 'pino';
-import { uniq } from 'lodash';
+import { has, uniq } from 'lodash';
 import { HTTPRequest } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
 import { getTruncatedUrl } from '../util';

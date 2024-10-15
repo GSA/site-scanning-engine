@@ -118,6 +118,22 @@ describe('core-scanner util', () => {
       expect(result).toBe('gov');
     });
   });
+
+  describe('getTruncatedUrl', () => {
+    it('truncates a url to the specified length', () => {
+      const url =
+        'https://poena.inl.gov:7004/console-selfservice/SelfService.do';
+      const result = getTruncatedUrl(url, 10);
+      expect(result).toBe('https://po...');
+    });
+
+    it('does not truncate a url that is shorter than the specified length', () => {
+      const url = 'https://gsa.gov';
+      const result = getTruncatedUrl(url, 15);
+      expect(result).toBe('https://gsa.gov');
+    });
+  });
+
 });
 
 describe('getTruncatedUrl', () => {
