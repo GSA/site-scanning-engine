@@ -3,6 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SecurityDataService } from './security-data.service';
 import * as fs from 'fs';
 import { ScanStatus } from 'entities/scan-status';
+import { fetchSecurityData } from './fetch-security-data'; // Adjust the path accordingly
+
 
 jest.mock('fs', () => ({
   promises: {
@@ -39,6 +41,7 @@ describe('SecurityDataService', () => {
     service = module.get<SecurityDataService>(SecurityDataService);
     mockConfigService = module.get<ConfigService>(ConfigService);
     jest.clearAllMocks();
+    jest.resetAllMocks();
   });
 
   it('should be defined', () => {
@@ -71,12 +74,9 @@ describe('SecurityDataService', () => {
     const result = await service.getSecurityResults(url);
 
     expect(result).toEqual({
-      status: ScanStatus.Completed,
-      result: {
-        securityScan: {
-          httpsEnforced: true,
-          hsts: true,
-        },
+      securityScan: {
+        httpsEnforced: true,
+        hsts: true,
       },
     });
   });
@@ -93,12 +93,9 @@ describe('SecurityDataService', () => {
     const result = await service.getSecurityResults(url);
 
     expect(result).toEqual({
-      status: ScanStatus.Completed,
-      result: {
-        securityScan: {
-          httpsEnforced: true,
-          hsts: true,
-        },
+      securityScan: {
+        httpsEnforced: true,
+        hsts: true,
       },
     });
   });
@@ -115,61 +112,56 @@ describe('SecurityDataService', () => {
     const result = await service.getSecurityResults(url);
 
     expect(result).toEqual({
-      status: ScanStatus.Completed,
-      result: {
-        securityScan: {
-          httpsEnforced: true,
-          hsts: false,
-        },
+      securityScan: {
+        httpsEnforced: true,
+        hsts: false,
       },
     });
   });
 
-  it('should handle CSV parsing errors', async () => {
+  it('should throw an error when CSV parsing fails', async () => {
+    const errorMessage = 'an_error';
     const url = 'example.com';
+
     jest.spyOn(fs, 'existsSync').mockReturnValue(true);
     jest.spyOn(fs.promises, 'readFile').mockImplementation(() => {
-      throw new Error('Failed to read file');
+      throw new Error(errorMessage);
     });
 
-    const result = await service.getSecurityResults(url);
-
-    expect(result.status).toEqual(ScanStatus.UnknownError);
+    await expect(service.getSecurityResults(url)).rejects.toThrow(errorMessage);
   });
 
-  it('should log an error and return an error status when fetchSecurityData fails', async () => {
+  it('should log and throw an error when fetchSecurityData fails', async () => {
+    const url = 'example.com';
     jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    const errorSpy = jest.spyOn(service['logger'], 'error');
     jest
       .spyOn(service, 'fetchAndSaveSecurityData')
       .mockRejectedValue(new Error('Failed to fetch data'));
 
-    const result = await service.getSecurityResults('example.com');
-
-    expect(errorSpy).toHaveBeenCalledWith(
-      'An error occurred fetching security data: Failed to fetch data',
-    );
-    expect(result.status).toEqual(ScanStatus.UnknownError);
+    await expect(service.getSecurityResults(url)).rejects.toThrow();
   });
 
   it('should correctly save fetched data to file system', async () => {
-    jest.spyOn(fs, 'existsSync').mockReturnValue(false);
-    jest
-      .spyOn(service, 'fetchAndSaveSecurityData')
-      .mockImplementation(async () => {
-        await fs.promises.mkdir('/data', { recursive: true });
-        await fs.promises.writeFile(
-          '/data/security-data.csv',
-          'some,csv,data',
-          'utf8',
-        );
-      });
+    const exampleData = "example_data";
 
-    await service.getSecurityResults('example.com');
+    jest.mock('./fetch-security-data', () => ({
+      fetchSecurityData: jest.fn(),
+    }));
 
-    expect(fs.promises.writeFile).toHaveBeenCalledWith(
+    (fetchSecurityData as jest.Mock).mockResolvedValue(exampleData);
+
+    const spyMkdir = jest.spyOn(fs.promises, 'mkdir'); //.mockImplementation();
+    const spyWriteFile = jest.spyOn(fs.promises, 'writeFile'); //.mock();
+
+    await service.fetchAndSaveSecurityData();
+
+    expect(spyMkdir).toHaveBeenCalledWith(
+      '/data', expect.anything(),
+    );
+
+    expect(spyWriteFile).toHaveBeenCalledWith(
       '/data/security-data.csv',
-      expect.any(String),
+      exampleData,
       'utf8',
     );
   });

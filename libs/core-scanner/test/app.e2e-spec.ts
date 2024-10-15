@@ -37,23 +37,18 @@ describe('CoreScanner (e2e)', () => {
         targetUrlBaseDomain: input.url,
       },
       primary: {
-        error: null,
         status: ScanStatus.Completed,
       },
       dns: {
-        error: null,
         status: ScanStatus.Completed,
       },
       notFound: {
-        error: null,
         status: ScanStatus.Completed,
       },
       robotsTxt: {
-        error: null,
         status: ScanStatus.Completed,
       },
       sitemapXml: {
-        error: null,
         status: ScanStatus.Completed,
       },
     });
@@ -72,23 +67,18 @@ describe('CoreScanner (e2e)', () => {
         targetUrlBaseDomain: input.url,
       },
       dns: {
-        error: null,
         status: ScanStatus.Completed,
       },
       primary: {
-        error: null,
         status: ScanStatus.Completed,
       },
       notFound: {
-        error: null,
         status: ScanStatus.Completed,
       },
       robotsTxt: {
-        error: null,
         status: ScanStatus.Completed,
       },
       sitemapXml: {
-        error: null,
         status: ScanStatus.Completed,
       },
     });

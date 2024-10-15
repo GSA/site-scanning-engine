@@ -3,7 +3,7 @@ import { Page, HTTPResponse, HTTPRequest, Browser } from 'puppeteer';
 import { getLoggerToken, PinoLogger } from 'nestjs-pino';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from 'pino';
+import pino, { type Logger } from 'pino';
 
 import { BrowserService } from '@app/browser';
 import { SecurityDataService } from '@app/security-data';
@@ -27,8 +27,8 @@ describe('CoreScannerService', () => {
   let mockRequest: MockProxy<HTTPRequest>;
   let redirectRequest: MockProxy<HTTPRequest>;
   let mockHttpService: MockProxy<HttpService>;
-  let mockLogger: DeepMockProxy<PinoLogger>;
-  let mockChildLogger: DeepMockProxy<Logger>;
+  let mockLogger: Logger;
+  let mockChildLogger: Logger;
   let mockSecurityDataService: MockProxy<SecurityDataService>;
   const finalUrl = 'https://18f.gsa.gov';
 
@@ -39,8 +39,13 @@ describe('CoreScannerService', () => {
     mockRequest = mock<HTTPRequest>();
     redirectRequest = mock<HTTPRequest>();
     mockHttpService = mock<HttpService>();
-    mockLogger = mockDeep<PinoLogger>();
-    mockChildLogger = mockDeep<Logger>();
+    mockChildLogger = pino();
+    mockLogger = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      child: () => mockChildLogger,
+      logger: mockChildLogger,
+    };
     mockSecurityDataService = mock<SecurityDataService>();
 
     redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
@@ -56,12 +61,9 @@ describe('CoreScannerService', () => {
     mockSecurityDataService.getSecurityResults
       .calledWith(finalUrl)
       .mockResolvedValue({
-        status: ScanStatus.Completed,
-        result: {
-          securityScan: {
-            httpsEnforced: true,
-            hsts: true,
-          },
+        securityScan: {
+          httpsEnforced: true,
+          hsts: true,
         },
       });
 
@@ -105,10 +107,6 @@ describe('CoreScannerService', () => {
       url: 'https://18f.gov',
       scanId: '123',
     };
-
-    mockLogger.logger.child
-      .calledWith(coreInputDto)
-      .mockReturnValue(mockChildLogger);
 
     const result = await service.scan(coreInputDto);
 
