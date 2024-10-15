@@ -3,7 +3,7 @@ import { has, uniq } from 'lodash';
 import { HTTPRequest } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
 import { getTruncatedUrl } from '../util';
-import { logScanResult } from '../metric-utils';
+import { logScanResult } from 'libs/logging/src/metric-utils';
 
 export type DapScriptCandidate = {
   url: string,
@@ -82,11 +82,11 @@ export const buildDapResult = async (
 };
 
 /**
- * Returns a comma delimited string of all GA Property IDs found in the given requests
+ * Returns a comma-delimited string of all GA Property IDs found in the given requests
  * 
- * @param logger A logger object
+ * @param parentLogger A logger object
  * @param allRequests An object containing all HTTPRequests made from the page
- * @returns A comma delimited string of all GA Property IDs found in the requests
+ * @returns A comma-delimited string of all GA Property IDs found in the requests
  */
 export function getAllGAPropertyTags(parentLogger: Logger, allRequests: HTTPRequest[]): string {
   let allGAPropertyIds: string[] = [];

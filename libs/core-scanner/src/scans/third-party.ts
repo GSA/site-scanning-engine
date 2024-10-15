@@ -1,7 +1,7 @@
 import { uniq } from 'lodash';
 import { HTTPRequest, HTTPResponse } from 'puppeteer';
 import { Logger } from 'pino';
-import { logCount, logTimer } from '../metric-utils';
+import { logCount } from '../../../logging/src/metric-utils';
 
 import { ThirdPartyScan } from 'entities/scan-data.entity';
 
@@ -38,15 +38,17 @@ export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTT
     domains: deduped.join(','),
     count: deduped.length,
   };
-};
+}
 
 /**
  * This function returns the third-party URLs
- * @param outboundRequests: HTTPRequest[]
- * @param finalUrl: string
+ *
+ * @param parentLogger
+ * @param outboundRequests
+ * @param finalUrl
  * @returns string
  */
-export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests: HTTPRequest[], finalUrl: string ): string{
+export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests: HTTPRequest[], finalUrl: string ): string {
   const logger = parentLogger.child({ function: 'thirdPartyServicesUrls' });
   const parsedUrl = new URL(finalUrl);
   const thirdPartyDomains = [];
@@ -64,11 +66,11 @@ export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests:
   const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
   logCount(logger, { thirdPartyServicesUrlsCount: deduped.length }, 'scanner.page.primary.scan.third-party.unique_external_urls.count', `${deduped.length} unique external URLs collected.`, deduped.length);
   return deduped.join(',')
-};
+}
 
 /**
  * This function removes the query parameters from the URL
- * @param url: string
+ * @param url
  * @returns string
  */
 export function removeQueryParameters(url: string): string {

@@ -21,7 +21,7 @@ import { buildCookieResult } from '../scans/cookies';
 import { buildSearchResult } from '../scans/search';
 import { buildMobileResult } from '../scans/mobile';
 
-import { logCount, logTimer } from '../metric-utils';
+import { logCount, logTimer } from '../../../logging/src/metric-utils';
 
 export const createPrimaryScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
@@ -32,33 +32,29 @@ export const createPrimaryScanner = (logger: Logger, input: CoreInputDto) => {
 type AsyncFunction<T> = (...args: any[]) => Promise<T>;
 
 const primaryScan = async (
-  parentLogger: Logger,
+  pageLogger: Logger,
   input: CoreInputDto,
   page: Page,
 ): Promise<PrimaryScans> => {
   const url = getHttpsUrl(input.url);
 
-  const logger = parentLogger.child({ scanUrl: url });
-  logger.info('Processing main page...');
-  logger.info(`Starting scan for ${url}`);
-
-  const getCSSRequests = await createCSSRequestsExtractor(page, logger);
+  const getCSSRequests = await createCSSRequestsExtractor(page, pageLogger);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
 
   const response = await page.goto(url, {
     waitUntil: 'networkidle0',
   });
 
-  const wrappedDapResult = runScan(logger, buildDapResult, 'DAPScan', url);
-  const wrappedThirdPartyResult = runScan(logger, buildThirdPartyResult, 'ThirdPartyScan', url);
-  const wrappedCookieResult = runScan(logger, buildCookieResult, 'CookieScan', url);
-  const wrappedSeoResult = runScan(logger, buildSeoResult, 'SEOScan', url);
-  const wrappedUswdsScanner = runScan(logger, createUswdsScanner( getCSSRequests, page), 'USWDSScan', url);
-  const wrappedLoginResult = runScan(logger, buildLoginResult, 'LoginScan', url);
-  const wrappedCmsResult = runScan(logger, buildCmsResult, 'CMSScan', url);
-  const wrappedRequiredLinksResult = runScan(logger, buildRequiredLinksResult, 'Required LinksScan', url);
-  const wrappedSearchResult = runScan(logger, buildSearchResult, 'SearchScan', url);
-  const wrappedMobileResult = runScan(logger, buildMobileResult, 'MobileScan', url);
+  const wrappedDapResult = runScan(input, pageLogger, buildDapResult, 'DAPScan', url);
+  const wrappedThirdPartyResult = runScan(input, pageLogger, buildThirdPartyResult, 'ThirdPartyScan', url);
+  const wrappedCookieResult = runScan(input, pageLogger, buildCookieResult, 'CookieScan', url);
+  const wrappedSeoResult = runScan(input, pageLogger, buildSeoResult, 'SEOScan', url);
+  const wrappedUswdsScanner = runScan(input, pageLogger, createUswdsScanner(getCSSRequests, page), 'USWDSScan', url);
+  const wrappedLoginResult = runScan(input, pageLogger, buildLoginResult, 'LoginScan', url);
+  const wrappedCmsResult = runScan(input, pageLogger, buildCmsResult, 'CMSScan', url);
+  const wrappedRequiredLinksResult = runScan(input, pageLogger, buildRequiredLinksResult, 'Required LinksScan', url);
+  const wrappedSearchResult = runScan(input, pageLogger, buildSearchResult, 'SearchScan', url);
+  const wrappedMobileResult = runScan(input, pageLogger, buildMobileResult, 'MobileScan', url);
 
   const [
     dapScan,
@@ -99,23 +95,43 @@ const primaryScan = async (
     mobileScan,
   };
 
-  function runScan<T>(parentLogger: Logger, fn: AsyncFunction<T>, scanName: string, siteUrl: string): AsyncFunction<T> {
+  function runScan<T>(input: CoreInputDto, parentLogger: Logger, fn: AsyncFunction<T>, scanName: string, siteUrl: string): AsyncFunction<T> {
     return async (...args: any[]): Promise<T> => {
-      const logger = parentLogger.child({ scan: scanName });
-      logger.info(`Starting ${scanName}`);
-      const timer = logTimer(logger);
+      const stepLogger = parentLogger.child({
+        context: `Scan.${scanName}`,
+        scan: scanName
+      });
+
+      if(!shouldRunScan(scanName, input, stepLogger)) {
+        return "skipped" as T;
+      }
+
+      stepLogger.info(`Starting ${scanName}`);
+      const timer = logTimer(stepLogger);
 
       try {
-        const toReturn = await fn(logger, ...args);
-        timer.log({}, `scanner.page.primary.scan.${scanName}.duration.total`, `${scanName} completed in [{metricValue}ms]`);
-        logCount( logger, {}, `${scanName}.succeeded.count`, `${scanName} completed successfully for site '${siteUrl}'.` );
+        const toReturn = await fn(stepLogger, ...args);
+        timer.log({}, `scanner.page.primary.scan.${scanName}.duration.total`, `${scanName} completed for site '${siteUrl}' in [{metricValue}ms]`);
+        logCount(stepLogger, {}, `${scanName}.succeeded.count`, `${scanName} completed successfully for site '${siteUrl}'.`);
         return toReturn;
       } catch (error) {
-        logger.error({ error }, `${scanName} failed with error: ${error.message}`);
-        logCount( logger, {}, `${scanName}.failed.count`, `${scanName} failed for site '${siteUrl}'.` );
+        stepLogger.error({error}, `${scanName} failed with error: ${error.message}`);
+        logCount(stepLogger, {}, `${scanName}.failed.count`, `${scanName} failed for site '${siteUrl}'.`);
         return null;
       }
     };
-  };
+  }
+
+  function shouldRunScan(scanName: string, input: CoreInputDto, pageLogger: Logger): boolean {
+    if (!input.scan) {
+      return true;
+    }
+    if (scanName.toLowerCase().includes(input.scan.toLowerCase())) {
+      pageLogger.info(`Scan '${scanName}' includes scan filter '${input.scan}'; running scan.`);
+      return true;
+    }
+    pageLogger.warn(`Scan '${scanName}' does not include scan filter '${input.scan}'; skipping scan.`);
+  }
+
 
 };

@@ -1,7 +1,8 @@
 import { Logger } from 'pino';
+import { DurationLogTimer } from "./types";
 
-export function logCount( logger: Logger, metadata: any, metricId: string, logMessage: string, metricValue = 1 ) {
-  if( !metadata ) {
+export function logCount(logger: Logger, metadata: any, metricId: string, logMessage: string, metricValue = 1) {
+  if (!metadata) {
     metadata = {};
   }
   const metaDefaults = {
@@ -13,15 +14,15 @@ export function logCount( logger: Logger, metadata: any, metricId: string, logMe
     ...metadata,
     metricId,
   };
-  logger.info( finalMetadata, logMessage );
+  logger.info(finalMetadata, logMessage);
 };
 
-export function logTimer( logger: Logger ) {
+export function logTimer(logger: Logger): DurationLogTimer {
   const timer = {
     start: Date.now(),
-    log: (metadata: any, metricId: string, logMessage: string, decimalPrecision = 0 ) => {
+    log: (metadata: any, metricId: string, logMessage: string) => {
       const duration = Date.now() - timer.start;
-      if( !metadata ) {
+      if (!metadata) {
         metadata = {};
       }
       const finalMetadata = {
@@ -32,9 +33,9 @@ export function logTimer( logger: Logger ) {
       };
 
       const finalMessage = logMessage
-        .replace(/\{metricValue\}/g, duration.toString());
-      
-      logger.info( finalMetadata, finalMessage );
+        .replace(/\{metricValue}/g, duration.toString());
+
+      logger.info(finalMetadata, finalMessage);
     }
   };
   return timer;
@@ -52,4 +53,4 @@ export function logScanResult( logger: Logger, metadata: any, name: string, valu
     },
   };
   logger.info( finalMetadata, message );
-}
+};

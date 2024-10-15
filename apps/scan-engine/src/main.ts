@@ -7,6 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule, {
     bufferLogs: true,
   });
+  console.log("bootstrap()");
   app.useLogger(app.get(Logger));
   app.flushLogs();
   app.init();

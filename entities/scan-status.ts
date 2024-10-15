@@ -12,13 +12,17 @@ export enum ScanStatus {
   InvalidSSLCert = 'invalid_ssl_cert',
   NotApplicable = 'not_applicable',
   PageFrameNotReady = 'page_frame_not_ready',
+  Skipped = 'skipped',
   SslVersionCipherMismatch = 'ssl_version_cipher_mismatch',
   Timeout = 'timeout',
   TooManyRedirects = 'too_many_redirects',
   UnknownError = 'unknown_error',
 }
 
-export const parseBrowserError = (err: Error): ScanStatus => {
+export type AnySuccessfulStatus = ScanStatus.Completed;
+export type AnyFailureStatus = Exclude<ScanStatus, ScanStatus.Completed>;
+
+export const parseBrowserError = (err: Error): AnyFailureStatus => {
   if (
     (err.name && err.name === 'TimeoutError') ||
     (err.message &&
