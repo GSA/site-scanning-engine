@@ -98,7 +98,7 @@ const primaryScan = async (
   function runScan<T>(input: CoreInputDto, parentLogger: Logger, fn: AsyncFunction<T>, scanName: string, siteUrl: string): AsyncFunction<T> {
     return async (...args: any[]): Promise<T> => {
       const stepLogger = parentLogger.child({
-        context: `Scan.${scanName}`,
+        essContext: `Scan.${scanName}`,
         scan: scanName
       });
 

@@ -63,7 +63,7 @@ export class CoreScannerService
 
   private initScanLogger(input: CoreInputDto): Logger {
     return this.logger.logger.child({
-      context: 'CoreScannerService',
+      essContext: 'CoreScannerService',
       scanId: input.scanId,
       scanUrl: input.url,
       url: input.url,
@@ -113,7 +113,7 @@ export class CoreScannerService
 
   private initPageLogger(page: Page, scanLogger: Logger): Logger {
     return scanLogger.child({
-      context: `Page.${page}`,
+      essContext: `Page.${page}`,
       page
     });
   }

@@ -10,6 +10,10 @@ import { RootLoggerMeta } from "./types";
  */
 export function injectLoggerModule(rootMeta: RootLoggerMeta = {}) {
     return LoggerModule.forRoot({
-        pinoHttp: getPinoHttpConfig(rootMeta)
-    })
+        pinoHttp: 
+          {
+          ...getPinoHttpConfig(rootMeta),
+          },
+          renameContext: 'essContext',
+    });
 }

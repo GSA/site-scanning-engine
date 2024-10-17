@@ -16,7 +16,7 @@ import { logCount } from "../../../libs/logging/src/metric-utils";
 
 function createCommandLogger(commandName: string, options = undefined): pino.Logger {
   const appLogger = getRootLogger();
-  return appLogger.child({ cliCommand: commandName, context: 'Cli.Main', cliOptions: options });
+  return appLogger.child({ cliCommand: commandName, essContext: 'Cli.Main', cliOptions: options });
 }
 
 async function bootstrap() {
