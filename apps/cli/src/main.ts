@@ -75,6 +75,17 @@ async function enqueueScans() {
   await nestApp.close();
 }
 
+async function enqueueLimitedScans(cmdObj) {
+  const nestApp = await bootstrap();
+  const logger = createCommandLogger('enqueue-limited-scans', { limit: cmdObj.limit });
+  const controller = nestApp.get(QueueController);
+  logger.info('enqueueing limited scan jobs');
+
+  await controller.queueScans(cmdObj.limit);
+  printMemoryUsage(logger);
+  await nestApp.close();
+}
+
 async function createSnapshot() {
   const nestApp = await bootstrap();
   const logger = createCommandLogger('create-snapshot');
@@ -168,6 +179,19 @@ async function main() {
       'enqueue-scans adds each target in the Website database table to the redis queue',
     )
     .action(enqueueScans);
+  
+  // queue-limited-scans
+  program
+    .command('enqueue-limited-scans')
+    .description(
+      'enqueue-scans-limit adds a limited set of targets from the Website database table to the redis queue',
+    )
+    .option(
+      '--limit <number>',
+      'limits the enqueue service to <number> urls',
+      parseInt,
+    )
+    .action((cmdObj) => enqueueLimitedScans(cmdObj));
 
   // create-snapshot
   program
