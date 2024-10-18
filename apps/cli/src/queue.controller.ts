@@ -14,11 +14,15 @@ export class QueueController {
     private websiteService: WebsiteService,
   ) {}
 
-  async queueScans() {
+  async queueScans(limit?: number) {
     this.logger.log('starting to enqueue scans...');
 
     try {
-      const websites = await this.websiteService.findAllWebsites();
+      let websites = await this.websiteService.findAllWebsites();
+
+      if(limit) {
+        websites = websites.slice(0, limit);
+      }
 
       this.logger.log(`adding ${websites.length} websites to the queue`);
 

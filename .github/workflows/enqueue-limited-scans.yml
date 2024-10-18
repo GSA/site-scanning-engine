@@ -1,0 +1,34 @@
+---
+name: Enqueue limited scans
+
+# yamllint disable-line rule:truthy
+on:
+  workflow_dispatch:
+    inputs:
+      cf_space:
+        description: deployed cloud.gov space
+        required: true
+        default: prod
+      site_limit:
+        description: number of sites to queue
+        required: true
+        default: 10
+        type: number
+
+jobs:
+  enqueue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: run enqueue-limited-scans cli job in chosen space
+        uses: cloud-gov/cg-cli-tools@main
+        with:
+          cf_api: https://api.fr.cloud.gov
+          cf_username: ${{ secrets.CF_USERNAME }}
+          cf_password: ${{ secrets.CF_PASSWORD }}
+          cf_org: gsatts-sitescan
+          cf_space: ${{ github.event.inputs.cf_space || 'prod' }}
+          cf_command: run-task site-scanner-consumer
+            -c "node dist/apps/cli/main.js enqueue-limited-scans --limit ${{ github.event.inputs.site_limit }}"
+            -k 2G -m 2G
+            --name github-action-enqueue-limited-scans-${{ github.run_id }}
