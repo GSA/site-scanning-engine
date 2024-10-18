@@ -14,6 +14,6 @@ export function injectLoggerModule(rootMeta: RootLoggerMeta = {}) {
           {
           ...getPinoHttpConfig(rootMeta),
           },
-          renameContext: 'essContext',
+          renameContext: 'sseContext',
     });
 }

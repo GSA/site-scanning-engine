@@ -24,7 +24,7 @@ export const PuppeteerService = {
    */
   useFactory: async (logger: PinoLogger) => {
     return createPuppeteerPool(
-      logger.logger.child({ essContext: 'puppeteer-pool' }),
+      logger.logger.child({ sseContext: 'puppeteer-pool' }),
       {
         min: 0,
         max: 4,
