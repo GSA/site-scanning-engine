@@ -39,16 +39,24 @@ export class BrowserService implements OnModuleDestroy {
     await page.setUserAgent(userAgent);
     await page.setCacheEnabled(false);
 
-    // Process page with a 60 second timeout.
-    return new Promise<Result>((resolve, reject) => {
-      setTimeout(() => {
-        reject('Processing timed out');
-      }, 60000);
-      handler(page)
-        .then(resolve)
-        .catch(reject)
-        .finally(() => page.close());
-    });
+    // Process page with a 120 second timeout.
+    let result: Promise<Result>;
+    try {
+      result = new Promise<Result>((resolve, reject) => {
+        setTimeout(() => {
+          reject('Processing timed out');
+        }, 120000);
+        handler(page)
+          .then(resolve)
+          .catch(reject)
+          .finally(() => page.close());
+      });
+      return result;
+    } catch (error) {
+      this.logger.error({error}, `Error processing page: ${error.message}`);
+      await page.close();
+    }
+    
   }
 
   async onModuleDestroy() {
