@@ -112,6 +112,7 @@ export const createPuppeteerPool = (
     return genericAcquire().then((browser: puppeteer.Browser) => {
       const newCount = useCounts.get(browser) + 1;
       useCounts.set(browser, newCount);
+      logger.info(`Browser instance has been used ${useCounts} out of ${options.maxUses} times`);
       logger.info({ msg: 'Acquired browser...', useCount: newCount });
       return browser;
     });
