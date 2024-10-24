@@ -43,7 +43,7 @@ export function getPinoConfig(rootMeta: RootLoggerMeta = {}): LoggerOptions {
             },
         },
         level: 'debug',
-        timestamp: () => `,"logTime":"${generateISO8601WithNanoseconds()}"`,
+        timestamp: () => `,"sseLogTime":"${generateISO8601WithNanoseconds()}"`,
     };
 
     if (usePinoPretty()) {
