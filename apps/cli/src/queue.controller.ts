@@ -82,4 +82,17 @@ export class QueueController {
       this.logger.error(err.message, err.stack);
     }
   }
+
+  async getQueueStatus() {
+    this.logger.log('Getting queue status...');
+
+    try{
+      const queueStatus = await this.queueService.getQueueStatus();
+      this.logger.log({queueStatus}, 'Successfully retrieved queue status');
+      return queueStatus;
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(err.message, err.stack);
+    }
+  }
 }

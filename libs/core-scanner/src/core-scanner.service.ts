@@ -66,7 +66,7 @@ export class CoreScannerService
       sseContext: 'CoreScannerService',
       scanId: input.scanId,
       scanUrl: input.url,
-      url: input.url,
+      sseUrl: input.url,
       websiteId: input.websiteId,
     });
   }
