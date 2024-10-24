@@ -75,6 +75,19 @@ async function enqueueScans() {
   await nestApp.close();
 }
 
+async function checkQueueStatus() {
+  const nestApp = await bootstrap();
+  const logger = createCommandLogger('check-queue-status');
+  const controller = nestApp.get(QueueController);
+  logger.info('checking queue status');
+
+  const queueStatus = await controller.getQueueStatus();
+  logger.info({ jobsRemaining: queueStatus.count  }, `${queueStatus.count} jobs remaining in queue`);
+  logger.info({ activeJobs: queueStatus.activeCount  }, `${queueStatus.activeCount} active jobs in queue`);
+  printMemoryUsage(logger);
+  await nestApp.close();
+}
+
 async function enqueueLimitedScans(cmdObj) {
   const nestApp = await bootstrap();
   const logger = createCommandLogger('enqueue-limited-scans', { limit: cmdObj.limit });
@@ -179,6 +192,14 @@ async function main() {
       'enqueue-scans adds each target in the Website database table to the redis queue',
     )
     .action(enqueueScans);
+
+  // queue-status
+  program
+    .command('queue-status')
+    .description(
+      'queue-status retrieves the active and remaining jobs in the redis queue',
+    )
+    .action(checkQueueStatus);
   
   // queue-limited-scans
   program
