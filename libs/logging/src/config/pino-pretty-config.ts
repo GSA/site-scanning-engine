@@ -10,6 +10,6 @@ export function getPinoPrettyConfig() {
         colorize: true,
         ignore: 'pid,hostname',
         singleLine: true,
-        timestampKey: 'logTime',
+        timestampKey: 'sseLogTime',
     };
 }
