@@ -11,6 +11,9 @@ export const createPerformanceScanner = (
   logger.info('Starting performance scan...');
 
   return async (page: Page): Promise<PerformanceScan> => {
+    page.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
+    page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
+    page.on('response', (response)=> logger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
     // Inject functions into the page to calculate performance metrics
     await page.evaluateOnNewDocument(calculateLargestContentfulPaint);
     await page.evaluateOnNewDocument(calculateCumulativeLayoutShift);

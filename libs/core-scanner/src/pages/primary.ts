@@ -36,6 +36,9 @@ const primaryScan = async (
   input: CoreInputDto,
   page: Page,
 ): Promise<PrimaryScans> => {
+  page.on('console', (message) => pageLogger.debug(`Page Log: ${message.text()}`));
+  page.on('error', (error) => pageLogger.warn({ error }, `Page Error: ${error.message}`));
+  page.on('response', (response)=> pageLogger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
   const url = getHttpsUrl(input.url);
 
   const getCSSRequests = await createCSSRequestsExtractor(page, pageLogger);

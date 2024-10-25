@@ -16,6 +16,7 @@ export const createAccessibilityScanner = (
   return async (page: Page): Promise<AccessibilityScan> => {
     page.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
     page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
+    page.on('response', (response)=> logger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
 
     await page.goto(getHttpsUrl(input.url));
 

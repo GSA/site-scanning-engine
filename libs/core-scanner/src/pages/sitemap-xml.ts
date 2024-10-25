@@ -13,6 +13,9 @@ export const createSitemapXmlScanner = (
 ) => {
   const url = getHttpsUrl(input.url);
   return async (sitemapPage: Page): Promise<SitemapXmlPageScans> => {
+    sitemapPage.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
+    sitemapPage.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
+    sitemapPage.on('response', (response)=> logger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
     // go to the sitemap page from the target url
     const sitemapUrl = new URL(url);
     sitemapUrl.pathname = 'sitemap.xml';

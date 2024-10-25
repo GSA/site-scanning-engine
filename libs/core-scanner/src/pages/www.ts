@@ -6,6 +6,9 @@ import { wwwScan } from 'entities/scan-data.entity';
 
 export const createWwwScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page: Page) => {
+    page.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
+    page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
+    page.on('response', (response)=> logger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
     const wwwUrl = getHttpsUrl(`www.${input.url}`);
 
     const wwwResponse = await page.goto(wwwUrl.toString(), {

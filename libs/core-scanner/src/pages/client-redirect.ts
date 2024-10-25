@@ -31,6 +31,9 @@ async function scanForClientRedirect(
   page: Page,
   url: string,
 ): Promise<ClientRedirectResults> {
+  page.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
+  page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
+  page.on('response', (response)=> logger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
   let firstResponseHandled = false;
 
   const firstResponseResult = new Promise<ClientRedirectResults>((resolve) => {
