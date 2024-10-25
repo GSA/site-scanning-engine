@@ -54,7 +54,7 @@ export const createPuppeteerPool = (
     puppeteerArgs: {
       headless: true,
       ignoreHTTPSErrors: true,
-      args: ['--no-sandbox'],
+      args: ['--no-sandbox', '--enable-logging', '--v=1'],
     },
     validator: () => Promise.resolve(true),
     ...userOptions,
