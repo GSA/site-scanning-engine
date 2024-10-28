@@ -25,6 +25,7 @@ const levelNames = {
 export function getPinoConfig(rootMeta: RootLoggerMeta = {}): LoggerOptions {
     const rootMetaDefaults = getRootMetaDefaults();
     const finalRootMeta = { ...rootMetaDefaults, ...rootMeta };
+    const now = new Date();
 
     const config: LoggerOptions = {
         base: finalRootMeta,
@@ -43,7 +44,7 @@ export function getPinoConfig(rootMeta: RootLoggerMeta = {}): LoggerOptions {
             },
         },
         level: 'debug',
-        timestamp: () => `,"sseLogTime":"${generateISO8601WithNanoseconds()}"`,
+        timestamp: () => `,"sseLogTime":"${now.toISOString()}"`,
     };
 
     if (usePinoPretty()) {
