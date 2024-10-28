@@ -5,7 +5,7 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { SitemapXmlScan } from 'entities/scan-data.entity';
 import { SitemapXmlPageScans } from 'entities/scan-page.entity';
 
-import { getHttpsUrl, getMIMEType, isLive } from '../util';
+import { getHttpsUrl, getMIMEType, isLive, createRequestHandlers } from '../util';
 
 export const createSitemapXmlScanner = (
   logger: Logger,
@@ -13,9 +13,7 @@ export const createSitemapXmlScanner = (
 ) => {
   const url = getHttpsUrl(input.url);
   return async (sitemapPage: Page): Promise<SitemapXmlPageScans> => {
-    sitemapPage.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
-    sitemapPage.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
-    sitemapPage.on('response', (response)=> logger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
+    createRequestHandlers(sitemapPage, logger);
     // go to the sitemap page from the target url
     const sitemapUrl = new URL(url);
     sitemapUrl.pathname = 'sitemap.xml';

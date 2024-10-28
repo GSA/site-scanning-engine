@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
+import { Logger } from 'pino';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { UrlScan } from 'entities/scan-data.entity';
-import { isLive } from '../util';
+import { isLive, createRequestHandlers } from '../util';
 
 import {
   getBaseDomain,
@@ -18,7 +19,11 @@ export const buildUrlScanResult = (
   input: CoreInputDto,
   page: Page,
   response: HTTPResponse,
+  parentLogger: Logger,
 ): UrlScan => {
+  const logger = parentLogger.child({ sseContext: 'Scan.UrlScan', scan: 'URLScan'});
+  logger.info('Building URL scan result...');
+  createRequestHandlers(page, logger);
   const url = getHttpsUrl(input.url);
   const redirectChain = response.request().redirectChain();
   const finalUrl = getFinalUrl(page);

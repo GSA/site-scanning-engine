@@ -1,14 +1,12 @@
 import { Logger } from 'pino';
 import { HTTPResponse, Page } from 'puppeteer';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { getHttpsUrl } from '../util';
+import { getHttpsUrl, createRequestHandlers } from '../util';
 import { wwwScan } from 'entities/scan-data.entity';
 
 export const createWwwScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page: Page) => {
-    page.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
-    page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
-    page.on('response', (response)=> logger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
+    createRequestHandlers(page, logger);
     const wwwUrl = getHttpsUrl(`www.${input.url}`);
 
     const wwwResponse = await page.goto(wwwUrl.toString(), {

@@ -34,9 +34,6 @@ export class BrowserService implements OnModuleDestroy {
   ) {
     this.logger.debug('Creating Puppeteer page...');
     const page = await browser.newPage();
-    page.on('console', (message) => this.logger.debug(`Page Log: ${message.text()}`));
-    page.on('error', (error) => this.logger.warn({ error }, `Page Error: ${error.message}`));
-    page.on('response', (response)=> this.logger.debug({sseResponse: response.status()}, `Response status: ${response.status()}`));
     const userAgent =
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4182.0 Safari/537.36';
     await page.setUserAgent(userAgent);
