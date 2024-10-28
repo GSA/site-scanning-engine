@@ -1,5 +1,8 @@
 import { browserInstance, newTestPage } from '../test-helper';
 import { buildUrlScanResult } from './url-scan';
+import pino from 'pino';
+
+const mockLogger = pino();
 
 describe('url scan', () => {
   it('works', async () => {
@@ -9,6 +12,7 @@ describe('url scan', () => {
           { websiteId: 123, scanId: 'asdf', url: 'https://www.18f.gov' },
           page,
           response,
+          mockLogger,
         ),
       ).toEqual({
         finalUrl: sourceUrl,

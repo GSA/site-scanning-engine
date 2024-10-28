@@ -9,7 +9,7 @@ const PROJECT_ROOT = process.cwd();
 
 const initBrowser = async () => {
   return await puppeteer.launch({
-    args: ['--no-sandbox'],
+    args: ['--no-sandbox', '--enable-logging', '--v=1'],
   });
 };
 

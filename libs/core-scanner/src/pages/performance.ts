@@ -1,5 +1,5 @@
 import { Logger } from 'pino';
-import { getHttpsUrl } from '../util';
+import { getHttpsUrl, createRequestHandlers } from '../util';
 import { CoreInputDto } from '../core.input.dto';
 import { Page } from 'puppeteer';
 import { PerformanceScan } from 'entities/scan-data.entity';
@@ -11,6 +11,7 @@ export const createPerformanceScanner = (
   logger.info('Starting performance scan...');
 
   return async (page: Page): Promise<PerformanceScan> => {
+    createRequestHandlers(page, logger);
     // Inject functions into the page to calculate performance metrics
     await page.evaluateOnNewDocument(calculateLargestContentfulPaint);
     await page.evaluateOnNewDocument(calculateCumulativeLayoutShift);

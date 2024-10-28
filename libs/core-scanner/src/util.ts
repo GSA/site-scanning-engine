@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
-import { HTTPResponse } from 'puppeteer';
+import { HTTPResponse, Page } from 'puppeteer';
+import { Logger } from 'pino';
 
 type UnwrapPromiseArray<T> = {
   [K in keyof T]: T[K] extends Promise<infer O> ? O : T[K];
@@ -71,3 +72,10 @@ export const isLive = (res: HTTPResponse): boolean => {
 export function getTruncatedUrl(url: string, length: number): string {
   return url.length > length ? url.slice(0, length) + '...' : url;
 }
+
+export function createRequestHandlers(page: Page, logger: Logger) {
+  page.on('console', (message) => logger.debug({sseMessage: message }, `Page Log: ${message.text()}`));
+  page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
+  page.on('response', (response)=> logger.debug({ sseResponseUrl: response.url(), sseResponseStatus: response.status()}, `Response status: ${response.status()}`));
+  page.on('requestfailed', (request) => logger.warn({ sseRequestUrl: request.url() }, `Request failed: ${getTruncatedUrl(request.url(), 40)}`));
+};

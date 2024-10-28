@@ -5,6 +5,7 @@ import { Page } from 'puppeteer';
 import { AccessibilityScan } from 'entities/scan-data.entity';
 import { AxePuppeteer } from '@axe-core/puppeteer';
 import { aggregateResults } from './results-aggregator';
+import { createRequestHandlers } from '../../util';
 
 export const createAccessibilityScanner = (
   logger: Logger,
@@ -14,8 +15,7 @@ export const createAccessibilityScanner = (
 
 
   return async (page: Page): Promise<AccessibilityScan> => {
-    page.on('console', (message) => logger.debug(`Page Log: ${message.text()}`));
-    page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
+    createRequestHandlers(page, logger);
 
     await page.goto(getHttpsUrl(input.url));
 

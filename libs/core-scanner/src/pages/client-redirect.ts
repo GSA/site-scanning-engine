@@ -1,7 +1,7 @@
 import { Logger } from 'pino';
 import { Page } from 'puppeteer';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { getHttpsUrl } from '../util';
+import { getHttpsUrl, createRequestHandlers } from '../util';
 
 export const createClientRedirectScanner = (
   logger: Logger,
@@ -31,6 +31,7 @@ async function scanForClientRedirect(
   page: Page,
   url: string,
 ): Promise<ClientRedirectResults> {
+  createRequestHandlers(page, logger);
   let firstResponseHandled = false;
 
   const firstResponseResult = new Promise<ClientRedirectResults>((resolve) => {

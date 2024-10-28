@@ -5,17 +5,18 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { RobotsTxtScan } from 'entities/scan-data.entity';
 import { RobotsTxtPageScans } from 'entities/scan-page.entity';
 
-import { getHttpsUrl, getMIMEType } from '../util';
-import { isLive } from '../util';
+import { getHttpsUrl, getMIMEType, isLive, createRequestHandlers } from '../util';
 
 export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   const url = getHttpsUrl(input.url);
   return async (robotsPage: Page): Promise<RobotsTxtPageScans> => {
+    createRequestHandlers(robotsPage, logger);
+
     // go to the robots page from the target url
     const robotsUrl = new URL(url);
     robotsUrl.pathname = 'robots.txt';
     const robotsResponse = await robotsPage.goto(robotsUrl.toString(), {
-      waitUntil: 'networkidle0',
+      waitUntil: 'networkidle2',
     });
     // extract the html page source
     const robotsText = await robotsResponse.text();

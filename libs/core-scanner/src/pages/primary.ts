@@ -23,6 +23,8 @@ import { buildMobileResult } from '../scans/mobile';
 
 import { logCount, logTimer } from '../../../logging/src/metric-utils';
 
+import { createRequestHandlers } from '../util';
+
 export const createPrimaryScanner = (logger: Logger, input: CoreInputDto) => {
   return async (page) => {
     return await primaryScan(logger, input, page);
@@ -36,14 +38,19 @@ const primaryScan = async (
   input: CoreInputDto,
   page: Page,
 ): Promise<PrimaryScans> => {
+  createRequestHandlers(page, pageLogger);
   const url = getHttpsUrl(input.url);
-
   const getCSSRequests = await createCSSRequestsExtractor(page, pageLogger);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
-
-  const response = await page.goto(url, {
-    waitUntil: 'networkidle0',
-  });
+  let response = null;
+  try {
+    response = await page.goto(url, {
+      waitUntil: 'networkidle2',
+    });
+  } catch (error) {
+    pageLogger.error({error}, `Failed to navigate to ${url} because of error: ${error.message}`);
+    return null;
+  }
 
   const wrappedDapResult = runScan(input, pageLogger, buildDapResult, 'DAPScan', url);
   const wrappedThirdPartyResult = runScan(input, pageLogger, buildThirdPartyResult, 'ThirdPartyScan', url);
@@ -79,7 +86,7 @@ const primaryScan = async (
     wrappedSearchResult(page),
     wrappedMobileResult(page),
   ]);
-  const urlScan = buildUrlScanResult(input, page, response);
+  const urlScan = buildUrlScanResult(input, page, response, pageLogger);
 
   return {
     urlScan,
@@ -103,6 +110,7 @@ const primaryScan = async (
       });
 
       if(!shouldRunScan(scanName, input, stepLogger)) {
+        stepLogger.debug(`Skipping ${scanName}`);
         return "skipped" as T;
       }
 

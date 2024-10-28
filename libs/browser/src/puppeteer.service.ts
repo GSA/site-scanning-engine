@@ -42,7 +42,7 @@ export const PuppeteerService = {
         // Arguments to pass on to Puppeteer
         puppeteerArgs: {
           ignoreHTTPSErrors: true,
-          args: ['--no-sandbox'],
+          args: ['--no-sandbox', '--enable-logging', '--v=1'],
         },
       },
     );
