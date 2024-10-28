@@ -10,7 +10,7 @@ export const createWwwScanner = (logger: Logger, input: CoreInputDto) => {
     const wwwUrl = getHttpsUrl(`www.${input.url}`);
 
     const wwwResponse = await page.goto(wwwUrl.toString(), {
-      waitUntil: 'networkidle0',
+      waitUntil: 'networkidle2',
     });
     return {
       wwwScan: await buildWwwResult(wwwUrl, wwwResponse),

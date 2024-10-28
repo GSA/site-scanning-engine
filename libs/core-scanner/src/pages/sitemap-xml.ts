@@ -19,7 +19,7 @@ export const createSitemapXmlScanner = (
     sitemapUrl.pathname = 'sitemap.xml';
     logger.info('Going to sitemap.xml...');
     const sitemapResponse = await sitemapPage.goto(sitemapUrl.toString(), {
-      waitUntil: 'networkidle0',
+      waitUntil: 'networkidle2',
     });
     logger.info('Got sitemap.xml!');
     // extract the html page source

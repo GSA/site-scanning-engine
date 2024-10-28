@@ -11,12 +11,12 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   const url = getHttpsUrl(input.url);
   return async (robotsPage: Page): Promise<RobotsTxtPageScans> => {
     createRequestHandlers(robotsPage, logger);
-    
+
     // go to the robots page from the target url
     const robotsUrl = new URL(url);
     robotsUrl.pathname = 'robots.txt';
     const robotsResponse = await robotsPage.goto(robotsUrl.toString(), {
-      waitUntil: 'networkidle0',
+      waitUntil: 'networkidle2',
     });
     // extract the html page source
     const robotsText = await robotsResponse.text();

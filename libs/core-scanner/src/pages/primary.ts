@@ -45,7 +45,7 @@ const primaryScan = async (
   let response = null;
   try {
     response = await page.goto(url, {
-      waitUntil: 'networkidle0',
+      waitUntil: 'networkidle2',
     });
   } catch (error) {
     pageLogger.error({error}, `Failed to navigate to ${url} because of error: ${error.message}`);
