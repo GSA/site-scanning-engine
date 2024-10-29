@@ -42,15 +42,10 @@ const primaryScan = async (
   const url = getHttpsUrl(input.url);
   const getCSSRequests = await createCSSRequestsExtractor(page, pageLogger);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
-  let response = null;
-  try {
-    response = await page.goto(url, {
-      waitUntil: 'networkidle2',
-    });
-  } catch (error) {
-    pageLogger.error({error}, `Failed to navigate to ${url} because of error: ${error.message}`);
-    return null;
-  }
+
+  const response = await page.goto(url, {
+    waitUntil: 'networkidle2',
+  });
 
   const wrappedDapResult = runScan(input, pageLogger, buildDapResult, 'DAPScan', url);
   const wrappedThirdPartyResult = runScan(input, pageLogger, buildThirdPartyResult, 'ThirdPartyScan', url);
