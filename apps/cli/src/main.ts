@@ -88,6 +88,17 @@ async function checkQueueStatus() {
   await nestApp.close();
 }
 
+async function enqueueSite(cmdObj) {
+  const nestApp = await bootstrap();
+  const logger = createCommandLogger('enqueue-site', { url: cmdObj.url });
+  const controller = nestApp.get(QueueController);
+  logger.info('enqueueing specific url');
+
+  await controller.queueSite(cmdObj.url);
+  printMemoryUsage(logger);
+  await nestApp.close();
+}
+
 async function enqueueLimitedScans(cmdObj) {
   const nestApp = await bootstrap();
   const logger = createCommandLogger('enqueue-limited-scans', { limit: cmdObj.limit });
@@ -192,6 +203,18 @@ async function main() {
       'enqueue-scans adds each target in the Website database table to the redis queue',
     )
     .action(enqueueScans);
+
+  // queue-site
+  program
+    .command('enqueue-site')
+    .description(
+      'enqueue-site add 1 site from the Website database table to the redis queue',
+    )
+    .option(
+      '--url <string>',
+      'queue up one specific site by URL'
+    )
+    .action(enqueueSite);
 
   // queue-status
   program
