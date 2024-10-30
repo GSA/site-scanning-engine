@@ -43,6 +43,27 @@ export class QueueController {
     }
   }
 
+  async queueSite(url: string) {
+    this.logger.log(`queueing site: ${url}`);
+
+    try {
+      let website = await this.websiteService.findByUrl(url);
+
+      const coreInput: CoreInputDto = {
+        websiteId: website.id,
+        url: website.url,
+        scanId: cuid(),
+      };
+      await this.queueService.addCoreJob(coreInput);
+
+      const queueStatus = await this.queueService.getQueueStatus();
+      this.logger.log({ msg: 'successfully added to queue', queueStatus });
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(err.message, err.stack);
+    }
+  }
+
   async clearQueue() {
     this.logger.log('starting to clear queue...');
 
