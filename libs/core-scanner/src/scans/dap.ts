@@ -168,7 +168,7 @@ export function getDapScriptCandidateRequests(parentLogger: Logger, allRequests:
     const isExactScriptMatch = checkUrlForScriptNameMatch(requestUrl);
     const isPropertyIdMatch = checkUrlForPropertyIdMatch(requestUrl);
     const isPostDataMatch = checkPostDataForPropertyIdMatch(postData);
-    const truncatedUrl = getTruncatedUrl(requestUrl, 40);
+    const truncatedUrl = getTruncatedUrl(requestUrl);
 
     if( isExactScriptMatch || isPropertyIdMatch || isPostDataMatch ) {
       logger.info(`Dap script candidate found: ${truncatedUrl}`);
@@ -195,7 +195,7 @@ export async function getDapScriptCandidates(parentLogger: Logger, dapScriptCand
   for (const request of dapScriptCandidateRequests) {
     const url = request.url();
     const parsedUrl = new URL(url);
-    const truncatedUrl = getTruncatedUrl(url, 40);
+    const truncatedUrl = getTruncatedUrl(url);
 
     const candidate: DapScriptCandidate = {
       body: null,
@@ -263,7 +263,7 @@ export function getBestCandidate(parentLogger: Logger, dapScriptCandidates: DapS
   let bestMatchLevel = 5;
   for (const candidate of dapScriptCandidates) {
     let matchLevel = -1;
-    const truncatedUrl = getTruncatedUrl(candidate.url, 40);
+    const truncatedUrl = getTruncatedUrl(candidate.url);
 
     for (let i = 0; i < checks.length; i++) {
       if (checks[i].check(candidate)) {
@@ -281,7 +281,7 @@ export function getBestCandidate(parentLogger: Logger, dapScriptCandidates: DapS
 
   }
 
-  const truncatedBestCandidateUrl = getTruncatedUrl(bestCandidate.url, 40);
+  const truncatedBestCandidateUrl = getTruncatedUrl(bestCandidate.url);
   logger.info(`Best DAP script candidate found: ${ truncatedBestCandidateUrl }`);
   return bestCandidate;
 }

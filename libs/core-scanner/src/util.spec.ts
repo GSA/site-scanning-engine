@@ -120,33 +120,18 @@ describe('core-scanner util', () => {
   });
 
   describe('getTruncatedUrl', () => {
-    it('truncates a url to the specified length', () => {
+    it('truncates a url that contains query parameters', () => {
       const url =
-        'https://poena.inl.gov:7004/console-selfservice/SelfService.do';
-      const result = getTruncatedUrl(url, 10);
-      expect(result).toBe('https://po...');
+        'https://poena.inl.gov:7004/console-selfservice/SelfService.do?ThisWillBeRemoved';
+      const result = getTruncatedUrl(url);
+      expect(result).toBe('https://poena.inl.gov:7004/console-selfservice/SelfService.do');
     });
 
-    it('does not truncate a url that is shorter than the specified length', () => {
+    it('does not truncate a url that does not contain query parameters', () => {
       const url = 'https://gsa.gov';
-      const result = getTruncatedUrl(url, 15);
+      const result = getTruncatedUrl(url);
       expect(result).toBe('https://gsa.gov');
     });
   });
 
-});
-
-describe('getTruncatedUrl', () => {
-  it('truncates a url to the specified length', () => {
-    const url =
-      'https://poena.inl.gov:7004/console-selfservice/SelfService.do';
-    const result = getTruncatedUrl(url, 10);
-    expect(result).toBe('https://po...');
-  });
-
-  it('does not truncate a url that is shorter than the specified length', () => {
-    const url = 'https://gsa.gov';
-    const result = getTruncatedUrl(url, 15);
-    expect(result).toBe('https://gsa.gov');
-  });
 });
