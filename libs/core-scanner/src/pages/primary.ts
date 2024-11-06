@@ -43,9 +43,8 @@ const primaryScan = async (
   const getCSSRequests = await createCSSRequestsExtractor(page, pageLogger);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
 
-  const response = await page.goto(url, {
-    waitUntil: 'networkidle2',
-  });
+  const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+  pageLogger.info({ sseResponseStatus: response.status }, `${url} returned status code ${response.status()}`);
 
   const wrappedDapResult = runScan(input, pageLogger, buildDapResult, 'DAPScan', url);
   const wrappedThirdPartyResult = runScan(input, pageLogger, buildThirdPartyResult, 'ThirdPartyScan', url);
