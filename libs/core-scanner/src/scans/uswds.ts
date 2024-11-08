@@ -37,49 +37,60 @@ export function createUswdsScanner( getCSSRequests: () => string[] , page: Page,
 
 export async function buildUswdsResult( parentLogger: Logger, cssPages: string[], htmlText: string, page: Page, ): Promise<UswdsScan> {
   const logger = parentLogger.child({ function: 'buildUswdsResult', pageUrl: page.url() });
-  const pageResults = await page.evaluate(() => {
-    const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
-    const usaClassesCount = Math.round(Math.sqrt(usaClasses.length)) * 5;
-
-    const classList = usaClasses
-      .map((element) => [...element.classList])
-      .reduce((acc, classes) => acc.concat(classes), []);
-
-    const filteredClasses =
-      classList &&
-      classList.filter(
-        (cls) =>
-          cls.startsWith('usa-') && !cls.includes('--') && !cls.includes('__'),
-      );
-
-    const uniqueClassesObj =
-      filteredClasses &&
-      filteredClasses.reduce((acc, cls) => {
-        if (!acc[cls]) {
-          acc[cls] = true;
-        }
-        return acc;
-      }, {});
-
-    const uniqueClasses = Object.keys(uniqueClassesObj).sort().join(',');
-
-    const selectorResults = [
-      ...document.querySelectorAll('.usa-banner__button-text, .usa-banner-button-text'),
-    ]
-      .map((el) => el.textContent.replace(/’/g, "'"));
-
-    const hasHeresHowYouKnowBannerEnglish = selectorResults.some((text) => text.includes("Here's how you know"));
-    const hasHeresHowYouKnowBannerSpanish = selectorResults.some((text) => text.includes("Así es como usted puede verificarlo"));
-    const hasHeresHowYouKnowBanner = hasHeresHowYouKnowBannerEnglish || hasHeresHowYouKnowBannerSpanish;
-
-    return {
-      usaClassesCount,
-      uniqueClasses,
-      hasHeresHowYouKnowBannerEnglish,
-      hasHeresHowYouKnowBannerSpanish,
-      hasHeresHowYouKnowBanner,
-    };
-  });
+  let pageResults = {
+    usaClassesCount: 0,
+    uniqueClasses: '',
+    hasHeresHowYouKnowBannerEnglish: false,
+    hasHeresHowYouKnowBannerSpanish: false,
+    hasHeresHowYouKnowBanner: false,
+  };
+  try {
+    pageResults = await page.evaluate(() => {
+      const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
+      const usaClassesCount = Math.round(Math.sqrt(usaClasses.length)) * 5;
+  
+      const classList = usaClasses
+        .map((element) => [...element.classList])
+        .reduce((acc, classes) => acc.concat(classes), []);
+  
+      const filteredClasses =
+        classList &&
+        classList.filter(
+          (cls) =>
+            cls.startsWith('usa-') && !cls.includes('--') && !cls.includes('__'),
+        );
+  
+      const uniqueClassesObj =
+        filteredClasses &&
+        filteredClasses.reduce((acc, cls) => {
+          if (!acc[cls]) {
+            acc[cls] = true;
+          }
+          return acc;
+        }, {});
+  
+      const uniqueClasses = Object.keys(uniqueClassesObj).sort().join(',');
+  
+      const selectorResults = [
+        ...document.querySelectorAll('.usa-banner__button-text, .usa-banner-button-text'),
+      ]
+        .map((el) => el.textContent.replace(/’/g, "'"));
+  
+      const hasHeresHowYouKnowBannerEnglish = selectorResults.some((text) => text.includes("Here's how you know"));
+      const hasHeresHowYouKnowBannerSpanish = selectorResults.some((text) => text.includes("Así es como usted puede verificarlo"));
+      const hasHeresHowYouKnowBanner = hasHeresHowYouKnowBannerEnglish || hasHeresHowYouKnowBannerSpanish;
+  
+      return {
+        usaClassesCount,
+        uniqueClasses,
+        hasHeresHowYouKnowBannerEnglish,
+        hasHeresHowYouKnowBannerSpanish,
+        hasHeresHowYouKnowBanner,
+      };
+    });
+  } catch (error) {
+    logger.error({ error }, `Error scanning for USWDS classes: ${error.message}`);
+  };
 
   if (pageResults.hasHeresHowYouKnowBannerEnglish) {
     logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerEnglish', 'Found English "Here\'s how you know" banner');
