@@ -6,8 +6,9 @@ import { CmsScan } from 'entities/scan-data.entity';
 import { Logger } from 'pino';
 
 export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<CmsScan> {
-  const htmlMatches = await getHtmlMatches(mainResponse);
-  const headerMatches = await getHeaderMatches(mainResponse);
+  parentLogger.info(`Building CMS scan result for: ${mainResponse.url()}`);
+  const htmlMatches = await getHtmlMatches(parentLogger, mainResponse);
+  const headerMatches = await getHeaderMatches(parentLogger, mainResponse);
 
   let cms = null;
 
@@ -20,8 +21,14 @@ export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPRe
   return { cms };
 };
 
-const getHtmlMatches = async (response: HTTPResponse) => {
-  const actualHtml = await response.text();
+const getHtmlMatches = async (logger: Logger, response: HTTPResponse) => {
+  logger.info(`Getting HTML matches for: ${response.url()}`);
+  let actualHtml = '';
+  try {
+    actualHtml = await response.text();
+  } catch (error) {
+    logger.error({ error }, `Error getting HTML from response: ${error.message}`);
+  }
 
   return cmsData.filter((obj) => {
     if (obj.html) {
@@ -42,7 +49,7 @@ const getHtmlMatches = async (response: HTTPResponse) => {
   });
 };
 
-const getHeaderMatches = async (response: HTTPResponse) => {
+const getHeaderMatches = async (logger: Logger, response: HTTPResponse) => {
   const actualHeaders = await response.headers();
   const formattedActualHeaders = _.transform(
     actualHeaders,

@@ -47,7 +47,7 @@ export class QueueController {
     this.logger.log(`queueing site: ${url}`);
 
     try {
-      let website = await this.websiteService.findByUrl(url);
+      const website = await this.websiteService.findByUrl(url);
 
       const coreInput: CoreInputDto = {
         websiteId: website.id,
