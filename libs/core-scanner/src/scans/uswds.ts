@@ -7,12 +7,31 @@ import { UswdsScan } from 'entities/scan-data.entity';
 
 export function createUswdsScanner( getCSSRequests: () => string[] , page: Page, ) {
   return async (logger: Logger, response: HTTPResponse) => {
-    return buildUswdsResult(
-      logger,
-      getCSSRequests(),
-      await response.text(),
-      page,
-    );
+    try{
+      return buildUswdsResult(
+        logger,
+        getCSSRequests(),
+        await response.text(),
+        page,
+      );
+    } catch (error) {
+      logger.error({ error }, `Error scanning for USWDS classes: ${error.message}`);
+      return {
+        usaClasses: 0,
+        usaClassesUsed: '',
+        uswdsString: 0,
+        uswdsInlineCss: 0,
+        uswdsUsFlag: 0,
+        uswdsUsFlagInCss: 0,
+        uswdsStringInCss: 0,
+        uswdsPublicSansFont: 0,
+        uswdsSemanticVersion: null,
+        uswdsVersion: 0,
+        uswdsCount: 0,
+        heresHowYouKnowBanner: false,
+      };
+    }
+    
   };
 }
 
