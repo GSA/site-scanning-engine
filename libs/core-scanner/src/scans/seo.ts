@@ -148,16 +148,10 @@ const findCanonicalLInkInResponseHeaders = async (
 };
 
 const findPageTitleText = async (logger: Logger, page: Page): Promise<string> => {
-  try {
-    await page.evaluate(() => {
-      const title = document.title;
-      return typeof title === 'string' ? title.trim() : '';
-    });
-  } catch (error) {
-    logger.error({error}, `Error finding page title: ${error.message}`);
-    return '';
-  }
-  
+  return await page.evaluate(() => {
+    const title = document.title;
+    return typeof title === 'string' ? title.trim() : '';
+  });
 };
 
 const findMetaDescriptionContent = async (
