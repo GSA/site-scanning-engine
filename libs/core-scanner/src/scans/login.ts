@@ -36,25 +36,16 @@ const loginProviderStrings = [
 ];
 
 export async function buildLoginResult ( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<LoginScan> {
-  parentLogger.info(`Building login scan result for: ${mainResponse.url()}`);
-  try {
-    const html = await mainResponse.text();
-    const htmlLower = html.toLowerCase();
+  const html = await mainResponse.text();
+  const htmlLower = html.toLowerCase();
 
-    const loginDetected = getLoginDetectedResults(htmlLower);
-    const loginProvider = getLoginProviderResults(htmlLower);
+  const loginDetected = getLoginDetectedResults(htmlLower);
+  const loginProvider = getLoginProviderResults(htmlLower);
 
-    return {
-      loginDetected,
-      loginProvider,
-    };
-  } catch (error) {
-    parentLogger.error({ error }, `Error scanning for login: ${error.message}`);
-    return {
-      loginDetected: null,
-      loginProvider: null,
-    };
-  }
+  return {
+    loginDetected,
+    loginProvider,
+  };
 };
 
 const getLoginDetectedResults = (html: string): string | null => {
