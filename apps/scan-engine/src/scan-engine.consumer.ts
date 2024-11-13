@@ -53,7 +53,6 @@ export class ScanEngineConsumer {
     concurrency: 4,
   })
   async processCore(job: Job<CoreInputDto>) {
-    this.printMemoryUsage(this.logger);
     this.logger.debug({
       msg: `scanning ${job.data.url} ${job.id}`,
       job,
@@ -80,22 +79,9 @@ export class ScanEngineConsumer {
     }
   }
 
-  printMemoryUsage(logger: Logger) {
-    const used = process.memoryUsage();
-    for (const key in used) {
-      const valueMb = Math.round((used[key] / 1024 / 1024) * 100) / 100;
-      logger.log( {
-        metricUnit: 'megabytes',
-        metricId: `scanner.core.memory.used.${key}.mb`,
-        valueMb
-      }, `Memory used: ${key}: ${valueMb} MB`);
-    }
-  }
-
   @OnQueueActive()
   onActive(job: Job<CoreInputDto>) {
     this.logger.log({
-      sseQueueStatus: 'Active',
       msg: `Processing job ${job.id} of type ${job.name}`,
       job,
     });
@@ -104,7 +90,6 @@ export class ScanEngineConsumer {
   @OnQueueStalled()
   onStalled(job: Job<CoreInputDto>) {
     this.logger.warn({
-      sseQueueStatus: 'Stalled',
       msg: `Queue stalled while processing job ${job.id} of type ${job.name}`,
       job,
     });
@@ -112,13 +97,12 @@ export class ScanEngineConsumer {
 
   @OnQueueDrained()
   onDrained() {
-    this.logger.log({ sseQueueStatus: 'Drained' }, 'Queue successfully drained.');
+    this.logger.log('Queue successfully drained.');
   }
 
   @OnQueueError()
   onError(error: Error) {
     this.logger.error({
-      sseQueueStatus: 'Error',
       msg: `Queue Error "${error.name}" detected: ${error.message}`,
       error,
     });
@@ -127,7 +111,6 @@ export class ScanEngineConsumer {
   @OnQueueCompleted()
   onCompleted(job: Job<CoreInputDto>) {
     this.logger.log({
-      sseQueueStatus: 'Completed',
       msg: 'Processed job',
       job,
     });

@@ -6,9 +6,8 @@ import { CmsScan } from 'entities/scan-data.entity';
 import { Logger } from 'pino';
 
 export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<CmsScan> {
-  parentLogger.info(`Building CMS scan result for: ${mainResponse.url()}`);
   const htmlMatches = await getHtmlMatches(parentLogger, mainResponse);
-  const headerMatches = await getHeaderMatches(parentLogger, mainResponse);
+  const headerMatches = await getHeaderMatches(mainResponse);
 
   let cms = null;
 
@@ -22,13 +21,7 @@ export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPRe
 };
 
 const getHtmlMatches = async (logger: Logger, response: HTTPResponse) => {
-  logger.info(`Getting HTML matches for: ${response.url()}`);
-  let actualHtml = '';
-  try {
-    actualHtml = await response.text();
-  } catch (error) {
-    logger.error({ error }, `Error getting HTML from response: ${error.message}`);
-  }
+  const actualHtml = await response.text();
 
   return cmsData.filter((obj) => {
     if (obj.html) {
@@ -49,7 +42,7 @@ const getHtmlMatches = async (logger: Logger, response: HTTPResponse) => {
   });
 };
 
-const getHeaderMatches = async (logger: Logger, response: HTTPResponse) => {
+const getHeaderMatches = async (response: HTTPResponse) => {
   const actualHeaders = await response.headers();
   const formattedActualHeaders = _.transform(
     actualHeaders,
