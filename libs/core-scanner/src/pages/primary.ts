@@ -43,7 +43,7 @@ const primaryScan = async (
   const getCSSRequests = await createCSSRequestsExtractor(page, pageLogger);
   const getOutboundRequests = createOutboundRequestsExtractor(page);
 
-  const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
+  const response = await page.goto(url, { waitUntil: 'networkidle2' });
   const chain = response.request().redirectChain();
   pageLogger.info({ sseRedirectChain: chain, sseResponseStatus: response.status }, `${url} returned status code ${response.status()}`);
 
