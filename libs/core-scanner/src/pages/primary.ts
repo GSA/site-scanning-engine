@@ -44,7 +44,8 @@ const primaryScan = async (
   const getOutboundRequests = createOutboundRequestsExtractor(page);
 
   const response = await page.goto(url, { waitUntil: 'domcontentloaded' });
-  pageLogger.info({ sseResponseStatus: response.status }, `${url} returned status code ${response.status()}`);
+  const chain = response.request().redirectChain();
+  pageLogger.info({ sseRedirectChain: chain, sseResponseStatus: response.status }, `${url} returned status code ${response.status()}`);
 
   const wrappedDapResult = runScan(input, pageLogger, buildDapResult, 'DAPScan', url);
   const wrappedThirdPartyResult = runScan(input, pageLogger, buildThirdPartyResult, 'ThirdPartyScan', url);
