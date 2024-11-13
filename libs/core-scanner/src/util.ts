@@ -76,6 +76,6 @@ export function getTruncatedUrl(url: string): string {
 export function createRequestHandlers(page: Page, logger: Logger) {
   page.on('console', (message) => logger.debug({sseMessage: message }, `Page Log: ${message.text()}`));
   page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
-  page.on('response', (response)=> response.status() !== 200 && logger.debug({ sseResponseUrl: response.url(), sseResponseStatus: response.status()}, `A ${response.status()} was returned from: ${getTruncatedUrl(response.url())} `));
-  page.on('requestfailed', (request) => logger.warn({ sseRequestUrl: request.url() }, `Request failed: ${getTruncatedUrl(request.url())}`));
+  page.on('response', (response)=> response.status() !== 200 && logger.debug({ sseResponseTiming: response.timing(), sseResponseUrl: response.url(), sseResponseStatus: response.status()}, `A ${response.status()} was returned from: ${getTruncatedUrl(response.url())} `));
+  page.on('requestfailed', (request) => logger.warn({ sseRequestFailure: request.failure(), sseRequestUrl: request.url() }, `Request failed due to ${request.failure().errorText} for ${getTruncatedUrl(request.url())}`));
 };
