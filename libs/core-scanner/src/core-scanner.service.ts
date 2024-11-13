@@ -68,6 +68,11 @@ export class CoreScannerService
       scanUrl: input.url,
       sseUrl: input.url,
       websiteId: input.websiteId,
+      job: {
+        data: {
+          scanId: input.scanId,
+        }
+      }
     });
   }
 
