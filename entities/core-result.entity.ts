@@ -155,7 +155,7 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'dap_parameters' })
   @Transform(
-    (value) => {
+    ({ value }: { value: string }) => {
       if (value) {
         const urlSearchParams = new URLSearchParams(value);
         const result = {};
@@ -232,7 +232,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'robots_txt_sitemap_locations' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
@@ -279,7 +279,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'third_party_service_domains' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
@@ -290,7 +290,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'third_party_service_urls' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
@@ -305,7 +305,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'cookie_domains' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
@@ -320,7 +320,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'login' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
@@ -351,7 +351,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'required_links_url' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
@@ -362,7 +362,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'required_links_text' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
@@ -395,7 +395,7 @@ export class CoreResult {
   @Column({ nullable: true })
   @Expose({ name: 'accessibility_results_list' })
   @Exclude()
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
@@ -466,7 +466,7 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'uswds_usa_class_list' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {

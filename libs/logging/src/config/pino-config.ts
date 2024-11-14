@@ -89,7 +89,7 @@ function usePinoPretty(): boolean {
 
 function generateISO8601WithNanoseconds(): string {
     const now = new Date();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     const [_seconds, nanoseconds] = process.hrtime();
 
     // Format the date to ISO 8601 with milliseconds

@@ -51,7 +51,7 @@ export class Website {
 
   @Column({ nullable: true })
   @Expose({ name: 'source_list' })
-  @Transform((value: string) => {
+  @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
     } else {
