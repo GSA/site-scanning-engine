@@ -18,7 +18,7 @@ describe('BrowserService', () => {
     mockPage = mock<Page>();
     mockPuppeteerPool = mock<PuppeteerPool>({
       clear: jest.fn(),
-      drain: jest.fn(async () => {}), // eslint-disable-line  @typescript-eslint/no-empty-function
+      drain: jest.fn(async () => {}),  
     });
 
     mockPage.url.calledWith().mockReturnValue(finalUrl);
