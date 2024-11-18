@@ -41,7 +41,7 @@ export const PuppeteerService = {
 
         // Arguments to pass on to Puppeteer
         puppeteerArgs: {
-          acceptInsecureCerts: true,
+          ignoreHTTPSErrors: true,
           args: ['--no-sandbox', '--enable-logging', '--v=1'],
         },
       },
