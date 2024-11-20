@@ -53,7 +53,7 @@ export const createPuppeteerPool = (
     testOnBorrow: true,
     puppeteerArgs: {
       headless: true,
-      acceptInsecureCerts: true,
+      ignoreHTTPSErrors: true,
       args: ['--no-sandbox', '--enable-logging', '--v=1'],
     },
     validator: () => Promise.resolve(true),
