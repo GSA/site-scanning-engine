@@ -45,6 +45,3 @@ venv/
 
 # data for security scan
 /security-data
-
-# Puppeteer cache
-.cache/

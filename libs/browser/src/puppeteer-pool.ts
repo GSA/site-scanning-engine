@@ -52,7 +52,7 @@ export const createPuppeteerPool = (
     maxUses: 100,
     testOnBorrow: true,
     puppeteerArgs: {
-      headless: true,
+      headless: 'shell' as 'shell', // Type assertion to bypass the error
       acceptInsecureCerts: true,
       args: ['--no-sandbox', '--enable-logging', '--v=1'],
     },
