@@ -70,13 +70,17 @@ export const createPuppeteerPool = (
   // Create a generic pool instance.
   const pool = genericPool.createPool<puppeteer.Browser>(
     {
-      create: () => {
+      create: async () => {
         logger.info({ msg: 'Creating browser...' });
-        return puppeteer.launch(options.puppeteerArgs).then((browser) => {
+        try {
+          const browser = await puppeteer.launch(options.puppeteerArgs);
           useCounts.set(browser, 0);
           validators.set(browser, createValidator(browser, logger));
           return browser;
-        });
+        } catch (error) {
+          logger.error({ error }, `Error creating browser: ${error.message}`);
+          throw error;
+        }
       },
       destroy: async (browser) => {
         logger.info({ msg: 'Destroying browser...' });

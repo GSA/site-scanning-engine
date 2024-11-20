@@ -45,11 +45,14 @@ export class CoreScannerService
       scanLogger.warn(`Scan filtering enabled! Only '${input.scan}' will be executed. This should never be used in production!`);
     }
 
+    scanLogger.info('Calling browser service to start scan...');
     return await this.browserService.useBrowser(async (browser) => {
       const result = this.initResultObject(input);
 
       // Iterate over the Page enum and run the scan for each page vis this.runPage()
+      scanLogger.info('Running scans for all pages...');
       for (const page in Page) {
+        scanLogger.info(`Running scan for page '${Page[page]}'...`);
         if (Object.prototype.hasOwnProperty.call(Page, page)) {
           const pageName = Page[page];
           result[pageName] = await this.runPage(pageName, input, scanLogger, browser);
