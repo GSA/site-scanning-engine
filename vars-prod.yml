@@ -12,5 +12,5 @@ scan_schedule: '0 0 * * *'
 snapshot_schedule: '0 8 * * Sun'
 
 consumer_instances: 12
-consumer_memory: 650MB
+consumer_memory: 1GB
 consumer_disk: 5G
