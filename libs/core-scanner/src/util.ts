@@ -1,6 +1,8 @@
 import * as _ from 'lodash';
 import { HTTPResponse, Page } from 'puppeteer';
 import { Logger } from 'pino';
+import { exec } from 'child_process';
+import { logCount } from 'libs/logging/src/metric-utils';
 
 type UnwrapPromiseArray<T> = {
   [K in keyof T]: T[K] extends Promise<infer O> ? O : T[K];
@@ -79,3 +81,60 @@ export function createRequestHandlers(page: Page, logger: Logger) {
   page.on('response', (response)=> response.status() !== 200 && logger.debug({ sseResponseUrl: response.url(), sseResponseStatus: response.status()}, `A ${response.status()} was returned from: ${getTruncatedUrl(response.url())} `));
   page.on('requestfailed', (request) => logger.warn({ sseRequestUrl: request.url() }, `Request failed: ${getTruncatedUrl(request.url())}`));
 };
+
+
+export function logRunningProcesses(logger: Logger, scanStage: string): void {
+  exec('ps aux', (error, stdout, stderr) => {
+      if (error) {
+          logger.error({ sseRunningProcError: error, sseScanStage: scanStage }, `Error executing ps command: ${error.message}`);
+          return;
+      }
+      if (stderr) {
+          logger.error({ sseRunningProcError: stderr, sseScanStage: scanStage }, `stderr: ${stderr}`);
+          return;
+      }
+
+      const lines = stdout.trim().split('\n');
+      const processCount = lines.length - 1; // Subtract 1 to exclude the header
+      const headers = lines[0].split(/\s+/); // Split by whitespace
+
+      const processes = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(/\s+/);
+        const process = {};
+
+        for (let j = 0; j < headers.length; j++) {
+          process[headers[j]] = values[j];
+        }
+
+        processes.push(process);
+      }
+      const combinedProcesses = processes.map((process) => process.COMMAND).join(',');
+      const processJson = [];
+      processes.forEach((process) => {
+        processJson.push(process.COMMAND);
+      });
+      
+      logCount(logger, {}, `${scanStage}.process.count`, `${processCount} processes running at the '${scanStage}' of scan.`, processCount);
+
+  });
+}
+
+export function printMemoryUsage(logger: Logger, metadata: any) {
+  if (!metadata) {
+    metadata = {};
+  }
+  const used = process.memoryUsage();
+  for (const key in used) {
+    const valueMb = Math.round((used[key] / 1024 / 1024) * 100) / 100;
+    logCount(logger, {
+        metricUnit: 'megabytes',
+        metadata,
+      },
+      `scanner.core.memory.used.${key}.mb`,
+      `Memory used: ${key}: ${valueMb} MB`,
+      valueMb
+    );
+  }
+}

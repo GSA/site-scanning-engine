@@ -18,6 +18,7 @@ import { getBaseDomain, getHttpsUrl } from './util';
 import { CoreResultPages } from 'entities/core-result.entity';
 import { logCount, logTimer } from "../../logging/src/metric-utils";
 import { DurationLogTimer } from "../../logging/src";
+import { logRunningProcesses, printMemoryUsage } from './util';
 
 @Injectable()
 export class CoreScannerService
@@ -33,6 +34,9 @@ export class CoreScannerService
 
   async scan(input: CoreInputDto): Promise<CoreResultPages> {
     const scanLogger = this.initScanLogger(input);
+
+    logRunningProcesses(scanLogger, 'start');
+    printMemoryUsage(scanLogger, {scanStage: 'start'});
 
     const timer = logTimer(scanLogger);
     scanLogger.info(`Starting scan for ${input.url}`);
@@ -60,6 +64,8 @@ export class CoreScannerService
       }
 
       this.logCoreScannerCompletion(timer, input, scanLogger);
+      logRunningProcesses(scanLogger, 'end');
+      printMemoryUsage(scanLogger, {scanStage: 'end'});
       return result as CoreResultPages;
     });
   }
