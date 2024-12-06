@@ -26,7 +26,7 @@ export class PaginationRequestDto {
   @IsPositive()
   @IsOptional()
   @Min(1)
-  @Transform((value) => Number(value))
+  @Transform(({ value }: {value: string}) => Number(value))
   page? = 1;
 
   /**
@@ -39,6 +39,6 @@ export class PaginationRequestDto {
   @IsPositive()
   @IsOptional()
   @Max(100)
-  @Transform((value) => Number(value))
+  @Transform(({ value }: {value: string}) => Number(value))
   limit? = 10;
 }
