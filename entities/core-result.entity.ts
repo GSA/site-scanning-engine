@@ -388,8 +388,7 @@ export class CoreResult {
   accessibilityScanStatus?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'accessibility_results' })
-  @Exclude()
+  @Expose({ name: 'accessibility_violations' })
   accessibilityResults?: string;
 
   @Column({ nullable: true })
@@ -507,6 +506,7 @@ export class CoreResult {
     'scan_date',
     'primary_scan_status',
     'accessibility_scan_status',
+    'accessibility_violations',
     'dns_scan_status',
     'not_found_scan_status',
     'performance_scan_status',
