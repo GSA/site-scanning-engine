@@ -141,8 +141,9 @@ export type ClientRedirectScan = {
   usesMetaRefresh: boolean;
 };
 
-export type wwwScan = {
+export type WwwScan = {
   wwwFinalUrl: string;
   wwwStatusCode: number;
+  wwwTitle: string;
   wwwSame: boolean;
 };

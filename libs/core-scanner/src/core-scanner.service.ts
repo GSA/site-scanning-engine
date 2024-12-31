@@ -229,6 +229,15 @@ export class CoreScannerService
       case Page.SECURITY:
         return await this.securityDataService.getSecurityResults(input.url);
 
+      case Page.WWW:
+        return await this.browserService.processPage(
+            browser,
+            pages.createWwwScanner(
+              pageLogger,
+              input,
+            ),
+          );
+
     }
   }
 
