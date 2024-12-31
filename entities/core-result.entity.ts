@@ -24,6 +24,7 @@ export type CoreResultPages = {
   accessibility: ScanPage.AccessibilityPageScan;
   performance: ScanPage.PerformancePageScan;
   security: ScanPage.SecurityPageScan;
+  www: ScanPage.wwwPageScan;
 };
 
 @Entity()
@@ -478,6 +479,26 @@ export class CoreResult {
   @Expose({ name: 'uswds_banner_heres_how' })
   heresHowYouKnowBanner?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'www_scan_status' })
+  wwwScanStatus?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'www_url' })
+  wwwFinalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'www_status_code' })
+  wwwStatusCode?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'www_title' })
+  wwwTitle?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'www_same' })
+  wwwSame?: boolean;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
@@ -579,5 +600,9 @@ export class CoreResult {
     'uswds_semantic_version',
     'uswds_version',
     'uswds_count',
+    'www_scan_status',
+    'www_url',
+    'www_status_code',
+    'www_title',
   ];
 }

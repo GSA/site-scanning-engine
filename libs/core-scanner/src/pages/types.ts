@@ -7,4 +7,5 @@ export enum Page {
     ROBOTS_TXT = 'robotsTxt',
     SECURITY = 'security',
     SITEMAP_XML = 'sitemapXml',
+    WWW = 'www',
 }

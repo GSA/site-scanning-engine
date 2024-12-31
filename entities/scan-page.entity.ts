@@ -67,3 +67,9 @@ export type SecurityScans = {
 };
 
 export type SecurityPageScan = PageScan<SecurityScans>;
+
+export type WwwScans = {
+  wwwScan: ScanData.WwwScan;
+};
+
+export type wwwPageScan = PageScan<WwwScans>;

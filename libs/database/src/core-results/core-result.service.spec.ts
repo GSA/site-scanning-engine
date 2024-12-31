@@ -254,6 +254,7 @@ describe('CoreResultService', () => {
           wwwScan: {
             wwwFinalUrl: null,
             wwwStatusCode: null,
+            wwwTitle: null,
             wwwSame: null,
           },
         },
