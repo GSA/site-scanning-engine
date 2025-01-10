@@ -48,6 +48,7 @@ export class IngestService {
         'sourceListMil1',
         'sourceListMil2',
         'ombIdeaPublic',
+        'filtered',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
