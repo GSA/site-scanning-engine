@@ -73,6 +73,7 @@ describe('WebsiteService', () => {
       bureau: 'GSA,FAS,Technology Transformation Service',
       sourceList: 'gov',
       ombIdeaPublic: false,
+      filtered: false,
     };
 
     const website = new Website();
@@ -82,6 +83,7 @@ describe('WebsiteService', () => {
     website.agency = createWebsiteDto.agency;
     website.bureau = createWebsiteDto.bureau;
     website.sourceList = 'gov';
+    website.filtered = false;
     (website.ombIdeaPublic = false), await service.upsert(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
   });
