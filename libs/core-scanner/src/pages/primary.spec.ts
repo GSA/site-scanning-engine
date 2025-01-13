@@ -24,6 +24,7 @@ describe.skip('primary scanner', () => {
       const input: CoreInputDto = {
         websiteId: 1,
         url: '18f.gov',
+        filter: false,
         scanId: '123',
       };
       const scanner = await createPrimaryScanner(mockLogger, input);

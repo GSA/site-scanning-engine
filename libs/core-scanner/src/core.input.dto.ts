@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsUrl } from 'class-validator';
+import { IsBoolean, IsNumber, IsString, IsUrl } from 'class-validator';
 
 /**
  * CoreInputDto is a Data Transfer Object for input to the Core scanner.
@@ -22,6 +22,13 @@ export class CoreInputDto {
    */
   @IsUrl()
   url: string;
+
+  /**
+   * filter is a boolean signifying whether a site was marked as filtered due to the contains or begins with filters.
+   *
+   */
+  @IsBoolean()
+  filter: boolean;
 
   /**
    * scanId is a string that will be used to uniquely identify this scan in logs.

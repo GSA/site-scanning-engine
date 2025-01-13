@@ -58,6 +58,7 @@ describe('ScanEngineConsumer', () => {
     const input: CoreInputDto = {
       websiteId: 1,
       url: 'https://18f.gov',
+      filter: false,
       scanId: '123',
     };
 

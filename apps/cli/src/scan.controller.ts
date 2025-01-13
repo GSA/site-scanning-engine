@@ -26,6 +26,7 @@ export class ScanController {
     const scanConfig: CoreInputDto = {
       websiteId: website.id,
       url: website.url,
+      filter: website.filter,
       scanId: cuid(),
     };
 
