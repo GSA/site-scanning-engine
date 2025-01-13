@@ -74,7 +74,7 @@ export class IngestService {
           website: data.targetUrl.toLowerCase(),
           sourceList: this.getSourceList(data),
           ombIdeaPublic,
-          filtered,
+          filter: filtered,
         };
       })
       .on('error', (error) => {
