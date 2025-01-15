@@ -30,6 +30,7 @@ export class QueueController {
         const coreInput: CoreInputDto = {
           websiteId: website.id,
           url: website.url,
+          filter: website.filter,
           scanId: cuid(),
         };
         await this.queueService.addCoreJob(coreInput);
@@ -52,6 +53,7 @@ export class QueueController {
       const coreInput: CoreInputDto = {
         websiteId: website.id,
         url: website.url,
+        filter: website.filter,
         scanId: cuid(),
       };
       await this.queueService.addCoreJob(coreInput);
@@ -91,6 +93,7 @@ export class QueueController {
         const coreInput: CoreInputDto = {
           websiteId: website.id,
           url: website.url,
+          filter: website.filter,
           scanId: cuid(),
         };
         await this.queueService.addCoreJob(coreInput);

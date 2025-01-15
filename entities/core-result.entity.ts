@@ -81,6 +81,10 @@ export class CoreResult {
   finalUrlIsLive?: boolean;
 
   @Column({ nullable: true })
+  @Expose({ name: 'filter' })
+  filter?: boolean;
+
+  @Column({ nullable: true })
   @Expose({ name: 'domain' })
   finalUrlBaseDomain?: string;
 
@@ -500,6 +504,7 @@ export class CoreResult {
     'base_domain',
     'top_level_domain',
     'live',
+    'filter',
     'status_code',
     'media_type',
     'agency',

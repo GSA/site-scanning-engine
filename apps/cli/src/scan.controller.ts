@@ -26,6 +26,7 @@ export class ScanController {
     const scanConfig: CoreInputDto = {
       websiteId: website.id,
       url: website.url,
+      filter: website.filter,
       scanId: cuid(),
     };
 
@@ -43,6 +44,7 @@ export class ScanController {
       website.id,
       results,
       this.logger,
+      website.filter,
     );
 
     this.logger.log({ msg: 'Got results', results }, `Results compiled for '${url}'`);

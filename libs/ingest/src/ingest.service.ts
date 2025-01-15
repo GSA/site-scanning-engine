@@ -48,12 +48,14 @@ export class IngestService {
         'sourceListMil1',
         'sourceListMil2',
         'ombIdeaPublic',
+        'filtered',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
     })
       .transform((data: SubdomainRow): CreateWebsiteDto => {
         let ombIdeaPublic = null;
+        let filtered = null;
 
         if (data.ombIdeaPublic.toLowerCase() === 'true') {
           ombIdeaPublic = true;
@@ -61,11 +63,18 @@ export class IngestService {
           ombIdeaPublic = false;
         }
 
+        if (data.filtered.toLowerCase() === 'true') {
+          filtered = true;
+        } else if (data.filtered.toLowerCase() === 'false') {
+          filtered = false;
+        }
+
         return {
           ...data,
           website: data.targetUrl.toLowerCase(),
           sourceList: this.getSourceList(data),
           ombIdeaPublic,
+          filter: filtered,
         };
       })
       .on('error', (error) => {

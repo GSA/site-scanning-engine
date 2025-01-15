@@ -18,4 +18,5 @@ export interface SubdomainRow {
   ombIdeaPublic: string;
   sourceListMil1: string;
   sourceListMil2: string;
+  filtered: string;
 }

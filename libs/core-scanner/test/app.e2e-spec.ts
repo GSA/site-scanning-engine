@@ -28,6 +28,7 @@ describe('CoreScanner (e2e)', () => {
     const input: CoreInputDto = {
       websiteId: 1,
       url: '18f.gov',
+      filter: false,
       scanId: '123',
     };
 
@@ -58,6 +59,7 @@ describe('CoreScanner (e2e)', () => {
     const input: CoreInputDto = {
       websiteId: 1,
       url: 'poolsafety.gov',
+      filter: false,
       scanId: '123',
     };
 

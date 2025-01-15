@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CoreResultService } from './core-result.service';
 import { Logger } from '@nestjs/common';
 import { ScanStatus } from 'entities/scan-status';
+import { filter } from 'lodash';
 
 describe('CoreResultService', () => {
   let service: CoreResultService;
@@ -262,7 +263,7 @@ describe('CoreResultService', () => {
     };
     const logger = mock<Logger>();
 
-    await service.createFromCoreResultPages(websiteId, pages, logger);
+    await service.createFromCoreResultPages(websiteId, pages, logger, false);
     expect(mockRepository.insert).toHaveBeenCalled();
   });
 });
