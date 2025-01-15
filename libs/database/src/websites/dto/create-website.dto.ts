@@ -9,4 +9,5 @@ export class CreateWebsiteDto {
   bureau: string;
   sourceList: string;
   ombIdeaPublic: boolean;
+  filter: boolean;
 }

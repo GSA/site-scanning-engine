@@ -64,6 +64,10 @@ export class Website {
   @Expose({ name: 'public' })
   ombIdeaPublic?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'filter' })
+  filter?: boolean;
+
   serialized() {
     const serializedWebsite = classToPlain(this);
     const serializedCoreResult = classToPlain(this.coreResult);

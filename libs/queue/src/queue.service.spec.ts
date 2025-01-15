@@ -40,6 +40,7 @@ describe('QueueService', () => {
     const data: CoreInputDto = {
       websiteId: 1,
       url: 'https://18f.gov',
+      filter: false,
       scanId: '123',
     };
     mockJob.data = data;

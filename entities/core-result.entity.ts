@@ -81,6 +81,10 @@ export class CoreResult {
   finalUrlIsLive?: boolean;
 
   @Column({ nullable: true })
+  @Expose({ name: 'filter' })
+  filter?: boolean;
+
+  @Column({ nullable: true })
   @Expose({ name: 'final_url_domain' })
   finalUrlBaseDomain?: string;
 
@@ -514,6 +518,7 @@ export class CoreResult {
     'final_url_top_level_domain',
     'final_url_website',
     'final_url_live',
+    'filter',
     'final_url_status_code',
     'final_url_media_type',
     'final_url_same_domain',

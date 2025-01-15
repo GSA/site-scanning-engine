@@ -23,12 +23,14 @@ export class CoreResultService {
     websiteId: number,
     pages: CoreResultPages,
     logger: Logger,
+    filter: boolean,
   ) {
     const coreResult = new CoreResult();
     const website = new Website();
     website.id = websiteId;
     coreResult.website = website;
     coreResult.targetUrlBaseDomain = pages.base.targetUrlBaseDomain;
+    coreResult.filter = filter;
 
     this.updatePrimaryScanResults(coreResult, pages, logger);
     this.updateNotFoundScanResults(coreResult, pages, logger);
