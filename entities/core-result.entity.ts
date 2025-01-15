@@ -109,7 +109,7 @@ export class CoreResult {
   targetUrl404Test?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'redirects' })
+  @Expose({ name: 'redirect' })
   targetUrlRedirects?: boolean;
 
   @Column({ nullable: true })
@@ -498,7 +498,7 @@ export class CoreResult {
     'initial_domain',
     'initial_base_domain',
     'initial_top_level_domain',
-    'redirects',
+    'redirect',
     'url',
     'domain',
     'base_domain',
