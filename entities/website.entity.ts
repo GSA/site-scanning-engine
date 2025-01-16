@@ -30,23 +30,23 @@ export class Website {
   coreResult: CoreResult;
 
   @Column()
-  @Expose({ name: 'target_url' })
+  @Expose({ name: 'initial_url' })
   url: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'target_url_top_level_domain' })
+  @Expose({ name: 'initial_top_level_domain' })
   topLevelDomain: string;
 
   @Column()
-  @Expose({ name: 'target_url_branch' })
+  @Expose({ name: 'branch' })
   branch: string;
 
   @Column()
-  @Expose({ name: 'target_url_agency_owner' })
+  @Expose({ name: 'agency' })
   agency: string;
 
   @Column()
-  @Expose({ name: 'target_url_bureau_owner' })
+  @Expose({ name: 'bureau' })
   bureau: string;
 
   @Column({ nullable: true })

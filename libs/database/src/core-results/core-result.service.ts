@@ -116,10 +116,14 @@ export class CoreResultService {
       coreResult.finalUrlTopLevelDomain = result.urlScan.finalUrlTopLevelDomain;
       coreResult.finalUrlIsLive = result.urlScan.finalUrlIsLive;
       coreResult.finalUrlMIMEType = result.urlScan.finalUrlMIMEType;
-      coreResult.finalUrlSameDomain = result.urlScan.finalUrlSameDomain;
-      coreResult.finalUrlSameWebsite = result.urlScan.finalUrlSameWebsite;
       coreResult.finalUrlStatusCode = result.urlScan.finalUrlStatusCode;
       coreResult.targetUrlRedirects = result.urlScan.targetUrlRedirects;
+
+      // Site name - finalUrlBaseDomain with www. stripped
+      coreResult.finalSiteName = coreResult.finalUrlBaseDomain ? coreResult.finalUrlBaseDomain.replace(/^www\./, '') : '';
+
+      // Base domain
+      coreResult.baseDomain = coreResult.finalUrlBaseDomain ? coreResult.finalUrlBaseDomain.split('.').slice(-2).join('.') : '';
 
       // USWDS scan
       coreResult.usaClasses = result.uswdsScan.usaClasses;
@@ -175,8 +179,6 @@ export class CoreResultService {
       coreResult.finalUrlTopLevelDomain = null;
       coreResult.finalUrlIsLive = null;
       coreResult.finalUrlMIMEType = null;
-      coreResult.finalUrlSameDomain = null;
-      coreResult.finalUrlSameWebsite = null;
       coreResult.finalUrlStatusCode = null;
       coreResult.targetUrlRedirects = null;
       coreResult.usaClasses = null;
@@ -242,9 +244,6 @@ export class CoreResultService {
       coreResult.robotsTxtSitemapLocations =
         robotsTxt.robotsTxtSitemapLocations;
       coreResult.robotsTxtFinalUrl = robotsTxt.robotsTxtFinalUrl;
-      coreResult.robotsTxtFinalUrlLive = robotsTxt.robotsTxtFinalUrlLive;
-      coreResult.robotsTxtTargetUrlRedirects =
-        robotsTxt.robotsTxtTargetUrlRedirects;
       coreResult.robotsTxtFinalUrlMimeType =
         robotsTxt.robotsTxtFinalUrlMimeType;
       coreResult.robotsTxtStatusCode = robotsTxt.robotsTxtStatusCode;
@@ -259,8 +258,6 @@ export class CoreResultService {
       coreResult.robotsTxtCrawlDelay = null;
       coreResult.robotsTxtSitemapLocations = null;
       coreResult.robotsTxtFinalUrl = null;
-      coreResult.robotsTxtFinalUrlLive = null;
-      coreResult.robotsTxtTargetUrlRedirects = null;
       coreResult.robotsTxtFinalUrlMimeType = null;
       coreResult.robotsTxtStatusCode = null;
       coreResult.robotsTxtDetected = null;
@@ -281,8 +278,6 @@ export class CoreResultService {
       coreResult.sitemapXmlCount = sitemap.sitemapXmlCount;
       coreResult.sitemapXmlPdfCount = sitemap.sitemapXmlPdfCount;
       coreResult.sitemapXmlFinalUrl = sitemap.sitemapXmlFinalUrl;
-      coreResult.sitemapXmlFinalUrlLive = sitemap.sitemapXmlFinalUrlLive;
-      coreResult.sitemapTargetUrlRedirects = sitemap.sitemapTargetUrlRedirects;
       coreResult.sitemapXmlFinalUrlMimeType =
         sitemap.sitemapXmlFinalUrlMimeType;
       coreResult.sitemapXmlStatusCode = sitemap.sitemapXmlStatusCode;
@@ -297,8 +292,6 @@ export class CoreResultService {
       coreResult.sitemapXmlCount = null;
       coreResult.sitemapXmlPdfCount = null;
       coreResult.sitemapXmlFinalUrl = null;
-      coreResult.sitemapXmlFinalUrlLive = null;
-      coreResult.sitemapTargetUrlRedirects = null;
       coreResult.sitemapXmlFinalUrlMimeType = null;
       coreResult.sitemapXmlStatusCode = null;
       coreResult.sitemapXmlDetected = null;

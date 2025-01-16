@@ -28,7 +28,7 @@ export const buildUrlScanResult = (
   const redirectChain = response.request().redirectChain();
   const finalUrl = getFinalUrl(page);
   return {
-    targetUrlRedirects: redirects(redirectChain),
+    targetUrlRedirects: isRedirect(url, finalUrl),
     finalUrl: finalUrl,
     finalUrlWebsite: getWithSubdomain(finalUrl),
     finalUrlTopLevelDomain: getTopLevelDomain(finalUrl),
@@ -49,3 +49,14 @@ const getFinalUrl = (page: Page) => {
   const finalUrl = page.url();
   return finalUrl;
 };
+
+function stripWww(url: string): string {
+  return url.replace(/^www\./, '');
+};
+
+function isRedirect(initialUrl: string, finalUrl: string): boolean {
+  if (!initialUrl || !finalUrl) {
+    return null;
+  }
+  return stripWww(initialUrl) !== stripWww(finalUrl);
+}

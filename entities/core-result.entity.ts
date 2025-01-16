@@ -69,15 +69,15 @@ export class CoreResult {
   dnsScanStatus?: string;
 
   @Column()
-  @Expose({ name: 'target_url_domain' })
+  @Expose({ name: 'initial_domain' })
   targetUrlBaseDomain: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url' })
+  @Expose({ name: 'url' })
   finalUrl?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_live' })
+  @Expose({ name: 'live' })
   finalUrlIsLive?: boolean;
 
   @Column({ nullable: true })
@@ -85,31 +85,31 @@ export class CoreResult {
   filter?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_domain' })
+  @Expose({ name: 'domain' })
   finalUrlBaseDomain?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_media_type' })
+  @Expose({ name: 'name' })
+  finalSiteName?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'initial_base_domain' })
+  baseDomain?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'media_type' })
   finalUrlMIMEType?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_same_domain' })
-  finalUrlSameDomain?: boolean;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'final_url_status_code' })
+  @Expose({ name: 'status_code' })
   finalUrlStatusCode?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_same_website' })
-  finalUrlSameWebsite?: boolean;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'target_url_404_test' })
+  @Expose({ name: '404_test' })
   targetUrl404Test?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'target_url_redirects' })
+  @Expose({ name: 'redirect' })
   targetUrlRedirects?: boolean;
 
   @Column({ nullable: true })
@@ -204,31 +204,23 @@ export class CoreResult {
   mainElementFinalUrl?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url' })
+  @Expose({ name: 'robots_txt_url' })
   robotsTxtFinalUrl?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url_status_code' })
+  @Expose({ name: 'robots_txt_status_code' })
   robotsTxtStatusCode?: number;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url_live' })
-  robotsTxtFinalUrlLive?: boolean;
 
   @Column({ nullable: true })
   @Expose({ name: 'robots_txt_detected' })
   robotsTxtDetected?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url_media_type' })
+  @Expose({ name: 'robots_txt_media_type' })
   robotsTxtFinalUrlMimeType?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_target_url_redirects' })
-  robotsTxtTargetUrlRedirects?: boolean;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'robots_txt_final_url_filesize' })
+  @Expose({ name: 'robots_txt_filesize' })
   robotsTxtFinalUrlSize?: number;
 
   @Column({ nullable: true })
@@ -251,27 +243,19 @@ export class CoreResult {
   sitemapXmlDetected?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url_status_code' })
+  @Expose({ name: 'sitemap_xml_status_code' })
   sitemapXmlStatusCode?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url' })
+  @Expose({ name: 'sitemap_xml_url' })
   sitemapXmlFinalUrl?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url_live' })
-  sitemapXmlFinalUrlLive?: boolean;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_target_url_redirects' })
-  sitemapTargetUrlRedirects?: boolean;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url_filesize' })
+  @Expose({ name: 'sitemap_xml_filesize' })
   sitemapXmlFinalUrlFilesize?: number;
 
   @Column({ nullable: true })
-  @Expose({ name: 'sitemap_xml_final_url_media_type' })
+  @Expose({ name: 'sitemap_xml_media_type' })
   sitemapXmlFinalUrlMimeType?: string;
 
   @Column({ nullable: true })
@@ -339,11 +323,11 @@ export class CoreResult {
   dnsHostname?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_website' })
+  @Expose({ name: 'top_level_domain' })
   finalUrlWebsite?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'final_url_top_level_domain' })
+  @Expose({ name: 'base_domain' })
   finalUrlTopLevelDomain?: string;
 
   @Column({ nullable: true })
@@ -509,24 +493,24 @@ export class CoreResult {
   }
 
   static snapshotColumnOrder = [
-    'target_url',
-    'target_url_domain',
-    'target_url_top_level_domain',
-    'target_url_redirects',
-    'final_url',
-    'final_url_domain',
-    'final_url_top_level_domain',
-    'final_url_website',
-    'final_url_live',
+    'name',
+    'initial_url',
+    'initial_domain',
+    'initial_base_domain',
+    'initial_top_level_domain',
+    'redirect',
+    'url',
+    'domain',
+    'base_domain',
+    'top_level_domain',
+    'live',
     'filter',
-    'final_url_status_code',
-    'final_url_media_type',
-    'final_url_same_domain',
-    'final_url_same_website',
-    'target_url_agency_owner',
-    'target_url_bureau_owner',
-    'target_url_branch',
-    'target_url_404_test',
+    'status_code',
+    'media_type',
+    'agency',
+    'bureau',
+    'branch',
+    '404_test',
     'source_list',
     'public',
     'scan_date',
@@ -576,21 +560,17 @@ export class CoreResult {
     'language_link',
     'main_element_present',
     'robots_txt_detected',
-    'robots_txt_target_url_redirects',
-    'robots_txt_final_url',
-    'robots_txt_final_url_live',
-    'robots_txt_final_url_status_code',
-    'robots_txt_final_url_media_type',
-    'robots_txt_final_url_filesize',
+    'robots_txt_url',
+    'robots_txt_status_code',
+    'robots_txt_media_type',
+    'robots_txt_filesize',
     'robots_txt_crawl_delay',
     'robots_txt_sitemap_locations',
     'sitemap_xml_detected',
-    'sitemap_xml_target_url_redirects',
-    'sitemap_xml_final_url',
-    'sitemap_xml_final_url_live',
-    'sitemap_xml_final_url_status_code',
-    'sitemap_xml_final_url_media_type',
-    'sitemap_xml_final_url_filesize',
+    'sitemap_xml_url',
+    'sitemap_xml_status_code',
+    'sitemap_xml_media_type',
+    'sitemap_xml_filesize',
     'sitemap_xml_count',
     'sitemap_xml_pdf_count',
     'uswds_favicon',
