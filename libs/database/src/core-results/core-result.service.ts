@@ -120,13 +120,10 @@ export class CoreResultService {
       coreResult.targetUrlRedirects = result.urlScan.targetUrlRedirects;
 
       // Site name - finalUrlBaseDomain with www. stripped
-      coreResult.finalSiteName = coreResult.finalUrlBaseDomain.replace(
-        /^www\./,
-        '',
-      );
+      coreResult.finalSiteName = coreResult.finalUrlBaseDomain ? coreResult.finalUrlBaseDomain.replace(/^www\./, '') : '';
 
       // Base domain
-      coreResult.baseDomain = coreResult.finalUrlBaseDomain.split('.').slice(-2).join('.');
+      coreResult.baseDomain = coreResult.finalUrlBaseDomain ? coreResult.finalUrlBaseDomain.split('.').slice(-2).join('.') : '';
 
       // USWDS scan
       coreResult.usaClasses = result.uswdsScan.usaClasses;
