@@ -30,7 +30,7 @@ export class Website {
   coreResult: CoreResult;
 
   @Column()
-  @Expose({ name: 'initial_url' })
+  @Expose({ name: 'initial_domain' })
   url: string;
 
   @Column({ nullable: true })

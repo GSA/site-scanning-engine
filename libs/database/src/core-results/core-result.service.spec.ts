@@ -74,6 +74,7 @@ describe('CoreResultService', () => {
   it('should create a CoreResult from CoreResultPages', async () => {
     const websiteId = 1;
     const scanStatus: ScanStatus = ScanStatus['Completed'];
+    const websiteUrl = 'https://18f.gsa.gov';
 
     // Fixme: This test is very brittle. Any changes to any scan will basically
     //        cause this mock object to type mismatch. If our test is only looking
@@ -263,7 +264,7 @@ describe('CoreResultService', () => {
     };
     const logger = mock<Logger>();
 
-    await service.createFromCoreResultPages(websiteId, pages, logger, false);
+    await service.createFromCoreResultPages(websiteId, pages, logger, false, websiteUrl);
     expect(mockRepository.insert).toHaveBeenCalled();
   });
 });

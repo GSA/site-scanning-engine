@@ -11,7 +11,6 @@ import { CoreScannerService } from 'libs/core-scanner/src';
 
 import { ScanEngineConsumer } from './scan-engine.consumer';
 import { QueueService } from '@app/queue';
-import { filter } from 'lodash';
 
 describe('ScanEngineConsumer', () => {
   let consumer: ScanEngineConsumer;
@@ -74,6 +73,7 @@ describe('ScanEngineConsumer', () => {
       coreResultFromPages,
       consumer['logger'],
       input.filter,
+      input.url,
     );
   });
 });
