@@ -45,6 +45,7 @@ export class ScanController {
       results,
       this.logger,
       website.filter,
+      website.url,
     );
 
     this.logger.log({ msg: 'Got results', results }, `Results compiled for '${url}'`);

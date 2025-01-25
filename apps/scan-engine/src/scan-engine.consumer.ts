@@ -66,6 +66,7 @@ export class ScanEngineConsumer {
         coreResultPages,
         this.logger,
         job.data.filter,
+        job.data.url,
       );
       this.logger.log({
         msg: `wrote core result for ${job.data.url}`,

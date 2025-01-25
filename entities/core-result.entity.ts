@@ -69,12 +69,16 @@ export class CoreResult {
   dnsScanStatus?: string;
 
   @Column()
-  @Expose({ name: 'initial_domain' })
+  @Expose({ name: 'initial_base_domain' })
   targetUrlBaseDomain: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'url' })
   finalUrl?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'initial_url' })
+  initialUrl?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'live' })
@@ -85,16 +89,12 @@ export class CoreResult {
   filter?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'domain' })
+  @Expose({ name: 'base_domain' })
   finalUrlBaseDomain?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'name' })
   finalSiteName?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'initial_base_domain' })
-  baseDomain?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'media_type' })
@@ -323,11 +323,11 @@ export class CoreResult {
   dnsHostname?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'top_level_domain' })
+  @Expose({ name: 'domain' })
   finalUrlWebsite?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'base_domain' })
+  @Expose({ name: 'top_level_domain' })
   finalUrlTopLevelDomain?: string;
 
   @Column({ nullable: true })

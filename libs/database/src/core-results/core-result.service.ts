@@ -24,6 +24,7 @@ export class CoreResultService {
     pages: CoreResultPages,
     logger: Logger,
     filter: boolean,
+    websiteUrl: string,
   ) {
     const coreResult = new CoreResult();
     const website = new Website();
@@ -31,6 +32,7 @@ export class CoreResultService {
     coreResult.website = website;
     coreResult.targetUrlBaseDomain = pages.base.targetUrlBaseDomain;
     coreResult.filter = filter;
+    coreResult.initialUrl = `https://${websiteUrl}`;
 
     this.updatePrimaryScanResults(coreResult, pages, logger);
     this.updateNotFoundScanResults(coreResult, pages, logger);
@@ -121,9 +123,6 @@ export class CoreResultService {
 
       // Site name - finalUrlBaseDomain with www. stripped
       coreResult.finalSiteName = coreResult.finalUrlBaseDomain ? coreResult.finalUrlBaseDomain.replace(/^www\./, '') : '';
-
-      // Base domain
-      coreResult.baseDomain = coreResult.finalUrlBaseDomain ? coreResult.finalUrlBaseDomain.split('.').slice(-2).join('.') : '';
 
       // USWDS scan
       coreResult.usaClasses = result.uswdsScan.usaClasses;
