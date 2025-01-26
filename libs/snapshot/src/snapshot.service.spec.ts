@@ -43,6 +43,10 @@ describe('SnapshotService', () => {
                 return 'weekly-snapshot';
               }
 
+              if (key === 'fileNameUnique') {
+                return 'weekly-snapshot-unique';
+              }
+
               if (key === 'fileNameAll') {
                 return 'weekly-snapshot-all';
               }
@@ -80,6 +84,7 @@ describe('SnapshotService', () => {
     website.url = 'supremecourt.gov';
 
     mockWebsiteService.findLiveSnapshotResults.mockResolvedValue([website]);
+    mockWebsiteService.findUniqueSnapshotResults.mockResolvedValue([website]);
     mockWebsiteService.findAllSnapshotResults.mockResolvedValue([website]);
 
     await service.weeklySnapshot();
@@ -87,7 +92,7 @@ describe('SnapshotService', () => {
     copyDate.setDate(copyDate.getDate() - 7);
     const expectedDate = copyDate.toISOString();
 
-    expect(mockStorageService.copy).toBeCalledTimes(4);
+    expect(mockStorageService.copy).toBeCalledTimes(6);
 
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.json',
@@ -97,6 +102,16 @@ describe('SnapshotService', () => {
     expect(mockStorageService.copy).toBeCalledWith(
       'weekly-snapshot.csv',
       `archive/csv/weekly-snapshot-${expectedDate}.csv`,
+    );
+
+    expect(mockStorageService.copy).toBeCalledWith(
+      'weekly-snapshot-unique.json',
+      `archive/json/weekly-snapshot-unique-${expectedDate}.json`,
+    );
+
+    expect(mockStorageService.copy).toBeCalledWith(
+      'weekly-snapshot-unique.csv',
+      `archive/csv/weekly-snapshot-unique-${expectedDate}.csv`,
     );
 
     expect(mockStorageService.copy).toBeCalledWith(
