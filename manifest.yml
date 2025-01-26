@@ -4,7 +4,7 @@ applications:
     disk_quota: ((api_disk))
     timeout: 10 # seconds
     services:
-      - scanner-postgres
+      - scanner-postgres-02
       - user-provided-api-key
     memory: ((api_memory))
     instances: ((api_instances))
@@ -14,7 +14,7 @@ applications:
   - name: site-scanner-consumer
     disk_quota: ((consumer_disk))
     services:
-      - scanner-postgres
+      - scanner-postgres-02
       - scanner-message-queue
     memory: ((consumer_memory))
     buildpacks:
