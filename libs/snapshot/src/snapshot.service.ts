@@ -20,6 +20,7 @@ export class SnapshotService {
   ) {}
 
   private fileNameLive = this.configService.get<string>('fileNameLive');
+  private fileNameUnique = this.configService.get<string>('fileNameUnique');
   private fileNameAll = this.configService.get<string>('fileNameAll');
   private fileNameAccessibility = this.configService.get<string>(
     'fileNameAccessibility',
@@ -42,6 +43,7 @@ export class SnapshotService {
     const priorDate = date.toISOString();
 
     await this.liveSnapshot(priorDate, CoreResult.snapshotColumnOrder);
+    await this.uniqueSnapshot(priorDate, CoreResult.snapshotColumnOrder);
     await this.allSnapshot(priorDate, CoreResult.snapshotColumnOrder);
   }
 
@@ -67,6 +69,30 @@ export class SnapshotService {
 
     liveWebsites = null;
     liveSnapshot = null;
+  }
+
+  async uniqueSnapshot(date: string, columns: string[]): Promise<void> {
+    let uniqueWebsites = await this.websiteService.findUniqueSnapshotResults();
+    this.logger.log(
+      `Total number of unique websites retrieved for snapshot: ${uniqueWebsites.length}`,
+    );
+
+    let uniqueSnapshot = new Snapshot(
+      this.storageService,
+      [new JsonSerializer(columns), new CsvSerializer(columns)],
+      uniqueWebsites,
+      date,
+      this.fileNameUnique,
+    );
+
+    await uniqueSnapshot.archiveExisting();
+    this.logger.log('Unique snapshot archived.');
+
+    await uniqueSnapshot.saveNew();
+    this.logger.log('Unique snapshot saved.');
+
+    uniqueWebsites = null;
+    uniqueSnapshot = null;
   }
 
   async allSnapshot(date: string, columns: string[]) {

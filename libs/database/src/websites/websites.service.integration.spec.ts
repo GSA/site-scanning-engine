@@ -81,6 +81,7 @@ describe('AnalysisService', () => {
     firstCoreResult.sitemapXmlScanStatus = 'complete';
     firstCoreResult.targetUrlBaseDomain = 'complete';
     firstCoreResult.finalUrlMIMEType = 'text/html';
+    firstCoreResult.filter = false;
 
     const secondCoreResult = new CoreResult();
     secondCoreResult.website = secondWebsite;
@@ -91,6 +92,7 @@ describe('AnalysisService', () => {
     secondCoreResult.sitemapXmlScanStatus = 'complete';
     secondCoreResult.targetUrlBaseDomain = 'complete';
     secondCoreResult.finalUrlMIMEType = 'text/html';
+    secondCoreResult.filter = false;
 
     const thirdCoreResult = new CoreResult();
     thirdCoreResult.website = thirdWebsite;
@@ -101,6 +103,7 @@ describe('AnalysisService', () => {
     thirdCoreResult.sitemapXmlScanStatus = 'complete';
     thirdCoreResult.targetUrlBaseDomain = 'complete';
     thirdCoreResult.finalUrlMIMEType = 'application/json';
+    thirdCoreResult.filter = false;
 
     const fourthCoreResult = new CoreResult();
     fourthCoreResult.website = fourthWebsite;
@@ -111,6 +114,7 @@ describe('AnalysisService', () => {
     fourthCoreResult.sitemapXmlScanStatus = 'complete';
     fourthCoreResult.targetUrlBaseDomain = 'complete';
     fourthCoreResult.finalUrlMIMEType = 'application/html';
+    fourthCoreResult.filter = false;
 
     await websiteRepository.insert(firstWebsite);
     await coreResultRepository.insert(firstCoreResult);

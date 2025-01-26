@@ -30,10 +30,30 @@ export class WebsiteService {
     const queryBuilder = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .andWhere('coreResult.filter = :isFilter', { isFilter: false })
       .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
         mimeTypes: [
-          'application/xhtml+xml',
+          'image/jpeg',
+          'application/xml',
+          'application/json',
+          'text/xml',
+        ],
+      });
+
+    return await queryBuilder.getMany();
+  }
+
+  async findUniqueSnapshotResults(): Promise<Website[]> {
+    const queryBuilder = this.website
+      .createQueryBuilder('website')
+      .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .andWhere('coreResult.filter = :isFilter', { isFilter: false })
+      .andWhere('coreResult.targetUrlRedirects = :isRedirect', { isRedirect: false })
+      .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
+      .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
+        mimeTypes: [
+          'image/jpeg',
           'application/xml',
           'application/json',
           'text/xml',
