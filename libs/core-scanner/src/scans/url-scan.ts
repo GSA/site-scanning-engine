@@ -28,7 +28,7 @@ export const buildUrlScanResult = (
   const redirectChain = response.request().redirectChain();
   const finalUrl = getFinalUrl(page);
   return {
-    targetUrlRedirects: isRedirect(url, finalUrl),
+    targetUrlRedirects: isRedirect(url, finalUrl, logger),
     finalUrl: finalUrl,
     finalUrlWebsite: getWithSubdomain(finalUrl),
     finalUrlTopLevelDomain: getTopLevelDomain(finalUrl),
@@ -50,13 +50,27 @@ const getFinalUrl = (page: Page) => {
   return finalUrl;
 };
 
-function stripWww(url: string): string {
-  return url.replace(/^www\./, '');
-};
+function cleanUrl(url: string): string {
+  // Remove the protocol (http:// or https://)
+  url = url.replace(/^https?:\/\//, '');
+  
+  // Remove 'www.' if it exists
+  url = url.replace(/^www\./, '');
 
-function isRedirect(initialUrl: string, finalUrl: string): boolean {
+  // Remove trailing slashes
+  url = url.replace(/\/$/, '');
+
+  return url;
+}
+
+function isRedirect(initialUrl: string, finalUrl: string, logger: Logger): boolean {
   if (!initialUrl || !finalUrl) {
+    logger.warn('One of the URLs is missing, cannot determine redirection.');
     return null;
   }
-  return stripWww(initialUrl) !== stripWww(finalUrl);
+  initialUrl = cleanUrl(initialUrl);
+  finalUrl = cleanUrl(finalUrl);
+  logger.info({redirectCheck: {initialUrl, finalUrl}}, `Comparing initial URL: ${initialUrl} with final URL: ${finalUrl}`);
+  logger.info(`Redirect check is: ${initialUrl !== finalUrl}`);
+  return initialUrl !== finalUrl;
 }
