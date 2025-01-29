@@ -28,7 +28,7 @@ export const buildUrlScanResult = (
   const redirectChain = response.request().redirectChain();
   const finalUrl = getFinalUrl(page);
   return {
-    targetUrlRedirects: isRedirect(url, finalUrl, logger),
+    targetUrlRedirects: isRedirect(url, getWithSubdomain(finalUrl), logger),
     finalUrl: finalUrl,
     finalUrlWebsite: getWithSubdomain(finalUrl),
     finalUrlTopLevelDomain: getTopLevelDomain(finalUrl),
@@ -53,9 +53,6 @@ const getFinalUrl = (page: Page) => {
 function cleanUrl(url: string): string {
   // Remove the protocol (http:// or https://)
   url = url.replace(/^https?:\/\//, '');
-  
-  // Remove 'www.' if it exists
-  url = url.replace(/^www\./, '');
 
   // Remove trailing slashes
   url = url.replace(/\/$/, '');
@@ -63,14 +60,35 @@ function cleanUrl(url: string): string {
   return url;
 }
 
+function removeWww(url: string): string {
+  return url.replace(/^www\./, '');
+}
+
+/**
+ * Compares the initial URL and final URL to determine if a redirect occurred
+ * 
+ * @param initialUrl The initial URL that is being scanned. Stored as the `url` property in the CoreInputDto
+ * @param finalUrl The final URL after all redirects. Stored as the `name` property in the CoreResult
+ * @param logger
+ * @returns true if the initial URL and final URL are the same, false if they are different, and null if either is missing
+ */
 function isRedirect(initialUrl: string, finalUrl: string, logger: Logger): boolean {
-  if (!initialUrl || !finalUrl) {
-    logger.warn('One of the URLs is missing, cannot determine redirection.');
+  if (!finalUrl) {
+    logger.info('No final URL found, cannot compare.');
     return null;
   }
+
   initialUrl = cleanUrl(initialUrl);
-  finalUrl = cleanUrl(finalUrl);
-  logger.info({redirectCheck: {initialUrl, finalUrl}}, `Comparing initial URL: ${initialUrl} with final URL: ${finalUrl}`);
-  logger.info(`Redirect check is: ${initialUrl !== finalUrl}`);
-  return initialUrl !== finalUrl;
+  finalUrl = removeWww(cleanUrl(finalUrl));
+
+  if (initialUrl === finalUrl) {
+    logger.info({redirectCheck: {initialUrl, finalUrl}}, 'Initial URL and final URL are the same.');
+    return true;
+  }
+  if (initialUrl && finalUrl) {
+    logger.info({redirectCheck: {initialUrl, finalUrl}}, 'Initial URL and final URL are different.');
+    return false;
+  }
+
+  return null;
 }

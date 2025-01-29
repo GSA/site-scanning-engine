@@ -24,7 +24,7 @@ describe('url scan', () => {
         finalUrlSameDomain: false,
         finalUrlSameWebsite: false,
         finalUrlStatusCode: 200,
-        targetUrlRedirects: true,
+        targetUrlRedirects: null,
       });
     });
   });
