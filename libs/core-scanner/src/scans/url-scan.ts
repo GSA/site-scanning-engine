@@ -83,11 +83,11 @@ function isRedirect(initialUrl: string, finalUrl: string, logger: Logger): boole
 
   if (initialUrl === finalUrl) {
     logger.info({redirectCheck: {initialUrl, finalUrl}}, 'Initial URL and final URL are the same.');
-    return true;
+    return false;
   }
   if (initialUrl && finalUrl) {
     logger.info({redirectCheck: {initialUrl, finalUrl}}, 'Initial URL and final URL are different.');
-    return false;
+    return true;
   }
 
   return null;
