@@ -54,6 +54,10 @@ function removeWww(url: string): string {
   return url.replace(/^www\./, '');
 }
 
+function removeHttps(url: string): string {
+  return url.replace(/^https?:\/\//, '');
+}
+
 /**
  * Compares the initial URL and final URL to determine if a redirect occurred
  * 
@@ -68,6 +72,7 @@ function isRedirect(initialUrl: string, finalUrl: string, logger: Logger): boole
     return null;
   }
 
+  initialUrl = removeHttps(initialUrl);
   finalUrl = removeWww(finalUrl);
 
   if (initialUrl === finalUrl) {
