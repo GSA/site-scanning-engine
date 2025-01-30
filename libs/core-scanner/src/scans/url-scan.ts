@@ -50,16 +50,6 @@ const getFinalUrl = (page: Page) => {
   return finalUrl;
 };
 
-function cleanUrl(url: string): string {
-  // Remove the protocol (http:// or https://)
-  url = url.replace(/^https?:\/\//, '');
-
-  // Remove trailing slashes
-  url = url.replace(/\/$/, '');
-
-  return url;
-}
-
 function removeWww(url: string): string {
   return url.replace(/^www\./, '');
 }
@@ -68,7 +58,7 @@ function removeWww(url: string): string {
  * Compares the initial URL and final URL to determine if a redirect occurred
  * 
  * @param initialUrl The initial URL that is being scanned. Stored as the `url` property in the CoreInputDto
- * @param finalUrl The final URL after all redirects. Stored as the `name` property in the CoreResult
+ * @param finalUrl The final URL after all redirects. Stored as the `name` property in the CoreResult after removing www.
  * @param logger
  * @returns true if the initial URL and final URL are the same, false if they are different, and null if either is missing
  */
@@ -78,16 +68,15 @@ function isRedirect(initialUrl: string, finalUrl: string, logger: Logger): boole
     return null;
   }
 
-  initialUrl = cleanUrl(initialUrl);
-  finalUrl = removeWww(cleanUrl(finalUrl));
+  finalUrl = removeWww(finalUrl);
 
   if (initialUrl === finalUrl) {
     logger.info({redirectCheck: {initialUrl, finalUrl}}, 'Initial URL and final URL are the same.');
-    return true;
+    return false;
   }
   if (initialUrl && finalUrl) {
     logger.info({redirectCheck: {initialUrl, finalUrl}}, 'Initial URL and final URL are different.');
-    return false;
+    return true;
   }
 
   return null;
