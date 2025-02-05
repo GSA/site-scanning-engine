@@ -70,7 +70,7 @@ const primaryScan = async (
     searchScan,
     mobileScan,
   ] = await promiseAll([
-    wrappedDapResult(getOutboundRequests()),
+    wrappedDapResult(getOutboundRequests(), page),
     wrappedThirdPartyResult(response, getOutboundRequests()),
     wrappedCookieResult(page),
     wrappedSeoResult(page, response),

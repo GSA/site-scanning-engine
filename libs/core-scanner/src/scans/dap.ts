@@ -1,6 +1,6 @@
 import { Logger } from 'pino';
 import { has, uniq } from 'lodash';
-import { HTTPRequest } from 'puppeteer';
+import { HTTPRequest, Page } from 'puppeteer';
 import { DapScan } from 'entities/scan-data.entity';
 import { getTruncatedUrl } from '../util';
 import { logScanResult } from 'libs/logging/src/metric-utils';
@@ -19,6 +19,7 @@ const DAP_GA_PROPERTY_IDS = ['G-CSLL4ZEK4L'];
 export const buildDapResult = async (
   parentLogger: Logger,
   outboundRequests: HTTPRequest[],
+  page: Page,
 ): Promise<DapScan> => {
   const emptyResponse = {
     dapDetected: false,
@@ -35,25 +36,30 @@ export const buildDapResult = async (
     return emptyResponse;
   }
 
+  logger.info(`Outbound requests found: ${outboundRequests.length}`);
+
   const allGAPropertyIds: string = getAllGAPropertyTags(logger, outboundRequests);
   const hasGaPropertyIds = allGAPropertyIds != '';
   if( hasGaPropertyIds ) {
     logScanResult(logger, {}, 'gaTagIds', allGAPropertyIds, 'GA Property IDs found');
   };
 
-  const dapScriptCandidateRequests: HTTPRequest[] = getDapScriptCandidateRequests(logger, outboundRequests);
+  const dapScriptUrlFromId = await getUrlByScriptId(logger, page);
+  logger.info({dapScriptUrlFromId},`Script tag check has returned: ${dapScriptUrlFromId}`);
+
+  const dapScriptCandidateRequests: HTTPRequest[] = getDapScriptCandidateRequests(logger, outboundRequests, dapScriptUrlFromId);
   const hasDapScriptCandidateRequests = dapScriptCandidateRequests.length != 0;
   if( !hasDapScriptCandidateRequests ) {
-    logScanResult(logger, {}, 'dapDetected', false, 'DAP Not Detected');
+    logScanResult(logger, {hasDapScriptCandidateRequests}, 'dapDetected', false, 'DAP Not Detected');
   };
 
   if(!hasDapScriptCandidateRequests && !hasGaPropertyIds) {
-    logger.info('Unable to locate dap script candidates or GA property IDs.');
+    logger.info({hasGaPropertyIds, hasDapScriptCandidateRequests}, 'Unable to locate dap script candidates or GA property IDs.');
     return emptyResponse;
   };
   
   if(!hasDapScriptCandidateRequests && hasGaPropertyIds) {
-    logger.info(`No DAP script candidates found, but the following GA property IDs were detected: ${allGAPropertyIds}`);
+    logger.info({hasGaPropertyIds, hasDapScriptCandidateRequests}, `No DAP script candidates found, but the following GA property IDs were detected: ${allGAPropertyIds}`);
     return {
       dapDetected: false,
       dapParameters: "",
@@ -64,7 +70,7 @@ export const buildDapResult = async (
 
   const dapScriptCandidates: DapScriptCandidate[] = await getDapScriptCandidates(logger, dapScriptCandidateRequests);
 
-  const dapScript: DapScriptCandidate = getBestCandidate(logger, dapScriptCandidates);
+  const dapScript: DapScriptCandidate = getBestCandidate(logger, dapScriptCandidates, dapScriptUrlFromId);
   const hasDapScript = dapScript !== null;
   if( hasDapScript ) {
     logScanResult(logger, {}, 'dapDetected', true, 'DAP Detected');
@@ -154,7 +160,7 @@ export function getUATag(stringToSearch: string): string[] {
  * @param allRequests An object containing all HTTPRequests made from the page
  * @returns A pruned down lust of HTTPRequests that contain DAP related tags or scripts
  */
-export function getDapScriptCandidateRequests(parentLogger: Logger, allRequests: HTTPRequest[]): HTTPRequest[] {
+export function getDapScriptCandidateRequests(parentLogger: Logger, allRequests: HTTPRequest[], dapScriptUrlFromId: string): HTTPRequest[] {
   const candidates: HTTPRequest[] = [];
   const logger = parentLogger.child({ function: 'getDapScriptCandidateRequests' });
 
@@ -168,9 +174,10 @@ export function getDapScriptCandidateRequests(parentLogger: Logger, allRequests:
     const isExactScriptMatch = checkUrlForScriptNameMatch(requestUrl);
     const isPropertyIdMatch = checkUrlForPropertyIdMatch(requestUrl);
     const isPostDataMatch = checkPostDataForPropertyIdMatch(postData);
+    const isScriptTagSrcMatch = requestUrl === dapScriptUrlFromId;
     const truncatedUrl = getTruncatedUrl(requestUrl);
 
-    if( isExactScriptMatch || isPropertyIdMatch || isPostDataMatch ) {
+    if( isExactScriptMatch || isPropertyIdMatch || isPostDataMatch || isScriptTagSrcMatch ) {
       logger.info(`Dap script candidate found: ${truncatedUrl}`);
       candidates.push(request);
     }
@@ -220,7 +227,7 @@ export async function getDapScriptCandidates(parentLogger: Logger, dapScriptCand
       logger.info({error: err}, `Error getting post data for DAP script candidate: ${url}`);
     }
 
-    logger.info(`DAP script candidate found: ${ truncatedUrl }`);
+    logger.info({dapVersion: candidate.version}, `DAP script candidate added to list: ${ truncatedUrl }`);
     candidates.push(candidate);
   }
 
@@ -234,28 +241,32 @@ export async function getDapScriptCandidates(parentLogger: Logger, dapScriptCand
  * @param dapScriptCandidates A list of DapScriptCandidates that will be analyzed to determine best option
  * @returns The best DAP candidate based on a series of checks
  */
-export function getBestCandidate(parentLogger: Logger, dapScriptCandidates: DapScriptCandidate[]): DapScriptCandidate {
+export function getBestCandidate(parentLogger: Logger, dapScriptCandidates: DapScriptCandidate[], dapScriptUrlFromId: string): DapScriptCandidate {
   const logger = parentLogger.child({ function: 'getBestCandidate' });
   const checks = [
     {
       name: 'Script and Version',
-      check: (candidate: DapScriptCandidate) => checkCandidateForScriptAndVersion(candidate) === true,
+      check: (candidate: DapScriptCandidate, scriptUrl: string) => checkCandidateForScriptAndVersion(candidate) === true,
+    },
+    {
+      name: 'Script By ID and Version',
+      check: (candidate: DapScriptCandidate, scriptUrl: string) => checkCandidateForScriptUrlFromIdAndVersion(candidate, scriptUrl) === true,
     },
     {
       name: 'Property and Version',
-      check: (candidate: DapScriptCandidate) => checkCandidateForPropertyAndVersion(candidate) === true,
+      check: (candidate: DapScriptCandidate, scriptUrl: string) => checkCandidateForPropertyAndVersion(candidate) === true,
     },
     {
       name: 'Version',
-      check: (candidate: DapScriptCandidate) => candidate.version !== null,
+      check: (candidate: DapScriptCandidate, scriptUrl: string) => candidate.version !== null,
     },
     {
       name: 'Script Name Match',
-      check: (candidate: DapScriptCandidate) => checkUrlForScriptNameMatch(candidate.url) === true,
+      check: (candidate: DapScriptCandidate, scriptUrl: string) => checkUrlForScriptNameMatch(candidate.url) === true,
     },
     {
       name: 'Any DAP Match',
-      check: (candidate: DapScriptCandidate) => checkCandidateForAnyDapMatch(candidate) === true,
+      check: (candidate: DapScriptCandidate, scriptUrl: string) => checkCandidateForAnyDapMatch(candidate) === true,
     },
   ];
 
@@ -266,7 +277,7 @@ export function getBestCandidate(parentLogger: Logger, dapScriptCandidates: DapS
     const truncatedUrl = getTruncatedUrl(candidate.url);
 
     for (let i = 0; i < checks.length; i++) {
-      if (checks[i].check(candidate)) {
+      if (checks[i].check(candidate, dapScriptUrlFromId)) {
           logger.debug(`DAP script candidate passed check: ${checks[i].name}`);
           matchLevel = i;
           break;
@@ -296,6 +307,52 @@ export function checkCandidateForScriptAndVersion(candidate: DapScriptCandidate)
   const isExactScriptMatch = checkUrlForScriptNameMatch(candidate.url);
   const hasVersion = candidate.version !== null;
   return !!isExactScriptMatch && hasVersion;
+}
+
+/**
+ * Check to see if the DapScriptCandidate contains the exact script URL and a version
+ * 
+ * @param candidate a DapScriptCandidate
+ * @param scriptUrl a string containing the script URL
+ * @returns TRUE if the DapScriptCandidate contains the exact dap script URL and a version, FALSE otherwise
+ */
+export function checkCandidateForScriptUrlFromIdAndVersion(candidate: DapScriptCandidate, scriptUrl: string): boolean {
+  const hasScriptUrl = candidate.url === scriptUrl;
+  const hasVersion = candidate.version !== null;
+  return !!hasScriptUrl && hasVersion;
+}
+/**
+ * Check to see if the page contains a script tag with the DAP script ID
+ * 
+ * @logger a logger object
+ * @param page a Puppeteer Page object
+ * @returns TRUE if the page contains a script tag with the DAP script ID, FALSE otherwise
+ */
+export async function checkPageForScriptTag(logger: Logger, page: Page): Promise<boolean> {
+  const scriptExists = await page.evaluate(() => {
+    const scriptTag = document.getElementById('_fed_an_ua_tag');
+    return scriptTag !== null && scriptTag.tagName.toLowerCase() === 'script';
+  });
+  return scriptExists;
+}
+
+/**
+ * Get the src attribute of the script tag with the DAP script ID
+ * 
+ * @logger a logger object
+ * @param page a Puppeteer Page object
+ * @returns The src attribute of the script tag with the DAP script ID, or null if not found
+ */
+export async function getUrlByScriptId(logger: Logger, page: Page): Promise<string | null> {
+  const scriptSrc = await page.evaluate(() => {
+    const scriptTag = document.getElementById('_fed_an_ua_tag');
+    if (scriptTag && scriptTag.tagName.toLowerCase() === 'script') {
+      return (scriptTag as HTMLScriptElement).src || null;
+    }
+    return null;
+  });
+
+  return scriptSrc;
 }
 
 /**

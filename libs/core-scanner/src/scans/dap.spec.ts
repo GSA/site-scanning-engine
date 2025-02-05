@@ -26,6 +26,13 @@ const mockLogger = pino();
 const minifiedScriptContents = getTestFileContents('dap/Universal-Federated-Analytics.min.js');
 const nonMinifiedScriptContents = getTestFileContents('dap/Universal-Federated-Analytics.js');
 
+const mockPage = {
+  goto: jest.fn(),
+  evaluate: jest.fn(),
+  $: jest.fn(),
+  $$: jest.fn(),
+};
+
 const MOCK_REQUESTS: Record<string, HTTPRequest> = {
   realDapScript: createMockRequest(
     'https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
@@ -218,12 +225,12 @@ describe('dap scan', () => {
 
   describe('getDapScriptCandidateRequests()', () => {
     it('should include all requests containing DAP', async () => {
-      const result = getDapScriptCandidateRequests(mockLogger, MOCK_REQUESTS_WITH_DAP);
+      const result = getDapScriptCandidateRequests(mockLogger, MOCK_REQUESTS_WITH_DAP, 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
       expect(result.length).toEqual(3);
     });
 
     it('should only include the requests that contain DAP and filter out non DAP requests', async () => {
-      const result = getDapScriptCandidateRequests(mockLogger, ALL_MOCK_REQUESTS);
+      const result = getDapScriptCandidateRequests(mockLogger, ALL_MOCK_REQUESTS, 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
       expect(result.length).toEqual(3);
     });
   });
@@ -237,11 +244,11 @@ describe('dap scan', () => {
 
   describe('getBestCandidate()', () => {
     it('should return the candidate that contains the exact script match and version', async () => {
-      const result = getBestCandidate(mockLogger, ALL_DAP_SCRIPT_CANDIDATES);
+      const result = getBestCandidate(mockLogger, ALL_DAP_SCRIPT_CANDIDATES, 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
       expect(result.url).toEqual('https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
     });
     it('should return a candidate that best matches the criteria', async () => {
-      const result = getBestCandidate(mockLogger, DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT);
+      const result = getBestCandidate(mockLogger, DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT, 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
       expect(result.version).toEqual('20240712 v8.2 - GA4');
     });
   });
@@ -370,5 +377,5 @@ function createMockRequest(url: string, responseBody: string | null = '', postDa
 }
 
 async function executeDapScanner( mockRequests: HTTPRequest[] ): Promise<DapScan> {
-  return buildDapResult( mockLogger, mockRequests );
+  return buildDapResult( mockLogger, mockRequests, mockPage as any );
 }
