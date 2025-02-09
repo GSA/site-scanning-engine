@@ -18,5 +18,12 @@ export interface SubdomainRow {
   ombIdeaPublic: string;
   sourceListMil1: string;
   sourceListMil2: string;
+  sourceListDodPublic: string;
+  sourceListDotmil: string;
+  sourceListFinalUrlWebsites: string;
+  sourceListHouse117th: string;
+  sourceListSenate117th: string;
+  sourceListGpoFdlp: string;
+  sourceListCisa: string;
   filtered: string;
 }

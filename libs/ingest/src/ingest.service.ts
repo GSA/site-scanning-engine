@@ -47,6 +47,13 @@ export class IngestService {
         'sourceListOther',
         'sourceListMil1',
         'sourceListMil2',
+        'sourceListDodPublic',
+        'sourceListDotmil',
+        'sourceListFinalUrlWebsites',
+        'sourceListHouse117th',
+        'sourceListSenate117th',
+        'sourceListGpoFdlp',
+        'sourceListCisa',
         'ombIdeaPublic',
         'filtered',
       ],
@@ -196,6 +203,34 @@ export class IngestService {
 
     if (row.sourceListMil2.toLowerCase() === 'true') {
       sourceList.push('mil-sites2');
+    }
+
+    if (row.sourceListDodPublic.toLowerCase() === 'true') {
+      sourceList.push('dod_public');
+    }
+
+    if (row.sourceListDotmil.toLowerCase() === 'true') {
+      sourceList.push('dotmil');
+    }
+
+    if (row.sourceListFinalUrlWebsites.toLowerCase() === 'true') {
+      sourceList.push('final_url_websites');
+    }
+
+    if (row.sourceListHouse117th.toLowerCase() === 'true') {
+      sourceList.push('house_117th');
+    }
+
+    if (row.sourceListSenate117th.toLowerCase() === 'true') {
+      sourceList.push('senate_117th');
+    }
+
+    if (row.sourceListGpoFdlp.toLowerCase() === 'true') {
+      sourceList.push('gpo_fdlp');
+    }
+
+    if (row.sourceListCisa.toLowerCase() === 'true') {
+      sourceList.push('cisa');
     }
 
     return sourceList.join(',');
