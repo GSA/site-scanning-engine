@@ -179,6 +179,7 @@ export class CoreResultService {
       coreResult.finalUrlIsLive = null;
       coreResult.finalUrlMIMEType = null;
       coreResult.finalUrlStatusCode = null;
+      coreResult.finalSiteName = null;
       coreResult.targetUrlRedirects = null;
       coreResult.usaClasses = null;
       coreResult.usaClassesUsed = null;
