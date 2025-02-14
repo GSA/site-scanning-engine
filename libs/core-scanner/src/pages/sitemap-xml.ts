@@ -61,10 +61,17 @@ const buildSitemapResult = async (
           sitemapXmlFinalUrlFilesize: Buffer.byteLength(sitemapText, 'utf-8'),
           sitemapXmlCount: await getUrlCount(sitemapPage),
           sitemapXmlPdfCount: getPdfCount(sitemapText),
+          sitemapXmlLastMod: getLastModDate(sitemapText),
         }
       : {}),
   };
 };
+
+function getLastModDate(sitemapText: string) {
+  const re = /<lastmod>(.*?)<\/lastmod>/g;
+  const matches = [...sitemapText.matchAll(re)];
+  return matches.length > 0 ? matches[matches.length - 1][1] : null;
+}
 
 const getUrlCount = async (page: Page) => {
   const urlCount = await page.evaluate(() => {

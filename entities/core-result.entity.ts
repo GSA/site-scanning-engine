@@ -267,6 +267,10 @@ export class CoreResult {
   sitemapXmlPdfCount?: number;
 
   @Column({ nullable: true })
+  @Exclude()
+  sitemapXmlLastMod?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'third_party_service_domains' })
   @Transform(({ value }: { value: string }) => {
     if (value) {

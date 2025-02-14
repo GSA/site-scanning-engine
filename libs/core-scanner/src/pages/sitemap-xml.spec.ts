@@ -57,6 +57,7 @@ describe('sitemap-xml scanner', () => {
         sitemapXmlFinalUrlLive: true,
         sitemapTargetUrlRedirects: true,
         sitemapXmlFinalUrlMimeType: 'text/xml',
+        sitemapXmlLastMod: null,
         sitemapXmlStatusCode: 200,
         sitemapXmlDetected: true,
       },
