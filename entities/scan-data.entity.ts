@@ -86,6 +86,7 @@ export type SitemapXmlScan = {
   sitemapXmlFinalUrlMimeType: string;
   sitemapXmlStatusCode: number;
   sitemapXmlDetected: boolean;
+  sitemapXmlLastMod?: string;
 };
 
 export type NotFoundScan = {

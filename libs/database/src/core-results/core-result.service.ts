@@ -282,6 +282,7 @@ export class CoreResultService {
         sitemap.sitemapXmlFinalUrlMimeType;
       coreResult.sitemapXmlStatusCode = sitemap.sitemapXmlStatusCode;
       coreResult.sitemapXmlDetected = sitemap.sitemapXmlDetected;
+      coreResult.sitemapXmlLastMod = sitemap.sitemapXmlLastMod;
     } else {
       logger.error({
         msg: pages.sitemapXml.error,
@@ -295,6 +296,7 @@ export class CoreResultService {
       coreResult.sitemapXmlFinalUrlMimeType = null;
       coreResult.sitemapXmlStatusCode = null;
       coreResult.sitemapXmlDetected = null;
+      coreResult.sitemapXmlLastMod = null;
     }
   }
 
