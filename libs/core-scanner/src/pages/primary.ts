@@ -59,6 +59,7 @@ const primaryScan = async (
   const wrappedMobileResult = runScan(input, pageLogger, buildMobileResult, 'MobileScan', url);
 
   const [
+    urlScan,
     dapScan,
     thirdPartyScan,
     cookieScan,
@@ -70,6 +71,7 @@ const primaryScan = async (
     searchScan,
     mobileScan,
   ] = await promiseAll([
+    buildUrlScanResult(input, page, response, pageLogger),
     wrappedDapResult(getOutboundRequests(), page),
     wrappedThirdPartyResult(response, getOutboundRequests()),
     wrappedCookieResult(page),
@@ -81,7 +83,6 @@ const primaryScan = async (
     wrappedSearchResult(page),
     wrappedMobileResult(page),
   ]);
-  const urlScan = buildUrlScanResult(input, page, response, pageLogger);
 
   return {
     urlScan,

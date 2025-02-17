@@ -106,6 +106,7 @@ describe('CoreResultService', () => {
             finalUrlSameDomain: null,
             finalUrlStatusCode: null,
             finalUrlSameWebsite: null,
+            finalUrlPageHash: null,
           },
           dapScan: {
             dapDetected: null,
@@ -199,6 +200,8 @@ describe('CoreResultService', () => {
             sitemapTargetUrlRedirects: null,
             sitemapXmlFinalUrlFilesize: null,
             sitemapXmlFinalUrlMimeType: null,
+            sitemapXmlLastMod: null,
+            sitemapXmlPageHash: null,
             sitemapXmlCount: null,
             sitemapXmlPdfCount: null,
           },

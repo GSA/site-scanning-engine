@@ -8,7 +8,7 @@ describe('url scan', () => {
   it('works', async () => {
     await newTestPage(async ({ page, response, sourceUrl }) => {
       expect(
-        buildUrlScanResult(
+        await buildUrlScanResult(
           { websiteId: 123, scanId: 'asdf', filter: false, url: 'https://www.18f.gov' },
           page,
           response,
@@ -24,6 +24,7 @@ describe('url scan', () => {
         finalUrlSameDomain: false,
         finalUrlSameWebsite: false,
         finalUrlStatusCode: 200,
+        finalUrlPageHash: '005ffef54e0acba5fe1b2f672c6be895',
         targetUrlRedirects: null,
       });
     });

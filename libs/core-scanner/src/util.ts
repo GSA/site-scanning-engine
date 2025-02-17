@@ -3,6 +3,7 @@ import { HTTPResponse, Page } from 'puppeteer';
 import { Logger } from 'pino';
 import { exec } from 'child_process';
 import { logCount } from 'libs/logging/src/metric-utils';
+import * as crypto from 'crypto';
 
 type UnwrapPromiseArray<T> = {
   [K in keyof T]: T[K] extends Promise<infer O> ? O : T[K];
@@ -137,4 +138,22 @@ export function printMemoryUsage(logger: Logger, metadata: any) {
       valueMb
     );
   }
+}
+
+/**
+ * Generates an MD5 hash of the HTML source of a page.
+ * 
+ * @param page The Puppeteer Page object representing the page to hash.
+ * @returns A promise that resolves to the MD5 hash of the page's HTML source or null if the page source is empty.
+ */
+export async function getPageMd5Hash(page: Page): Promise<string> {
+  const pageSource = await page.content();
+
+  const hash = crypto.createHash('md5');
+  if(!pageSource) {
+    return null;
+  }
+  hash.update(pageSource);
+
+  return hash.digest('hex');
 }

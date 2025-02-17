@@ -13,6 +13,7 @@ export type UrlScan = {
   finalUrlSameDomain: boolean;
   finalUrlSameWebsite: boolean;
   finalUrlStatusCode: number;
+  finalUrlPageHash: string;
 };
 
 export type DapScan = {
@@ -87,6 +88,7 @@ export type SitemapXmlScan = {
   sitemapXmlStatusCode: number;
   sitemapXmlDetected: boolean;
   sitemapXmlLastMod?: string;
+  sitemapXmlPageHash?: string;
 };
 
 export type NotFoundScan = {
