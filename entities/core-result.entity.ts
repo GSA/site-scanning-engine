@@ -97,6 +97,10 @@ export class CoreResult {
   finalSiteName?: string;
 
   @Column({ nullable: true })
+  @Exclude()
+  finalUrlPageHash?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'media_type' })
   finalUrlMIMEType?: string;
 
@@ -269,6 +273,10 @@ export class CoreResult {
   @Column({ nullable: true })
   @Exclude()
   sitemapXmlLastMod?: string;
+
+  @Column({ nullable: true })
+  @Exclude()
+  sitemapXmlPageHash?: string;
 
   @Column({ nullable: true })
   @Expose({ name: 'third_party_service_domains' })

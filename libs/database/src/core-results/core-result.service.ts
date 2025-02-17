@@ -120,6 +120,7 @@ export class CoreResultService {
       coreResult.finalUrlMIMEType = result.urlScan.finalUrlMIMEType;
       coreResult.finalUrlStatusCode = result.urlScan.finalUrlStatusCode;
       coreResult.targetUrlRedirects = result.urlScan.targetUrlRedirects;
+      coreResult.finalUrlPageHash = result.urlScan.finalUrlPageHash;
 
       // Site name - finalUrlBaseDomain with www. stripped
       coreResult.finalSiteName = coreResult.finalUrlWebsite ? coreResult.finalUrlWebsite.replace(/^www\./, '') : '';
@@ -180,6 +181,7 @@ export class CoreResultService {
       coreResult.finalUrlMIMEType = null;
       coreResult.finalUrlStatusCode = null;
       coreResult.finalSiteName = null;
+      coreResult.finalUrlPageHash = null;
       coreResult.targetUrlRedirects = null;
       coreResult.usaClasses = null;
       coreResult.usaClassesUsed = null;
@@ -283,6 +285,7 @@ export class CoreResultService {
       coreResult.sitemapXmlStatusCode = sitemap.sitemapXmlStatusCode;
       coreResult.sitemapXmlDetected = sitemap.sitemapXmlDetected;
       coreResult.sitemapXmlLastMod = sitemap.sitemapXmlLastMod;
+      coreResult.sitemapXmlPageHash = sitemap.sitemapXmlPageHash;
     } else {
       logger.error({
         msg: pages.sitemapXml.error,
@@ -297,6 +300,7 @@ export class CoreResultService {
       coreResult.sitemapXmlStatusCode = null;
       coreResult.sitemapXmlDetected = null;
       coreResult.sitemapXmlLastMod = null;
+      coreResult.sitemapXmlPageHash = null;
     }
   }
 

@@ -4,7 +4,7 @@ import { Logger } from 'pino';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { UrlScan } from 'entities/scan-data.entity';
-import { isLive, createRequestHandlers } from '../util';
+import { isLive, createRequestHandlers, getPageMd5Hash } from '../util';
 
 import {
   getBaseDomain,
@@ -15,18 +15,19 @@ import {
   getTopLevelDomain,
 } from '../util';
 
-export const buildUrlScanResult = (
+export const buildUrlScanResult = async (
   input: CoreInputDto,
   page: Page,
   response: HTTPResponse,
   parentLogger: Logger,
-): UrlScan => {
+): Promise<UrlScan> => {
   const logger = parentLogger.child({ sseContext: 'Scan.UrlScan', scan: 'URLScan'});
   logger.info('Building URL scan result...');
   createRequestHandlers(page, logger);
   const url = getHttpsUrl(input.url);
   const redirectChain = response.request().redirectChain();
   const finalUrl = getFinalUrl(page);
+  const finalUrlPageHash = await getPageMd5Hash(page);
   return {
     targetUrlRedirects: isRedirect(url, getWithSubdomain(finalUrl), logger),
     finalUrl: finalUrl,
@@ -38,6 +39,7 @@ export const buildUrlScanResult = (
     finalUrlSameDomain: getBaseDomain(url) === getBaseDomain(finalUrl),
     finalUrlSameWebsite: getFullDomain(url) === getFullDomain(finalUrl),
     finalUrlStatusCode: response.status(),
+    finalUrlPageHash: finalUrlPageHash,
   };
 };
 

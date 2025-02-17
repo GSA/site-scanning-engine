@@ -5,7 +5,7 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { SitemapXmlScan } from 'entities/scan-data.entity';
 import { SitemapXmlPageScans } from 'entities/scan-page.entity';
 
-import { getHttpsUrl, getMIMEType, isLive, createRequestHandlers } from '../util';
+import { getHttpsUrl, getMIMEType, isLive, createRequestHandlers, getPageMd5Hash } from '../util';
 
 export const createSitemapXmlScanner = (
   logger: Logger,
@@ -47,6 +47,8 @@ const buildSitemapResult = async (
   const sitemapXmlDetected =
     sitemapUrl.pathname.endsWith('/sitemap.xml') && sitemapLive;
 
+  
+
   return {
     sitemapXmlFinalUrl: sitemapUrl.toString(),
     sitemapXmlFinalUrlLive: sitemapLive,
@@ -62,6 +64,7 @@ const buildSitemapResult = async (
           sitemapXmlCount: await getUrlCount(sitemapPage),
           sitemapXmlPdfCount: getPdfCount(sitemapText),
           sitemapXmlLastMod: getLastModDate(sitemapText),
+          sitemapXmlPageHash: await getPageMd5Hash(sitemapPage),
         }
       : {}),
   };
