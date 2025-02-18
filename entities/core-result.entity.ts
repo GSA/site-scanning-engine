@@ -97,7 +97,7 @@ export class CoreResult {
   finalSiteName?: string;
 
   @Column({ nullable: true })
-  @Exclude()
+  @Expose({ name: 'page_hash' })
   finalUrlPageHash?: string;
 
   @Column({ nullable: true })
@@ -271,11 +271,11 @@ export class CoreResult {
   sitemapXmlPdfCount?: number;
 
   @Column({ nullable: true })
-  @Exclude()
+  @Expose({ name: 'sitemap_xml_lastmod' })
   sitemapXmlLastMod?: string;
 
   @Column({ nullable: true })
-  @Exclude()
+  @Expose({ name: 'sitemap_xml_page_hash' })
   sitemapXmlPageHash?: string;
 
   @Column({ nullable: true })
@@ -535,6 +535,7 @@ export class CoreResult {
     'security_scan_status',
     'sitemap_xml_scan_status',
     'www_scan_status',
+    'page_hash',
     'accessibility_violations',
     'ipv6',
     'hostname',
@@ -585,7 +586,9 @@ export class CoreResult {
     'sitemap_xml_media_type',
     'sitemap_xml_filesize',
     'sitemap_xml_count',
+    'sitemap_xml_lastmod',
     'sitemap_xml_pdf_count',
+    'sitemap_xml_page_hash',
     'uswds_favicon',
     'uswds_favicon_in_css',
     'uswds_publicsans_font',
