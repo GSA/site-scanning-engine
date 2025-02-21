@@ -63,18 +63,56 @@ const buildSitemapResult = async (
           sitemapXmlFinalUrlFilesize: Buffer.byteLength(sitemapText, 'utf-8'),
           sitemapXmlCount: await getUrlCount(sitemapPage),
           sitemapXmlPdfCount: getPdfCount(sitemapText),
-          sitemapXmlLastMod: getLastModDate(sitemapText),
+          sitemapXmlLastMod: await getLastModDate(sitemapText, sitemapPage),
           sitemapXmlPageHash: await getPageMd5Hash(sitemapPage),
         }
       : {}),
   };
 };
 
-function getLastModDate(sitemapText: string) {
+async function getLastModDate(sitemapText: string, sitemapPage: Page) {
+  if (!sitemapText || !sitemapPage) {
+    return null;
+  }
+  let dates = getModDatesByLastmodTag(sitemapText);
+  if (!dates) {
+    dates = await getModDatesByTDTag(sitemapPage);
+  }
+  if (!dates || dates.length === 0) {
+    return null;
+  }
+  
+  const lastModDate = dates[0];
+  return lastModDate;
+}
+
+function getModDatesByLastmodTag(sitemapText: string): string[] | null {
   const re = /<lastmod>(.*?)<\/lastmod>/g;
   const matches = [...sitemapText.matchAll(re)];
-  return matches.length > 0 ? matches[matches.length - 1][1] : null;
+  if (matches.length > 0) {
+    return matches.map(match => match[1]);
+  }
+
+  return null;
 }
+
+async function getModDatesByTDTag(sitemapPage: Page): Promise<string[] | null> {
+  const tdTexts = await sitemapPage.$$eval('td', (tds) =>
+    tds.map(td => td.textContent?.trim()).filter(text => text !== undefined)
+  );
+  if (!tdTexts || tdTexts.length === 0) {
+    return null;
+  }
+  const dateRegex = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([-+]\d{2}:\d{2}|\.\d+)?/;
+  const extDateRegex = /\d{4}-\d{2}-\d{2}|\d{1,2}\/\d{1,2}\/\d{4}/;
+  const dates = tdTexts.filter(text => dateRegex.test(text));
+  if (dates.length === 0) {
+    const dates = tdTexts.filter(text => extDateRegex.test(text));
+  }
+  return dates.length > 0 ? dates : null;
+}
+
+
 
 const getUrlCount = async (page: Page) => {
   const urlCount = await page.evaluate(() => {
