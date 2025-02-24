@@ -1,5 +1,7 @@
 import { Logger } from 'pino';
 import { Page, HTTPResponse } from 'puppeteer';
+import { HttpService } from '@nestjs/axios';
+import { lastValueFrom } from 'rxjs';
 
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { SitemapXmlScan } from 'entities/scan-data.entity';
@@ -10,6 +12,7 @@ import { getHttpsUrl, getMIMEType, isLive, createRequestHandlers, getPageMd5Hash
 export const createSitemapXmlScanner = (
   logger: Logger,
   input: CoreInputDto,
+  httpService: HttpService,
 ) => {
   const url = getHttpsUrl(input.url);
   return async (sitemapPage: Page): Promise<SitemapXmlPageScans> => {
@@ -17,19 +20,22 @@ export const createSitemapXmlScanner = (
     // go to the sitemap page from the target url
     const sitemapUrl = new URL(url);
     sitemapUrl.pathname = 'sitemap.xml';
-    logger.info('Going to sitemap.xml...');
+    logger.info(`Going to sitemap.xml: ${sitemapUrl.toString()}`);
+
     const sitemapResponse = await sitemapPage.goto(sitemapUrl.toString(), {
       waitUntil: 'networkidle2',
     });
     logger.info('Got sitemap.xml!');
     // extract the html page source
-    const sitemapText = await sitemapResponse.text();
-    logger.info('Got sitemap.xml text!');
+    //const sitemapText = await sitemapResponse.text();
+    logger.info(`Got sitemap.xml text from: ${sitemapResponse.url()}`);
+
+    const sitemapContents = await getSitemapUsingAxios(sitemapResponse.url(), httpService, logger);
 
     return {
       sitemapXmlScan: await buildSitemapResult(
         sitemapResponse,
-        sitemapText,
+        sitemapContents.data.toString(),
         sitemapPage,
         logger,
       ),
@@ -71,6 +77,25 @@ const buildSitemapResult = async (
       : {}),
   };
 };
+
+/**
+ * Fetches the sitemap XML using Axios.
+ *
+ * @param  url The URL to fetch the sitemap from
+ * @param  httpService The HTTP service to use for making requests
+ * @param  logger A logger instance for logging
+ * @returns The sitemap XML response as a string or null if an error occurs
+ */
+export async function getSitemapUsingAxios(url: string, httpService: HttpService, logger: Logger) {
+  try {
+    const response = await httpService.get(url);
+    logger.info(`Got sitemap.xml response using Axios`);
+    return await lastValueFrom(response)
+  } catch (error) {
+    logger.error({error}, 'Error fetching sitemap.xml using Axios');
+    return null;
+  }
+}
 
 const getUrlCount = async (page: Page) => {
   const urlCount = await page.evaluate(() => {
@@ -120,9 +145,11 @@ async function getLastModDate(sitemapText: string, sitemapPage: Page, logger: Lo
   }
   let dates = getModDatesByLastmodTag(sitemapText);
   if (!dates) {
+    logger.info('No <lastmod> tags found, checking <td> tags...');
     dates = await getModDatesByTDTag(sitemapPage, logger);
   }
   if (!dates || dates.length === 0) {
+    logger.info('No valid dates found in <lastmod> or <td> tags.');
     return null;
   }
   const parsedDates = convertStringsToDates(dates, logger);
