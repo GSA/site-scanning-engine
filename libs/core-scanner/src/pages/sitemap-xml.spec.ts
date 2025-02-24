@@ -1,10 +1,13 @@
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Logger } from 'pino';
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
+import { HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
 
 import { CoreInputDto } from '../core.input.dto';
-import { createSitemapXmlScanner } from './sitemap-xml';
+import { createSitemapXmlScanner, getSitemapUsingAxios } from './sitemap-xml';
 import { source } from './test-page-source';
+import { of } from 'rxjs';
 
 describe('sitemap-xml scanner', () => {
   let mockPage: MockProxy<Page>;
@@ -44,14 +47,27 @@ describe('sitemap-xml scanner', () => {
     mockResponse.url.mockReturnValue('https://18f.gsa.gov/sitemap.xml');
     mockPage.goto.mockResolvedValue(mockResponse);
     redirectRequest.redirectChain.mockReturnValue([]);
+    const mockHttpService = mock<HttpService>();
+    const axiosResponse: AxiosResponse<any> = {
+      data: {},
+      status: 404,
+      statusText: 'Not Found',
+      headers: {},
+      config: {
+        headers: null,
+      },
+    };
+    jest
+      .spyOn(mockHttpService, 'get')
+      .mockImplementationOnce(() => of(axiosResponse));
 
-    const scanner = createSitemapXmlScanner(mockLogger, input);
+    const scanner = createSitemapXmlScanner(mockLogger, input, mockHttpService);
     const result = await scanner(mockPage);
 
     expect(result).toEqual({
       sitemapXmlScan: {
         sitemapXmlCount: undefined,
-        sitemapXmlFinalUrlFilesize: 39170,
+        sitemapXmlFinalUrlFilesize: 15,
         sitemapXmlPdfCount: 0,
         sitemapXmlFinalUrl: 'https://18f.gsa.gov/sitemap.xml',
         sitemapXmlFinalUrlLive: true,

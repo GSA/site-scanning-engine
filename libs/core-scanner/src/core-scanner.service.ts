@@ -196,6 +196,7 @@ export class CoreScannerService
           pages.createSitemapXmlScanner(
             pageLogger,
             input,
+            this.httpService,
           ),
         );
 
