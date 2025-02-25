@@ -99,7 +99,14 @@ export class CoreResultService {
       coreResult.ogUrlContent = result.seoScan.ogUrlContent;
       coreResult.htmlLangContent = result.seoScan.htmlLangContent;
       coreResult.hrefLangContent = result.seoScan.hrefLangContent;
-
+      // Experimental Fields #1368 Feb 2025
+      coreResult.dcDateContent = result.seoScan.dcDateContent;
+      coreResult.dcDateCreatedContent = result.seoScan.dcDateCreatedContent;
+      coreResult.dctermsCreatedContent = result.seoScan.dctermsCreatedContent;
+      coreResult.revisedContent = result.seoScan.revisedContent;
+      coreResult.lastModifiedContent = result.seoScan.lastModifiedContent;
+      coreResult.dateContent = result.seoScan.dateContent;
+      
       // Third-party scan
       coreResult.thirdPartyServiceCount =
         result.thirdPartyScan.thirdPartyServiceCount;

@@ -61,6 +61,13 @@ describe.skip('primary scanner', () => {
           ogImageContent: 'https://18f.gsa.gov/assets/img/logos/18F-Logo-M.png',
           ogTypeContent: null,
           ogUrlContent: null,
+          // Experimental Fields #1368 Feb 2025
+          dcDateContent: null,
+          dcDateCreatedContent: null,
+          dctermsCreatedContent: null,
+          revisedContent: null,
+          lastModifiedContent: null,
+          dateContent: null,
         },
         thirdPartyScan: {
           thirdPartyServiceDomains:

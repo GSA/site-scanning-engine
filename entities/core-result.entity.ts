@@ -499,6 +499,37 @@ export class CoreResult {
   @Expose({ name: 'www_same' })
   wwwSame?: boolean;
 
+  // Experimental fields #1368 Feb 2025
+  @Column({ nullable: true })
+  @Expose({ name: 'dc_date_content' })
+  @Exclude()
+  dcDateContent?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'dc_date_created_content' })
+  @Exclude()
+  dcDateCreatedContent?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'dcterms_created_content' })
+  @Exclude()
+  dctermsCreatedContent?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'revised_content' })
+  @Exclude()
+  revisedContent?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'last_modified_content' })
+  @Exclude()
+  lastModifiedContent?: string;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'date_content' })
+  @Exclude()
+  dateContent?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

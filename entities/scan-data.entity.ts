@@ -38,6 +38,13 @@ export type SeoScan = {
   ogUrlContent: string;
   htmlLangContent: string;
   hrefLangContent: string;
+  // Experimental Fields #1368 Feb 2025
+  dcDateContent: string;
+  dcDateCreatedContent: string;
+  dctermsCreatedContent: string;
+  revisedContent: string;
+  lastModifiedContent: string;
+  dateContent: string;
 };
 
 export type ThirdPartyScan = {
