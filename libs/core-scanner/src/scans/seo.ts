@@ -34,6 +34,29 @@ export const buildSeoResult = async (
   const htmlLangContent = await findHtmlLangContent(page);
   const hrefLangContent = await findHreflangContent(page);
 
+  /**
+   * The following fields are experimental and were added Feb 24, 2025
+   * for issue 1368
+   */
+  const dcDateContent = await findMetaContent(page, 'name', 'dc.date');
+  const dcDateCreatedContent = await findMetaContent(
+    page,
+    'name',
+    'dc.date.created',
+  );
+  const dctermsCreatedContent = await findMetaContent(
+    page,
+    'name',
+    'dcterms.created',
+  );
+  const revisedContent = await findMetaContent(page, 'name', 'revised');
+  const lastModifiedContent = await findMetaContent(
+    page,
+    'http-equiv',
+    'last-modified',
+  );
+  const dateContent = await findMetaContent(page, 'name', 'date');
+
   return {
     ogTitleFinalUrl,
     ogDescriptionFinalUrl,
@@ -49,6 +72,13 @@ export const buildSeoResult = async (
     ogUrlContent,
     htmlLangContent,
     hrefLangContent,
+    // Experimental Fields #1368 Feb 2025
+    dcDateContent,
+    dcDateCreatedContent,
+    dctermsCreatedContent,
+    revisedContent,
+    lastModifiedContent,
+    dateContent,
   };
 };
 

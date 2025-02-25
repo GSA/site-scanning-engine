@@ -32,6 +32,13 @@ describe('seo scan', () => {
           'https://www.arc.gov/wp-content/uploads/2020/08/48982308566_5ce274f0ab_o-washington-scaled.jpg',
         ogTypeContent: 'website',
         ogUrlContent: 'https://www.arc.gov/',
+        // Experimental Fields #1368 Feb 2025
+        dcDateContent: null,
+        dcDateCreatedContent: null,
+        dctermsCreatedContent: null,
+        revisedContent: null,
+        lastModifiedContent: null,
+        dateContent: null,
       });
     }, 'arc_gov_dump.mht');
   });
