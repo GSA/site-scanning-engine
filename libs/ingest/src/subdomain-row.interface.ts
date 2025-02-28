@@ -25,5 +25,6 @@ export interface SubdomainRow {
   sourceListSenate117th: string;
   sourceListGpoFdlp: string;
   sourceListCisa: string;
+  sourceListDod2025: string;
   filtered: string;
 }
