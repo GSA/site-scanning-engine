@@ -54,6 +54,7 @@ export class IngestService {
         'sourceListSenate117th',
         'sourceListGpoFdlp',
         'sourceListCisa',
+        'sourceListDod2025',
         'ombIdeaPublic',
         'filtered',
       ],
@@ -231,6 +232,10 @@ export class IngestService {
 
     if (row.sourceListCisa.toLowerCase() === 'true') {
       sourceList.push('cisa');
+    }
+
+    if (row.sourceListDod2025.toLowerCase() === 'true') {
+      sourceList.push('dod_2025');
     }
 
     return sourceList.join(',');
