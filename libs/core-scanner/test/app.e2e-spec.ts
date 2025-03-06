@@ -24,10 +24,10 @@ describe('CoreScanner (e2e)', () => {
     await moduleFixture.close();
   });
 
-  it('should return results for 18f.gov', async () => {
+  it('should return results for 10x.gsa.gov', async () => {
     const input: CoreInputDto = {
       websiteId: 1,
-      url: '18f.gov',
+      url: '10x.gsa.gov',
       filter: false,
       scanId: '123',
     };
@@ -35,7 +35,7 @@ describe('CoreScanner (e2e)', () => {
     const result = await service.scan(input);
     expect(result).toMatchObject({
       base: {
-        targetUrlBaseDomain: input.url,
+        targetUrlBaseDomain: 'gsa.gov',
       },
       primary: {
         status: ScanStatus.Completed,
