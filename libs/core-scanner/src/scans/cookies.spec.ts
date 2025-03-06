@@ -7,9 +7,9 @@ const mockLogger = pino();
 describe('cookie scan', () => {
   it('detects if cookies are present', async () => {
     await newTestPage(async ({ page }) => {
-      // We make an actual network request to 18f.gsa.gov in this test case,
+      // We make an actual network request to 10x.gsa.gov in this test case,
       // so this is more so an integration test than a unit test per se.
-      await page.goto('https://18f.gsa.gov/');
+      await page.goto('https://10x.gsa.gov/');
 
       const result = await buildCookieResult(mockLogger, page);
 
