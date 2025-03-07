@@ -243,7 +243,7 @@ export class CoreScannerService
   }
 
   private getScanStatus(error: Error, url: string, logger: Logger): AnyFailureStatus {
-    const scanStatus = parseBrowserError(error);
+    const scanStatus = parseBrowserError(error, logger);
     if (scanStatus === ScanStatus.UnknownError) {
       logger.warn(`Unknown Error calling ${url}: ${error.message}`);
     }
