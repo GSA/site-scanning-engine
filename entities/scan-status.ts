@@ -1,3 +1,5 @@
+import { Logger } from 'pino';
+
 export enum ScanStatus {
   AddressUnreachable = 'address_unreachable',
   Completed = 'completed',
@@ -6,6 +8,7 @@ export enum ScanStatus {
   ConnectionReset = 'connection_reset',
   DNSResolutionError = 'dns_resolution_error',
   EmptyResponse = 'empty_response',
+  InvalidResponse = 'invalid_response',
   EvaluationFailed = 'evaluation_failed',
   ExecutionContextDestroyed = 'execution_context_destroyed',
   Http2Error = 'http2_error',
@@ -22,12 +25,13 @@ export enum ScanStatus {
 export type AnySuccessfulStatus = ScanStatus.Completed;
 export type AnyFailureStatus = Exclude<ScanStatus, ScanStatus.Completed>;
 
-export const parseBrowserError = (err: Error): AnyFailureStatus => {
+export const parseBrowserError = (err: Error, logger: Logger): AnyFailureStatus => {
   if (
     (err.name && err.name === 'TimeoutError') ||
     (err.message &&
       (err.message.startsWith('net::ERR_CONNECTION_TIMED_OUT') ||
-        err.message.startsWith('connect ETIMEDOUT')))
+        err.message.startsWith('connect ETIMEDOUT') ||
+        err.message.startsWith('net::ERR_TIMED_OUT')))
   ) {
     return ScanStatus.Timeout;
   }
@@ -44,6 +48,7 @@ export const parseBrowserError = (err: Error): AnyFailureStatus => {
       err.message.startsWith('net::ERR_CERT_COMMON_NAME_INVALID') ||
       err.message.startsWith('net::ERR_CERT_DATE_INVALID') ||
       err.message.startsWith('net::ERR_BAD_SSL_CLIENT_AUTH_CERT') ||
+      err.message.startsWith('net::ERR_SSL_UNRECOGNIZED_NAME_ALERT') ||
       err.message.startsWith('unable to verify the first certificate')
     ) {
       return ScanStatus.InvalidSSLCert;
@@ -98,7 +103,12 @@ export const parseBrowserError = (err: Error): AnyFailureStatus => {
     if (err.message.startsWith('Evaluation failed')) {
       return ScanStatus.EvaluationFailed;
     }
+
+    if (err.message.startsWith('net::ERR_INVALID_RESPONSE')) {
+      return ScanStatus.InvalidResponse;
+    }
   }
+  logger.warn({unknownError: err}, `Unknown error: ${err.message}`);
 
   return ScanStatus.UnknownError;
 };
