@@ -31,11 +31,12 @@ export const createSitemapXmlScanner = (
     logger.info(`Got sitemap.xml text from: ${sitemapResponse.url()}`);
 
     const sitemapContents = await getSitemapUsingAxios(sitemapResponse.url(), httpService, logger);
+    const sitemapText = sitemapContents ? sitemapContents.data.toString() : '';
 
     return {
       sitemapXmlScan: await buildSitemapResult(
         sitemapResponse,
-        sitemapContents.data.toString(),
+        sitemapText,
         sitemapPage,
         logger,
       ),

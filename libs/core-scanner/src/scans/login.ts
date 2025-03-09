@@ -36,7 +36,7 @@ const loginProviderStrings = [
 ];
 
 export async function buildLoginResult ( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<LoginScan> {
-  const html = await mainResponse.text();
+  const html = mainResponse ? await mainResponse.text() : '';
   const htmlLower = html.toLowerCase();
 
   const loginDetected = getLoginDetectedResults(htmlLower);

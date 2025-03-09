@@ -25,7 +25,7 @@ export const buildUrlScanResult = async (
   logger.info('Building URL scan result...');
   createRequestHandlers(page, logger);
   const url = getHttpsUrl(input.url);
-  const redirectChain = response.request().redirectChain();
+  const redirectChain = response ? response.request().redirectChain() : '';
   const finalUrl = getFinalUrl(page);
   const finalUrlPageHash = await getPageMd5Hash(page);
   return {
@@ -38,7 +38,7 @@ export const buildUrlScanResult = async (
     finalUrlBaseDomain: getBaseDomain(finalUrl),
     finalUrlSameDomain: getBaseDomain(url) === getBaseDomain(finalUrl),
     finalUrlSameWebsite: getFullDomain(url) === getFullDomain(finalUrl),
-    finalUrlStatusCode: response.status(),
+    finalUrlStatusCode: response ? response.status() : null,
     finalUrlPageHash: finalUrlPageHash,
   };
 };

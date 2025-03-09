@@ -38,7 +38,7 @@ export const getHttpsUrl = (url: string): string => {
 };
 
 export const getMIMEType = (res: HTTPResponse): string => {
-  const headers = res.headers();
+  const headers = res ? res.headers() : {};
   if (headers['Content-Type'] || headers['content-type']) {
     const contentType = headers['Content-Type'] || headers['content-type'];
     const mimetype = contentType.split(';')[0];
@@ -68,6 +68,7 @@ export const getTopLevelDomain = (url: string): string | null => {
 };
 
 export const isLive = (res: HTTPResponse): boolean => {
+  if (!res) return false;
   const http200FamilyCodes = [200, 201, 202, 203, 204, 205, 206];
   return _.includes(http200FamilyCodes, res.status());
 };

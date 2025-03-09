@@ -19,7 +19,7 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
       waitUntil: 'networkidle2',
     });
     // extract the html page source
-    const robotsText = await robotsResponse.text();
+    const robotsText = robotsResponse ? await robotsResponse.text() : null;
 
     return {
       robotsTxtScan: buildRobotTxtResult(

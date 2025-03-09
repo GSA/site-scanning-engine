@@ -6,8 +6,8 @@ import { CmsScan } from 'entities/scan-data.entity';
 import { Logger } from 'pino';
 
 export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<CmsScan> {
-  const htmlMatches = await getHtmlMatches(parentLogger, mainResponse);
-  const headerMatches = await getHeaderMatches(mainResponse);
+  const htmlMatches = mainResponse ? await getHtmlMatches(parentLogger, mainResponse) : [];
+  const headerMatches = mainResponse ? await getHeaderMatches(mainResponse) : [];
 
   let cms = null;
 
@@ -21,7 +21,7 @@ export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPRe
 };
 
 const getHtmlMatches = async (logger: Logger, response: HTTPResponse) => {
-  const actualHtml = await response.text();
+  const actualHtml = response ? await response.text() : '';
 
   return cmsData.filter((obj) => {
     if (obj.html) {
@@ -43,7 +43,7 @@ const getHtmlMatches = async (logger: Logger, response: HTTPResponse) => {
 };
 
 const getHeaderMatches = async (response: HTTPResponse) => {
-  const actualHeaders = await response.headers();
+  const actualHeaders = response ? await response.headers() : {};
   const formattedActualHeaders = _.transform(
     actualHeaders,
     function (result, val, key) {

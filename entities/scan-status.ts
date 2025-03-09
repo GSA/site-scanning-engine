@@ -19,6 +19,9 @@ export enum ScanStatus {
   SslVersionCipherMismatch = 'ssl_version_cipher_mismatch',
   Timeout = 'timeout',
   TooManyRedirects = 'too_many_redirects',
+  InvalidAuthCredentials = 'invalid_auth_credentials',
+  SslProtocolError = 'ssl_protocol_error',
+  Aborted = 'aborted',
   UnknownError = 'unknown_error',
 }
 
@@ -106,6 +109,18 @@ export const parseBrowserError = (err: Error, logger: Logger): AnyFailureStatus 
 
     if (err.message.startsWith('net::ERR_INVALID_RESPONSE')) {
       return ScanStatus.InvalidResponse;
+    }
+
+    if (err.message.startsWith('net::ERR_INVALID_AUTH_CREDENTIALS')) {
+      return ScanStatus.InvalidAuthCredentials;
+    }
+
+    if (err.message.startsWith('net::ERR_SSL_PROTOCOL_ERROR')) {
+      return ScanStatus.SslProtocolError;
+    }
+
+    if (err.message.startsWith('net::ERR_ABORTED')) {
+      return ScanStatus.Aborted;
     }
   }
   logger.warn({unknownError: err}, `Unknown error: ${err.message}`);

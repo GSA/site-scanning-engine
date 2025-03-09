@@ -10,7 +10,7 @@ export function createUswdsScanner( getCSSRequests: () => string[] , page: Page,
     return buildUswdsResult(
       logger,
       getCSSRequests(),
-      await response.text(),
+      await (response ? response.text() : ''),
       page,
     );
   };
