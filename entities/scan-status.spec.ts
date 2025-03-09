@@ -60,5 +60,10 @@ describe('scan-status', () => {
       const err = new Error('net::ERR_SSL_PROTOCOL_ERROR');
       expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.SslProtocolError);
     });
+
+    it('should parse aborted error', () => {
+      const err = new Error('net::ERR_ABORTED');
+      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.Aborted);
+    });
   });
 });
