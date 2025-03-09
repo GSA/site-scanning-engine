@@ -50,5 +50,15 @@ describe('scan-status', () => {
       const err = new Error('UnknownError');
       expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.UnknownError);
     });
+
+    it('should parse invalid auth credentials error', () => {
+      const err = new Error('net::ERR_INVALID_AUTH_CREDENTIALS');
+      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.InvalidAuthCredentials);
+    });
+
+    it('should parse ssl protocol error', () => {
+      const err = new Error('net::ERR_SSL_PROTOCOL_ERROR');
+      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.SslProtocolError);
+    });
   });
 });
