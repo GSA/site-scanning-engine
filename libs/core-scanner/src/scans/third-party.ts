@@ -11,8 +11,8 @@ export const buildThirdPartyResult = async (
   outboundRequests: HTTPRequest[],
 ): Promise<ThirdPartyScan> => {
   const logger = parentLogger.child({ scan: 'third-party-scan' });
-  logger.info(`Building third party scan result for: ${mainResponse.url()}`);
   const url = mainResponse && mainResponse.url();
+  logger.info(`Building third party scan result for: ${url}`);
   const thirdPartyResult = await thirdPartyServices(logger, outboundRequests, url);
   const thirdPartyUrlResult = await thirdPartyServicesUrls(logger, outboundRequests, url);
   return {
@@ -25,6 +25,13 @@ export const buildThirdPartyResult = async (
 export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTTPRequest[], finalUrl: string, ): { domains: string; count: number; } {
   const logger = parentLogger.child({ function: 'thirdPartyServices' });
   logger.info(`Collecting third party services for: ${finalUrl}`);
+  if( (!outboundRequests || outboundRequests.length === 0) || !finalUrl ) {
+    logger.warn(`No outbound requests or final URL provided. Returning empty result.`);
+    return {
+      domains: '',
+      count: 0,
+    };
+  }
   try {
     const parsedUrl = new URL(finalUrl);
     const thirdPartyDomains = [];
@@ -61,6 +68,10 @@ export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTT
 export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests: HTTPRequest[], finalUrl: string ): string {
   const logger = parentLogger.child({ function: 'thirdPartyServicesUrls' });
   logger.info(`Collecting third party services URLs for: ${finalUrl}`);
+  if( (!outboundRequests || outboundRequests.length === 0) || !finalUrl ) {
+    logger.warn(`No outbound requests or final URL provided. Returning empty result.`);
+    return '';
+  }
   try{
     const parsedUrl = new URL(finalUrl);
     const thirdPartyDomains = [];

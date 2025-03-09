@@ -23,7 +23,7 @@ export const buildSeoResult = async (
   const mainElementFinalUrl = await findMainElement(page);
   const canonicalLink =
     (await findCanonicalLinkInHtml(page)) ??
-    (await findCanonicalLInkInResponseHeaders(response)) ??
+    (response ? await findCanonicalLInkInResponseHeaders(response) : null) ??
     null;
   const pageTitle = await findPageTitleText(page);
   const metaDescriptionContent = await findMetaDescriptionContent(page);
@@ -145,6 +145,9 @@ const findCanonicalLinkInHtml = async (page: Page): Promise<string | null> => {
 const findCanonicalLInkInResponseHeaders = async (
   response: HTTPResponse,
 ): Promise<string | null> => {
+  if (!response) {
+    return null;
+  }
   const headers = await response.headers();
 
   for (const key in headers) {
