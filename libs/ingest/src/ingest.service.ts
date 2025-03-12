@@ -57,6 +57,8 @@ export class IngestService {
         'sourceListDod2025',
         'ombIdeaPublic',
         'filtered',
+        'pageviews',
+        'visits',
       ],
       renameHeaders: true, // discard the existing headers to ease parsing
       maxRows: maxRows,
@@ -64,6 +66,14 @@ export class IngestService {
       .transform((data: SubdomainRow): CreateWebsiteDto => {
         let ombIdeaPublic = null;
         let filtered = null;
+        let pageviews = null;
+        let visits = null;
+        if (data.pageviews) {
+          pageviews = data.pageviews;
+        }
+        if (data.visits) {
+          visits = data.visits;
+        }
 
         if (data.ombIdeaPublic.toLowerCase() === 'true') {
           ombIdeaPublic = true;
@@ -83,6 +93,8 @@ export class IngestService {
           sourceList: this.getSourceList(data),
           ombIdeaPublic,
           filter: filtered,
+          pageviews,
+          visits,
         };
       })
       .on('error', (error) => {

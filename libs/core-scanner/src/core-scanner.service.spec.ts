@@ -106,6 +106,8 @@ describe('CoreScannerService', () => {
       websiteId: 1,
       url: 'https://18f.gov',
       filter: false,
+      pageviews: 1,
+      visits: 1,
       scanId: '123',
     };
 

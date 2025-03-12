@@ -68,6 +68,14 @@ export class Website {
   @Expose({ name: 'filter' })
   filter?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'pageviews' })
+  pageviews?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'visits' })
+  visits?: number;
+
   serialized() {
     const serializedWebsite = classToPlain(this);
     const serializedCoreResult = classToPlain(this.coreResult);

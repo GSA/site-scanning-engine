@@ -27,6 +27,8 @@ export class ScanController {
       websiteId: website.id,
       url: website.url,
       filter: website.filter,
+      pageviews: website.pageviews,
+      visits: website.visits,
       scanId: cuid(),
     };
 
@@ -45,6 +47,8 @@ export class ScanController {
       results,
       this.logger,
       website.filter,
+      website.pageviews,
+      website.visits,
       website.url,
     );
 

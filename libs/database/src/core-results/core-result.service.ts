@@ -24,6 +24,8 @@ export class CoreResultService {
     pages: CoreResultPages,
     logger: Logger,
     filter: boolean,
+    pageviews: number,
+    visits: number,
     websiteUrl: string,
   ) {
     const coreResult = new CoreResult();
@@ -32,6 +34,8 @@ export class CoreResultService {
     coreResult.website = website;
     coreResult.targetUrlBaseDomain = pages.base.targetUrlBaseDomain;
     coreResult.filter = filter;
+    coreResult.pageviews = pageviews;
+    coreResult.visits = visits;
     coreResult.initialUrl = `https://${websiteUrl}`;
 
     this.updatePrimaryScanResults(coreResult, pages, logger);

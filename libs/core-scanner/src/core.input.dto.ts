@@ -31,6 +31,22 @@ export class CoreInputDto {
   filter: boolean;
 
   /**
+   * pageviews is a number representing the number of pageviews for the website.
+   *
+   * @remarks This is used to determine the priority of the scan.
+   */
+  @IsNumber()
+  pageviews: number;
+
+  /**
+   * visits is a number representing the number of visits for the website.
+   *
+   * @remarks This is used to determine the priority of the scan.
+   */
+  @IsNumber()
+  visits: number;
+
+  /**
    * scanId is a string that will be used to uniquely identify this scan in logs.
    */
   @IsString()

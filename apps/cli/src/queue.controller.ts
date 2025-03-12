@@ -31,6 +31,8 @@ export class QueueController {
           websiteId: website.id,
           url: website.url,
           filter: website.filter,
+          pageviews: website.pageviews,
+          visits: website.visits,
           scanId: cuid(),
         };
         await this.queueService.addCoreJob(coreInput);
@@ -54,6 +56,8 @@ export class QueueController {
         websiteId: website.id,
         url: website.url,
         filter: website.filter,
+        pageviews: website.pageviews,
+        visits: website.visits,
         scanId: cuid(),
       };
       await this.queueService.addCoreJob(coreInput);
@@ -94,6 +98,8 @@ export class QueueController {
           websiteId: website.id,
           url: website.url,
           filter: website.filter,
+          pageviews: website.pageviews,
+          visits: website.visits,
           scanId: cuid(),
         };
         await this.queueService.addCoreJob(coreInput);

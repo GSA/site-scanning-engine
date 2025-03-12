@@ -29,6 +29,8 @@ describe('CoreScanner (e2e)', () => {
       websiteId: 1,
       url: '10x.gsa.gov',
       filter: false,
+      pageviews: 1,
+      visits: 1,
       scanId: '123',
     };
 
@@ -60,6 +62,8 @@ describe('CoreScanner (e2e)', () => {
       websiteId: 1,
       url: 'poolsafety.gov',
       filter: false,
+      pageviews: 1,
+      visits: 1,
       scanId: '123',
     };
 

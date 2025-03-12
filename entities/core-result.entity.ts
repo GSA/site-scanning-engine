@@ -89,6 +89,14 @@ export class CoreResult {
   filter?: boolean;
 
   @Column({ nullable: true })
+  @Expose({ name: 'pageviews' })
+  pageviews?: number;
+
+  @Column({ nullable: true })
+  @Expose({ name: 'visits' })
+  visits?: number;
+
+  @Column({ nullable: true })
   @Expose({ name: 'base_domain' })
   finalUrlBaseDomain?: string;
 
@@ -568,6 +576,8 @@ export class CoreResult {
     'www_scan_status',
     'page_hash',
     'accessibility_violations',
+    'pageviews',
+    'visits',
     'ipv6',
     'hostname',
     'cms',

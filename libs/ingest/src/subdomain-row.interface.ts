@@ -27,4 +27,6 @@ export interface SubdomainRow {
   sourceListCisa: string;
   sourceListDod2025: string;
   filtered: string;
+  pageviews: number;
+  visits: number;
 }
