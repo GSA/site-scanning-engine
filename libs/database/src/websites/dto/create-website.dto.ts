@@ -10,4 +10,6 @@ export class CreateWebsiteDto {
   sourceList: string;
   ombIdeaPublic: boolean;
   filter: boolean;
+  pageviews: number;
+  visits: number;
 }

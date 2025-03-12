@@ -9,7 +9,7 @@ describe('url scan', () => {
     await newTestPage(async ({ page, response, sourceUrl }) => {
       expect(
         await buildUrlScanResult(
-          { websiteId: 123, scanId: 'asdf', filter: false, url: 'https://www.18f.gov' },
+          { websiteId: 123, scanId: 'asdf', filter: false, pageviews: 1, visits: 1, url: 'https://www.18f.gov' },
           page,
           response,
           mockLogger,

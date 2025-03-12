@@ -66,6 +66,8 @@ export class ScanEngineConsumer {
         coreResultPages,
         this.logger,
         job.data.filter,
+        job.data.pageviews,
+        job.data.visits,
         job.data.url,
       );
       this.logger.log({

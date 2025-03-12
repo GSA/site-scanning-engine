@@ -74,6 +74,8 @@ describe('WebsiteService', () => {
       sourceList: 'gov',
       ombIdeaPublic: false,
       filter: false,
+      pageviews: 1,
+      visits: 1,
     };
 
     const website = new Website();
@@ -84,6 +86,8 @@ describe('WebsiteService', () => {
     website.bureau = createWebsiteDto.bureau;
     website.sourceList = 'gov';
     website.filter = false;
+    website.pageviews = 1;
+    website.visits = 1;
     (website.ombIdeaPublic = false), await service.upsert(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
   });

@@ -59,6 +59,8 @@ describe('ScanEngineConsumer', () => {
       websiteId: 1,
       url: 'https://18f.gov',
       filter: false,
+      pageviews: 1,
+      visits: 1,
       scanId: '123',
     };
 
@@ -73,6 +75,8 @@ describe('ScanEngineConsumer', () => {
       coreResultFromPages,
       consumer['logger'],
       input.filter,
+      input.pageviews,
+      input.visits,
       input.url,
     );
   });

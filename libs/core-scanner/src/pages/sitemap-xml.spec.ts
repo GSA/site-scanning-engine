@@ -40,6 +40,8 @@ describe('sitemap-xml scanner', () => {
       websiteId: 1,
       url: '18f.gov',
       filter: false,
+      pageviews: 1,
+      visits: 1,
       scanId: '123',
     };
 

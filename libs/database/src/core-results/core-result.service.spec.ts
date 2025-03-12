@@ -273,7 +273,7 @@ describe('CoreResultService', () => {
     };
     const logger = mock<Logger>();
 
-    await service.createFromCoreResultPages(websiteId, pages, logger, false, websiteUrl);
+    await service.createFromCoreResultPages(websiteId, pages, logger, false, 1, 1, websiteUrl);
     expect(mockRepository.insert).toHaveBeenCalled();
   });
 });
