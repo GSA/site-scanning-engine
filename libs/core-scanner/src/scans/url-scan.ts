@@ -23,6 +23,23 @@ export const buildUrlScanResult = async (
 ): Promise<UrlScan> => {
   const logger = parentLogger.child({ sseContext: 'Scan.UrlScan', scan: 'URLScan'});
   logger.info('Building URL scan result...');
+  logger.debug(`Page url: ${page.url()}`);
+  if( page.url() === 'chrome-error://chromewebdata/') {
+    logger.warn('Page url is chrome-error://chromewebdata/');
+    return {
+      targetUrlRedirects: null,
+      finalUrl: null,
+      finalUrlWebsite: null,
+      finalUrlTopLevelDomain: null,
+      finalUrlMIMEType: null,
+      finalUrlIsLive: false,
+      finalUrlBaseDomain: null,
+      finalUrlSameDomain: null,
+      finalUrlSameWebsite: null,
+      finalUrlStatusCode: response ? response.status() : null,
+      finalUrlPageHash: null,
+    };
+  }
   createRequestHandlers(page, logger);
   const url = getHttpsUrl(input.url);
   const redirectChain = response ? response.request().redirectChain() : '';
