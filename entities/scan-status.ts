@@ -122,6 +122,10 @@ export const parseBrowserError = (err: Error, logger: Logger): AnyFailureStatus 
     if (err.message.startsWith('net::ERR_ABORTED')) {
       return ScanStatus.Aborted;
     }
+
+    if (err.toString() === 'Processing timed out') {
+      return ScanStatus.Timeout;
+    }
   }
   logger.warn({unknownError: err}, `Unknown error: ${err.message}`);
 
