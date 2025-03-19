@@ -6,6 +6,7 @@ import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 import { ScanStatus } from 'entities/scan-status';
 import { CoreResultPages } from 'entities/core-result.entity';
+import e from 'express';
 
 @Injectable()
 export class CoreResultService {
@@ -137,25 +138,45 @@ export class CoreResultService {
       coreResult.finalSiteName = coreResult.finalUrlWebsite ? coreResult.finalUrlWebsite.replace(/^www\./, '') : '';
 
       // USWDS scan
-      coreResult.usaClasses = result.uswdsScan.usaClasses;
-      coreResult.usaClassesUsed = result.uswdsScan.usaClassesUsed;
-      coreResult.uswdsString = result.uswdsScan.uswdsString;
-      coreResult.uswdsInlineCss = result.uswdsScan.uswdsInlineCss;
-      coreResult.uswdsUsFlag = result.uswdsScan.uswdsUsFlag;
-      coreResult.uswdsUsFlagInCss = result.uswdsScan.uswdsUsFlagInCss;
-      coreResult.uswdsStringInCss = result.uswdsScan.uswdsStringInCss;
-      coreResult.uswdsPublicSansFont = result.uswdsScan.uswdsPublicSansFont;
-      coreResult.uswdsSemanticVersion = result.uswdsScan.uswdsSemanticVersion;
-      coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
-      coreResult.uswdsCount = result.uswdsScan.uswdsCount;
-      coreResult.heresHowYouKnowBanner = result.uswdsScan.heresHowYouKnowBanner;
+      if ( result.uswdsScan ) {
+        coreResult.usaClasses = result.uswdsScan.usaClasses;
+        coreResult.usaClassesUsed = result.uswdsScan.usaClassesUsed;
+        coreResult.uswdsString = result.uswdsScan.uswdsString;
+        coreResult.uswdsInlineCss = result.uswdsScan.uswdsInlineCss;
+        coreResult.uswdsUsFlag = result.uswdsScan.uswdsUsFlag;
+        coreResult.uswdsUsFlagInCss = result.uswdsScan.uswdsUsFlagInCss;
+        coreResult.uswdsStringInCss = result.uswdsScan.uswdsStringInCss;
+        coreResult.uswdsPublicSansFont = result.uswdsScan.uswdsPublicSansFont;
+        coreResult.uswdsSemanticVersion = result.uswdsScan.uswdsSemanticVersion;
+        coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
+        coreResult.uswdsCount = result.uswdsScan.uswdsCount;
+        coreResult.heresHowYouKnowBanner = result.uswdsScan.heresHowYouKnowBanner;
+      } else {
+        coreResult.usaClasses = null;
+        coreResult.usaClassesUsed = null;
+        coreResult.uswdsString = null;
+        coreResult.uswdsInlineCss = null;
+        coreResult.uswdsUsFlag = null;
+        coreResult.uswdsUsFlagInCss = null;
+        coreResult.uswdsStringInCss = null;
+        coreResult.uswdsPublicSansFont = null;
+        coreResult.uswdsSemanticVersion = null;
+        coreResult.uswdsVersion = null;
+        coreResult.uswdsCount = null;
+        coreResult.heresHowYouKnowBanner = null;
+      }
 
       // Login scan
-      coreResult.loginDetected = result.loginScan.loginDetected;
-      coreResult.loginProvider = result.loginScan.loginProvider;
+      if( result.loginScan ) {
+        coreResult.loginDetected = result.loginScan.loginDetected;
+        coreResult.loginProvider = result.loginScan.loginProvider;
+      } else {
+        coreResult.loginDetected = null;
+        coreResult.loginProvider = null;
+      }
 
       // CMS scan
-      coreResult.cms = result.cmsScan.cms;
+      coreResult.cms = result.cmsScan ? result.cmsScan.cms : null;
 
       // Required links scan
       coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
