@@ -171,6 +171,7 @@ export class CoreScannerService
             targetUrl404Test: await pages.createNotFoundScanner(
               this.httpService,
               input.url,
+              pageLogger,
             ),
           },
         };
