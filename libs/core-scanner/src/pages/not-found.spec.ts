@@ -3,6 +3,9 @@ import { createNotFoundScanner } from './not-found';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
+import pino from 'pino';
+
+const mockLogger = pino();
 
 describe('not-found scan', () => {
   it('returns true when the page is not found', async () => {
@@ -24,6 +27,7 @@ describe('not-found scan', () => {
     const result = await createNotFoundScanner(
       mockHttpService,
       'gsa.gov/some-page',
+      mockLogger,
     );
     expect(result).toEqual(true);
   });
@@ -44,7 +48,7 @@ describe('not-found scan', () => {
       .spyOn(mockHttpService, 'get')
       .mockImplementationOnce(() => of(response));
 
-    const result = await createNotFoundScanner(mockHttpService, 'gsa.gov');
+    const result = await createNotFoundScanner(mockHttpService, 'gsa.gov', mockLogger);
     expect(result).toEqual(false);
   });
 });
