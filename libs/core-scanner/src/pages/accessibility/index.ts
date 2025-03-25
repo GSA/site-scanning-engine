@@ -11,29 +11,38 @@ export const createAccessibilityScanner = (
   logger: Logger,
   input: CoreInputDto,
 ) => {
-  logger.info('Starting a11y scan...');
+  const childLogger = logger.child({ module: 'accessibility' });
+  childLogger.info('Starting a11y scan...');
 
 
   return async (page: Page): Promise<AccessibilityScan> => {
-    createRequestHandlers(page, logger);
+    createRequestHandlers(page, childLogger);
+    const accessibilityResults = null;
+    const accessibilityResultsList = null;
 
-    await page.goto(getHttpsUrl(input.url));
+    try{
+      await page.goto(getHttpsUrl(input.url));
 
-    const axeScanResult = await new AxePuppeteer(page).analyze();
-    const violationResults = axeScanResult.violations;
+      const axeScanResult = await new AxePuppeteer(page).analyze();
+      const violationResults = axeScanResult.violations;
 
-    const { resultsSummary, resultsList } = aggregateResults(violationResults);
+      const { resultsSummary, resultsList } = aggregateResults(violationResults);
 
-    const accessibilityResults = Object.keys(resultsSummary).length
-      ? JSON.stringify(resultsSummary)
-      : null;
-    const accessibilityResultsList = resultsList.length
-      ? JSON.stringify(resultsList)
-      : null;
+      const accessibilityResults = Object.keys(resultsSummary).length
+        ? JSON.stringify(resultsSummary)
+        : null;
+      const accessibilityResultsList = resultsList.length
+        ? JSON.stringify(resultsList)
+        : null;
+
+    } catch (error) {
+      childLogger.error({ error, }, `Error during a11y scan: ${error.message}`);
+    }
 
     return {
       accessibilityResults,
       accessibilityResultsList,
     };
+
   };
 };
