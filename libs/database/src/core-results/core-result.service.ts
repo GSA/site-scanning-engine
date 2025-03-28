@@ -151,6 +151,7 @@ export class CoreResultService {
         coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
         coreResult.uswdsCount = result.uswdsScan.uswdsCount;
         coreResult.heresHowYouKnowBanner = result.uswdsScan.heresHowYouKnowBanner;
+        coreResult.heresHowYouKnowBanner2 = result.uswdsScan.heresHowYouKnowBanner2;
       } else {
         coreResult.usaClasses = null;
         coreResult.usaClassesUsed = null;

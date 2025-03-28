@@ -35,6 +35,7 @@ describe('Scan: USWDS', () => {
           uswdsSemanticVersion: null,
           uswdsVersion: 0,
           heresHowYouKnowBanner: true,
+          heresHowYouKnowBanner2: false,
         });
       });
     });
