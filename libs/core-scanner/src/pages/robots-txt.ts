@@ -22,7 +22,6 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
     let robotsText = null
     try {
       robotsText = await robotsResponse.text();
-      logger.debug(`robots.txt response: ${robotsText}`);
     } catch (e) {
       logger.error(`Error getting robots.txt response: ${e.message}`);
       robotsText = null;

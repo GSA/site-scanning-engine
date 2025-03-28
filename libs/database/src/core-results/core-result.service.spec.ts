@@ -158,6 +158,7 @@ describe('CoreResultService', () => {
             uswdsVersion: null,
             uswdsCount: null,
             heresHowYouKnowBanner: null,
+            heresHowYouKnowBanner2: null,
           },
           loginScan: {
             loginDetected: null,
