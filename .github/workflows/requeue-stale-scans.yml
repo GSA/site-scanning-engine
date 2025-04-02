@@ -3,6 +3,9 @@ name: Requeue stale scans
 
 # yamllint disable-line rule:truthy
 on:
+  schedule:
+    - cron: '0 12 * * 2,4,6'
+
   workflow_dispatch:
     inputs:
       cf_space:
