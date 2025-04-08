@@ -168,6 +168,17 @@ async function requeueStaleScans() {
   await nestApp.close();
 }
 
+async function queuePrimaryTimeout() {
+  const nestApp = await bootstrap();
+  const logger = createCommandLogger('queue-timed-out-scans');
+  const controller = nestApp.get(QueueController);
+  logger.info('enqueueing scan jobs for timed out results');
+
+  await controller.queuePrimaryTimeout();
+  printMemoryUsage(logger);
+  await nestApp.close();
+}
+
 async function main() {
   const program = new Command();
   program.version('0.0.1');
@@ -279,6 +290,14 @@ async function main() {
       'enqueue all websites with core results that were last updated prior to the current date',
     )
     .action(requeueStaleScans);
+
+  // queue timed out scans
+  program
+    .command('queue-primary-timeout')
+    .description(
+      'enqueue all websites with core results that were marked with a primaryScanStatus as timeout',
+    )
+    .action(queuePrimaryTimeout);
 
   await program.parseAsync(process.argv);
 }

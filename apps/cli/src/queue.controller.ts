@@ -113,6 +113,37 @@ export class QueueController {
     }
   }
 
+  async queuePrimaryTimeout() {
+    this.logger.log('starting to enqueue primary timeout scans...');
+
+    try {
+      const websites =
+        await this.websiteService.findWebsitesWithPrimaryTimedOutCoreResults();
+
+      this.logger.log(
+        `adding ${websites.length} websites with primary timeout scan results to the queue`,
+      );
+
+      for (const website of websites) {
+        const coreInput: CoreInputDto = {
+          websiteId: website.id,
+          url: website.url,
+          filter: website.filter,
+          pageviews: website.pageviews,
+          visits: website.visits,
+          scanId: cuid(),
+        };
+        await this.queueService.addCoreJob(coreInput);
+      }
+
+      const queueStatus = await this.queueService.getQueueStatus();
+      this.logger.log({ msg: 'successfully added to queue', queueStatus });
+    } catch (error) {
+      const err = error as Error;
+      this.logger.error(err.message, err.stack);
+    }
+  }
+
   async getQueueStatus() {
     this.logger.log('Getting queue status...');
 

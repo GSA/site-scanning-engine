@@ -97,6 +97,18 @@ export class WebsiteService {
     return await queryBuilder.getMany();
   }
 
+  async findWebsitesWithPrimaryTimedOutCoreResults(): Promise<Website[]> {
+
+    const queryBuilder = this.website
+      .createQueryBuilder('website')
+      .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .where('coreResult.primaryScanStatus = :timedOut', {
+        timedOut: 'timeout',
+      });
+
+    return await queryBuilder.getMany();
+  }
+
   async findAccessibilityResultsSnapshotResults(): Promise<Website[]> {
     const queryBuilder = this.website
       .createQueryBuilder('website')
