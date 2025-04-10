@@ -17,27 +17,20 @@ export const createAccessibilityScanner = (
 
   return async (page: Page): Promise<AccessibilityScan> => {
     createRequestHandlers(page, childLogger);
-    const accessibilityResults = null;
-    const accessibilityResultsList = null;
 
-    try{
-      await page.goto(getHttpsUrl(input.url));
+    await page.goto(getHttpsUrl(input.url));
 
-      const axeScanResult = await new AxePuppeteer(page).analyze();
-      const violationResults = axeScanResult.violations;
+    const axeScanResult = await new AxePuppeteer(page).analyze();
+    const violationResults = axeScanResult.violations;
 
-      const { resultsSummary, resultsList } = aggregateResults(violationResults);
+    const { resultsSummary, resultsList } = aggregateResults(violationResults);
 
-      const accessibilityResults = Object.keys(resultsSummary).length
-        ? JSON.stringify(resultsSummary)
-        : null;
-      const accessibilityResultsList = resultsList.length
-        ? JSON.stringify(resultsList)
-        : null;
-
-    } catch (error) {
-      childLogger.error({ error, }, `Error during a11y scan: ${error.message}`);
-    }
+    const accessibilityResults = Object.keys(resultsSummary).length
+      ? JSON.stringify(resultsSummary)
+      : null;
+    const accessibilityResultsList = resultsList.length
+      ? JSON.stringify(resultsList)
+      : null;
 
     return {
       accessibilityResults,
