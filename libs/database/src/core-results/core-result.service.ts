@@ -88,29 +88,52 @@ export class CoreResultService {
       coreResult.gaTagIds = result.dapScan.gaTagIds;
 
       // SEO scan
-      coreResult.mainElementFinalUrl = result.seoScan.mainElementFinalUrl;
-      coreResult.ogArticleModifiedFinalUrl =
-        result.seoScan.ogArticleModifiedFinalUrl;
-      coreResult.ogArticlePublishedFinalUrl =
-        result.seoScan.ogArticlePublishedFinalUrl;
-      coreResult.ogDescriptionFinalUrl = result.seoScan.ogDescriptionFinalUrl;
-      coreResult.ogTitleFinalUrl = result.seoScan.ogTitleFinalUrl;
-      coreResult.canonicalLink = result.seoScan.canonicalLink;
-      coreResult.pageTitle = result.seoScan.pageTitle;
-      coreResult.metaDescriptionContent = result.seoScan.metaDescriptionContent;
-      coreResult.metaKeywordsContent = result.seoScan.metaKeywordsContent;
-      coreResult.ogImageContent = result.seoScan.ogImageContent;
-      coreResult.ogTypeContent = result.seoScan.ogTypeContent;
-      coreResult.ogUrlContent = result.seoScan.ogUrlContent;
-      coreResult.htmlLangContent = result.seoScan.htmlLangContent;
-      coreResult.hrefLangContent = result.seoScan.hrefLangContent;
-      // Experimental Fields #1368 Feb 2025
-      coreResult.dcDateContent = result.seoScan.dcDateContent;
-      coreResult.dcDateCreatedContent = result.seoScan.dcDateCreatedContent;
-      coreResult.dctermsCreatedContent = result.seoScan.dctermsCreatedContent;
-      coreResult.revisedContent = result.seoScan.revisedContent;
-      coreResult.lastModifiedContent = result.seoScan.lastModifiedContent;
-      coreResult.dateContent = result.seoScan.dateContent;
+      if(result.seoScan) {
+        coreResult.mainElementFinalUrl = result.seoScan.mainElementFinalUrl;
+        coreResult.ogArticleModifiedFinalUrl =
+          result.seoScan.ogArticleModifiedFinalUrl;
+        coreResult.ogArticlePublishedFinalUrl =
+          result.seoScan.ogArticlePublishedFinalUrl;
+        coreResult.ogDescriptionFinalUrl = result.seoScan.ogDescriptionFinalUrl;
+        coreResult.ogTitleFinalUrl = result.seoScan.ogTitleFinalUrl;
+        coreResult.canonicalLink = result.seoScan.canonicalLink;
+        coreResult.pageTitle = result.seoScan.pageTitle;
+        coreResult.metaDescriptionContent = result.seoScan.metaDescriptionContent;
+        coreResult.metaKeywordsContent = result.seoScan.metaKeywordsContent;
+        coreResult.ogImageContent = result.seoScan.ogImageContent;
+        coreResult.ogTypeContent = result.seoScan.ogTypeContent;
+        coreResult.ogUrlContent = result.seoScan.ogUrlContent;
+        coreResult.htmlLangContent = result.seoScan.htmlLangContent;
+        coreResult.hrefLangContent = result.seoScan.hrefLangContent;
+        // Experimental Fields #1368 Feb 2025
+        coreResult.dcDateContent = result.seoScan.dcDateContent;
+        coreResult.dcDateCreatedContent = result.seoScan.dcDateCreatedContent;
+        coreResult.dctermsCreatedContent = result.seoScan.dctermsCreatedContent;
+        coreResult.revisedContent = result.seoScan.revisedContent;
+        coreResult.lastModifiedContent = result.seoScan.lastModifiedContent;
+        coreResult.dateContent = result.seoScan.dateContent;
+      } else {
+        coreResult.mainElementFinalUrl = null;
+        coreResult.ogArticleModifiedFinalUrl = null;
+        coreResult.ogArticlePublishedFinalUrl = null;
+        coreResult.ogDescriptionFinalUrl = null;
+        coreResult.ogTitleFinalUrl = null;
+        coreResult.canonicalLink = null;
+        coreResult.pageTitle = null;
+        coreResult.metaDescriptionContent = null;
+        coreResult.metaKeywordsContent = null;
+        coreResult.ogImageContent = null;
+        coreResult.ogTypeContent = null;
+        coreResult.ogUrlContent = null;
+        coreResult.htmlLangContent = null;
+        coreResult.hrefLangContent = null;
+        coreResult.dcDateContent = null;
+        coreResult.dcDateCreatedContent = null;
+        coreResult.dctermsCreatedContent = null;
+        coreResult.revisedContent = null;
+        coreResult.lastModifiedContent = null;
+        coreResult.dateContent = null;
+      }
       
       // Third-party scan
       coreResult.thirdPartyServiceCount =
