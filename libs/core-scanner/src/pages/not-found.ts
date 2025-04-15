@@ -34,7 +34,7 @@ export const createNotFoundScanner = async (
     childLogger.debug({ status: resp.status }, `Got response from URL: ${randomUrl.toString()}`);
     return resp.status === HttpStatus.NOT_FOUND;
   } catch (error) {
-    childLogger.error({ error }, `Error fetching URL: ${randomUrl.toString()}`);
+    childLogger.error({ error: error.message }, `Error fetching URL: ${randomUrl.toString()}`);
     return false;
   }
   
