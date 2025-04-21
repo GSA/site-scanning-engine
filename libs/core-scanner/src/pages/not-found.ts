@@ -22,7 +22,7 @@ export const createNotFoundScanner = async (
     rejectUnauthorized: false, // lgtm[js/disabling-certificate-validation]
   });
 
-  try {
+  // try {
     const resp = await lastValueFrom(
       await httpService.get(randomUrl.toString(), {
         validateStatus: () => {
@@ -33,9 +33,9 @@ export const createNotFoundScanner = async (
     );
     childLogger.debug({ status: resp.status }, `Got response from URL: ${randomUrl.toString()}`);
     return resp.status === HttpStatus.NOT_FOUND;
-  } catch (error) {
-    childLogger.error({ error: error.message }, `Error fetching URL: ${randomUrl.toString()}`);
-    return false;
-  }
+  // } catch (error) {
+  //   childLogger.error({ error: error.message }, `Error fetching URL: ${randomUrl.toString()}`);
+  //   return false;
+  // }
   
 };
