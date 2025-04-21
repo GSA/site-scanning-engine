@@ -25,6 +25,14 @@ export class SnapshotService {
   private fileNameAccessibility = this.configService.get<string>(
     'fileNameAccessibility',
   );
+  private fileNameDailyLive = this.configService.get<string>(
+    'fileNameDailyLive',
+  );
+  private fileNameDailyUnique = this.configService.get<string>(
+    'fileNameDailyUnique',
+  );
+  private fileNameDailyAll = this.configService.get<string>('fileNameDailyAll');
+
   /**
    * weeklySnapshot is meant to be called weekly. It takes three snapshots:
    * - weekly-snapshot-all: contains all Website and CoreResults
@@ -42,12 +50,22 @@ export class SnapshotService {
     date.setDate(date.getDate() - 7);
     const priorDate = date.toISOString();
 
-    await this.liveSnapshot(priorDate, CoreResult.snapshotColumnOrder);
-    await this.uniqueSnapshot(priorDate, CoreResult.snapshotColumnOrder);
-    await this.allSnapshot(priorDate, CoreResult.snapshotColumnOrder);
+    await this.liveSnapshot(priorDate, CoreResult.snapshotColumnOrder, this.fileNameLive);
+    await this.uniqueSnapshot(priorDate, CoreResult.snapshotColumnOrder, this.fileNameUnique);
+    await this.allSnapshot(priorDate, CoreResult.snapshotColumnOrder, this.fileNameAll);
   }
 
-  async liveSnapshot(date: string, columns: string[]): Promise<void> {
+  async dailySnapshot() {
+    const date = this.datetimeService.now();
+    date.setDate(date.getDate() - 1);
+    const yesterday = date.toISOString().split('T')[0];
+
+    await this.liveSnapshot(yesterday, CoreResult.snapshotColumnOrder, this.fileNameDailyLive);
+    await this.uniqueSnapshot(yesterday, CoreResult.snapshotColumnOrder, this.fileNameDailyUnique);
+    await this.allSnapshot(yesterday, CoreResult.snapshotColumnOrder, this.fileNameDailyAll);
+  }
+
+  async liveSnapshot(date: string, columns: string[], fileName: string): Promise<void> {
     let liveWebsites = await this.websiteService.findLiveSnapshotResults();
     this.logger.log(
       `Total number of live websites retrieved for snapshot: ${liveWebsites.length}`,
@@ -58,7 +76,7 @@ export class SnapshotService {
       [new JsonSerializer(columns), new CsvSerializer(columns)],
       liveWebsites,
       date,
-      this.fileNameLive,
+      fileName,
     );
 
     await liveSnapshot.archiveExisting();
@@ -71,7 +89,7 @@ export class SnapshotService {
     liveSnapshot = null;
   }
 
-  async uniqueSnapshot(date: string, columns: string[]): Promise<void> {
+  async uniqueSnapshot(date: string, columns: string[], filename: string): Promise<void> {
     let uniqueWebsites = await this.websiteService.findUniqueSnapshotResults();
     this.logger.log(
       `Total number of unique websites retrieved for snapshot: ${uniqueWebsites.length}`,
@@ -82,7 +100,7 @@ export class SnapshotService {
       [new JsonSerializer(columns), new CsvSerializer(columns)],
       uniqueWebsites,
       date,
-      this.fileNameUnique,
+      filename,
     );
 
     await uniqueSnapshot.archiveExisting();
@@ -95,7 +113,7 @@ export class SnapshotService {
     uniqueSnapshot = null;
   }
 
-  async allSnapshot(date: string, columns: string[]) {
+  async allSnapshot(date: string, columns: string[], filename: string) {
     let allWebsites = await this.websiteService.findAllSnapshotResults();
     this.logger.log(
       `Total number of all websites retrieved for snapshot: ${allWebsites.length}`,
@@ -106,7 +124,7 @@ export class SnapshotService {
       [new JsonSerializer(columns), new CsvSerializer(columns)],
       allWebsites,
       date,
-      this.fileNameAll,
+      filename,
     );
 
     await allSnapshot.archiveExisting();
