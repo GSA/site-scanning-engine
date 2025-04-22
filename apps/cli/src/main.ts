@@ -121,6 +121,17 @@ async function createSnapshot() {
   await nestApp.close();
 }
 
+async function createDailySnapshot() {
+  const nestApp = await bootstrap();
+  const logger = createCommandLogger('create-daily-snapshot');
+  const controller = nestApp.get(SnapshotController);
+  logger.info('creating snapshot');
+
+  await controller.dailySnapshot();
+  printMemoryUsage(logger);
+  await nestApp.close();
+}
+
 async function createAccessibilityResultsSnapshot() {
   const nestApp = await bootstrap();
   const logger = createCommandLogger('create-a11y-snapshot');
@@ -255,6 +266,14 @@ async function main() {
       'create-snapshot writes a CSV and JSON of the current scans to S3',
     )
     .action(createSnapshot);
+
+  // create-daily-snapshot
+  program
+    .command('create-daily-snapshot')
+    .description(
+      'create-daily-snapshot writes a CSV and JSON of the current scans to S3',
+    )
+    .action(createDailySnapshot);
 
   // create-a11y-snapshot
   program

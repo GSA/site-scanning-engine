@@ -10,6 +10,10 @@ export class SnapshotController {
     await this.snapshotService.weeklySnapshot();
   }
 
+  async dailySnapshot() {
+    await this.snapshotService.dailySnapshot();
+  }
+
   async accessibilityResultsSnapshot() {
     await this.snapshotService.accessibilityResultsSnapshot();
   }
