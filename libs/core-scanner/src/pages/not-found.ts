@@ -18,24 +18,22 @@ export const createNotFoundScanner = async (
   randomUrl.pathname = `not-found-test${v4()}`;
   childLogger.info(`Testing URL: ${randomUrl.toString()}`);
 
-  const agent = new Agent({
-    rejectUnauthorized: false, // lgtm[js/disabling-certificate-validation]
-  });
+  try {
+    const agent = new Agent({
+      rejectUnauthorized: false, // lgtm[js/disabling-certificate-validation]
+    });
 
-  // try {
     const resp = await lastValueFrom(
       await httpService.get(randomUrl.toString(), {
-        validateStatus: () => {
-          return true;
-        },
+        timeout: 15000,
         httpsAgent: agent,
       }),
     );
     childLogger.debug({ status: resp.status }, `Got response from URL: ${randomUrl.toString()}`);
     return resp.status === HttpStatus.NOT_FOUND;
-  // } catch (error) {
-  //   childLogger.error({ error: error.message }, `Error fetching URL: ${randomUrl.toString()}`);
-  //   return false;
-  // }
+  } catch (error) {
+    childLogger.error({ error: error.message }, `Error fetching URL: ${randomUrl.toString()}`);
+    return false;
+  }
   
 };
