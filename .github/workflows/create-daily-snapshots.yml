@@ -3,8 +3,8 @@
   
   # yamllint disable-line rule:truthy
   on:
-    schedule:
-      - cron: '15 12 * * *'
+    # schedule:
+    #   - cron: '15 12 * * *'
   
     workflow_dispatch:
       inputs:
