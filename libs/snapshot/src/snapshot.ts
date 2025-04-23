@@ -28,11 +28,32 @@ export class Snapshot {
     const operations = [];
 
     this.serializers.forEach((serializer) => {
-      const newFileName = `archive/${serializer.fileExtension}/${this.fileName.replace('-latest', '')}-${this.priorDate}.${serializer.fileExtension}`;
+      const newFileName = `archive/${serializer.fileExtension}/${this.fileName}-${this.priorDate}.${serializer.fileExtension}`;
       operations.push(
         this.storageService.copy(
           `${this.fileName}.${serializer.fileExtension}`,
           newFileName,
+        ),
+      );
+    });
+
+    await Promise.all(operations);
+  }
+
+  async archiveDaily(): Promise<void> {
+    const operations = [];
+
+    this.serializers.forEach((serializer) => {
+      const previousFileName = `${this.fileName.replace('-latest', '-previous')}.${serializer.fileExtension}`;
+      const archiveFileName = `archive/${serializer.fileExtension}/${this.fileName.replace('-latest', '')}-${this.priorDate}.${serializer.fileExtension}`;
+      operations.push(
+        this.storageService.copy(
+          previousFileName,
+          archiveFileName,
+        ),
+        this.storageService.copy(
+          `${this.fileName}.${serializer.fileExtension}`,
+          previousFileName,
         ),
       );
     });

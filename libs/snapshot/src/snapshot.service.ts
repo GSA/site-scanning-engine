@@ -79,7 +79,11 @@ export class SnapshotService {
       fileName,
     );
 
-    await liveSnapshot.archiveExisting();
+    if( fileName.includes('site-scanning') ) {
+      await liveSnapshot.archiveDaily();
+    } else {
+      await liveSnapshot.archiveExisting();
+    }
     this.logger.log('Live snapshot archived.');
 
     await liveSnapshot.saveNew();
@@ -103,7 +107,11 @@ export class SnapshotService {
       filename,
     );
 
-    await uniqueSnapshot.archiveExisting();
+    if( filename.includes('site-scanning') ) {
+      await uniqueSnapshot.archiveDaily();
+    } else {
+      await uniqueSnapshot.archiveExisting();
+    }
     this.logger.log('Unique snapshot archived.');
 
     await uniqueSnapshot.saveNew();
@@ -127,7 +135,11 @@ export class SnapshotService {
       filename,
     );
 
-    await allSnapshot.archiveExisting();
+    if( filename.includes('site-scanning') ) {
+      await allSnapshot.archiveDaily();
+    } else {
+      await allSnapshot.archiveExisting();
+    }
     this.logger.log('All snapshot archived.');
 
     await allSnapshot.saveNew();
