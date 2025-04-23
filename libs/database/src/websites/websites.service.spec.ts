@@ -39,6 +39,7 @@ describe('WebsiteService', () => {
     mockQB.innerJoinAndSelect.mockReturnThis();
     mockQB.where.mockReturnThis();
     mockQB.getMany.mockResolvedValue([website]);
+    mockQB.orderBy.mockReturnThis();
     mockRepository.createQueryBuilder.mockReturnValue(mockQB);
 
     const result = await service.findAllSnapshotResults();

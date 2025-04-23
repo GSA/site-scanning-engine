@@ -21,6 +21,10 @@ export class WebsiteService {
     const websites = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .orderBy({
+        'coreResult.targetUrlBaseDomain': 'ASC',
+        'website.url': 'ASC',
+      })
       .getMany();
 
     return websites;
@@ -39,6 +43,10 @@ export class WebsiteService {
           'application/json',
           'text/xml',
         ],
+      })
+      .orderBy({
+        'coreResult.targetUrlBaseDomain': 'ASC',
+        'website.url': 'ASC',
       });
 
     return await queryBuilder.getMany();
@@ -58,6 +66,10 @@ export class WebsiteService {
           'application/json',
           'text/xml',
         ],
+      })
+      .orderBy({
+        'coreResult.targetUrlBaseDomain': 'ASC',
+        'website.url': 'ASC',
       });
 
     return await queryBuilder.getMany();
