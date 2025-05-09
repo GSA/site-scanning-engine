@@ -26,6 +26,9 @@ export const createNotFoundScanner = async (
     const resp = await lastValueFrom(
       await httpService.get(randomUrl.toString(), {
         timeout: 15000,
+        validateStatus: () => {
+          return true;
+        },
         httpsAgent: agent,
       }),
     );
