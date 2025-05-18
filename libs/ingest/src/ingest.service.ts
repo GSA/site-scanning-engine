@@ -60,7 +60,6 @@ export class IngestService {
         'sourceListUsagovClicksMil',
         'sourceListSearchGov',
         'sourceListSearchGovMil',
-        'ombIdeaPublic',
         'filtered',
         'pageviews',
         'visits',
@@ -69,7 +68,6 @@ export class IngestService {
       maxRows: maxRows,
     })
       .transform((data: SubdomainRow): CreateWebsiteDto => {
-        let ombIdeaPublic = null;
         let filtered = null;
         let pageviews = null;
         let visits = null;
@@ -78,12 +76,6 @@ export class IngestService {
         }
         if (data.visits) {
           visits = data.visits;
-        }
-
-        if (data.ombIdeaPublic.toLowerCase() === 'true') {
-          ombIdeaPublic = true;
-        } else if (data.ombIdeaPublic.toLowerCase() === 'false') {
-          ombIdeaPublic = false;
         }
 
         if (data.filtered.toLowerCase() === 'true') {
@@ -96,7 +88,6 @@ export class IngestService {
           ...data,
           website: data.targetUrl.toLowerCase(),
           sourceList: this.getSourceList(data),
-          ombIdeaPublic,
           filter: filtered,
           pageviews,
           visits,

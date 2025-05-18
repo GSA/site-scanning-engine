@@ -563,7 +563,6 @@ export class CoreResult {
     'branch',
     '404_test',
     'source_list',
-    'public',
     'scan_date',
     'primary_scan_status',
     'accessibility_scan_status',

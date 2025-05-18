@@ -44,7 +44,6 @@ describe('AnalysisService', () => {
     website.agency = 'General Services Administration';
     website.bureau = 'GSA,FAS,Technology Transformation Service';
     website.sourceList = 'gov';
-    website.ombIdeaPublic = false;
 
     const coreResult = createCoreResult(website);
     coreResult.finalUrlBaseDomain = '18f.gov';
@@ -78,7 +77,6 @@ describe('AnalysisService', () => {
     firstWebsite.agency = 'General Services Administration';
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.sourceList = 'gov';
-    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -87,7 +85,6 @@ describe('AnalysisService', () => {
     secondWebsite.agency = 'Fake Agency';
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.sourceList = 'gov';
-    secondWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';
@@ -125,7 +122,6 @@ describe('AnalysisService', () => {
     firstWebsite.agency = 'General Services Administration';
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.sourceList = 'gov';
-    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -134,7 +130,6 @@ describe('AnalysisService', () => {
     secondWebsite.agency = 'Fake Agency';
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.sourceList = 'gov';
-    secondWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';
@@ -172,7 +167,6 @@ describe('AnalysisService', () => {
     firstWebsite.agency = 'General Services Administration';
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.sourceList = 'gov';
-    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -181,7 +175,6 @@ describe('AnalysisService', () => {
     secondWebsite.agency = 'General Services Administration';
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.sourceList = 'gov';
-    secondWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = createCoreResult(firstWebsite);
     firstCoreResult.finalUrlBaseDomain = '18f.gov';

@@ -73,7 +73,6 @@ describe('WebsiteService', () => {
       agency: 'General Services Administration',
       bureau: 'GSA,FAS,Technology Transformation Service',
       sourceList: 'gov',
-      ombIdeaPublic: false,
       filter: false,
       pageviews: 1,
       visits: 1,
@@ -88,8 +87,7 @@ describe('WebsiteService', () => {
     website.sourceList = 'gov';
     website.filter = false;
     website.pageviews = 1;
-    website.visits = 1;
-    (website.ombIdeaPublic = false), await service.upsert(createWebsiteDto);
+    website.visits = 1, await service.upsert(createWebsiteDto);
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
   });
 
