@@ -45,7 +45,7 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
     const uniqueClasses = Object.keys(uniqueClassesObj).sort().join(',');
 
     const selectorResults = [
-      ...document.querySelectorAll('.usa-banner__button-text, .usa-banner-button-text, .usa-media-block__body, .usa-banner__header-text, .usa-media_block-body'),
+      ...document.querySelectorAll('.usa-banner__button-text, .usa-banner-button-text'),
     ]
       .map((el) => el.textContent.replace(/’/g, "'"));
 
@@ -53,38 +53,14 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
     const hasHeresHowYouKnowBannerSpanish = selectorResults.some((text) => text.includes("Así es como usted puede verificarlo"));
     const hasHeresHowYouKnowBanner = hasHeresHowYouKnowBannerEnglish || hasHeresHowYouKnowBannerSpanish;
 
-    const officialWebsiteOfUSGovEnglish = selectorResults.some((text) => text.includes("official website of the United States government"));
-    const officialWebsiteOfUSGovSpanish = selectorResults.some((text) => text.includes("sitio oficial del Gobierno de Estados Unidos"));
-
-    const officialWebsitesUseGovEnglish = selectorResults.some((text) => text.includes("Official websites use .gov"));
-    const officialWebsitesUseMilEnglish = selectorResults.some((text) => text.includes("Official websites use .mil"));
-    const officialWebsitesUseGovSpanish = selectorResults.some((text) => text.includes("Los sitios web oficiales usan .gov"));
-    const officialWebsitesUseMilSpanish = selectorResults.some((text) => text.includes("Los sitios web oficiales usan .mil"));
-
-    const secureWebsitesUseGovEnglish = selectorResults.some((text) => text.includes("Secure .gov websites use HTTPS"));
-    const secureWebsitesUseMilEnglish = selectorResults.some((text) => text.includes("Secure .mil websites use HTTPS"));
-    const secureWebsitesUseGovSpanish = selectorResults.some((text) => text.includes("Los sitios web seguros .gov usan HTTPS"));
-    const secureWebsitesUseMilSpanish = selectorResults.some((text) => text.includes("Los sitios web seguros .mil usan HTTPS"));
-
-    const heresHowYouKnowBanner2 = (officialWebsiteOfUSGovEnglish || officialWebsiteOfUSGovSpanish) && 
-      (officialWebsitesUseGovEnglish || officialWebsitesUseGovSpanish || officialWebsitesUseMilEnglish || officialWebsitesUseMilSpanish) &&
-      (secureWebsitesUseGovEnglish || secureWebsitesUseGovSpanish || secureWebsitesUseMilEnglish || secureWebsitesUseMilSpanish);
-
     return {
       usaClassesCount,
       uniqueClasses,
       hasHeresHowYouKnowBannerEnglish,
       hasHeresHowYouKnowBannerSpanish,
       hasHeresHowYouKnowBanner,
-      heresHowYouKnowBanner2,
     };
   });
-
-  let hasHeresHowYouKnowBanner2 = pageResults.heresHowYouKnowBanner2;
-  if( !hasHeresHowYouKnowBanner2 ) {
-    logger.info('Checking for "Here\'s how you know" banner version 2 using text search');
-    hasHeresHowYouKnowBanner2 = heresHow2Check(htmlText, logger);
-  }
 
   if (pageResults.hasHeresHowYouKnowBannerEnglish) {
     logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerEnglish', 'Found English "Here\'s how you know" banner');
@@ -95,11 +71,6 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
   if (!pageResults.hasHeresHowYouKnowBanner) {
     logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerNotFound', '"Here\'s how you know" banner not found');
   }
-  if (hasHeresHowYouKnowBanner2) {
-    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBanner2', 'Found "Here\'s how you know" banner version 2');
-  }
-
-
 
   const uswdsSemanticVersion = uswdsSemVer(logger, cssPages);
   const uswdsVersionScoreAdjustment = 100;
@@ -116,7 +87,6 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
     uswdsVersion: uswdsSemanticVersion ? uswdsVersionScoreAdjustment : 0,
     uswdsCount: 0,
     heresHowYouKnowBanner: pageResults.hasHeresHowYouKnowBanner,
-    heresHowYouKnowBanner2: hasHeresHowYouKnowBanner2,
   };
 
   result.uswdsCount = sum([
@@ -130,39 +100,6 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
     result.uswdsVersion,
   ]);
   return result;
-}
-
-export function htmlContainsText(htmlText: string, searchText: string): boolean {
-  return htmlText.toLowerCase().includes(searchText.toLowerCase());
-}
-
-export function heresHow2Check(htmlText: string, logger:Logger ): boolean {
-  const officialWebsiteOfUSGovEnglish = htmlContainsText(htmlText, "official website of the United States government");
-  logger.debug(`found official website of US Gov English: ${officialWebsiteOfUSGovEnglish}`);
-  const officialWebsiteOfUSGovSpanish = htmlContainsText(htmlText, "sitio oficial del Gobierno de Estados Unidos");
-  logger.debug(`found official website of US Gov Spanish: ${officialWebsiteOfUSGovSpanish}`);
-
-  const officialWebsitesUseGovEnglish = htmlContainsText(htmlText, "Official websites use .gov");
-  logger.debug(`found official websites use .gov English: ${officialWebsitesUseGovEnglish}`);
-  const officialWebsitesUseMilEnglish = htmlContainsText(htmlText, "Official websites use .mil");
-  logger.debug(`found official websites use .mil English: ${officialWebsitesUseMilEnglish}`);
-  const officialWebsitesUseGovSpanish = htmlContainsText(htmlText, "Los sitios web oficiales usan .gov");
-  logger.debug(`found official websites use .gov Spanish: ${officialWebsitesUseGovSpanish}`);
-  const officialWebsitesUseMilSpanish = htmlContainsText(htmlText, "Los sitios web oficiales usan .mil");
-  logger.debug(`found official websites use .mil Spanish: ${officialWebsitesUseMilSpanish}`);
-
-  const secureWebsitesUseGovEnglish = htmlContainsText(htmlText, "Secure .gov websites use HTTPS");
-  logger.debug(`found secure websites use .gov English: ${secureWebsitesUseGovEnglish}`);
-  const secureWebsitesUseMilEnglish = htmlContainsText(htmlText, "Secure .mil websites use HTTPS");
-  logger.debug(`found secure websites use .mil English: ${secureWebsitesUseMilEnglish}`);
-  const secureWebsitesUseGovSpanish = htmlContainsText(htmlText, "Los sitios web seguros .gov usan HTTPS");
-  logger.debug(`found secure websites use .gov Spanish: ${secureWebsitesUseGovSpanish}`);
-  const secureWebsitesUseMilSpanish = htmlContainsText(htmlText, "Los sitios web seguros .mil usan HTTPS");
-  logger.debug(`found secure websites use .mil Spanish: ${secureWebsitesUseMilSpanish}`);
-
-  return (officialWebsiteOfUSGovEnglish || officialWebsiteOfUSGovSpanish) && 
-    (officialWebsitesUseGovEnglish || officialWebsitesUseGovSpanish || officialWebsitesUseMilEnglish || officialWebsitesUseMilSpanish) &&
-    (secureWebsitesUseGovEnglish || secureWebsitesUseGovSpanish || secureWebsitesUseMilEnglish || secureWebsitesUseMilSpanish);
 }
 
 const uswdsInHtml = (logger: Logger, htmlText: string) => {
