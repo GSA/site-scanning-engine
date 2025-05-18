@@ -8,7 +8,6 @@ export class CreateWebsiteDto {
   agency: string;
   bureau: string;
   sourceList: string;
-  ombIdeaPublic: boolean;
   filter: boolean;
   pageviews: number;
   visits: number;

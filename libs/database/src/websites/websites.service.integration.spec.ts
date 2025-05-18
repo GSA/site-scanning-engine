@@ -43,7 +43,6 @@ describe('AnalysisService', () => {
     firstWebsite.agency = 'General Services Administration';
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.sourceList = 'gov';
-    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -52,7 +51,6 @@ describe('AnalysisService', () => {
     secondWebsite.agency = 'Fake Agency';
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.sourceList = 'gov';
-    secondWebsite.ombIdeaPublic = false;
 
     const thirdWebsite = new Website();
     thirdWebsite.url = 'https://anotherfake.gov';
@@ -61,7 +59,6 @@ describe('AnalysisService', () => {
     thirdWebsite.agency = 'Fake Agency';
     thirdWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     thirdWebsite.sourceList = 'gov';
-    thirdWebsite.ombIdeaPublic = false;
 
     const fourthWebsite = new Website();
     fourthWebsite.url = 'https://anotherfake.mil';
@@ -70,7 +67,6 @@ describe('AnalysisService', () => {
     fourthWebsite.branch = 'fake';
     fourthWebsite.bureau = 'fake';
     fourthWebsite.sourceList = 'mil';
-    fourthWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = new CoreResult();
     firstCoreResult.website = firstWebsite;
@@ -138,7 +134,6 @@ describe('AnalysisService', () => {
     firstWebsite.agency = 'General Services Administration';
     firstWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     firstWebsite.sourceList = 'gov';
-    firstWebsite.ombIdeaPublic = false;
 
     const secondWebsite = new Website();
     secondWebsite.url = 'https://fake.gov';
@@ -147,7 +142,6 @@ describe('AnalysisService', () => {
     secondWebsite.agency = 'Fake Agency';
     secondWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     secondWebsite.sourceList = 'gov';
-    secondWebsite.ombIdeaPublic = false;
 
     const thirdWebsite = new Website();
     thirdWebsite.url = 'https://fake.gov';
@@ -156,7 +150,6 @@ describe('AnalysisService', () => {
     thirdWebsite.agency = 'Fake Agency';
     thirdWebsite.bureau = 'GSA,FAS,Technology Transformation Service';
     thirdWebsite.sourceList = 'gov';
-    thirdWebsite.ombIdeaPublic = false;
 
     const firstCoreResult = new CoreResult();
     firstCoreResult.website = firstWebsite;

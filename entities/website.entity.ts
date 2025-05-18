@@ -61,10 +61,6 @@ export class Website {
   sourceList?: string;
 
   @Column({ nullable: true })
-  @Expose({ name: 'public' })
-  ombIdeaPublic?: boolean;
-
-  @Column({ nullable: true })
   @Expose({ name: 'filter' })
   filter?: boolean;
 
