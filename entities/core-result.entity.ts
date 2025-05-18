@@ -488,10 +488,6 @@ export class CoreResult {
   heresHowYouKnowBanner?: boolean;
 
   @Column({ nullable: true })
-  @Expose({ name: 'uswds_banner_heres_how-2' })
-  heresHowYouKnowBanner2?: boolean;
-
-  @Column({ nullable: true })
   @Expose({ name: 'www_scan_status' })
   wwwScanStatus?: string;
 
@@ -640,7 +636,6 @@ export class CoreResult {
     'uswds_inpage_css',
     'uswds_usa_class_list',
     'uswds_banner_heres_how',
-    'uswds_banner_heres_how-2',
     'uswds_usa_classes',
     'uswds_string',
     'uswds_string_in_css',

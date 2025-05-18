@@ -70,7 +70,6 @@ export type UswdsScan = {
   uswdsVersion: number;
   uswdsCount: number;
   heresHowYouKnowBanner: boolean;
-  heresHowYouKnowBanner2: boolean;
 };
 
 export type RobotsTxtScan = {
