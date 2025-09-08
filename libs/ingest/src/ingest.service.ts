@@ -60,6 +60,7 @@ export class IngestService {
         'sourceListUsagovClicksMil',
         'sourceListSearchGov',
         'sourceListSearchGovMil',
+        'sourceListPublicInventory',
         'filtered',
         'pageviews',
         'visits',
