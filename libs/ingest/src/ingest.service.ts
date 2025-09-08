@@ -60,7 +60,10 @@ export class IngestService {
         'sourceListUsagovClicksMil',
         'sourceListSearchGov',
         'sourceListSearchGovMil',
-        'sourceListPublicInventory',
+        // [SOURCE-ADD-POINT]
+        // Add new source list here
+        // e.g.
+        // 'sourceListNewList',
         'filtered',
         'pageviews',
         'visits',
@@ -247,9 +250,12 @@ export class IngestService {
       sourceList.push('dod_2025');
     }
 
-    if (row.sourceListPublicInventory.toLowerCase() === 'true') {
-      sourceList.push('public_inventory');
-    }
+    // [SOURCE-ADD-POINT]
+    // Add new source list here
+    // e.g.
+    // if (row.sourceListNewSource.toLowerCase() === 'true') {
+    //   sourceList.push('new_source');
+    // }
 
     return sourceList.join(',');
   }
