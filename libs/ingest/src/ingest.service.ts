@@ -60,7 +60,10 @@ export class IngestService {
         'sourceListUsagovClicksMil',
         'sourceListSearchGov',
         'sourceListSearchGovMil',
-        'sourceListPublicInventory',
+        // [SOURCE-ADD-POINT]
+        // Add new source list here
+        // e.g.
+        // 'sourceListNewList',
         'filtered',
         'pageviews',
         'visits',
@@ -245,10 +248,6 @@ export class IngestService {
 
     if (row.sourceListDod2025.toLowerCase() === 'true') {
       sourceList.push('dod_2025');
-    }
-
-    if (row.sourceListPublicInventory.toLowerCase() === 'true') {
-      sourceList.push('public_inventory');
     }
 
     // [SOURCE-ADD-POINT]
