@@ -26,6 +26,7 @@ export interface SubdomainRow {
   sourceListGpoFdlp: string;
   sourceListCisa: string;
   sourceListDod2025: string;
+  sourceListPublicInventory: string;
   filtered: string;
   pageviews: number;
   visits: number;

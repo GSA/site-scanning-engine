@@ -247,6 +247,10 @@ export class IngestService {
       sourceList.push('dod_2025');
     }
 
+    if (row.sourceListPublicInventory.toLowerCase() === 'true') {
+      sourceList.push('public_inventory');
+    }
+
     return sourceList.join(',');
   }
 }
