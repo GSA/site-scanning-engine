@@ -27,6 +27,10 @@ export interface SubdomainRow {
   sourceListCisa: string;
   sourceListDod2025: string;
   sourceListPublicInventory: string;
+  // [SOURCE-ADD-POINT]
+  // Add new source list here
+  // e.g.
+  // sourceListNewList: string;
   filtered: string;
   pageviews: number;
   visits: number;

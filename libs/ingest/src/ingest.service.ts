@@ -251,6 +251,13 @@ export class IngestService {
       sourceList.push('public_inventory');
     }
 
+    // [SOURCE-ADD-POINT]
+    // Add new source list here
+    // e.g.
+    // if (row.sourceListNewSource.toLowerCase() === 'true') {
+    //   sourceList.push('new_source');
+    // }
+
     return sourceList.join(',');
   }
 }
