@@ -38,6 +38,8 @@ export async function buildRequiredLinksResult( parentLogger: Logger, page: Page
       'about us',
       'accessibility',
       'budget and performance',
+      'budget & performance',
+      'budget &amp; performance',
       'no fear act',
       'foia',
       'freedom of information act',
