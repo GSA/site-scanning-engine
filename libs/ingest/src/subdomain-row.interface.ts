@@ -26,6 +26,10 @@ export interface SubdomainRow {
   sourceListGpoFdlp: string;
   sourceListCisa: string;
   sourceListDod2025: string;
+  sourceListUsagovClicks: string;
+  sourceListUsagovClicksMil: string;
+  sourceListSearchGov: string;
+  sourceListSearchGovMil: string;
   sourceListPublicInventory: string;
   // [SOURCE-ADD-POINT]
   // Add new source list here
