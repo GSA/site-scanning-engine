@@ -10,6 +10,8 @@ applications:
     instances: ((api_instances))
     random-route: true
     command: npm run start:prod:api
+    env:
+      NODE_MODULES_CACHE: false
 
   - name: site-scanner-consumer
     disk_quota: ((consumer_disk))
@@ -26,4 +28,5 @@ applications:
     health-check-type: process
     env:
       OPTIMIZE_MEMORY: true
+      NODE_MODULES_CACHE: false
       TZ: UTC

@@ -13,4 +13,4 @@ snapshot_schedule: '0 8 * * Sun'
 
 consumer_instances: 10
 consumer_memory: 1GB
-consumer_disk: 7G
+consumer_disk: 5G
