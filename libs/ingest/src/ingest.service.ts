@@ -251,6 +251,22 @@ export class IngestService {
       sourceList.push('dod_2025');
     }
 
+    if(row.sourceListUsagovClicks.toLowerCase() === 'true') {
+      sourceList.push('usagov_clicks');
+    }
+
+    if(row.sourceListUsagovClicksMil.toLowerCase() === 'true') {
+      sourceList.push('usagov_clicks_mil');
+    }
+
+    if(row.sourceListSearchGov.toLowerCase() === 'true') {
+      sourceList.push('searchgov');
+    }
+
+    if(row.sourceListSearchGovMil.toLowerCase() === 'true') {
+      sourceList.push('searchgov_mil');
+    }
+
     if (row.sourceListPublicInventory.toLowerCase() === 'true') {
       sourceList.push('public_inventory');
     }
