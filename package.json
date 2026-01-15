@@ -75,7 +75,7 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.5.2",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.14",
+    "typeorm": "^0.3.27",
     "uuid": "^11.0.3",
     "webpack": ">=5.94.0"
   },
