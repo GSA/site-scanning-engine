@@ -34,15 +34,24 @@ export class WebsiteController {
     type: PaginatedWebsiteResponseDto,
   })
   @ApiInternalServerErrorResponse({
-    // This decorator is For OpenAPI/Swagger documentation
+    // This decorator is For OpenAPI/Swagger documentation.
     description: 'This response type indicates an internal error.',
   })
   async getResults(@Query() query: FilterWebsiteDto) {
+    // Ensure pagination values are safe integers within expected bounds to
+    // prevent passing unsanitized user input downstream.
+    const safePage = Math.max(1, Math.floor(Number(query.page) || 1));
+    const safeLimit = Math.min(
+      100,
+      Math.max(1, Math.floor(Number(query.limit) || 10)),
+    );
+
     const websites = await this.websiteService.paginatedFilter(query, {
-      page: query.page,
-      limit: query.limit,
+      page: safePage,
+      limit: safeLimit,
       route: `/${WEBSITE_ROUTE_NAME}`,
     });
+
     return websites;
   }
 
@@ -61,7 +70,7 @@ export class WebsiteController {
       'This response indicated that there is no matching `target_url` in the database',
   })
   @ApiInternalServerErrorResponse({
-    // This decorator is For OpenAPI/Swagger documentation
+    // This decorator is For OpenAPI/Swagger documentation.
     description: 'This response type indicates an internal error.',
   })
   async getResultByUrl(@Param('url') url: string) {
