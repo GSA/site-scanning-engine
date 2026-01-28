@@ -251,19 +251,23 @@ export class IngestService {
       sourceList.push('dod_2025');
     }
 
-    if(row.sourceListUsagovClicks.toLowerCase() === 'true') {
+    if (row.sourceListDap2.toLowerCase() === 'true') {
+      sourceList.push('dap2');
+    }
+
+    if (row.sourceListUsagovClicks.toLowerCase() === 'true') {
       sourceList.push('usagov_clicks');
     }
 
-    if(row.sourceListUsagovClicksMil.toLowerCase() === 'true') {
+    if (row.sourceListUsagovClicksMil.toLowerCase() === 'true') {
       sourceList.push('usagov_clicks_mil');
     }
 
-    if(row.sourceListSearchGov.toLowerCase() === 'true') {
+    if (row.sourceListSearchGov.toLowerCase() === 'true') {
       sourceList.push('searchgov');
     }
 
-    if(row.sourceListSearchGovMil.toLowerCase() === 'true') {
+    if (row.sourceListSearchGovMil.toLowerCase() === 'true') {
       sourceList.push('searchgov_mil');
     }
 
