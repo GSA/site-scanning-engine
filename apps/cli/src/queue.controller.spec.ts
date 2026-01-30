@@ -38,7 +38,7 @@ describe('QueueController', () => {
     });
     it('queueScans should enqueue scan jobs', async () => {
       mockWebsiteService.findAllWebsites.mockResolvedValue(
-        Promise.resolve([new Website(), new Website()]),
+        await Promise.resolve([new Website(), new Website()]),
       );
       await queueController.queueScans();
       expect(mockWebsiteService.findAllWebsites).toHaveBeenCalled();
