@@ -76,7 +76,7 @@
     "rxjs": "^7.8.2",
     "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.28",
-    "uuid": "^13.0.0",
+    "uuid": "11.0.5",
     "webpack": ">=5.104.1"
   },
   "devDependencies": {
@@ -128,9 +128,6 @@
     },
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
-    "transformIgnorePatterns": [
-      "node_modules/(?!uuid)"
-    ],
     "roots": [
       "<rootDir>/apps/",
       "<rootDir>/entities/",
