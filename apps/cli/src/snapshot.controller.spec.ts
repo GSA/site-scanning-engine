@@ -23,7 +23,7 @@ describe('SnapshotController', () => {
   });
 
   it('creates snapshot', () => {
-    snapshotController.weeklySnapshot();
-    expect(mockSnapshotService.weeklySnapshot).toHaveBeenCalled();
+    snapshotController.dailySnapshot();
+    expect(mockSnapshotService.dailySnapshot).toHaveBeenCalled();
   });
 });

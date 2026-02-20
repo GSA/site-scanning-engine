@@ -6,10 +6,6 @@ import { SnapshotService } from '@app/snapshot';
 export class SnapshotController {
   constructor(private readonly snapshotService: SnapshotService) {}
 
-  async weeklySnapshot() {
-    await this.snapshotService.weeklySnapshot();
-  }
-
   async dailySnapshot() {
     await this.snapshotService.dailySnapshot();
   }
