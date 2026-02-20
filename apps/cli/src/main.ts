@@ -12,11 +12,18 @@ import { SecurityDataController } from './security-data.controller';
 
 import pino from 'pino';
 import { getRootLogger } from '../../../libs/logging/src';
-import { logCount } from "../../../libs/logging/src/metric-utils";
+import { logCount } from '../../../libs/logging/src/metric-utils';
 
-function createCommandLogger(commandName: string, options = undefined): pino.Logger {
+function createCommandLogger(
+  commandName: string,
+  options = undefined,
+): pino.Logger {
   const appLogger = getRootLogger();
-  return appLogger.child({ cliCommand: commandName, sseContext: 'Cli.Main', cliOptions: options });
+  return appLogger.child({
+    cliCommand: commandName,
+    sseContext: 'Cli.Main',
+    cliOptions: options,
+  });
 }
 
 async function bootstrap() {
@@ -32,19 +39,24 @@ function printMemoryUsage(logger: pino.Logger) {
   const used = process.memoryUsage();
   for (const key in used) {
     const valueMb = Math.round((used[key] / 1024 / 1024) * 100) / 100;
-    logCount(logger, {
+    logCount(
+      logger,
+      {
         metricUnit: 'megabytes',
       },
       `scanner.core.memory.used.${key}.mb`,
       `Memory used: ${key}: ${valueMb} MB`,
-      valueMb
+      valueMb,
     );
   }
 }
 
 async function ingest(cmdObj) {
   const nestApp = await bootstrap();
-  const logger = createCommandLogger('ingest', { limit: cmdObj.limit, federalSubdomainsUrl: cmdObj.federalSubdomainsUrl });
+  const logger = createCommandLogger('ingest', {
+    limit: cmdObj.limit,
+    federalSubdomainsUrl: cmdObj.federalSubdomainsUrl,
+  });
   const controller = nestApp.get(IngestController);
   logger.info('ingesting target urls');
 
@@ -82,8 +94,14 @@ async function checkQueueStatus() {
   logger.info('checking queue status');
 
   const queueStatus = await controller.getQueueStatus();
-  logger.info({ jobsRemaining: queueStatus.count  }, `${queueStatus.count} jobs remaining in queue`);
-  logger.info({ activeJobs: queueStatus.activeCount  }, `${queueStatus.activeCount} active jobs in queue`);
+  logger.info(
+    { jobsRemaining: queueStatus.count },
+    `${queueStatus.count} jobs remaining in queue`,
+  );
+  logger.info(
+    { activeJobs: queueStatus.activeCount },
+    `${queueStatus.activeCount} active jobs in queue`,
+  );
   printMemoryUsage(logger);
   await nestApp.close();
 }
@@ -101,22 +119,13 @@ async function enqueueSite(cmdObj) {
 
 async function enqueueLimitedScans(cmdObj) {
   const nestApp = await bootstrap();
-  const logger = createCommandLogger('enqueue-limited-scans', { limit: cmdObj.limit });
+  const logger = createCommandLogger('enqueue-limited-scans', {
+    limit: cmdObj.limit,
+  });
   const controller = nestApp.get(QueueController);
   logger.info('enqueueing limited scan jobs');
 
   await controller.queueScans(cmdObj.limit);
-  printMemoryUsage(logger);
-  await nestApp.close();
-}
-
-async function createSnapshot() {
-  const nestApp = await bootstrap();
-  const logger = createCommandLogger('create-snapshot');
-  const controller = nestApp.get(SnapshotController);
-  logger.info('creating snapshot');
-
-  await controller.weeklySnapshot();
   printMemoryUsage(logger);
   await nestApp.close();
 }
@@ -145,11 +154,15 @@ async function createAccessibilityResultsSnapshot() {
 
 async function scanSite(cmdObj) {
   const nestApp = await bootstrap();
-  const logger = createCommandLogger('scan-site', { url: cmdObj.url, page: cmdObj.page, scan: cmdObj.scan });
+  const logger = createCommandLogger('scan-site', {
+    url: cmdObj.url,
+    page: cmdObj.page,
+    scan: cmdObj.scan,
+  });
   const controller = nestApp.get(ScanController);
 
   logger.info(
-    `Scanning site: ${cmdObj.url}, page: ${cmdObj.page ?? 'ALL'}, scan: ${cmdObj.scan ?? 'ALL'}`
+    `Scanning site: ${cmdObj.url}, page: ${cmdObj.page ?? 'ALL'}, scan: ${cmdObj.scan ?? 'ALL'}`,
   );
 
   await controller.scanSite(cmdObj.url, cmdObj.page, cmdObj.scan);
@@ -232,10 +245,7 @@ async function main() {
     .description(
       'enqueue-site add 1 site from the Website database table to the redis queue',
     )
-    .option(
-      '--url <string>',
-      'queue up one specific site by URL'
-    )
+    .option('--url <string>', 'queue up one specific site by URL')
     .action(enqueueSite);
 
   // queue-status
@@ -245,7 +255,7 @@ async function main() {
       'queue-status retrieves the active and remaining jobs in the redis queue',
     )
     .action(checkQueueStatus);
-  
+
   // queue-limited-scans
   program
     .command('enqueue-limited-scans')
@@ -258,14 +268,6 @@ async function main() {
       parseInt,
     )
     .action((cmdObj) => enqueueLimitedScans(cmdObj));
-
-  // create-snapshot
-  program
-    .command('create-snapshot')
-    .description(
-      'create-snapshot writes a CSV and JSON of the current scans to S3',
-    )
-    .action(createSnapshot);
 
   // create-daily-snapshot
   program
@@ -287,7 +289,7 @@ async function main() {
   program
     .command('scan-site')
     .description(
-      'scan-site scans a given URL, which MUST exist in the website table'
+      'scan-site scans a given URL, which MUST exist in the website table',
     )
     .option('--url <string>', 'URL to scan')
     .option('--page <string>', 'Page to scan (optional)')

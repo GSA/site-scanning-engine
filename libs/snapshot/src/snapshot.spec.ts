@@ -8,19 +8,20 @@ import { CsvSerializer } from './serializers/csv-serializer';
 
 describe('Snapshot', () => {
   let mockStorageService: MockProxy<StorageService>;
+  let dateString: string;
+  let website: Website;
 
   beforeEach(async () => {
     mockStorageService = mock<StorageService>();
-  });
-
-  it('archives prior snapshot', async () => {
-    const dateString = new Date().toISOString();
-    const website = new Website();
+    dateString = new Date().toISOString();
+    website = new Website();
     website.id = 1;
     website.created = dateString;
     website.updated = dateString;
     website.coreResult = new CoreResult();
+  });
 
+  it('archives prior snapshot', async () => {
     const snapshot = new Snapshot(
       mockStorageService,
       [
@@ -29,29 +30,35 @@ describe('Snapshot', () => {
       ],
       [website],
       dateString,
-      'weekly-snapshot',
+      'site-scanning-latest',
     );
 
-    await snapshot.archiveExisting();
+    await snapshot.archiveDaily();
 
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot.json',
-      `archive/json/weekly-snapshot-${dateString}.json`,
+    expect(mockStorageService.copy).toHaveBeenCalledTimes(4);
+
+    // JSON serializer copies
+    expect(mockStorageService.copy).toHaveBeenCalledWith(
+      'site-scanning-previous.json',
+      `archive/json/site-scanning-${dateString}.json`,
     );
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot.csv',
-      `archive/csv/weekly-snapshot-${dateString}.csv`,
+    expect(mockStorageService.copy).toHaveBeenCalledWith(
+      'site-scanning-latest.json',
+      'site-scanning-previous.json',
+    );
+
+    // CSV serializer copies
+    expect(mockStorageService.copy).toHaveBeenCalledWith(
+      'site-scanning-previous.csv',
+      `archive/csv/site-scanning-${dateString}.csv`,
+    );
+    expect(mockStorageService.copy).toHaveBeenCalledWith(
+      'site-scanning-latest.csv',
+      'site-scanning-previous.csv',
     );
   });
 
   it('saves new snapshot', async () => {
-    const dateString = new Date().toISOString();
-    const website = new Website();
-    website.id = 1;
-    website.created = dateString;
-    website.updated = dateString;
-    website.coreResult = new CoreResult();
-
     const snapshot = new Snapshot(
       mockStorageService,
       [
@@ -60,11 +67,19 @@ describe('Snapshot', () => {
       ],
       [website],
       dateString,
-      'weekly-snapshot',
+      'site-scanning-latest',
     );
 
     await snapshot.saveNew();
 
     expect(mockStorageService.upload).toHaveBeenCalledTimes(2);
+    expect(mockStorageService.upload).toHaveBeenCalledWith(
+      'site-scanning-latest.json',
+      expect.anything(),
+    );
+    expect(mockStorageService.upload).toHaveBeenCalledWith(
+      'site-scanning-latest.csv',
+      expect.anything(),
+    );
   });
 });
