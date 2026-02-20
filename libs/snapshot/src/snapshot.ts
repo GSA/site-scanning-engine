@@ -27,15 +27,26 @@ export class Snapshot {
     const operations = [];
 
     this.serializers.forEach((serializer) => {
+      const latestFileName = `${this.fileName}.${serializer.fileExtension}`;
       const previousFileName = `${this.fileName.replace('-latest', '-previous')}.${serializer.fileExtension}`;
       const archiveFileName = `archive/${serializer.fileExtension}/${this.fileName.replace('-latest', '')}-${this.priorDate}.${serializer.fileExtension}`;
-      operations.push(
-        this.storageService.copy(previousFileName, archiveFileName),
-        this.storageService.copy(
-          `${this.fileName}.${serializer.fileExtension}`,
-          previousFileName,
-        ),
-      );
+
+      const archiveAndRotate = async () => {
+        const [latestExists, previousExists] = await Promise.all([
+          this.storageService.exists(latestFileName),
+          this.storageService.exists(previousFileName),
+        ]);
+
+        if (previousExists) {
+          await this.storageService.copy(previousFileName, archiveFileName);
+        }
+
+        if (latestExists) {
+          await this.storageService.copy(latestFileName, previousFileName);
+        }
+      };
+
+      operations.push(archiveAndRotate());
     });
 
     await Promise.all(operations);
