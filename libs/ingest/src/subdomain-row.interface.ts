@@ -32,6 +32,8 @@ export interface SubdomainRow {
   sourceListSearchGov: string;
   sourceListSearchGovMil: string;
   sourceListPublicInventory: string;
+  sourceListNonGovMil: string;
+  sourceListGovtUrls: string;
   // [SOURCE-ADD-POINT]
   // Add new source list here
   // e.g.

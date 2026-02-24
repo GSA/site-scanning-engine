@@ -61,6 +61,8 @@ export class IngestService {
         'sourceListSearchGov',
         'sourceListSearchGovMil',
         'sourceListPublicInventory',
+        'sourceListNonGovMil',
+        'sourceListGovtUrls',
         // [SOURCE-ADD-POINT]
         // Add new source list here
         // e.g.
@@ -273,6 +275,14 @@ export class IngestService {
 
     if (row.sourceListPublicInventory.toLowerCase() === 'true') {
       sourceList.push('public_inventory');
+    }
+
+    if (row.sourceListNonGovMil.toLowerCase() === 'true') {
+      sourceList.push('non_govmil');
+    }
+
+    if (row.sourceListGovtUrls.toLowerCase() === 'true') {
+      sourceList.push('govt_urls');
     }
 
     // [SOURCE-ADD-POINT]
