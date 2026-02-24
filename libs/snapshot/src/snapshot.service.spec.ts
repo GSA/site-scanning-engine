@@ -40,9 +40,12 @@ describe('SnapshotService', () => {
           useValue: {
             get: jest.fn((key: string) => {
               if (key === 'fileNameDailyLive') {
+                return 'site-scanning-live-latest';
+              }
+              if (key === 'fileNameDailyLiveFiltered') {
                 return 'site-scanning-live-filtered-latest';
               }
-              if (key === 'fileNameDailyUnique') {
+              if (key === 'fileNameDailyLiveFilteredUnique') {
                 return 'site-scanning-live-filtered-unique-latest';
               }
               if (key === 'fileNameDailyAll') {
@@ -79,7 +82,12 @@ describe('SnapshotService', () => {
     website.url = 'supremecourt.gov';
 
     mockWebsiteService.findLiveSnapshotResults.mockResolvedValue([website]);
-    mockWebsiteService.findUniqueSnapshotResults.mockResolvedValue([website]);
+    mockWebsiteService.findLiveFilteredSnapshotResults.mockResolvedValue([
+      website,
+    ]);
+    mockWebsiteService.findLiveFilteredUniqueSnapshotResults.mockResolvedValue([
+      website,
+    ]);
     mockWebsiteService.findAllSnapshotResults.mockResolvedValue([website]);
 
     mockStorageService.exists.mockResolvedValue(true);
@@ -94,6 +102,24 @@ describe('SnapshotService', () => {
     await service.dailySnapshot();
 
     const expectedCopyCalls = [
+      // live (JSON)
+      [
+        'site-scanning-live-previous.json',
+        `archive/json/site-scanning-live-${expectedDate}.json`,
+      ],
+      [
+        'site-scanning-live-filtered-latest.json',
+        'site-scanning-live-filtered-previous.json',
+      ],
+      // live (CSV)
+      [
+        'site-scanning-live-previous.csv',
+        `archive/csv/site-scanning-live-${expectedDate}.csv`,
+      ],
+      [
+        'site-scanning-live-filtered-latest.csv',
+        'site-scanning-live-filtered-previous.csv',
+      ],
       // live filtered (JSON)
       [
         'site-scanning-live-filtered-previous.json',
@@ -145,6 +171,8 @@ describe('SnapshotService', () => {
     ];
 
     const expectedUploadCalls = [
+      ['site-scanning-live-latest.json', expect.anything()],
+      ['site-scanning-live-latest.csv', expect.anything()],
       ['site-scanning-live-filtered-latest.json', expect.anything()],
       ['site-scanning-live-filtered-latest.csv', expect.anything()],
       ['site-scanning-live-filtered-unique-latest.json', expect.anything()],

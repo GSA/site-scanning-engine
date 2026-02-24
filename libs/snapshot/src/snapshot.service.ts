@@ -19,15 +19,18 @@ export class SnapshotService {
     private configService: ConfigService,
   ) {}
 
+  private fileNameDailyLive =
+    this.configService.get<string>('fileNameDailyLive');
+  private fileNameDailyLiveFiltered = this.configService.get<string>(
+    'fileNameDailyLiveFiltered',
+  );
+  private fileNameDailyLiveFilteredUnique = this.configService.get<string>(
+    'fileNameDailyLiveFilteredUnique',
+  );
+  private fileNameDailyAll = this.configService.get<string>('fileNameDailyAll');
   private fileNameAccessibility = this.configService.get<string>(
     'fileNameAccessibility',
   );
-  private fileNameDailyLive =
-    this.configService.get<string>('fileNameDailyLive');
-  private fileNameDailyUnique = this.configService.get<string>(
-    'fileNameDailyUnique',
-  );
-  private fileNameDailyAll = this.configService.get<string>('fileNameDailyAll');
 
   async dailySnapshot() {
     const date = this.datetimeService.now();
@@ -39,10 +42,15 @@ export class SnapshotService {
       CoreResult.snapshotColumnOrder,
       this.fileNameDailyLive,
     );
-    await this.uniqueSnapshot(
+    await this.liveFilteredSnapshot(
       yesterday,
       CoreResult.snapshotColumnOrder,
-      this.fileNameDailyUnique,
+      this.fileNameDailyLiveFiltered,
+    );
+    await this.liveFilteredUniqueSnapshot(
+      yesterday,
+      CoreResult.snapshotColumnOrder,
+      this.fileNameDailyLiveFilteredUnique,
     );
     await this.allSnapshot(
       yesterday,
@@ -58,7 +66,7 @@ export class SnapshotService {
   ): Promise<void> {
     let liveWebsites = await this.websiteService.findLiveSnapshotResults();
     this.logger.log(
-      `Total number of live websites retrieved for snapshot: ${liveWebsites.length}`,
+      `Total number of live websites retrieved for live snapshot: ${liveWebsites.length}`,
     );
 
     let liveSnapshot = new Snapshot(
@@ -79,32 +87,62 @@ export class SnapshotService {
     liveSnapshot = null;
   }
 
-  async uniqueSnapshot(
+  async liveFilteredSnapshot(
+    date: string,
+    columns: string[],
+    fileName: string,
+  ): Promise<void> {
+    let liveFilteredWebsites =
+      await this.websiteService.findLiveFilteredSnapshotResults();
+    this.logger.log(
+      `Total number of live websites retrieved for live filtered snapshot: ${liveFilteredWebsites.length}`,
+    );
+
+    let liveFilteredSnapshot = new Snapshot(
+      this.storageService,
+      [new JsonSerializer(columns), new CsvSerializer(columns)],
+      liveFilteredWebsites,
+      date,
+      fileName,
+    );
+
+    await liveFilteredSnapshot.archiveDaily();
+    this.logger.log('Live filtered snapshot archived.');
+
+    await liveFilteredSnapshot.saveNew();
+    this.logger.log('Live filtered snapshot saved.');
+
+    liveFilteredWebsites = null;
+    liveFilteredSnapshot = null;
+  }
+
+  async liveFilteredUniqueSnapshot(
     date: string,
     columns: string[],
     filename: string,
   ): Promise<void> {
-    let uniqueWebsites = await this.websiteService.findUniqueSnapshotResults();
+    let liveFilteredUniqueWebsites =
+      await this.websiteService.findLiveFilteredUniqueSnapshotResults();
     this.logger.log(
-      `Total number of unique websites retrieved for snapshot: ${uniqueWebsites.length}`,
+      `Total number of live filtered unique websites retrieved for snapshot: ${liveFilteredUniqueWebsites.length}`,
     );
 
-    let uniqueSnapshot = new Snapshot(
+    let liveFilteredUniqueSnapshot = new Snapshot(
       this.storageService,
       [new JsonSerializer(columns), new CsvSerializer(columns)],
-      uniqueWebsites,
+      liveFilteredUniqueWebsites,
       date,
       filename,
     );
 
-    await uniqueSnapshot.archiveDaily();
-    this.logger.log('Unique snapshot archived.');
+    await liveFilteredUniqueSnapshot.archiveDaily();
+    this.logger.log('Live filtered unique snapshot archived.');
 
-    await uniqueSnapshot.saveNew();
-    this.logger.log('Unique snapshot saved.');
+    await liveFilteredUniqueSnapshot.saveNew();
+    this.logger.log('Live filtered unique snapshot saved.');
 
-    uniqueWebsites = null;
-    uniqueSnapshot = null;
+    liveFilteredUniqueWebsites = null;
+    liveFilteredUniqueSnapshot = null;
   }
 
   async allSnapshot(date: string, columns: string[], filename: string) {
