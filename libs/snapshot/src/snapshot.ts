@@ -1,7 +1,6 @@
 import { StorageService } from '@app/storage';
 import { Website } from 'entities/website.entity';
 import { Serializer } from './serializers/serializer';
-import { Logger } from 'nestjs-pino';
 
 export class Snapshot {
   storageService: StorageService;
@@ -24,38 +23,30 @@ export class Snapshot {
     this.fileName = fileName;
   }
 
-  async archiveExisting(): Promise<void> {
-    const operations = [];
-
-    this.serializers.forEach((serializer) => {
-      const newFileName = `archive/${serializer.fileExtension}/${this.fileName}-${this.priorDate}.${serializer.fileExtension}`;
-      operations.push(
-        this.storageService.copy(
-          `${this.fileName}.${serializer.fileExtension}`,
-          newFileName,
-        ),
-      );
-    });
-
-    await Promise.all(operations);
-  }
-
   async archiveDaily(): Promise<void> {
     const operations = [];
 
     this.serializers.forEach((serializer) => {
+      const latestFileName = `${this.fileName}.${serializer.fileExtension}`;
       const previousFileName = `${this.fileName.replace('-latest', '-previous')}.${serializer.fileExtension}`;
       const archiveFileName = `archive/${serializer.fileExtension}/${this.fileName.replace('-latest', '')}-${this.priorDate}.${serializer.fileExtension}`;
-      operations.push(
-        this.storageService.copy(
-          previousFileName,
-          archiveFileName,
-        ),
-        this.storageService.copy(
-          `${this.fileName}.${serializer.fileExtension}`,
-          previousFileName,
-        ),
-      );
+
+      const archiveAndRotate = async () => {
+        const [latestExists, previousExists] = await Promise.all([
+          this.storageService.exists(latestFileName),
+          this.storageService.exists(previousFileName),
+        ]);
+
+        if (previousExists) {
+          await this.storageService.copy(previousFileName, archiveFileName);
+        }
+
+        if (latestExists) {
+          await this.storageService.copy(latestFileName, previousFileName);
+        }
+      };
+
+      operations.push(archiveAndRotate());
     });
 
     await Promise.all(operations);

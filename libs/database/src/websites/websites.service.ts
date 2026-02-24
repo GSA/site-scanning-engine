@@ -34,6 +34,27 @@ export class WebsiteService {
     const queryBuilder = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
+      .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
+      .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
+        mimeTypes: [
+          'image/jpeg',
+          'application/xml',
+          'application/json',
+          'text/xml',
+        ],
+      })
+      .orderBy({
+        'coreResult.targetUrlBaseDomain': 'ASC',
+        'website.url': 'ASC',
+      });
+
+    return await queryBuilder.getMany();
+  }
+
+  async findLiveFilteredSnapshotResults(): Promise<Website[]> {
+    const queryBuilder = this.website
+      .createQueryBuilder('website')
+      .innerJoinAndSelect('website.coreResult', 'coreResult')
       .andWhere('coreResult.filter = :isFilter', { isFilter: false })
       .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
@@ -52,12 +73,14 @@ export class WebsiteService {
     return await queryBuilder.getMany();
   }
 
-  async findUniqueSnapshotResults(): Promise<Website[]> {
+  async findLiveFilteredUniqueSnapshotResults(): Promise<Website[]> {
     const queryBuilder = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
       .andWhere('coreResult.filter = :isFilter', { isFilter: false })
-      .andWhere('coreResult.targetUrlRedirects = :isRedirect', { isRedirect: false })
+      .andWhere('coreResult.targetUrlRedirects = :isRedirect', {
+        isRedirect: false,
+      })
       .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
         mimeTypes: [
@@ -110,7 +133,6 @@ export class WebsiteService {
   }
 
   async findWebsitesWithPrimaryTimedOutCoreResults(): Promise<Website[]> {
-
     const queryBuilder = this.website
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')

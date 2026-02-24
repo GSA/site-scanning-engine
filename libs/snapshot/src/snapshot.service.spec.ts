@@ -39,16 +39,17 @@ describe('SnapshotService', () => {
           provide: ConfigService,
           useValue: {
             get: jest.fn((key: string) => {
-              if (key === 'fileNameLive') {
-                return 'weekly-snapshot';
+              if (key === 'fileNameDailyLive') {
+                return 'site-scanning-live-latest';
               }
-
-              if (key === 'fileNameUnique') {
-                return 'weekly-snapshot-unique';
+              if (key === 'fileNameDailyLiveFiltered') {
+                return 'site-scanning-live-filtered-latest';
               }
-
-              if (key === 'fileNameAll') {
-                return 'weekly-snapshot-all';
+              if (key === 'fileNameDailyLiveFilteredUnique') {
+                return 'site-scanning-live-filtered-unique-latest';
+              }
+              if (key === 'fileNameDailyAll') {
+                return 'site-scanning-latest';
               }
             }),
           },
@@ -67,11 +68,8 @@ describe('SnapshotService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should serialize the database results to JSON and save in Storage', async () => {
+  it('should serialize the database results and save in Storage', async () => {
     const coreResult = new CoreResult();
-    const date = new Date();
-    const copyDate = new Date(date);
-    mockDatetimeService.now.mockReturnValue(date);
 
     coreResult.finalUrlIsLive = true;
     coreResult.primaryScanStatus = 'completed';
@@ -84,44 +82,117 @@ describe('SnapshotService', () => {
     website.url = 'supremecourt.gov';
 
     mockWebsiteService.findLiveSnapshotResults.mockResolvedValue([website]);
-    mockWebsiteService.findUniqueSnapshotResults.mockResolvedValue([website]);
+    mockWebsiteService.findLiveFilteredSnapshotResults.mockResolvedValue([
+      website,
+    ]);
+    mockWebsiteService.findLiveFilteredUniqueSnapshotResults.mockResolvedValue([
+      website,
+    ]);
     mockWebsiteService.findAllSnapshotResults.mockResolvedValue([website]);
 
-    await service.weeklySnapshot();
+    mockStorageService.exists.mockResolvedValue(true);
 
-    copyDate.setDate(copyDate.getDate() - 7);
-    const expectedDate = copyDate.toISOString();
+    const fixedDate = new Date('2026-02-20T00:00:00.000Z');
+    mockDatetimeService.now.mockReturnValue(new Date(fixedDate));
 
-    expect(mockStorageService.copy).toBeCalledTimes(6);
+    const yesterday = new Date(fixedDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const expectedDate = yesterday.toISOString().split('T')[0];
 
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot.json',
-      `archive/json/weekly-snapshot-${expectedDate}.json`,
+    await service.dailySnapshot();
+
+    const expectedCopyCalls = [
+      // live (JSON)
+      [
+        'site-scanning-live-previous.json',
+        `archive/json/site-scanning-live-${expectedDate}.json`,
+      ],
+      [
+        'site-scanning-live-filtered-latest.json',
+        'site-scanning-live-filtered-previous.json',
+      ],
+      // live (CSV)
+      [
+        'site-scanning-live-previous.csv',
+        `archive/csv/site-scanning-live-${expectedDate}.csv`,
+      ],
+      [
+        'site-scanning-live-filtered-latest.csv',
+        'site-scanning-live-filtered-previous.csv',
+      ],
+      // live filtered (JSON)
+      [
+        'site-scanning-live-filtered-previous.json',
+        `archive/json/site-scanning-live-filtered-${expectedDate}.json`,
+      ],
+      [
+        'site-scanning-live-filtered-latest.json',
+        'site-scanning-live-filtered-previous.json',
+      ],
+      // live filtered (CSV)
+      [
+        'site-scanning-live-filtered-previous.csv',
+        `archive/csv/site-scanning-live-filtered-${expectedDate}.csv`,
+      ],
+      [
+        'site-scanning-live-filtered-latest.csv',
+        'site-scanning-live-filtered-previous.csv',
+      ],
+      // live filtered unique (JSON)
+      [
+        'site-scanning-live-filtered-unique-previous.json',
+        `archive/json/site-scanning-live-filtered-unique-${expectedDate}.json`,
+      ],
+      [
+        'site-scanning-live-filtered-unique-latest.json',
+        'site-scanning-live-filtered-unique-previous.json',
+      ],
+      // live filtered unique (CSV)
+      [
+        'site-scanning-live-filtered-unique-previous.csv',
+        `archive/csv/site-scanning-live-filtered-unique-${expectedDate}.csv`,
+      ],
+      [
+        'site-scanning-live-filtered-unique-latest.csv',
+        'site-scanning-live-filtered-unique-previous.csv',
+      ],
+      // all (JSON)
+      [
+        'site-scanning-previous.json',
+        `archive/json/site-scanning-${expectedDate}.json`,
+      ],
+      ['site-scanning-latest.json', 'site-scanning-previous.json'],
+      // all (CSV)
+      [
+        'site-scanning-previous.csv',
+        `archive/csv/site-scanning-${expectedDate}.csv`,
+      ],
+      ['site-scanning-latest.csv', 'site-scanning-previous.csv'],
+    ];
+
+    const expectedUploadCalls = [
+      ['site-scanning-live-latest.json', expect.anything()],
+      ['site-scanning-live-latest.csv', expect.anything()],
+      ['site-scanning-live-filtered-latest.json', expect.anything()],
+      ['site-scanning-live-filtered-latest.csv', expect.anything()],
+      ['site-scanning-live-filtered-unique-latest.json', expect.anything()],
+      ['site-scanning-live-filtered-unique-latest.csv', expect.anything()],
+      ['site-scanning-latest.json', expect.anything()],
+      ['site-scanning-latest.csv', expect.anything()],
+    ];
+
+    expect(mockStorageService.copy).toHaveBeenCalledTimes(
+      expectedCopyCalls.length,
+    );
+    expect(mockStorageService.copy.mock.calls).toEqual(
+      expect.arrayContaining(expectedCopyCalls),
     );
 
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot.csv',
-      `archive/csv/weekly-snapshot-${expectedDate}.csv`,
+    expect(mockStorageService.upload).toHaveBeenCalledTimes(
+      expectedUploadCalls.length,
     );
-
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot-unique.json',
-      `archive/json/weekly-snapshot-unique-${expectedDate}.json`,
-    );
-
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot-unique.csv',
-      `archive/csv/weekly-snapshot-unique-${expectedDate}.csv`,
-    );
-
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot-all.json',
-      `archive/json/weekly-snapshot-all-${expectedDate}.json`,
-    );
-
-    expect(mockStorageService.copy).toBeCalledWith(
-      'weekly-snapshot-all.csv',
-      `archive/csv/weekly-snapshot-all-${expectedDate}.csv`,
+    expect(mockStorageService.upload.mock.calls).toEqual(
+      expect.arrayContaining(expectedUploadCalls),
     );
   });
 });
