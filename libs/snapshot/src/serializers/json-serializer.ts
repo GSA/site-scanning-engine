@@ -12,7 +12,7 @@ export class JsonSerializer implements Serializer {
     return 'json';
   }
 
-  serialize(websites: Website[]) {
+  async serialize(websites: Website[]) {
     const serializedWebsites = websites
       .map((website) => website.serialized())
       .map((serializedWebsite) => {
