@@ -74,6 +74,13 @@ describe('core-scanner util', () => {
       const result = getMIMEType(mockResponse);
       expect(result).toBe('text/html');
     });
+
+    it('defaults to "none-specified" if a Puppeteer HTTPResponse instance does not have a content-type header', () => {
+      const mockResponse = mock<HTTPResponse>();
+      mockResponse.headers.calledWith().mockReturnValue({});
+      const result = getMIMEType(mockResponse);
+      expect(result).toBe('none-specified');
+    });
   });
 
   describe('getWithSubdomain', () => {
@@ -124,7 +131,9 @@ describe('core-scanner util', () => {
       const url =
         'https://poena.inl.gov:7004/console-selfservice/SelfService.do?ThisWillBeRemoved';
       const result = getTruncatedUrl(url);
-      expect(result).toBe('https://poena.inl.gov:7004/console-selfservice/SelfService.do');
+      expect(result).toBe(
+        'https://poena.inl.gov:7004/console-selfservice/SelfService.do',
+      );
     });
 
     it('does not truncate a url that does not contain query parameters', () => {
@@ -133,5 +142,4 @@ describe('core-scanner util', () => {
       expect(result).toBe('https://gsa.gov');
     });
   });
-
 });

@@ -44,7 +44,7 @@ export const getMIMEType = (res: HTTPResponse): string => {
     const mimetype = contentType.split(';')[0];
     return mimetype;
   } else {
-    return 'unknown';
+    return 'none-specified';
   }
 };
 
@@ -78,48 +78,80 @@ export function getTruncatedUrl(url: string): string {
 }
 
 export function createRequestHandlers(page: Page, logger: Logger) {
-  page.on('console', (message) => logger.debug({sseMessage: message }, `Page Log: ${message.text()}`));
-  page.on('error', (error) => logger.warn({ error }, `Page Error: ${error.message}`));
-  page.on('response', (response)=> response.status() !== 200 && logger.debug({ sseResponseUrl: response.url(), sseResponseStatus: response.status()}, `A ${response.status()} was returned from: ${getTruncatedUrl(response.url())} `));
-  page.on('requestfailed', (request) => logger.warn({ sseRequestUrl: request.url() }, `Request failed: ${getTruncatedUrl(request.url())}`));
-};
-
+  page.on('console', (message) =>
+    logger.debug({ sseMessage: message }, `Page Log: ${message.text()}`),
+  );
+  page.on('error', (error) =>
+    logger.warn({ error }, `Page Error: ${error.message}`),
+  );
+  page.on(
+    'response',
+    (response) =>
+      response.status() !== 200 &&
+      logger.debug(
+        {
+          sseResponseUrl: response.url(),
+          sseResponseStatus: response.status(),
+        },
+        `A ${response.status()} was returned from: ${getTruncatedUrl(response.url())} `,
+      ),
+  );
+  page.on('requestfailed', (request) =>
+    logger.warn(
+      { sseRequestUrl: request.url() },
+      `Request failed: ${getTruncatedUrl(request.url())}`,
+    ),
+  );
+}
 
 export function logRunningProcesses(logger: Logger, scanStage: string): void {
   exec('ps aux', (error, stdout, stderr) => {
-      if (error) {
-          logger.error({ sseRunningProcError: error, sseScanStage: scanStage }, `Error executing ps command: ${error.message}`);
-          return;
+    if (error) {
+      logger.error(
+        { sseRunningProcError: error, sseScanStage: scanStage },
+        `Error executing ps command: ${error.message}`,
+      );
+      return;
+    }
+    if (stderr) {
+      logger.error(
+        { sseRunningProcError: stderr, sseScanStage: scanStage },
+        `stderr: ${stderr}`,
+      );
+      return;
+    }
+
+    const lines = stdout.trim().split('\n');
+    const processCount = lines.length - 1; // Subtract 1 to exclude the header
+    const headers = lines[0].split(/\s+/); // Split by whitespace
+
+    const processes = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(/\s+/);
+      const process = {};
+
+      for (let j = 0; j < headers.length; j++) {
+        process[headers[j]] = values[j];
       }
-      if (stderr) {
-          logger.error({ sseRunningProcError: stderr, sseScanStage: scanStage }, `stderr: ${stderr}`);
-          return;
-      }
 
-      const lines = stdout.trim().split('\n');
-      const processCount = lines.length - 1; // Subtract 1 to exclude the header
-      const headers = lines[0].split(/\s+/); // Split by whitespace
+      processes.push(process);
+    }
+    const combinedProcesses = processes
+      .map((process) => process.COMMAND)
+      .join(',');
+    const processJson = [];
+    processes.forEach((process) => {
+      processJson.push(process.COMMAND);
+    });
 
-      const processes = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(/\s+/);
-        const process = {};
-
-        for (let j = 0; j < headers.length; j++) {
-          process[headers[j]] = values[j];
-        }
-
-        processes.push(process);
-      }
-      const combinedProcesses = processes.map((process) => process.COMMAND).join(',');
-      const processJson = [];
-      processes.forEach((process) => {
-        processJson.push(process.COMMAND);
-      });
-      
-      logCount(logger, {}, `${scanStage}.process.count`, `${processCount} processes running at the '${scanStage}' of scan.`, processCount);
-
+    logCount(
+      logger,
+      {},
+      `${scanStage}.process.count`,
+      `${processCount} processes running at the '${scanStage}' of scan.`,
+      processCount,
+    );
   });
 }
 
@@ -130,20 +162,22 @@ export function printMemoryUsage(logger: Logger, metadata: any) {
   const used = process.memoryUsage();
   for (const key in used) {
     const valueMb = Math.round((used[key] / 1024 / 1024) * 100) / 100;
-    logCount(logger, {
+    logCount(
+      logger,
+      {
         metricUnit: 'megabytes',
         metadata,
       },
       `scanner.core.memory.used.${key}.mb`,
       `Memory used: ${key}: ${valueMb} MB`,
-      valueMb
+      valueMb,
     );
   }
 }
 
 /**
  * Generates an MD5 hash of the HTML source of a page.
- * 
+ *
  * @param page The Puppeteer Page object representing the page to hash.
  * @returns A promise that resolves to the MD5 hash of the page's HTML source or null if the page source is empty.
  */
@@ -151,7 +185,7 @@ export async function getPageMd5Hash(page: Page): Promise<string> {
   const pageSource = await page.content();
 
   const hash = crypto.createHash('md5');
-  if(!pageSource) {
+  if (!pageSource) {
     return null;
   }
   hash.update(pageSource);
