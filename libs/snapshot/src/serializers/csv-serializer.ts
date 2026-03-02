@@ -1,6 +1,6 @@
 import { Serializer } from './serializer';
 import { Website } from 'entities/website.entity';
-import { Parser } from 'json2csv';
+import { writeToBuffer } from '@fast-csv/format';
 import { truncateArray } from './csv-helpers';
 
 export class CsvSerializer implements Serializer {
@@ -14,7 +14,7 @@ export class CsvSerializer implements Serializer {
     return 'csv';
   }
 
-  serialize(websites: Website[]) {
+  async serialize(websites: Website[]) {
     const serializedWebsites = websites
       .map((website) => website.serialized())
       .map((serializedWebsite) => {
@@ -30,8 +30,7 @@ export class CsvSerializer implements Serializer {
     return this.createCsv(formattedResults);
   }
 
-  createCsv(rows: { [x: string]: any }[]) {
-    // Return header row on empty rows array.
+  private async createCsv(rows: { [x: string]: any }[]) {
     if (rows.length === 0) {
       return this.columnOrder.map((f) => `"${f}"`).join(',');
     }
@@ -40,10 +39,13 @@ export class CsvSerializer implements Serializer {
       this.columnOrder,
       Array.from(Object.keys(rows[0])),
     );
-    const eol = '\r\n';
-    const parser = new Parser({ fields, eol });
 
-    return parser.parse(rows);
+    const buffer = await writeToBuffer(rows, {
+      headers: fields,
+      rowDelimiter: '\r\n',
+    });
+
+    return buffer.toString();
   }
 
   private formatWebsites(websites) {
@@ -64,6 +66,8 @@ export class CsvSerializer implements Serializer {
         } else if (Array.isArray(result[key])) {
           const truncatedArray = truncateArray(result[key], characterLimit);
           formattedResult[key] = truncatedArray;
+        } else if (typeof result[key] === 'object' && result[key] !== null) {
+          formattedResult[key] = JSON.stringify(result[key]);
         } else {
           formattedResult[key] = result[key];
         }

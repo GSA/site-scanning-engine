@@ -54,7 +54,7 @@ export class Snapshot {
 
   async saveNew(): Promise<void> {
     for (const serializer of this.serializers) {
-      let serializedData = serializer.serialize(this.websites);
+      let serializedData = await serializer.serialize(this.websites);
 
       await this.storageService.upload(
         `${this.fileName}.${serializer.fileExtension}`,
