@@ -24,7 +24,7 @@ describe('CsvSerializer', () => {
     const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
     const result = await serializer.serialize([MockWebsite1]);
 
-    // Sanity Checks
+    // Confidence Checks
     expect(typeof result).toBe('string');
     expect(result).toContain('\n');
 
@@ -36,7 +36,7 @@ describe('CsvSerializer', () => {
     const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
     const result = await serializer.serialize([MockWebsite1, MockWebsite2]);
 
-    // Sanity Checks
+    // Confidence Checks
     expect(typeof result).toBe('string');
     expect(result).toContain('\n');
 
@@ -81,7 +81,7 @@ describe('CsvSerializer', () => {
 
     const result = await serializer.serialize([website]);
 
-    // Sanity Checks
+    // Confidence Checks
     expect(typeof result).toBe('string');
     expect(result).toContain('\n');
 
@@ -96,7 +96,7 @@ describe('CsvSerializer', () => {
 
     const result = await serializer.serialize([website]);
 
-    // Sanity Checks
+    // Confidence Checks
     expect(typeof result).toBe('string');
     expect(result).toContain('\n');
 
