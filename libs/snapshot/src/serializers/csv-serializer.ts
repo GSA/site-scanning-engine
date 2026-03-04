@@ -66,6 +66,8 @@ export class CsvSerializer implements Serializer {
         } else if (Array.isArray(result[key])) {
           const truncatedArray = truncateArray(result[key], characterLimit);
           formattedResult[key] = JSON.stringify(truncatedArray);
+        } else if (result[key] instanceof Date) {
+          formattedResult[key] = result[key].toISOString();
         } else if (typeof result[key] === 'object' && result[key] !== null) {
           formattedResult[key] = JSON.stringify(result[key]);
         } else {
