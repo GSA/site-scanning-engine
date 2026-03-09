@@ -4,7 +4,10 @@ import { SearchScan } from 'entities/scan-data.entity';
 
 import { Logger } from 'pino';
 
-export async function buildSearchResult ( parentLogger: Logger, page: Page ): Promise<SearchScan> {
+export async function buildSearchResult(
+  parentLogger: Logger,
+  page: Page,
+): Promise<SearchScan> {
   const searchScanResults = await page.evaluate(() => {
     const formElements = [...document.querySelectorAll('form')];
     const inputElements = [...document.querySelectorAll('input')];
@@ -73,4 +76,4 @@ export async function buildSearchResult ( parentLogger: Logger, page: Page ): Pr
   });
 
   return searchScanResults;
-};
+}

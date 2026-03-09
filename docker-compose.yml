@@ -48,25 +48,25 @@ services:
 #      exit 0;
 #      "
 
-  # cli:
-  #   build:
-  #       context: "."
-  #       dockerfile: "./apps/scan-engine/Dockerfile"
-  #       target: development
-  #   #profiles: ["cli"]
-  #   volumes:
-  #       - .:/usr/src/app
-  #       - /usr/src/app/node_modules
-  #   command: bash
-  #   environment:
-  #       - QUEUE_HOST=redis
-  #   security_opt:
-  #       - "seccomp=./apps/scan-engine/chrome.json"
-  #   networks:
-  #       - webnet
-  #   depends_on:
-  #       - redis
-  #       - postgres
+# cli:
+#   build:
+#       context: "."
+#       dockerfile: "./apps/scan-engine/Dockerfile"
+#       target: development
+#   #profiles: ["cli"]
+#   volumes:
+#       - .:/usr/src/app
+#       - /usr/src/app/node_modules
+#   command: bash
+#   environment:
+#       - QUEUE_HOST=redis
+#   security_opt:
+#       - "seccomp=./apps/scan-engine/chrome.json"
+#   networks:
+#       - webnet
+#   depends_on:
+#       - redis
+#       - postgres
 
 networks:
   webnet:

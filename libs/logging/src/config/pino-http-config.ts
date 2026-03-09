@@ -1,7 +1,7 @@
 import { Options } from 'pino-http';
-import { getRootLogger } from "../root-logger";
-import { RootLoggerMeta } from "../types";
-import { DEFAULT_APPLICATION_NAME } from "../constants";
+import { getRootLogger } from '../root-logger';
+import { RootLoggerMeta } from '../types';
+import { DEFAULT_APPLICATION_NAME } from '../constants';
 
 /**
  * Builds and returns a configuration object for `pino-http`.
@@ -11,10 +11,10 @@ import { DEFAULT_APPLICATION_NAME } from "../constants";
  * @returns {Options} A pino-http configuration object.
  */
 export function getPinoHttpConfig(rootMeta: RootLoggerMeta = {}): Options {
-    const applicationName = rootMeta.applicationName || DEFAULT_APPLICATION_NAME;
-    return {
-        logger: getRootLogger(rootMeta),
-        name: applicationName,
-        useLevel: 'info',
-    }
+  const applicationName = rootMeta.applicationName || DEFAULT_APPLICATION_NAME;
+  return {
+    logger: getRootLogger(rootMeta),
+    name: applicationName,
+    useLevel: 'info',
+  };
 }

@@ -20,7 +20,7 @@ export class QueueController {
     try {
       let websites = await this.websiteService.findAllWebsites();
 
-      if(limit) {
+      if (limit) {
         websites = websites.slice(0, limit);
       }
 
@@ -147,9 +147,9 @@ export class QueueController {
   async getQueueStatus() {
     this.logger.log('Getting queue status...');
 
-    try{
+    try {
       const queueStatus = await this.queueService.getQueueStatus();
-      this.logger.log({queueStatus}, 'Successfully retrieved queue status');
+      this.logger.log({ queueStatus }, 'Successfully retrieved queue status');
       return queueStatus;
     } catch (error) {
       const err = error as Error;

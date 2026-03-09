@@ -88,7 +88,7 @@ export class CoreResultService {
       coreResult.gaTagIds = result.dapScan.gaTagIds;
 
       // SEO scan
-      if(result.seoScan) {
+      if (result.seoScan) {
         coreResult.mainElementFinalUrl = result.seoScan.mainElementFinalUrl;
         coreResult.ogArticleModifiedFinalUrl =
           result.seoScan.ogArticleModifiedFinalUrl;
@@ -98,7 +98,8 @@ export class CoreResultService {
         coreResult.ogTitleFinalUrl = result.seoScan.ogTitleFinalUrl;
         coreResult.canonicalLink = result.seoScan.canonicalLink;
         coreResult.pageTitle = result.seoScan.pageTitle;
-        coreResult.metaDescriptionContent = result.seoScan.metaDescriptionContent;
+        coreResult.metaDescriptionContent =
+          result.seoScan.metaDescriptionContent;
         coreResult.metaKeywordsContent = result.seoScan.metaKeywordsContent;
         coreResult.ogImageContent = result.seoScan.ogImageContent;
         coreResult.ogTypeContent = result.seoScan.ogTypeContent;
@@ -134,7 +135,7 @@ export class CoreResultService {
         coreResult.lastModifiedContent = null;
         coreResult.dateContent = null;
       }
-      
+
       // Third-party scan
       coreResult.thirdPartyServiceCount =
         result.thirdPartyScan.thirdPartyServiceCount;
@@ -158,10 +159,12 @@ export class CoreResultService {
       coreResult.finalUrlPageHash = result.urlScan.finalUrlPageHash;
 
       // Site name - finalUrlBaseDomain with www. stripped
-      coreResult.finalSiteName = coreResult.finalUrlWebsite ? coreResult.finalUrlWebsite.replace(/^www\./, '') : '';
+      coreResult.finalSiteName = coreResult.finalUrlWebsite
+        ? coreResult.finalUrlWebsite.replace(/^www\./, '')
+        : '';
 
       // USWDS scan
-      if ( result.uswdsScan ) {
+      if (result.uswdsScan) {
         coreResult.usaClasses = result.uswdsScan.usaClasses;
         coreResult.usaClassesUsed = result.uswdsScan.usaClassesUsed;
         coreResult.uswdsString = result.uswdsScan.uswdsString;
@@ -173,7 +176,8 @@ export class CoreResultService {
         coreResult.uswdsSemanticVersion = result.uswdsScan.uswdsSemanticVersion;
         coreResult.uswdsVersion = result.uswdsScan.uswdsVersion;
         coreResult.uswdsCount = result.uswdsScan.uswdsCount;
-        coreResult.heresHowYouKnowBanner = result.uswdsScan.heresHowYouKnowBanner;
+        coreResult.heresHowYouKnowBanner =
+          result.uswdsScan.heresHowYouKnowBanner;
       } else {
         coreResult.usaClasses = null;
         coreResult.usaClassesUsed = null;
@@ -190,7 +194,7 @@ export class CoreResultService {
       }
 
       // Login scan
-      if( result.loginScan ) {
+      if (result.loginScan) {
         coreResult.loginDetected = result.loginScan.loginDetected;
         coreResult.loginProvider = result.loginScan.loginProvider;
       } else {

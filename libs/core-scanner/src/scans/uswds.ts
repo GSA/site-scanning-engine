@@ -5,7 +5,7 @@ import { logCount } from '../../../logging/src/metric-utils';
 
 import { UswdsScan } from 'entities/scan-data.entity';
 
-export function createUswdsScanner( getCSSRequests: () => string[] , page: Page, ) {
+export function createUswdsScanner(getCSSRequests: () => string[], page: Page) {
   return async (logger: Logger, response: HTTPResponse) => {
     return buildUswdsResult(
       logger,
@@ -16,8 +16,16 @@ export function createUswdsScanner( getCSSRequests: () => string[] , page: Page,
   };
 }
 
-export async function buildUswdsResult( parentLogger: Logger, cssPages: string[], htmlText: string, page: Page, ): Promise<UswdsScan> {
-  const logger = parentLogger.child({ function: 'buildUswdsResult', pageUrl: page.url() });
+export async function buildUswdsResult(
+  parentLogger: Logger,
+  cssPages: string[],
+  htmlText: string,
+  page: Page,
+): Promise<UswdsScan> {
+  const logger = parentLogger.child({
+    function: 'buildUswdsResult',
+    pageUrl: page.url(),
+  });
   const pageResults = await page.evaluate(() => {
     const usaClasses = [...document.querySelectorAll("[class^='usa-']")];
     const usaClassesCount = Math.round(Math.sqrt(usaClasses.length)) * 5;
@@ -45,13 +53,19 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
     const uniqueClasses = Object.keys(uniqueClassesObj).sort().join(',');
 
     const selectorResults = [
-      ...document.querySelectorAll('.usa-banner__button-text, .usa-banner-button-text'),
-    ]
-      .map((el) => el.textContent.replace(/’/g, "'"));
+      ...document.querySelectorAll(
+        '.usa-banner__button-text, .usa-banner-button-text',
+      ),
+    ].map((el) => el.textContent.replace(/’/g, "'"));
 
-    const hasHeresHowYouKnowBannerEnglish = selectorResults.some((text) => text.includes("Here's how you know"));
-    const hasHeresHowYouKnowBannerSpanish = selectorResults.some((text) => text.includes("Así es como usted puede verificarlo"));
-    const hasHeresHowYouKnowBanner = hasHeresHowYouKnowBannerEnglish || hasHeresHowYouKnowBannerSpanish;
+    const hasHeresHowYouKnowBannerEnglish = selectorResults.some((text) =>
+      text.includes("Here's how you know"),
+    );
+    const hasHeresHowYouKnowBannerSpanish = selectorResults.some((text) =>
+      text.includes('Así es como usted puede verificarlo'),
+    );
+    const hasHeresHowYouKnowBanner =
+      hasHeresHowYouKnowBannerEnglish || hasHeresHowYouKnowBannerSpanish;
 
     return {
       usaClassesCount,
@@ -63,13 +77,28 @@ export async function buildUswdsResult( parentLogger: Logger, cssPages: string[]
   });
 
   if (pageResults.hasHeresHowYouKnowBannerEnglish) {
-    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerEnglish', 'Found English "Here\'s how you know" banner');
+    logCount(
+      logger,
+      {},
+      'scanner.page.primary.scan.uswds.heresHowYouKnowBannerEnglish',
+      'Found English "Here\'s how you know" banner',
+    );
   }
   if (pageResults.hasHeresHowYouKnowBannerSpanish) {
-    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerSpanish', 'Found Spanish "Here\'s how you know" banner');
+    logCount(
+      logger,
+      {},
+      'scanner.page.primary.scan.uswds.heresHowYouKnowBannerSpanish',
+      'Found Spanish "Here\'s how you know" banner',
+    );
   }
   if (!pageResults.hasHeresHowYouKnowBanner) {
-    logCount(logger, {}, 'scanner.page.primary.scan.uswds.heresHowYouKnowBannerNotFound', '"Here\'s how you know" banner not found');
+    logCount(
+      logger,
+      {},
+      'scanner.page.primary.scan.uswds.heresHowYouKnowBannerNotFound',
+      '"Here\'s how you know" banner not found',
+    );
   }
 
   const uswdsSemanticVersion = uswdsSemVer(logger, cssPages);

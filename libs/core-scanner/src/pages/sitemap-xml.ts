@@ -7,7 +7,13 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { SitemapXmlScan } from 'entities/scan-data.entity';
 import { SitemapXmlPageScans } from 'entities/scan-page.entity';
 
-import { getHttpsUrl, getMIMEType, isLive, createRequestHandlers, getPageMd5Hash } from '../util';
+import {
+  getHttpsUrl,
+  getMIMEType,
+  isLive,
+  createRequestHandlers,
+  getPageMd5Hash,
+} from '../util';
 
 export const createSitemapXmlScanner = (
   logger: Logger,
@@ -30,7 +36,11 @@ export const createSitemapXmlScanner = (
     //const sitemapText = await sitemapResponse.text();
     logger.info(`Got sitemap.xml text from: ${sitemapResponse.url()}`);
 
-    const sitemapContents = await getSitemapUsingAxios(sitemapResponse.url(), httpService, logger);
+    const sitemapContents = await getSitemapUsingAxios(
+      sitemapResponse.url(),
+      httpService,
+      logger,
+    );
     const sitemapText = sitemapContents ? sitemapContents.data.toString() : '';
 
     return {
@@ -56,8 +66,6 @@ const buildSitemapResult = async (
   const sitemapXmlDetected =
     sitemapUrl.pathname.endsWith('/sitemap.xml') && sitemapLive;
 
-  
-
   return {
     sitemapXmlFinalUrl: sitemapUrl.toString(),
     sitemapXmlFinalUrlLive: sitemapLive,
@@ -72,7 +80,11 @@ const buildSitemapResult = async (
           sitemapXmlFinalUrlFilesize: Buffer.byteLength(sitemapText, 'utf-8'),
           sitemapXmlCount: await getUrlCount(sitemapPage),
           sitemapXmlPdfCount: getPdfCount(sitemapText),
-          sitemapXmlLastMod: await getLastModDate(sitemapText, sitemapPage, logger),
+          sitemapXmlLastMod: await getLastModDate(
+            sitemapText,
+            sitemapPage,
+            logger,
+          ),
           sitemapXmlPageHash: await getPageMd5Hash(sitemapPage),
         }
       : {}),
@@ -87,13 +99,17 @@ const buildSitemapResult = async (
  * @param  logger A logger instance for logging
  * @returns The sitemap XML response as a string or null if an error occurs
  */
-export async function getSitemapUsingAxios(url: string, httpService: HttpService, logger: Logger) {
+export async function getSitemapUsingAxios(
+  url: string,
+  httpService: HttpService,
+  logger: Logger,
+) {
   try {
     const response = await httpService.get(url);
     logger.info(`Got sitemap.xml response using Axios`);
-    return await lastValueFrom(response)
+    return await lastValueFrom(response);
   } catch (error) {
-    logger.error({error}, 'Error fetching sitemap.xml using Axios');
+    logger.error({ error }, 'Error fetching sitemap.xml using Axios');
     return null;
   }
 }
@@ -119,17 +135,48 @@ const getPdfCount = (sitemapText: string) => {
  */
 const dateFormats = [
   // Try MM/DD/YYYY (e.g., 02/20/2025)
-  { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, parser: (m: RegExpMatchArray) => new Date(`${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`) },
+  {
+    regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
+    parser: (m: RegExpMatchArray) =>
+      new Date(`${m[3]}-${m[1].padStart(2, '0')}-${m[2].padStart(2, '0')}`),
+  },
   // Try DD/MM/YYYY (e.g., 20/02/2025)
-  { regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/, parser: (m: RegExpMatchArray) => new Date(`${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`) },
+  {
+    regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
+    parser: (m: RegExpMatchArray) =>
+      new Date(`${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`),
+  },
   // Try YYYY-MM-DD (e.g., 2025-02-20)
-  { regex: /^(\d{4})-(\d{1,2})-(\d{1,2})$/, parser: (m: RegExpMatchArray) => new Date(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`) },
+  {
+    regex: /^(\d{4})-(\d{1,2})-(\d{1,2})$/,
+    parser: (m: RegExpMatchArray) =>
+      new Date(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`),
+  },
   // Try (2025-02-20T01:00:02-05:00)
-  { regex: /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{1,2}):(\d{1,2})([-+]\d{2}:\d{2})$/, parser: (m: RegExpMatchArray) => new Date(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}T${m[4].padStart(2, '0')}:${m[5].padStart(2, '0')}:${m[6].padStart(2, '0')}${m[7]}`) },
+  {
+    regex:
+      /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{1,2}):(\d{1,2})([-+]\d{2}:\d{2})$/,
+    parser: (m: RegExpMatchArray) =>
+      new Date(
+        `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}T${m[4].padStart(2, '0')}:${m[5].padStart(2, '0')}:${m[6].padStart(2, '0')}${m[7]}`,
+      ),
+  },
   // Try 2016-07-08T13:24Z
-  { regex: /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{1,2})(Z)$/, parser: (m: RegExpMatchArray) => new Date(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}T${m[4].padStart(2, '0')}:${m[5].padStart(2, '0')}${m[6]}`) },
+  {
+    regex: /^(\d{4})-(\d{1,2})-(\d{1,2})T(\d{1,2}):(\d{1,2})(Z)$/,
+    parser: (m: RegExpMatchArray) =>
+      new Date(
+        `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}T${m[4].padStart(2, '0')}:${m[5].padStart(2, '0')}${m[6]}`,
+      ),
+  },
   // Try 2025-01-31 22:33
-  { regex: /^(\d{4})-(\d{1,2})-(\d{1,2}) (\d{1,2}):(\d{1,2})$/, parser: (m: RegExpMatchArray) => new Date(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}T${m[4].padStart(2, '0')}:${m[5].padStart(2, '0')}`) },
+  {
+    regex: /^(\d{4})-(\d{1,2})-(\d{1,2}) (\d{1,2}):(\d{1,2})$/,
+    parser: (m: RegExpMatchArray) =>
+      new Date(
+        `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}T${m[4].padStart(2, '0')}:${m[5].padStart(2, '0')}`,
+      ),
+  },
 ];
 
 /**
@@ -140,7 +187,11 @@ const dateFormats = [
  * @param logger A logger instance for logging
  * @returns The last modification date as a string or null if not found
  */
-async function getLastModDate(sitemapText: string, sitemapPage: Page, logger: Logger) {
+async function getLastModDate(
+  sitemapText: string,
+  sitemapPage: Page,
+  logger: Logger,
+) {
   if (!sitemapText || !sitemapPage) {
     return null;
   }
@@ -157,7 +208,10 @@ async function getLastModDate(sitemapText: string, sitemapPage: Page, logger: Lo
 
   const mostRecentDate = getMostRecentDate(parsedDates, logger);
 
-  logger.info({sitemapXmlLastMod: mostRecentDate.toISOString()}, `Most recent date found: ${mostRecentDate.toISOString()}`);
+  logger.info(
+    { sitemapXmlLastMod: mostRecentDate.toISOString() },
+    `Most recent date found: ${mostRecentDate.toISOString()}`,
+  );
   return mostRecentDate.toISOString();
 }
 
@@ -169,7 +223,7 @@ async function getLastModDate(sitemapText: string, sitemapPage: Page, logger: Lo
  * @returns An array of Date objects
  */
 function convertStringsToDates(dates: string[], logger: Logger): Date[] {
-  return dates.map(date => parseDate(date, logger));
+  return dates.map((date) => parseDate(date, logger));
 }
 
 /**
@@ -211,7 +265,7 @@ function getModDatesByLastmodTag(sitemapText: string): string[] | null {
   const re = /<lastmod>\s*(.*?)\s*<\/lastmod>/g;
   const matches = [...sitemapText.matchAll(re)];
   if (matches.length > 0) {
-    return matches.map(match => match[1]);
+    return matches.map((match) => match[1]);
   }
 
   return null;
@@ -224,16 +278,23 @@ function getModDatesByLastmodTag(sitemapText: string): string[] | null {
  * @param logger A logger instance for logging
  * @returns An array of modification dates as strings or null if not found
  */
-async function getModDatesByTDTag(sitemapPage: Page, logger: Logger): Promise<string[] | null> {
+async function getModDatesByTDTag(
+  sitemapPage: Page,
+  logger: Logger,
+): Promise<string[] | null> {
   const tdTexts = await sitemapPage.$$eval('td', (tds) =>
-    tds.map(td => td.textContent?.trim()).filter(text => text !== undefined)
+    tds
+      .map((td) => td.textContent?.trim())
+      .filter((text) => text !== undefined),
   );
   if (!tdTexts || tdTexts.length === 0) {
     return null;
   }
-  const modDates = tdTexts.map(text => text.trim()).filter(text => isDate(text, logger));
-  const parsedDates = modDates.map(date => parseDate(date, logger));
-  const stringDates = parsedDates.map(date => date.toISOString());
+  const modDates = tdTexts
+    .map((text) => text.trim())
+    .filter((text) => isDate(text, logger));
+  const parsedDates = modDates.map((date) => parseDate(date, logger));
+  const stringDates = parsedDates.map((date) => date.toISOString());
 
   return stringDates.length > 0 ? stringDates : null;
 }

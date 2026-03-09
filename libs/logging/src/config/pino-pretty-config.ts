@@ -6,10 +6,10 @@
  * @returns The configuration object for pino-pretty.
  */
 export function getPinoPrettyConfig() {
-    return {
-        colorize: true,
-        ignore: 'pid,hostname',
-        singleLine: true,
-        timestampKey: 'sseLogTime',
-    };
+  return {
+    colorize: true,
+    ignore: 'pid,hostname',
+    singleLine: true,
+    timestampKey: 'sseLogTime',
+  };
 }

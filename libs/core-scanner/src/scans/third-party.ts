@@ -13,8 +13,16 @@ export const buildThirdPartyResult = async (
   const logger = parentLogger.child({ scan: 'third-party-scan' });
   const url = mainResponse && mainResponse.url();
   logger.info(`Building third party scan result for: ${url}`);
-  const thirdPartyResult = await thirdPartyServices(logger, outboundRequests, url);
-  const thirdPartyUrlResult = await thirdPartyServicesUrls(logger, outboundRequests, url);
+  const thirdPartyResult = await thirdPartyServices(
+    logger,
+    outboundRequests,
+    url,
+  );
+  const thirdPartyUrlResult = await thirdPartyServicesUrls(
+    logger,
+    outboundRequests,
+    url,
+  );
   return {
     thirdPartyServiceDomains: thirdPartyResult.domains,
     thirdPartyServiceCount: thirdPartyResult.count,
@@ -22,11 +30,17 @@ export const buildThirdPartyResult = async (
   };
 };
 
-export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTTPRequest[], finalUrl: string, ): { domains: string; count: number; } {
+export function thirdPartyServices(
+  parentLogger: Logger,
+  outboundRequests: HTTPRequest[],
+  finalUrl: string,
+): { domains: string; count: number } {
   const logger = parentLogger.child({ function: 'thirdPartyServices' });
   logger.info(`Collecting third party services for: ${finalUrl}`);
-  if( (!outboundRequests || outboundRequests.length === 0) || !finalUrl ) {
-    logger.warn(`No outbound requests or final URL provided. Returning empty result.`);
+  if (!outboundRequests || outboundRequests.length === 0 || !finalUrl) {
+    logger.warn(
+      `No outbound requests or final URL provided. Returning empty result.`,
+    );
     return {
       domains: '',
       count: 0,
@@ -38,18 +52,30 @@ export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTT
 
     for (const request of outboundRequests) {
       const url = request && new URL(request.url());
-      if (parsedUrl.hostname != url.hostname && !request.isNavigationRequest()) {
+      if (
+        parsedUrl.hostname != url.hostname &&
+        !request.isNavigationRequest()
+      ) {
         thirdPartyDomains.push(url.hostname);
       }
     }
     const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
-    logCount( logger, { thirdPartyServicesDomainsCount: deduped.length }, `scanner.page.primary.scan.third-party.domainCount`, `${deduped.length} third party domains collected.`, deduped.length );
+    logCount(
+      logger,
+      { thirdPartyServicesDomainsCount: deduped.length },
+      `scanner.page.primary.scan.third-party.domainCount`,
+      `${deduped.length} third party domains collected.`,
+      deduped.length,
+    );
     return {
       domains: deduped.join(','),
       count: deduped.length,
     };
   } catch (error) {
-    logger.error({ error }, `Error collecting third party services: ${error.message}`);
+    logger.error(
+      { error },
+      `Error collecting third party services: ${error.message}`,
+    );
     return {
       domains: '',
       count: 0,
@@ -65,32 +91,51 @@ export function thirdPartyServices ( parentLogger: Logger, outboundRequests: HTT
  * @param finalUrl
  * @returns string
  */
-export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests: HTTPRequest[], finalUrl: string ): string {
+export function thirdPartyServicesUrls(
+  parentLogger: Logger,
+  outboundRequests: HTTPRequest[],
+  finalUrl: string,
+): string {
   const logger = parentLogger.child({ function: 'thirdPartyServicesUrls' });
   logger.info(`Collecting third party services URLs for: ${finalUrl}`);
-  if( (!outboundRequests || outboundRequests.length === 0) || !finalUrl ) {
-    logger.warn(`No outbound requests or final URL provided. Returning empty result.`);
+  if (!outboundRequests || outboundRequests.length === 0 || !finalUrl) {
+    logger.warn(
+      `No outbound requests or final URL provided. Returning empty result.`,
+    );
     return '';
   }
-  try{
+  try {
     const parsedUrl = new URL(finalUrl);
     const thirdPartyDomains = [];
 
     for (const request of outboundRequests) {
       const url = request && new URL(request.url());
-      if (parsedUrl.hostname != url.hostname && !request.isNavigationRequest()) {
+      if (
+        parsedUrl.hostname != url.hostname &&
+        !request.isNavigationRequest()
+      ) {
         const fullUrl = removeQueryParameters(url.toString());
-        const isPageLoad = fullUrl.startsWith('http') || fullUrl.startsWith('https');
-        if( isPageLoad) {
+        const isPageLoad =
+          fullUrl.startsWith('http') || fullUrl.startsWith('https');
+        if (isPageLoad) {
           thirdPartyDomains.push(fullUrl);
         }
       }
     }
     const deduped = uniq(thirdPartyDomains).filter(Boolean).sort();
-    logCount(logger, { thirdPartyServicesUrlsCount: deduped.length }, 'scanner.page.primary.scan.third-party.unique_external_urls.count', `${deduped.length} unique external URLs collected.`, deduped.length);
-    return deduped.join(',')
+    logCount(
+      logger,
+      { thirdPartyServicesUrlsCount: deduped.length },
+      'scanner.page.primary.scan.third-party.unique_external_urls.count',
+      `${deduped.length} unique external URLs collected.`,
+      deduped.length,
+    );
+    return deduped.join(',');
   } catch (error) {
-    logger.error({ error }, `Error collecting third party services URLs: ${error.message}`);
+    logger.error(
+      { error },
+      `Error collecting third party services URLs: ${error.message}`,
+    );
     return '';
   }
 }
@@ -102,11 +147,11 @@ export function thirdPartyServicesUrls ( parentLogger: Logger, outboundRequests:
  */
 export function removeQueryParameters(url: string): string {
   try {
-      const parsedUrl = new URL(url);
-      parsedUrl.search = '';
+    const parsedUrl = new URL(url);
+    parsedUrl.search = '';
 
-      return parsedUrl.toString();
+    return parsedUrl.toString();
   } catch (error) {
-      throw new Error('Invalid URL');
+    throw new Error('Invalid URL');
   }
 }

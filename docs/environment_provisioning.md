@@ -3,7 +3,7 @@
 ## Overview
 
 Deploying to an environment (space) requires that the space exist --
-be provisionied -- before code can be deployed to it.  The steps to
+be provisionied -- before code can be deployed to it. The steps to
 provision an environment include:
 
 1. Create the space on Cloud Foundry
@@ -19,7 +19,7 @@ provision an environment include:
 ### 1. Create the space on Cloud Foundry
 
 First, verify that the environment you wish to create doesn't yet
-exist by using the `cf spaces command`  (note: you must be logged
+exist by using the `cf spaces command` (note: you must be logged
 in first).
 
 Assuming the space does not yet exist, use the `cf create-space`
@@ -36,15 +36,15 @@ to be used.
 ### 2. Create vars file for the environment
 
 Cloud Foundry uses `manifest.yml` files to describe the applications
-to be deployed to a space.  The `manifest.yml` file for this project
+to be deployed to a space. The `manifest.yml` file for this project
 uses [variable substitution](https://docs.cloudfoundry.org/devguide/deploy-apps/manifest-attributes.html#variable-substitution)
 to specify environment-specific variables (e.g., memory quota,
-number of instances, etc.).  The values for these variables are found
-in the `env-NAME_OF_SPACE.yml` files.  So, for example, the vars
+number of instances, etc.). The values for these variables are found
+in the `env-NAME_OF_SPACE.yml` files. So, for example, the vars
 file for the `dev` environment is `vars-dev.yml` (case-sensitive).
 
 So, to create a vars file for a new environment, copy an existing
-vars file and supply the appropriate values.  Be sure to add the
+vars file and supply the appropriate values. Be sure to add the
 file to the repository (`git add`), commit it (`git commit`) and
 push it (`git push origin NAME_OF_BRANCH`) so that the deployment
 script is able to deploy changes to said environment.
@@ -53,7 +53,7 @@ script is able to deploy changes to said environment.
 
 The deployment script -- used to provision the environment -- uses
 the name of the space in order to select which vars file will be
-used with the environment.  Therefore, it's important to target
+used with the environment. Therefore, it's important to target
 the space by using the `cf target` command:
 
 ```sh
@@ -63,11 +63,11 @@ cf target -o NAME_OF_ORG -s NAME_OF_SPACE
 ### 4. Create an API key for use with the environment
 
 The deployment script requests the `API_KEY` to use with
-the deployed environment.  This `API_KEY` is passed along with
+the deployed environment. This `API_KEY` is passed along with
 API calls to authenticate the request.
 
 The API key is stored as a user-provided service, so its value
-is accessible via `cf env`.  Moreover, the only time that the key
+is accessible via `cf env`. Moreover, the only time that the key
 is needed is when connecting the API to an external service (e.g.,
 API Umbrella) or when querying the API directly (e.g., via `curl`).
 
@@ -79,7 +79,7 @@ That is, it could literally be a face-plant on the keyboard.
 ### 5. Run the deployment script
 
 There is a deployment script that is used to provision the environment
-(space) called `cloudgov-deploy.sh`.  This script will not only
+(space) called `cloudgov-deploy.sh`. This script will not only
 push code to Cloud Foundry, but it will also wire up the required
 services (e.g., RDS Postgres, Redis, the API key, etc.).
 
@@ -90,13 +90,13 @@ times).
 
 Note: the process of creating and binding all of the services to the
 (new) applications takes a while -- don't be surprised if it takes
-upwards of 15..20 minutes to complete.  This is normal.
+upwards of 15..20 minutes to complete. This is normal.
 
 ### 6. Verify that the service accounts can deploy to the environment
 
 Once the application is provisioned, you, dear operator, should
 probably add the service accounts used to deploy other environments
-to this application.  One way to accomplish this is by listing the
+to this application. One way to accomplish this is by listing the
 users who have access to other, existing spaces:
 
 ```sh
@@ -123,9 +123,9 @@ passed in the `X-Secret-Api-Access-Token` HTTP header.
 
 In the following example, the following variables are used:
 
-* **key**: the API key (available from `cf env`)
-* **route**: the route (hostname, available from `cf app`)
-* **endpoint**: the endpoint to query (e.g., `/websites/`)
+- **key**: the API key (available from `cf env`)
+- **route**: the route (hostname, available from `cf app`)
+- **endpoint**: the endpoint to query (e.g., `/websites/`)
 
 ```sh
 curl -H "X-Secret-Api-Access-Token: $key" "https://${route}${endpoint}"

@@ -87,7 +87,7 @@ describe('WebsiteService', () => {
     website.sourceList = 'gov';
     website.filter = false;
     website.pageviews = 1;
-    website.visits = 1, await service.upsert(createWebsiteDto);
+    ((website.visits = 1), await service.upsert(createWebsiteDto));
     expect(mockRepository.insert).toHaveBeenCalledWith(website);
   });
 

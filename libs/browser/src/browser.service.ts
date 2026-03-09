@@ -53,10 +53,9 @@ export class BrowserService implements OnModuleDestroy {
       });
       return result;
     } catch (error) {
-      this.logger.error({error}, `Error processing page: ${error.message}`);
+      this.logger.error({ error }, `Error processing page: ${error.message}`);
       await page.close();
     }
-    
   }
 
   async onModuleDestroy() {

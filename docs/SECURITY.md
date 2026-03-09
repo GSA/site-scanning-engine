@@ -40,5 +40,5 @@ Acting means:
 - Dismissing the security alert with “Risk is tolerable
   to this project."
   - All security alerts dismissed in this way must be
-  documented with a closed issue linking to the
-  vulnerability and explaining why the risk is tolerable.
+    documented with a closed issue linking to the
+    vulnerability and explaining why the risk is tolerable.

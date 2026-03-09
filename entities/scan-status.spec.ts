@@ -18,32 +18,44 @@ describe('scan-status', () => {
 
     it('should parse dns resolution error', () => {
       const err = new Error('net::ERR_NAME_NOT_RESOLVED');
-      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.DNSResolutionError);
+      expect(parseBrowserError(err, mockLogger)).toBe(
+        ScanStatus.DNSResolutionError,
+      );
     });
 
     it('should parse invalid ssl cert error', () => {
       const err = new Error('net::ERR_CERT_COMMON_NAME_INVALID');
-      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.InvalidSSLCert);
+      expect(parseBrowserError(err, mockLogger)).toBe(
+        ScanStatus.InvalidSSLCert,
+      );
     });
 
     it('should parse invalid ssl cert error', () => {
       const err = new Error('net::ERR_SSL_UNRECOGNIZED_NAME_ALERT');
-      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.InvalidSSLCert);
+      expect(parseBrowserError(err, mockLogger)).toBe(
+        ScanStatus.InvalidSSLCert,
+      );
     });
 
     it('should parse connection refused error', () => {
       const err = new Error('net::ERR_CONNECTION_REFUSED');
-      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.ConnectionRefused);
+      expect(parseBrowserError(err, mockLogger)).toBe(
+        ScanStatus.ConnectionRefused,
+      );
     });
 
     it('should parse connection reset error', () => {
       const err = new Error('net::ERR_CONNECTION_RESET');
-      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.ConnectionReset);
+      expect(parseBrowserError(err, mockLogger)).toBe(
+        ScanStatus.ConnectionReset,
+      );
     });
 
     it('should parse invalid response', () => {
       const err = new Error('net::ERR_INVALID_RESPONSE');
-      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.InvalidResponse);
+      expect(parseBrowserError(err, mockLogger)).toBe(
+        ScanStatus.InvalidResponse,
+      );
     });
 
     it('should parse unknown error', () => {
@@ -53,12 +65,16 @@ describe('scan-status', () => {
 
     it('should parse invalid auth credentials error', () => {
       const err = new Error('net::ERR_INVALID_AUTH_CREDENTIALS');
-      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.InvalidAuthCredentials);
+      expect(parseBrowserError(err, mockLogger)).toBe(
+        ScanStatus.InvalidAuthCredentials,
+      );
     });
 
     it('should parse ssl protocol error', () => {
       const err = new Error('net::ERR_SSL_PROTOCOL_ERROR');
-      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.SslProtocolError);
+      expect(parseBrowserError(err, mockLogger)).toBe(
+        ScanStatus.SslProtocolError,
+      );
     });
 
     it('should parse aborted error', () => {

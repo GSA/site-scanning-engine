@@ -5,9 +5,16 @@ import { CmsScan } from 'entities/scan-data.entity';
 
 import { Logger } from 'pino';
 
-export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<CmsScan> {
-  const htmlMatches = mainResponse ? await getHtmlMatches(parentLogger, mainResponse) : [];
-  const headerMatches = mainResponse ? await getHeaderMatches(mainResponse) : [];
+export async function buildCmsResult(
+  parentLogger: Logger,
+  mainResponse: HTTPResponse,
+): Promise<CmsScan> {
+  const htmlMatches = mainResponse
+    ? await getHtmlMatches(parentLogger, mainResponse)
+    : [];
+  const headerMatches = mainResponse
+    ? await getHeaderMatches(mainResponse)
+    : [];
 
   let cms = null;
 
@@ -18,7 +25,7 @@ export async function buildCmsResult( parentLogger: Logger, mainResponse: HTTPRe
   }
 
   return { cms };
-};
+}
 
 const getHtmlMatches = async (logger: Logger, response: HTTPResponse) => {
   const actualHtml = response ? await response.text() : '';

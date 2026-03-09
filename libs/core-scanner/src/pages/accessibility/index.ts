@@ -14,7 +14,6 @@ export const createAccessibilityScanner = (
   const childLogger = logger.child({ module: 'accessibility' });
   childLogger.info('Starting a11y scan...');
 
-
   return async (page: Page): Promise<AccessibilityScan> => {
     createRequestHandlers(page, childLogger);
 
@@ -36,6 +35,5 @@ export const createAccessibilityScanner = (
       accessibilityResults,
       accessibilityResultsList,
     };
-
   };
 };

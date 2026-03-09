@@ -24,69 +24,77 @@ describe('CoreScanner (e2e)', () => {
     await moduleFixture.close();
   });
 
-  it('should return results for 10x.gsa.gov', async () => {
-    const input: CoreInputDto = {
-      websiteId: 1,
-      url: '10x.gsa.gov',
-      filter: false,
-      pageviews: 1,
-      visits: 1,
-      scanId: '123',
-    };
+  it(
+    'should return results for 10x.gsa.gov',
+    async () => {
+      const input: CoreInputDto = {
+        websiteId: 1,
+        url: '10x.gsa.gov',
+        filter: false,
+        pageviews: 1,
+        visits: 1,
+        scanId: '123',
+      };
 
-    const result = await service.scan(input);
-    expect(result).toMatchObject({
-      base: {
-        targetUrlBaseDomain: 'gsa.gov',
-      },
-      primary: {
-        status: ScanStatus.Completed,
-      },
-      dns: {
-        status: ScanStatus.Completed,
-      },
-      notFound: {
-        status: ScanStatus.Completed,
-      },
-      robotsTxt: {
-        status: ScanStatus.Completed,
-      },
-      sitemapXml: {
-        status: ScanStatus.Completed,
-      },
-    });
-  }, E2E_TEST_TIMEOUT);
+      const result = await service.scan(input);
+      expect(result).toMatchObject({
+        base: {
+          targetUrlBaseDomain: 'gsa.gov',
+        },
+        primary: {
+          status: ScanStatus.Completed,
+        },
+        dns: {
+          status: ScanStatus.Completed,
+        },
+        notFound: {
+          status: ScanStatus.Completed,
+        },
+        robotsTxt: {
+          status: ScanStatus.Completed,
+        },
+        sitemapXml: {
+          status: ScanStatus.Completed,
+        },
+      });
+    },
+    E2E_TEST_TIMEOUT,
+  );
 
-  it('returns results for poolsafety.gov', async () => {
-    const input: CoreInputDto = {
-      websiteId: 1,
-      url: 'poolsafety.gov',
-      filter: false,
-      pageviews: 1,
-      visits: 1,
-      scanId: '123',
-    };
+  it(
+    'returns results for poolsafety.gov',
+    async () => {
+      const input: CoreInputDto = {
+        websiteId: 1,
+        url: 'poolsafety.gov',
+        filter: false,
+        pageviews: 1,
+        visits: 1,
+        scanId: '123',
+      };
 
-    const result = await service.scan(input);
-    expect(result).toMatchObject({
-      base: {
-        targetUrlBaseDomain: input.url,
-      },
-      dns: {
-        status: ScanStatus.Completed,
-      },
-      primary: {
-        status: ScanStatus.Completed,
-      },
-      notFound: {
-        status: ScanStatus.Completed,
-      },
-      robotsTxt: {
-        status: ScanStatus.Completed,
-      },
-      sitemapXml: {
-        status: ScanStatus.Completed,
-      },
-    });
-  }, E2E_TEST_TIMEOUT);
+      const result = await service.scan(input);
+      expect(result).toMatchObject({
+        base: {
+          targetUrlBaseDomain: input.url,
+        },
+        dns: {
+          status: ScanStatus.Completed,
+        },
+        primary: {
+          status: ScanStatus.Completed,
+        },
+        notFound: {
+          status: ScanStatus.Completed,
+        },
+        robotsTxt: {
+          status: ScanStatus.Completed,
+        },
+        sitemapXml: {
+          status: ScanStatus.Completed,
+        },
+      });
+    },
+    E2E_TEST_TIMEOUT,
+  );
 });

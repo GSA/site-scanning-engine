@@ -35,7 +35,10 @@ const loginProviderStrings = [
   'secureauth',
 ];
 
-export async function buildLoginResult ( parentLogger: Logger, mainResponse: HTTPResponse ): Promise<LoginScan> {
+export async function buildLoginResult(
+  parentLogger: Logger,
+  mainResponse: HTTPResponse,
+): Promise<LoginScan> {
   const html = mainResponse ? await mainResponse.text() : '';
   const htmlLower = html.toLowerCase();
 
@@ -46,7 +49,7 @@ export async function buildLoginResult ( parentLogger: Logger, mainResponse: HTT
     loginDetected,
     loginProvider,
   };
-};
+}
 
 const getLoginDetectedResults = (html: string): string | null => {
   const results = [];

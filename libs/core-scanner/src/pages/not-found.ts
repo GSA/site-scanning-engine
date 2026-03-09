@@ -32,11 +32,16 @@ export const createNotFoundScanner = async (
         httpsAgent: agent,
       }),
     );
-    childLogger.debug({ status: resp.status }, `Got response from URL: ${randomUrl.toString()}`);
+    childLogger.debug(
+      { status: resp.status },
+      `Got response from URL: ${randomUrl.toString()}`,
+    );
     return resp.status === HttpStatus.NOT_FOUND;
   } catch (error) {
-    childLogger.error({ error: error.message }, `Error fetching URL: ${randomUrl.toString()}`);
+    childLogger.error(
+      { error: error.message },
+      `Error fetching URL: ${randomUrl.toString()}`,
+    );
     return false;
   }
-  
 };

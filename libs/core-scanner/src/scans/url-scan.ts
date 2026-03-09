@@ -21,10 +21,13 @@ export const buildUrlScanResult = async (
   response: HTTPResponse,
   parentLogger: Logger,
 ): Promise<UrlScan> => {
-  const logger = parentLogger.child({ sseContext: 'Scan.UrlScan', scan: 'URLScan'});
+  const logger = parentLogger.child({
+    sseContext: 'Scan.UrlScan',
+    scan: 'URLScan',
+  });
   logger.info('Building URL scan result...');
   logger.debug(`Page url: ${page.url()}`);
-  if( page.url() === 'chrome-error://chromewebdata/') {
+  if (page.url() === 'chrome-error://chromewebdata/') {
     logger.warn('Page url is chrome-error://chromewebdata/');
     return {
       targetUrlRedirects: null,
@@ -79,13 +82,17 @@ function removeHttps(url: string): string {
 
 /**
  * Compares the initial URL and final URL to determine if a redirect occurred
- * 
+ *
  * @param initialUrl The initial URL that is being scanned. Stored as the `url` property in the CoreInputDto
  * @param finalUrl The final URL after all redirects. Stored as the `name` property in the CoreResult after removing www.
  * @param logger
  * @returns true if the initial URL and final URL are the same, false if they are different, and null if either is missing
  */
-function isRedirect(initialUrl: string, finalUrl: string, logger: Logger): boolean {
+function isRedirect(
+  initialUrl: string,
+  finalUrl: string,
+  logger: Logger,
+): boolean {
   if (!finalUrl) {
     logger.info('No final URL found, cannot compare.');
     return null;
@@ -95,11 +102,17 @@ function isRedirect(initialUrl: string, finalUrl: string, logger: Logger): boole
   finalUrl = removeWww(finalUrl);
 
   if (initialUrl === finalUrl) {
-    logger.info({redirectCheck: {initialUrl, finalUrl}}, 'Initial URL and final URL are the same.');
+    logger.info(
+      { redirectCheck: { initialUrl, finalUrl } },
+      'Initial URL and final URL are the same.',
+    );
     return false;
   }
   if (initialUrl && finalUrl) {
-    logger.info({redirectCheck: {initialUrl, finalUrl}}, 'Initial URL and final URL are different.');
+    logger.info(
+      { redirectCheck: { initialUrl, finalUrl } },
+      'Initial URL and final URL are different.',
+    );
     return true;
   }
 

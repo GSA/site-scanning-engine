@@ -1,13 +1,19 @@
 import { Logger } from 'pino';
-import { DurationLogTimer } from "./types";
+import { DurationLogTimer } from './types';
 
-export function logCount(logger: Logger, metadata: any, metricId: string, logMessage: string, metricValue = 1) {
+export function logCount(
+  logger: Logger,
+  metadata: any,
+  metricId: string,
+  logMessage: string,
+  metricValue = 1,
+) {
   if (!metadata) {
     metadata = {};
   }
   const metaDefaults = {
     metricValue,
-    metricUnit: "count",
+    metricUnit: 'count',
   };
   const finalMetadata = {
     ...metaDefaults,
@@ -15,7 +21,7 @@ export function logCount(logger: Logger, metadata: any, metricId: string, logMes
     metricId,
   };
   logger.info(finalMetadata, logMessage);
-};
+}
 
 export function logTimer(logger: Logger): DurationLogTimer {
   const timer = {
@@ -27,30 +33,38 @@ export function logTimer(logger: Logger): DurationLogTimer {
       }
       const finalMetadata = {
         ...metadata,
-        metricUnit: "ms",
+        metricUnit: 'ms',
         metricValue: duration,
         metricId,
       };
 
-      const finalMessage = logMessage
-        .replace(/\{metricValue}/g, duration.toString());
+      const finalMessage = logMessage.replace(
+        /\{metricValue}/g,
+        duration.toString(),
+      );
 
       logger.info(finalMetadata, finalMessage);
-    }
+    },
   };
   return timer;
-};
+}
 
-export function logScanResult( logger: Logger, metadata: any, name: string, value: any, message: string ) {
-  if( !metadata ) {
+export function logScanResult(
+  logger: Logger,
+  metadata: any,
+  name: string,
+  value: any,
+  message: string,
+) {
+  if (!metadata) {
     metadata = {};
   }
   const finalMetadata = {
     ...metadata,
     scanResult: {
       name,
-      value: JSON.stringify( value ),
+      value: JSON.stringify(value),
     },
   };
-  logger.info( finalMetadata, message );
-};
+  logger.info(finalMetadata, message);
+}

@@ -8,7 +8,7 @@ source components, so it is feasible to run the application locally.
 
 The project uses a `.env` file to configure the environment. This file
 is not checked into the repository, so you will need to create one in
-the root of the project. 
+the root of the project.
 
 A `.env.example` file is provided. Simply copy that file to `.env`
 and update any values as needed.
@@ -70,4 +70,3 @@ npm run test:watch
 # lint
 npm run lint
 ```
-

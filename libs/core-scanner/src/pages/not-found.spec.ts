@@ -48,7 +48,11 @@ describe('not-found scan', () => {
       .spyOn(mockHttpService, 'get')
       .mockImplementationOnce(() => of(response));
 
-    const result = await createNotFoundScanner(mockHttpService, 'gsa.gov', mockLogger);
+    const result = await createNotFoundScanner(
+      mockHttpService,
+      'gsa.gov',
+      mockLogger,
+    );
     expect(result).toEqual(false);
   });
 });

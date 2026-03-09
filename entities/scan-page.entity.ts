@@ -5,12 +5,12 @@ export type PageScanSuccess<T> = {
   status: AnySuccessfulStatus;
   result: T;
   error?: null;
-}
+};
 
 export type PageScanFailure = {
   status: AnyFailureStatus;
   error: string;
-}
+};
 
 // A page scan includes scan data and a status of "completed", or a non-completed status.
 export type PageScan<T> = PageScanSuccess<T> | PageScanFailure;

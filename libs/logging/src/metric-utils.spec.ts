@@ -1,11 +1,9 @@
 import pino from 'pino';
 import { logCount, logTimer } from './metric-utils';
 
-
 const mockLogger = pino();
 
 describe('Metric Utilities', () => {
-
   describe('logCount()', () => {
     afterAll(() => {
       jest.resetAllMocks();
@@ -20,7 +18,10 @@ describe('Metric Utilities', () => {
         metricUnit: 'count',
         metricId,
       };
-      expect(mockLogger.info).toHaveBeenCalledWith(expectedMetadata, logMessage);
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expectedMetadata,
+        logMessage,
+      );
     });
 
     it('should call mockLogger.info with provided metadata merged with defaults', () => {
@@ -28,7 +29,7 @@ describe('Metric Utilities', () => {
       const logMessage = 'Another log message';
       const metadata = {
         metricValue: 5,
-        additionalInfo: 'Extra data'
+        additionalInfo: 'Extra data',
       };
       logCount(mockLogger, metadata, metricId, logMessage);
 
@@ -36,9 +37,12 @@ describe('Metric Utilities', () => {
         metricValue: 5,
         metricUnit: 'count',
         metricId,
-        additionalInfo: 'Extra data'
+        additionalInfo: 'Extra data',
       };
-      expect(mockLogger.info).toHaveBeenCalledWith(expectedMetadata, logMessage);
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expectedMetadata,
+        logMessage,
+      );
     });
   });
 
@@ -72,9 +76,10 @@ describe('Metric Utilities', () => {
       // The log message should replace {metricValue} with the duration
       const expectedMessage = `Duration: ${expectedDuration} ms`;
 
-      expect(mockLogger.info).toHaveBeenCalledWith(expectedMetadata, expectedMessage);
+      expect(mockLogger.info).toHaveBeenCalledWith(
+        expectedMetadata,
+        expectedMessage,
+      );
     });
-
   });
-
 });

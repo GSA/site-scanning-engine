@@ -10,10 +10,10 @@
 
 This repository is for the Site Scanning engine itself, the codebase that actually runs the scans and generates data. This is the new base scanner repository which uses Headless Chrome, powered by Puppeteer for scanning.
 
-For more detailed documentation about the Site Scanning program, including **who it's for**, **what it does**, **long-term goals**, etc. please visit the 
-[Site Scanning program website](https://digital.gov/site-scanning), especially the [Technical Details page](https://digital.gov/guides/site-scanning/technical-details/).  
+For more detailed documentation about the Site Scanning program, including **who it's for**, **what it does**, **long-term goals**, etc. please visit the
+[Site Scanning program website](https://digital.gov/site-scanning), especially the [Technical Details page](https://digital.gov/guides/site-scanning/technical-details/).
 
-The project's issue tracker and other relevant repositories and links [can be found here](https://github.com/GSA/site-scanning?tab=readme-ov-file#site-scanning).  
+The project's issue tracker and other relevant repositories and links [can be found here](https://github.com/GSA/site-scanning?tab=readme-ov-file#site-scanning).
 
 ## Table of Contents
 
@@ -241,4 +241,3 @@ You can optionally pass a different manifest file with `cloudgov-deploy.sh manif
 - [Environment Provisioning](docs/environment_provisioning.md)
 - [Layout](docs/layout.md)
 - [Architectural Diagram](docs/architecture/diagrams/images/architecture-cloud-gov.png)
-

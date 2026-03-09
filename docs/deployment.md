@@ -1,7 +1,7 @@
 # How to Deploy Site-Scanner
 
 Site-Scanner uses different deployment techniques, depending on where it will
-be deployed.  For deployments to the cloud.gov environment, several
+be deployed. For deployments to the cloud.gov environment, several
 buildpacks are used (nodejs, apt); for local deployments, Docker (for
 the application) and Docker-Compose (for required services) are used.
 
@@ -21,12 +21,12 @@ in the local environment.
 #### Configure The Required Services
 
 First, a configuration file, `.env` must be created in the project's
-root directory.  This file includes parameters needed to start the
+root directory. This file includes parameters needed to start the
 required services and for the Scan Engine to interact with them.
 
 A sample configuration file is available in [sample.env](../sample.env)
-with several `<add_a_key_here>` indicators.  These need to be
-replaced with actual keys.  The file should be copied to `.env` (e.g.,
+with several `<add_a_key_here>` indicators. These need to be
+replaced with actual keys. The file should be copied to `.env` (e.g.,
 `cp sample.env .env`), not moved or updated in-place.
 
 The actual values used to replace the `<add_a_key_here>` are largely
@@ -101,7 +101,7 @@ cf target -o "$ORGANIZATION" -s "$SPACE"
 ```
 
 Here, `$ORGANIZATION` and `$SPACE` are the orgnization and space,
-respectively.  To list the organizations one may access, use:
+respectively. To list the organizations one may access, use:
 
 ```bash
 cf orgs
@@ -128,7 +128,7 @@ desired space (environment):
 The `cloudgov-deploy.sh` is a wrapper around running `cf push`
 that will push the code on the filesystem -- regardless of any
 git branches, Pull Requests (PRs), commits, etc. -- out to the
-cloud.gov infrastructure.  Also, the script has functionality
+cloud.gov infrastructure. Also, the script has functionality
 to verify that the required services are setup and running
 on the cloud.gov infrastructure, such as an S3 bucket,
 Redis queue, Postgres database, API key, etc..
@@ -139,13 +139,13 @@ environment-specific YAML file, typically named of the form
 of the actual environment.
 
 When `cloudgov-deploy.sh` is run in a new environment, it
-will prompt the operator for an API key.  This API key is stored on
+will prompt the operator for an API key. This API key is stored on
 cloud.gov as an environment variable that can be used by applications.
 As a result, one doesn't need to retain the API key or store it
 anywhere.
 
 - **Note:** the process of standing up a new environment takes
-   about 20 minutes to complete.  This is normal.
+  about 20 minutes to complete. This is normal.
 
 ## Resources
 

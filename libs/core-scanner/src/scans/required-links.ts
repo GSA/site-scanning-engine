@@ -4,7 +4,10 @@ import { RequiredLinksScan } from 'entities/scan-data.entity';
 
 import { Logger } from 'pino';
 
-export async function buildRequiredLinksResult( parentLogger: Logger, page: Page ): Promise<RequiredLinksScan> {
+export async function buildRequiredLinksResult(
+  parentLogger: Logger,
+  page: Page,
+): Promise<RequiredLinksScan> {
   const requiredLinksResults = await page.evaluate(() => {
     const requiredLinksUrlContents = [
       'about',
@@ -18,7 +21,7 @@ export async function buildRequiredLinksResult( parentLogger: Logger, page: Page
       'español',
       '/es',
     ];
-  
+
     const requiredLinksUrl = requiredLinksUrlContents
       .filter((string) => {
         let stringDetected = false;
@@ -52,7 +55,7 @@ export async function buildRequiredLinksResult( parentLogger: Logger, page: Page
       'espa&ntilde;ol',
       'spanish',
     ];
-  
+
     const requiredLinksText = requiredLinksTextContents
       .filter((string) => {
         let stringDetected = false;
@@ -73,4 +76,4 @@ export async function buildRequiredLinksResult( parentLogger: Logger, page: Page
     };
   });
   return requiredLinksResults;
-};
+}

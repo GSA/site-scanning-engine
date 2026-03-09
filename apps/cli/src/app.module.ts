@@ -1,5 +1,3 @@
- 
-
 import { Module } from '@nestjs/common';
 
 import { CoreScannerModule } from '@app/core-scanner';
@@ -14,14 +12,14 @@ import { QueueController } from './queue.controller';
 import { ScanController } from './scan.controller';
 import { SnapshotController } from './snapshot.controller';
 import { SecurityDataController } from './security-data.controller';
-import { injectLoggerModule } from "../../../libs/logging/src";
+import { injectLoggerModule } from '../../../libs/logging/src';
 
 @Module({
   imports: [
     CoreScannerModule,
     DatabaseModule,
     IngestModule,
-    injectLoggerModule({ applicationName: "cli" }),
+    injectLoggerModule({ applicationName: 'cli' }),
     QueueModule,
     SnapshotModule,
     SecurityDataModule,

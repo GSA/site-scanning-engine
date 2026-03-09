@@ -5,7 +5,6 @@ import * as fs from 'fs';
 import { ScanStatus } from 'entities/scan-status';
 import { fetchSecurityData } from './fetch-security-data'; // Adjust the path accordingly
 
-
 jest.mock('fs', () => ({
   promises: {
     readFile: jest.fn(),
@@ -142,7 +141,7 @@ describe('SecurityDataService', () => {
   });
 
   it('should correctly save fetched data to file system', async () => {
-    const exampleData = "example_data";
+    const exampleData = 'example_data';
 
     jest.mock('./fetch-security-data', () => ({
       fetchSecurityData: jest.fn(),
@@ -155,9 +154,7 @@ describe('SecurityDataService', () => {
 
     await service.fetchAndSaveSecurityData();
 
-    expect(spyMkdir).toHaveBeenCalledWith(
-      '/data', expect.anything(),
-    );
+    expect(spyMkdir).toHaveBeenCalledWith('/data', expect.anything());
 
     expect(spyWriteFile).toHaveBeenCalledWith(
       '/data/security-data.csv',

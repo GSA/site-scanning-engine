@@ -44,19 +44,79 @@ const primaryScan = async (
   const getOutboundRequests = createOutboundRequestsExtractor(page);
 
   const response = await page.goto(url, {
-    waitUntil: 'networkidle2'
+    waitUntil: 'networkidle2',
   });
 
-  const wrappedDapResult = runScan(input, pageLogger, buildDapResult, 'DAPScan', url);
-  const wrappedThirdPartyResult = runScan(input, pageLogger, buildThirdPartyResult, 'ThirdPartyScan', url);
-  const wrappedCookieResult = runScan(input, pageLogger, buildCookieResult, 'CookieScan', url);
-  const wrappedSeoResult = runScan(input, pageLogger, buildSeoResult, 'SEOScan', url);
-  const wrappedUswdsScanner = runScan(input, pageLogger, createUswdsScanner(getCSSRequests, page), 'USWDSScan', url);
-  const wrappedLoginResult = runScan(input, pageLogger, buildLoginResult, 'LoginScan', url);
-  const wrappedCmsResult = runScan(input, pageLogger, buildCmsResult, 'CMSScan', url);
-  const wrappedRequiredLinksResult = runScan(input, pageLogger, buildRequiredLinksResult, 'Required LinksScan', url);
-  const wrappedSearchResult = runScan(input, pageLogger, buildSearchResult, 'SearchScan', url);
-  const wrappedMobileResult = runScan(input, pageLogger, buildMobileResult, 'MobileScan', url);
+  const wrappedDapResult = runScan(
+    input,
+    pageLogger,
+    buildDapResult,
+    'DAPScan',
+    url,
+  );
+  const wrappedThirdPartyResult = runScan(
+    input,
+    pageLogger,
+    buildThirdPartyResult,
+    'ThirdPartyScan',
+    url,
+  );
+  const wrappedCookieResult = runScan(
+    input,
+    pageLogger,
+    buildCookieResult,
+    'CookieScan',
+    url,
+  );
+  const wrappedSeoResult = runScan(
+    input,
+    pageLogger,
+    buildSeoResult,
+    'SEOScan',
+    url,
+  );
+  const wrappedUswdsScanner = runScan(
+    input,
+    pageLogger,
+    createUswdsScanner(getCSSRequests, page),
+    'USWDSScan',
+    url,
+  );
+  const wrappedLoginResult = runScan(
+    input,
+    pageLogger,
+    buildLoginResult,
+    'LoginScan',
+    url,
+  );
+  const wrappedCmsResult = runScan(
+    input,
+    pageLogger,
+    buildCmsResult,
+    'CMSScan',
+    url,
+  );
+  const wrappedRequiredLinksResult = runScan(
+    input,
+    pageLogger,
+    buildRequiredLinksResult,
+    'Required LinksScan',
+    url,
+  );
+  const wrappedSearchResult = runScan(
+    input,
+    pageLogger,
+    buildSearchResult,
+    'SearchScan',
+    url,
+  );
+  const wrappedMobileResult = runScan(
+    input,
+    pageLogger,
+    buildMobileResult,
+    'MobileScan',
+    url,
+  );
 
   const [
     urlScan,
@@ -98,16 +158,22 @@ const primaryScan = async (
     mobileScan,
   };
 
-  function runScan<T>(input: CoreInputDto, parentLogger: Logger, fn: AsyncFunction<T>, scanName: string, siteUrl: string): AsyncFunction<T> {
+  function runScan<T>(
+    input: CoreInputDto,
+    parentLogger: Logger,
+    fn: AsyncFunction<T>,
+    scanName: string,
+    siteUrl: string,
+  ): AsyncFunction<T> {
     return async (...args: any[]): Promise<T> => {
       const stepLogger = parentLogger.child({
         sseContext: `Scan.${scanName}`,
-        scan: scanName
+        scan: scanName,
       });
 
-      if(!shouldRunScan(scanName, input, stepLogger)) {
+      if (!shouldRunScan(scanName, input, stepLogger)) {
         stepLogger.debug(`Skipping ${scanName}`);
-        return "skipped" as T;
+        return 'skipped' as T;
       }
 
       stepLogger.info(`Starting ${scanName}`);
@@ -115,27 +181,50 @@ const primaryScan = async (
 
       try {
         const toReturn = await fn(stepLogger, ...args);
-        timer.log({}, `scanner.page.primary.scan.${scanName}.duration.total`, `${scanName} completed for site '${siteUrl}' in [{metricValue}ms]`);
-        logCount(stepLogger, {}, `${scanName}.succeeded.count`, `${scanName} completed successfully for site '${siteUrl}'.`);
+        timer.log(
+          {},
+          `scanner.page.primary.scan.${scanName}.duration.total`,
+          `${scanName} completed for site '${siteUrl}' in [{metricValue}ms]`,
+        );
+        logCount(
+          stepLogger,
+          {},
+          `${scanName}.succeeded.count`,
+          `${scanName} completed successfully for site '${siteUrl}'.`,
+        );
         return toReturn;
       } catch (error) {
-        stepLogger.error({error}, `${scanName} failed with error: ${error.message}`);
-        logCount(stepLogger, {}, `${scanName}.failed.count`, `${scanName} failed for site '${siteUrl}'.`);
+        stepLogger.error(
+          { error },
+          `${scanName} failed with error: ${error.message}`,
+        );
+        logCount(
+          stepLogger,
+          {},
+          `${scanName}.failed.count`,
+          `${scanName} failed for site '${siteUrl}'.`,
+        );
         return null;
       }
     };
   }
 
-  function shouldRunScan(scanName: string, input: CoreInputDto, pageLogger: Logger): boolean {
+  function shouldRunScan(
+    scanName: string,
+    input: CoreInputDto,
+    pageLogger: Logger,
+  ): boolean {
     if (!input.scan) {
       return true;
     }
     if (scanName.toLowerCase().includes(input.scan.toLowerCase())) {
-      pageLogger.info(`Scan '${scanName}' includes scan filter '${input.scan}'; running scan.`);
+      pageLogger.info(
+        `Scan '${scanName}' includes scan filter '${input.scan}'; running scan.`,
+      );
       return true;
     }
-    pageLogger.warn(`Scan '${scanName}' does not include scan filter '${input.scan}'; skipping scan.`);
+    pageLogger.warn(
+      `Scan '${scanName}' does not include scan filter '${input.scan}'; skipping scan.`,
+    );
   }
-
-
 };

@@ -73,10 +73,8 @@ export function getTestFileContents(testFileName: string): string {
  * @param body
  */
 export const newTestPageFromBody = async (
-    handler: (ctx: {
-      page: puppeteer.Page;
-    }) => Promise<void>,
-    body
+  handler: (ctx: { page: puppeteer.Page }) => Promise<void>,
+  body,
 ) => {
   await newPage(async (page) => {
     const htmlContent = `

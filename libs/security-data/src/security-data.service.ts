@@ -30,7 +30,10 @@ export class SecurityDataService {
       try {
         await this.fetchAndSaveSecurityData();
       } catch (error) {
-        this.wrapErrorAndRethrow("An error occurred fetching security data", error);
+        this.wrapErrorAndRethrow(
+          'An error occurred fetching security data',
+          error,
+        );
       }
     }
 
@@ -40,7 +43,7 @@ export class SecurityDataService {
       const csvString = await fs.readFile(this.filePath, 'utf8');
 
       await new Promise((resolve, reject) => {
-        parseString(csvString, {headers: true})
+        parseString(csvString, { headers: true })
           .on('data', (row: { [key: string]: string }) => {
             if (row.domain === url) {
               matchingRow = row;
@@ -51,7 +54,10 @@ export class SecurityDataService {
           .on('error', reject);
       });
     } catch (error) {
-      this.wrapErrorAndRethrow("An error occurred parsing security data", error);
+      this.wrapErrorAndRethrow(
+        'An error occurred parsing security data',
+        error,
+      );
     }
 
     if (!matchingRow) {
@@ -72,11 +78,14 @@ export class SecurityDataService {
   async fetchAndSaveSecurityData(): Promise<void> {
     this.logger.log(`Fetching security data from ${this.securityDataCsvUrl}`);
 
-    const csvData: string = await fetchSecurityData(this.securityDataCsvUrl, this.logger);
+    const csvData: string = await fetchSecurityData(
+      this.securityDataCsvUrl,
+      this.logger,
+    );
 
     if (csvData) {
       try {
-        await fs.mkdir(this.dirPath, {recursive: true});
+        await fs.mkdir(this.dirPath, { recursive: true });
         await fs.writeFile(this.filePath, csvData, 'utf8');
         this.logger.log(`Security data saved to ${this.filePath}`);
       } catch (error) {

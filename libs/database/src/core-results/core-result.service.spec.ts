@@ -111,8 +111,8 @@ describe('CoreResultService', () => {
           dapScan: {
             dapDetected: null,
             dapParameters: null,
-            dapVersion: "",
-            gaTagIds: "",
+            dapVersion: '',
+            gaTagIds: '',
           },
           seoScan: {
             ogTitleFinalUrl: null,
@@ -273,7 +273,15 @@ describe('CoreResultService', () => {
     };
     const logger = mock<Logger>();
 
-    await service.createFromCoreResultPages(websiteId, pages, logger, false, 1, 1, websiteUrl);
+    await service.createFromCoreResultPages(
+      websiteId,
+      pages,
+      logger,
+      false,
+      1,
+      1,
+      websiteUrl,
+    );
     expect(mockRepository.insert).toHaveBeenCalled();
   });
 });

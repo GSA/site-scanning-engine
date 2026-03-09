@@ -5,7 +5,12 @@ import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { RobotsTxtScan } from 'entities/scan-data.entity';
 import { RobotsTxtPageScans } from 'entities/scan-page.entity';
 
-import { getHttpsUrl, getMIMEType, isLive, createRequestHandlers } from '../util';
+import {
+  getHttpsUrl,
+  getMIMEType,
+  isLive,
+  createRequestHandlers,
+} from '../util';
 
 export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   const url = getHttpsUrl(input.url);
@@ -19,7 +24,7 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
       waitUntil: 'networkidle2',
     });
     // extract the html page source
-    let robotsText = null
+    let robotsText = null;
     try {
       robotsText = await robotsResponse.text();
     } catch (e) {

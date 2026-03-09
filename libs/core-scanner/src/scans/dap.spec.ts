@@ -3,7 +3,7 @@ import { mock } from 'jest-mock-extended';
 import { HTTPRequest, HTTPResponse } from 'puppeteer';
 import { getTestFileContents } from '../test-helper';
 
-import { 
+import {
   buildDapResult,
   getDapVersion,
   getDapScriptCandidateRequests,
@@ -20,11 +20,15 @@ import {
   getG4Tag,
   getUATag,
 } from './dap';
-import {DapScan} from '../../../../entities/scan-data.entity';
+import { DapScan } from '../../../../entities/scan-data.entity';
 
 const mockLogger = pino();
-const minifiedScriptContents = getTestFileContents('dap/Universal-Federated-Analytics.min.js');
-const nonMinifiedScriptContents = getTestFileContents('dap/Universal-Federated-Analytics.js');
+const minifiedScriptContents = getTestFileContents(
+  'dap/Universal-Federated-Analytics.min.js',
+);
+const nonMinifiedScriptContents = getTestFileContents(
+  'dap/Universal-Federated-Analytics.js',
+);
 
 const mockPage = {
   goto: jest.fn(),
@@ -47,10 +51,7 @@ const MOCK_REQUESTS: Record<string, HTTPRequest> = {
     null,
     'abcd-def/G-CSLL4ZEK4L/xyz',
   ),
-  doesNotContainDap: createMockRequest(
-    'https://no-dap/here',
-    null,
-  ),
+  doesNotContainDap: createMockRequest('https://no-dap/here', null),
   notRealGATagFirst: createMockRequest(
     'https://abcd-def/G-PI9UT7YUAT/xyz',
     null,
@@ -126,7 +127,7 @@ const MOCK_DAP_SCRIPT_CANDIDATES: Record<string, DapScriptCandidate> = {
     body: null,
     version: null,
   },
-}
+};
 
 const MOCK_REQUESTS_WITH_DAP = [
   MOCK_REQUESTS.realDapScript,
@@ -165,43 +166,43 @@ const DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT = [
 ];
 
 describe('dap scan', () => {
-
   describe('buildDapResult()', () => {
     it('should detect the presence of DAP when passed a real DAP script', async () => {
-      const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
+      const result = await executeDapScanner([MOCK_REQUESTS.realDapScript]);
       expect(result.dapDetected).toEqual(true);
     });
 
     it('should detect the DAP version from a minified JS script', async () => {
-      const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
+      const result = await executeDapScanner([MOCK_REQUESTS.realDapScript]);
       expect(result.dapVersion).toEqual('20240712 v8.2 - GA4');
     });
 
     it('should detect the DAP parameters from a minified JS script', async () => {
-      const result = await executeDapScanner([ MOCK_REQUESTS.realDapScript ]);
+      const result = await executeDapScanner([MOCK_REQUESTS.realDapScript]);
       expect(result.dapParameters).toEqual('test1=1&test2=2');
     });
 
     it('should detect the presence of DAP when using GA tags', async () => {
-      const result = await executeDapScanner([ MOCK_REQUESTS.gaTagsNoResponse ]);
+      const result = await executeDapScanner([MOCK_REQUESTS.gaTagsNoResponse]);
       expect(result.dapDetected).toEqual(true);
     });
-  
+
     it('should detect DAP if the analytics code is in the POST data', async () => {
-      const result = await executeDapScanner([ MOCK_REQUESTS.gaTagsInPostResponse ]);
+      const result = await executeDapScanner([
+        MOCK_REQUESTS.gaTagsInPostResponse,
+      ]);
       expect(result.dapDetected).toEqual(true);
     });
 
     it('should return GA tags', async () => {
-      const result = await executeDapScanner([ MOCK_REQUESTS.notRealBothTags ]);
+      const result = await executeDapScanner([MOCK_REQUESTS.notRealBothTags]);
       expect(result.gaTagIds).toEqual('G-QNT2XPC6EB,UA-842645-1');
     });
 
     it('should not detect the presence of DAP', async () => {
-      const result = await executeDapScanner([ MOCK_REQUESTS.notRealBothTags ]);
+      const result = await executeDapScanner([MOCK_REQUESTS.notRealBothTags]);
       expect(result.dapDetected).toEqual(false);
     });
-
   });
 
   describe('getDapVersion()', () => {
@@ -211,56 +212,86 @@ describe('dap scan', () => {
     });
 
     it('should correctly extract the version from a non-minified DAP script', async () => {
-      const result = getDapVersion(MOCK_DAP_SCRIPT_CANDIDATES.realNonMinifiedScript.body);
+      const result = getDapVersion(
+        MOCK_DAP_SCRIPT_CANDIDATES.realNonMinifiedScript.body,
+      );
       expect(result).toEqual('20240524 v7.05 - Dual Tracking');
     });
   });
 
   describe('getAllGAPropertyIds()', () => {
     it('should return an comma delimited list of GA property IDs', async () => {
-      const result = getAllGAPropertyTags(mockLogger, MOCK_REQUESTS_WITH_GA_TAGS);
-      expect(result).toEqual('G-CSLL4ZEK4L,G-PI9UT7YUAT,G-QNT3KRC6EB,UA-33523145-1,UA-842976-1,G-QNT3FIU6EB,UA-8427660-1,G-QNT2XPC6EB,UA-842645-1');
+      const result = getAllGAPropertyTags(
+        mockLogger,
+        MOCK_REQUESTS_WITH_GA_TAGS,
+      );
+      expect(result).toEqual(
+        'G-CSLL4ZEK4L,G-PI9UT7YUAT,G-QNT3KRC6EB,UA-33523145-1,UA-842976-1,G-QNT3FIU6EB,UA-8427660-1,G-QNT2XPC6EB,UA-842645-1',
+      );
     });
   });
 
   describe('getDapScriptCandidateRequests()', () => {
     it('should include all requests containing DAP', async () => {
-      const result = getDapScriptCandidateRequests(mockLogger, MOCK_REQUESTS_WITH_DAP, 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
+      const result = getDapScriptCandidateRequests(
+        mockLogger,
+        MOCK_REQUESTS_WITH_DAP,
+        'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
+      );
       expect(result.length).toEqual(3);
     });
 
     it('should only include the requests that contain DAP and filter out non DAP requests', async () => {
-      const result = getDapScriptCandidateRequests(mockLogger, ALL_MOCK_REQUESTS, 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
+      const result = getDapScriptCandidateRequests(
+        mockLogger,
+        ALL_MOCK_REQUESTS,
+        'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
+      );
       expect(result.length).toEqual(3);
     });
   });
 
   describe('getDapScriptCandidates()', () => {
     it('should return an array of DapCandidateScripts', async () => {
-      const result = await getDapScriptCandidates(mockLogger, MOCK_REQUESTS_WITH_DAP);
+      const result = await getDapScriptCandidates(
+        mockLogger,
+        MOCK_REQUESTS_WITH_DAP,
+      );
       expect(result.length).toEqual(3);
     });
   });
 
   describe('getBestCandidate()', () => {
     it('should return the candidate that contains the exact script match and version', async () => {
-      const result = getBestCandidate(mockLogger, ALL_DAP_SCRIPT_CANDIDATES, 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
-      expect(result.url).toEqual('https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
+      const result = getBestCandidate(
+        mockLogger,
+        ALL_DAP_SCRIPT_CANDIDATES,
+        'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
+      );
+      expect(result.url).toEqual(
+        'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
+      );
     });
     it('should return a candidate that best matches the criteria', async () => {
-      const result = getBestCandidate(mockLogger, DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT, 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2');
+      const result = getBestCandidate(
+        mockLogger,
+        DAP_SCRIPT_CANDIDATES_WITHOUT_REALSCRIPT,
+        'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2',
+      );
       expect(result.version).toEqual('20240712 v8.2 - GA4');
     });
   });
 
   describe('checkUrlForScriptNameMatch()', () => {
     it('should return TRUE if the script is found', async () => {
-      const scriptUrl = 'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2'
+      const scriptUrl =
+        'https://test.gov/Universal-Federated-Analytics-Min.js?test1=1&test2=2';
       const result = checkUrlForScriptNameMatch(scriptUrl);
       expect(result).toEqual(true);
     });
     it('should return FALSE if the script is not found', async () => {
-      const scriptUrl = 'https://test.gov/script-is-not-included?test1=1&test2=2'
+      const scriptUrl =
+        'https://test.gov/script-is-not-included?test1=1&test2=2';
       const result = checkUrlForScriptNameMatch(scriptUrl);
       expect(result).toEqual(false);
     });
@@ -268,12 +299,12 @@ describe('dap scan', () => {
 
   describe('checkUrlForPropertyIdMatch()', () => {
     it('should return TRUE if the GA properties in the url match', async () => {
-      const url = 'https://abcd-def/G-CSLL4ZEK4L/xyz'
+      const url = 'https://abcd-def/G-CSLL4ZEK4L/xyz';
       const result = checkUrlForPropertyIdMatch(url);
       expect(result).toEqual(true);
     });
     it('should return TRUE if the GA properties in the url match', async () => {
-      const url = 'https://abcd-def/not-a-property/xyz'
+      const url = 'https://abcd-def/not-a-property/xyz';
       const result = checkUrlForPropertyIdMatch(url);
       expect(result).toEqual(false);
     });
@@ -281,52 +312,72 @@ describe('dap scan', () => {
 
   describe('checkPostDataForPropertyIdMatch()', () => {
     it('should return TRUE if the POST data contains the GA properties', async () => {
-      const result = checkPostDataForPropertyIdMatch('abcd-def/G-CSLL4ZEK4L/xyz');
+      const result = checkPostDataForPropertyIdMatch(
+        'abcd-def/G-CSLL4ZEK4L/xyz',
+      );
       expect(result).toEqual(true);
     });
     it('should return FALSE if the POST data does not contain the GA properties', async () => {
-      const result = checkPostDataForPropertyIdMatch('abcd-def/does not have/xyz');
+      const result = checkPostDataForPropertyIdMatch(
+        'abcd-def/does not have/xyz',
+      );
       expect(result).toEqual(false);
     });
   });
 
   describe('checkCandidateForScriptAndVersion()', () => {
     it('should return TRUE if the candidate contains the exact script URL/GA tag and a version, FALSE otherwise', async () => {
-      const result = checkCandidateForScriptAndVersion(MOCK_DAP_SCRIPT_CANDIDATES.realScript);
+      const result = checkCandidateForScriptAndVersion(
+        MOCK_DAP_SCRIPT_CANDIDATES.realScript,
+      );
       expect(result).toEqual(true);
     });
     it('should return FALSE if the candidate is missing the version', async () => {
-      const result = checkCandidateForScriptAndVersion(MOCK_DAP_SCRIPT_CANDIDATES.realScriptNoVersion);
+      const result = checkCandidateForScriptAndVersion(
+        MOCK_DAP_SCRIPT_CANDIDATES.realScriptNoVersion,
+      );
       expect(result).toEqual(false);
     });
     it('should return FALSE if the candidate is missing a valid script/GA Tag', async () => {
-      const result = checkCandidateForScriptAndVersion(MOCK_DAP_SCRIPT_CANDIDATES.invalidUrlWithVersion);
+      const result = checkCandidateForScriptAndVersion(
+        MOCK_DAP_SCRIPT_CANDIDATES.invalidUrlWithVersion,
+      );
       expect(result).toEqual(false);
     });
     it('should return FALSE if the candidate is missing both a valid script/GA Tag and version', async () => {
-      const result = checkCandidateForScriptAndVersion(MOCK_DAP_SCRIPT_CANDIDATES.invalidCandidate);
+      const result = checkCandidateForScriptAndVersion(
+        MOCK_DAP_SCRIPT_CANDIDATES.invalidCandidate,
+      );
       expect(result).toEqual(false);
     });
   });
 
   describe('checkCandidateForPropertyAndVersion()', () => {
     it('should return TRUE if the candidate contains GA properties and a version, FALSE otherwise', async () => {
-      const result = checkCandidateForPropertyAndVersion(MOCK_DAP_SCRIPT_CANDIDATES.gaTagsWithVersion);
+      const result = checkCandidateForPropertyAndVersion(
+        MOCK_DAP_SCRIPT_CANDIDATES.gaTagsWithVersion,
+      );
       expect(result).toEqual(true);
     });
     it('should return FALSE if the candidate is missing either GA properties or version', async () => {
-      const result = checkCandidateForPropertyAndVersion(MOCK_DAP_SCRIPT_CANDIDATES.gaTagsNoVersion);
+      const result = checkCandidateForPropertyAndVersion(
+        MOCK_DAP_SCRIPT_CANDIDATES.gaTagsNoVersion,
+      );
       expect(result).toEqual(false);
     });
   });
-  
+
   describe('checkCandidateForAnyDapMatch()', () => {
     it('should return TRUE if the candidate contains any DAP related criteria, FALSE otherwise', async () => {
-      const result = checkCandidateForAnyDapMatch(MOCK_DAP_SCRIPT_CANDIDATES.gaTagsNoVersion);
+      const result = checkCandidateForAnyDapMatch(
+        MOCK_DAP_SCRIPT_CANDIDATES.gaTagsNoVersion,
+      );
       expect(result).toEqual(true);
     });
     it('should return FALSE if the candidate has no DAP related criteria', async () => {
-      const result = checkCandidateForPropertyAndVersion(MOCK_DAP_SCRIPT_CANDIDATES.invalidCandidate);
+      const result = checkCandidateForPropertyAndVersion(
+        MOCK_DAP_SCRIPT_CANDIDATES.invalidCandidate,
+      );
       expect(result).toEqual(false);
     });
   });
@@ -338,7 +389,7 @@ describe('dap scan', () => {
     });
     it('should return multiple G4 tags contained in the url, empty string otherwise', async () => {
       const result = getG4Tag('https://abcd-def/G-CSLL4ZEK4L/G-CSLLYBUS4L/xyz');
-      expect(result).toEqual(['G-CSLL4ZEK4L','G-CSLLYBUS4L']);
+      expect(result).toEqual(['G-CSLL4ZEK4L', 'G-CSLLYBUS4L']);
     });
     it('should return the an empty string if a G4 tag is not contained in the url', async () => {
       const result = getG4Tag('https://abcd-def/no-tag-here/xyz');
@@ -352,8 +403,10 @@ describe('dap scan', () => {
       expect(result).toEqual(['UA-33523145-1']);
     });
     it('should return multiple UA tags contained in the url, empty string otherwise', async () => {
-      const result = getUATag('https://abcd-def/UA-33523145-1/UA-33523145-2/xyz');
-      expect(result).toEqual(['UA-33523145-1','UA-33523145-2']);
+      const result = getUATag(
+        'https://abcd-def/UA-33523145-1/UA-33523145-2/xyz',
+      );
+      expect(result).toEqual(['UA-33523145-1', 'UA-33523145-2']);
     });
     it('should return the an empty string if a UA tag is not contained in the url', async () => {
       const result = getUATag('https://abcd-def/no-tag-here/xyz');
@@ -362,13 +415,17 @@ describe('dap scan', () => {
   });
 });
 
-function createMockRequest(url: string, responseBody: string | null = '', postData: string | null = null) {
+function createMockRequest(
+  url: string,
+  responseBody: string | null = '',
+  postData: string | null = null,
+) {
   return mock<HTTPRequest>({
     response() {
       return {
         async text() {
           return responseBody;
-        }
+        },
       } as HTTPResponse;
     },
     url: () => url,
@@ -376,6 +433,8 @@ function createMockRequest(url: string, responseBody: string | null = '', postDa
   });
 }
 
-async function executeDapScanner( mockRequests: HTTPRequest[] ): Promise<DapScan> {
-  return buildDapResult( mockLogger, mockRequests, mockPage as any );
+async function executeDapScanner(
+  mockRequests: HTTPRequest[],
+): Promise<DapScan> {
+  return buildDapResult(mockLogger, mockRequests, mockPage as any);
 }
