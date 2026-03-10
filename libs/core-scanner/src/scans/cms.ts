@@ -1,80 +1,7 @@
 import * as _ from 'lodash';
 import { HTTPResponse } from 'puppeteer';
-
 import { CmsScan } from 'entities/scan-data.entity';
-
 import { Logger } from 'pino';
-
-export async function buildCmsResult(
-  parentLogger: Logger,
-  mainResponse: HTTPResponse,
-): Promise<CmsScan> {
-  const htmlMatches = mainResponse
-    ? await getHtmlMatches(parentLogger, mainResponse)
-    : [];
-  const headerMatches = mainResponse
-    ? await getHeaderMatches(mainResponse)
-    : [];
-
-  let cms = null;
-
-  if (htmlMatches.length > 0) {
-    cms = htmlMatches[0].cms;
-  } else if (headerMatches.length > 0) {
-    cms = headerMatches[0].cms;
-  }
-
-  return { cms };
-}
-
-const getHtmlMatches = async (logger: Logger, response: HTTPResponse) => {
-  const actualHtml = response ? await response.text() : '';
-
-  return cmsData.filter((obj) => {
-    if (obj.html) {
-      if (Array.isArray(obj.html)) {
-        return (
-          obj.html.filter((html) => {
-            if (actualHtml.match(new RegExp(html, 'i'))) {
-              return obj;
-            }
-          }).length > 0
-        );
-      } else {
-        if (actualHtml.match(new RegExp(obj.html, 'i'))) {
-          return obj;
-        }
-      }
-    }
-  });
-};
-
-const getHeaderMatches = async (response: HTTPResponse) => {
-  const actualHeaders = response ? await response.headers() : {};
-  const formattedActualHeaders = _.transform(
-    actualHeaders,
-    function (result, val, key) {
-      result[key.toLowerCase()] = val.toLowerCase();
-    },
-  );
-
-  return cmsData.filter((obj) => {
-    if (obj.headers) {
-      return obj.headers.some((header) => {
-        const formattedKey = header.key.toLowerCase();
-        if (Object.keys(formattedActualHeaders).includes(formattedKey)) {
-          const formattedValue = formattedActualHeaders[formattedKey];
-          if (
-            formattedValue.match(new RegExp(header.value, 'i')) ||
-            header.value === ''
-          ) {
-            return header;
-          }
-        }
-      });
-    }
-  });
-};
 
 const cmsData = [
   {
@@ -391,3 +318,70 @@ const cmsData = [
     ],
   },
 ];
+
+const compiledCmsData = cmsData.map((entry) => ({
+  ...entry,
+  htmlPatterns: entry.html
+    ? (Array.isArray(entry.html) ? entry.html : [entry.html]).map(
+        (p) => new RegExp(p, 'i'),
+      )
+    : [],
+  headerPatterns:
+    entry.headers?.map((h) => ({
+      ...h,
+      keyLower: h.key.toLowerCase(),
+      valueRegex: h.value ? new RegExp(h.value, 'i') : null,
+    })) ?? [],
+}));
+
+export async function buildCmsResult(
+  parentLogger: Logger,
+  mainResponse: HTTPResponse,
+): Promise<CmsScan> {
+  const t0 = performance.now();
+  const htmlMatch = mainResponse
+    ? await getHtmlMatch(parentLogger, mainResponse)
+    : null;
+  const t1 = performance.now();
+  const headerMatch =
+    !htmlMatch && mainResponse ? await getHeaderMatch(mainResponse) : null;
+  const t2 = performance.now();
+
+  parentLogger.info(
+    `CMS scan timing: getHtmlMatch=${(t1 - t0).toFixed(2)}ms, getHeaderMatch=${(t2 - t1).toFixed(2)}ms, total=${(t2 - t0).toFixed(2)}ms`,
+  );
+
+  const cms = htmlMatch?.cms ?? headerMatch?.cms ?? null;
+
+  return { cms };
+}
+
+const getHtmlMatch = async (logger: Logger, response: HTTPResponse) => {
+  const actualHtml = response ? await response.text() : '';
+
+  return compiledCmsData.find((obj) =>
+    obj.htmlPatterns.some((pattern) => pattern.test(actualHtml)),
+  );
+};
+
+const getHeaderMatch = async (response: HTTPResponse) => {
+  const actualHeaders = response ? await response.headers() : {};
+  const formattedActualHeaders = _.transform(
+    actualHeaders,
+    function (result, val, key) {
+      result[key.toLowerCase()] = val.toLowerCase();
+    },
+  );
+
+  return compiledCmsData.find((obj) =>
+    obj.headerPatterns.some((header) => {
+      if (Object.keys(formattedActualHeaders).includes(header.keyLower)) {
+        const formattedValue = formattedActualHeaders[header.keyLower];
+        return header.valueRegex
+          ? header.valueRegex.test(formattedValue)
+          : true;
+      }
+      return false;
+    }),
+  );
+};
