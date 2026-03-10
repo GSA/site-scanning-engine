@@ -12,6 +12,7 @@ packages:
   - libpango-1.0-0
   - libcairo2
   - libasound2
+  - libxkbcommon0
   - libxss1
   - libxtst6
   - fonts-liberation
