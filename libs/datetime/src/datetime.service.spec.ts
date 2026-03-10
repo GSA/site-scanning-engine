@@ -17,8 +17,10 @@ describe('DatetimeService', () => {
   });
 
   it('should get the current datetime', () => {
+    jest.useFakeTimers();
     const expected = new Date();
     const result = service.now();
-    expect(expected).toEqual(result);
+    expect(result).toEqual(expected);
+    jest.useRealTimers();
   });
 });

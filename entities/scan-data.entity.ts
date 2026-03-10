@@ -157,3 +157,7 @@ export type WwwScan = {
   wwwTitle: string;
   wwwSame: boolean;
 };
+
+export type ToolingScan = {
+  tooling: string;
+};

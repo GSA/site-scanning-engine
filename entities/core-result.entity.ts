@@ -538,6 +538,18 @@ export class CoreResult {
   @Exclude()
   dateContent?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'tooling' })
+  @Exclude()
+  @Transform(({ value }: { value: string }) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  tooling?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));

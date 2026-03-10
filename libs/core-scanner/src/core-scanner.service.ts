@@ -3,17 +3,14 @@ import { HttpService } from '@nestjs/axios';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 import { Logger } from 'pino';
 import { Browser } from 'puppeteer';
-
 import { BrowserService } from '@app/browser';
 import { SecurityDataService } from '@app/security-data';
-
 import {
   AnyFailureStatus,
   parseBrowserError,
   ScanStatus,
 } from 'entities/scan-status';
 import { Scanner } from 'libs/scanner.interface';
-
 import { CoreInputDto } from './core.input.dto';
 import * as pages from './pages';
 import { Page } from './pages';
