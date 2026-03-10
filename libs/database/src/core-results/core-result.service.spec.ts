@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { CoreResultService } from './core-result.service';
 import { Logger } from '@nestjs/common';
 import { ScanStatus } from 'entities/scan-status';
-import { filter } from 'lodash';
 
 describe('CoreResultService', () => {
   let service: CoreResultService;
@@ -176,6 +175,9 @@ describe('CoreResultService', () => {
           },
           mobileScan: {
             viewportMetaTag: false,
+          },
+          toolingScan: {
+            tooling: null,
           },
         },
       },
