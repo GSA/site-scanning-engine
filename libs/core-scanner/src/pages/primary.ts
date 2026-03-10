@@ -1,10 +1,8 @@
 import { Logger } from 'pino';
 import { Page } from 'puppeteer';
-
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { buildUrlScanResult } from '@app/core-scanner/scans/url-scan';
 import { PrimaryScans } from 'entities/scan-page.entity';
-
 import { buildDapResult } from '../scans/dap';
 import { buildSeoResult } from '../scans/seo';
 import { buildThirdPartyResult } from '../scans/third-party';
@@ -20,9 +18,8 @@ import { buildRequiredLinksResult } from '../scans/required-links';
 import { buildCookieResult } from '../scans/cookies';
 import { buildSearchResult } from '../scans/search';
 import { buildMobileResult } from '../scans/mobile';
-
+import { buildToolingResult } from '../scans/tooling';
 import { logCount, logTimer } from '../../../logging/src/metric-utils';
-
 import { createRequestHandlers } from '../util';
 
 export const createPrimaryScanner = (logger: Logger, input: CoreInputDto) => {
@@ -117,6 +114,13 @@ const primaryScan = async (
     'MobileScan',
     url,
   );
+  const wrappedToolingResult = runScan(
+    input,
+    pageLogger,
+    buildToolingResult,
+    'ToolingScan',
+    url,
+  );
 
   const [
     urlScan,
@@ -130,6 +134,7 @@ const primaryScan = async (
     requiredLinksScan,
     searchScan,
     mobileScan,
+    toolingScan,
   ] = await promiseAll([
     buildUrlScanResult(input, page, response, pageLogger),
     wrappedDapResult(getOutboundRequests(), page),
@@ -142,6 +147,7 @@ const primaryScan = async (
     wrappedRequiredLinksResult(page),
     wrappedSearchResult(page),
     wrappedMobileResult(page),
+    wrappedToolingResult(page),
   ]);
 
   return {
@@ -156,6 +162,7 @@ const primaryScan = async (
     requiredLinksScan,
     searchScan,
     mobileScan,
+    toolingScan,
   };
 
   function runScan<T>(
