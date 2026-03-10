@@ -6,6 +6,7 @@ coverage
 docs
 libs
 node_modules
+dist
 notebooks
 storage
 
