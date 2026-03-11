@@ -4,7 +4,7 @@ name: Create daily S3 snapshots
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: '30 12 * * *'
+    - cron: '0 15 * * *'
 
   workflow_dispatch:
     inputs:
