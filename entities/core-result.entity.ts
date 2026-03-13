@@ -507,6 +507,17 @@ export class CoreResult {
   @Expose({ name: 'www_same' })
   wwwSame?: boolean;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'tooling' })
+  @Transform(({ value }: { value: string }) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  tooling?: string;
+
   // Experimental fields #1368 Feb 2025
   @Column({ nullable: true })
   @Expose({ name: 'dc_date_content' })
@@ -537,18 +548,6 @@ export class CoreResult {
   @Expose({ name: 'date_content' })
   @Exclude()
   dateContent?: string;
-
-  @Column({ nullable: true })
-  @Expose({ name: 'tooling' })
-  @Exclude()
-  @Transform(({ value }: { value: string }) => {
-    if (value) {
-      return value.split(',');
-    } else {
-      return null;
-    }
-  })
-  tooling?: string;
 
   static getColumnNames(): string[] {
     // return class-transformer version of column names
@@ -604,6 +603,7 @@ export class CoreResult {
     'third_party_service_urls',
     'third_party_service_count',
     'cookie_domains',
+    'tooling',
     'viewport_meta_tag',
     'cumulative_layout_shift',
     'largest_contentful_paint',
