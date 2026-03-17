@@ -5,12 +5,14 @@ import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 import { ScanStatus } from 'entities/scan-status';
 import { CoreResultPages } from 'entities/core-result.entity';
+import { WebsiteService } from '@app/database/websites/websites.service';
 
 @Injectable()
 export class CoreResultService {
   constructor(
     @InjectRepository(CoreResult)
     private coreResultRepository: Repository<CoreResult>,
+    private websiteService: WebsiteService,
   ) {}
 
   async findAll(): Promise<CoreResult[]> {
@@ -18,7 +20,7 @@ export class CoreResultService {
     return results;
   }
 
-  createFromCoreResultPages(
+  async createFromCoreResultPages(
     websiteId: number,
     pages: CoreResultPages,
     logger: Logger,
@@ -47,10 +49,6 @@ export class CoreResultService {
     this.updateSecurityScanResults(coreResult, pages, logger);
     this.updateWwwScanResults(coreResult, pages, logger);
 
-    return this.create(coreResult);
-  }
-
-  async create(coreResult: CoreResult) {
     const exists = await this.coreResultRepository.findOne({
       where: {
         website: {
@@ -63,6 +61,13 @@ export class CoreResultService {
       await this.coreResultRepository.update(exists.id, coreResult);
     } else {
       await this.coreResultRepository.insert(coreResult);
+    }
+
+    if (
+      coreResult.finalUrlMIMEType &&
+      CoreResult.filteredMediaTypes.includes(coreResult.finalUrlMIMEType)
+    ) {
+      await this.websiteService.setFiltered(websiteId, true);
     }
   }
 
