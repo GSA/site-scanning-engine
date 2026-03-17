@@ -10,6 +10,7 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { FilterWebsiteDto } from 'apps/api/src/website/filter-website.dto';
 import { ScanStatus } from 'entities/scan-status';
+import { CoreResult } from 'entities/core-result.entity';
 
 @Injectable()
 export class WebsiteService {
@@ -36,12 +37,7 @@ export class WebsiteService {
       .innerJoinAndSelect('website.coreResult', 'coreResult')
       .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
-        mimeTypes: [
-          'image/jpeg',
-          'application/xml',
-          'application/json',
-          'text/xml',
-        ],
+        mimeTypes: CoreResult.filteredMediaTypes,
       })
       .orderBy({
         'coreResult.targetUrlBaseDomain': 'ASC',
@@ -58,12 +54,7 @@ export class WebsiteService {
       .andWhere('coreResult.filter = :isFilter', { isFilter: false })
       .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
-        mimeTypes: [
-          'image/jpeg',
-          'application/xml',
-          'application/json',
-          'text/xml',
-        ],
+        mimeTypes: CoreResult.filteredMediaTypes,
       })
       .orderBy({
         'coreResult.targetUrlBaseDomain': 'ASC',
@@ -83,12 +74,7 @@ export class WebsiteService {
       })
       .andWhere('coreResult.finalUrlIsLive = :isLive', { isLive: true })
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
-        mimeTypes: [
-          'image/jpeg',
-          'application/xml',
-          'application/json',
-          'text/xml',
-        ],
+        mimeTypes: CoreResult.filteredMediaTypes,
       })
       .orderBy({
         'coreResult.targetUrlBaseDomain': 'ASC',

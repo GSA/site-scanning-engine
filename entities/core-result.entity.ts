@@ -657,4 +657,14 @@ export class CoreResult {
     'www_status_code',
     'www_title',
   ];
+
+  static filteredMediaTypes = [
+    'application/javascript',
+    'application/json',
+    'application/xml',
+    'application/xhtml+xml',
+    'image/jpeg',
+    'text/javascript',
+    'text/xml',
+  ];
 }
