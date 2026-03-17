@@ -142,12 +142,7 @@ export class WebsiteService {
         { emptyString: '' },
       )
       .andWhere('coreResult.finalUrlMIMEType NOT IN (:...mimeTypes)', {
-        mimeTypes: [
-          'application/xhtml+xml',
-          'application/xml',
-          'application/json',
-          'text/xml',
-        ],
+        mimeTypes: CoreResult.filteredMediaTypes,
       });
 
     return await queryBuilder.getMany();
@@ -260,5 +255,9 @@ export class WebsiteService {
         updated: LessThanOrEqual(date.toISOString()),
       })
       .execute();
+  }
+
+  async setFiltered(id: number, filtered: boolean): Promise<void> {
+    await this.website.update(id, { filter: filtered });
   }
 }
