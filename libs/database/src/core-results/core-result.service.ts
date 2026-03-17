@@ -57,17 +57,18 @@ export class CoreResultService {
       },
     });
 
-    if (exists) {
-      await this.coreResultRepository.update(exists.id, coreResult);
-    } else {
-      await this.coreResultRepository.insert(coreResult);
-    }
-
     if (
       coreResult.finalUrlMIMEType &&
       CoreResult.filteredMediaTypes.includes(coreResult.finalUrlMIMEType)
     ) {
-      await this.websiteService.setFiltered(websiteId, true);
+      coreResult.filter = true;
+      await this.websiteService.setFilter(websiteId, true);
+    }
+
+    if (exists) {
+      await this.coreResultRepository.update(exists.id, coreResult);
+    } else {
+      await this.coreResultRepository.insert(coreResult);
     }
   }
 

@@ -282,10 +282,13 @@ describe('CoreResultService', () => {
       websiteUrl,
     );
     expect(mockRepository.insert).toHaveBeenCalled();
-    expect(mockWebsiteService.setFiltered).not.toHaveBeenCalled();
+    expect(mockWebsiteService.setFilter).not.toHaveBeenCalled();
+    expect(mockRepository.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ filter: false }),
+    );
   });
 
-  it('should call setFiltered when finalUrlMIMEType is a filtered type', async () => {
+  it('should call setFilter when finalUrlMIMEType is a filtered type', async () => {
     const websiteId = 1;
     const scanStatus: ScanStatus = ScanStatus['Completed'];
     const websiteUrl = 'https://example.gov';
@@ -471,9 +474,9 @@ describe('CoreResultService', () => {
     );
 
     expect(mockRepository.insert).toHaveBeenCalled();
-    expect(mockWebsiteService.setFiltered).toHaveBeenCalledWith(
-      websiteId,
-      true,
+    expect(mockWebsiteService.setFilter).toHaveBeenCalledWith(websiteId, true);
+    expect(mockRepository.insert).toHaveBeenCalledWith(
+      expect.objectContaining({ filter: true }),
     );
   });
 });

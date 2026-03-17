@@ -257,7 +257,7 @@ export class WebsiteService {
       .execute();
   }
 
-  async setFiltered(id: number, filtered: boolean): Promise<void> {
-    await this.website.update(id, { filter: filtered });
+  async setFilter(id: number, filter: boolean): Promise<void> {
+    await this.website.update(id, { filter });
   }
 }
