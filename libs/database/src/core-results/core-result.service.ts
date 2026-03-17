@@ -5,7 +5,6 @@ import { CoreResult } from 'entities/core-result.entity';
 import { Website } from 'entities/website.entity';
 import { ScanStatus } from 'entities/scan-status';
 import { CoreResultPages } from 'entities/core-result.entity';
-import e from 'express';
 
 @Injectable()
 export class CoreResultService {
