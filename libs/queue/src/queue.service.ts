@@ -25,7 +25,14 @@ export class QueueService {
   async addCoreJob(coreInput: CoreInputDto) {
     const job = await this.scannerQueue.add(CORE_SCAN_JOB_NAME, coreInput, {
       removeOnComplete: true,
+      // Retry after three attempts
       attempts: 3,
+      // First, retry after 30 seconds, and then again after 60 seconds, and a third and final time after 120 seconds
+      backoff: {
+        type: 'exponential',
+        delay: 30000,
+      },
+      removeOnFail: false,
     });
     return job;
   }

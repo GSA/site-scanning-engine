@@ -31,13 +31,26 @@ export class BrowserService implements OnModuleDestroy {
   async processPage<Result>(
     browser: Browser,
     handler: (page: Page) => Promise<Result>,
+    options?: { allowImages?: boolean },
   ) {
     this.logger.debug('Creating Puppeteer page...');
     const page = await browser.newPage();
-    const userAgent =
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4182.0 Safari/537.36';
-    await page.setUserAgent(userAgent);
     await page.setCacheEnabled(false);
+
+    // Block non-essential resources to speed up page loads and reduce memory usage.
+    // Images are also blocked unless explicitly allowed (e.g., for LCP measurement).
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      const blocked = ['media', 'font'];
+      if (!options?.allowImages) {
+        blocked.push('image');
+      }
+      if (blocked.includes(req.resourceType())) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
 
     // Process page with a 120 second timeout.
     let result: Promise<Result>;

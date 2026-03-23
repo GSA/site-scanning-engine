@@ -80,6 +80,24 @@ export class ScanEngineConsumer {
     } catch (e) {
       const err = e as Error;
       this.logger.error(err.message, err.stack);
+
+      // Don't retry errors that are permanent
+      const errorMsg = err.message || '';
+      const isPermanent =
+        errorMsg.includes('ERR_NAME_NOT_RESOLVED') ||
+        errorMsg.includes('ENOTFOUND') ||
+        errorMsg.includes('ERR_CERT_') ||
+        errorMsg.includes('ERR_SSL_UNRECOGNIZED_NAME_ALERT') ||
+        errorMsg.includes('unable to verify the first certificate') ||
+        errorMsg.includes('ERR_SSL_VERSION_OR_CIPHER_MISMATCH');
+
+      if (isPermanent) {
+        this.logger.warn(`Permanent failure for ${job.data.url}, not retrying`);
+        return;
+      }
+
+      // re-throw so Bull retries
+      throw err;
     }
   }
 
