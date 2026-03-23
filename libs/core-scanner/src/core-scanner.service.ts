@@ -299,6 +299,7 @@ export class CoreScannerService implements Scanner<
           performanceScan: await this.browserService.processPage(
             browser,
             pages.createPerformanceScanner(pageLogger, input),
+            { allowImages: true },
           ),
         };
 
