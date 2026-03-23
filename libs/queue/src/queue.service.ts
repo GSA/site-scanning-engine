@@ -26,6 +26,11 @@ export class QueueService {
     const job = await this.scannerQueue.add(CORE_SCAN_JOB_NAME, coreInput, {
       removeOnComplete: true,
       attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 30000, // retry after 30 seconds first, then after 60 seconds, and finally after 120 seconds
+      },
+      removeOnFail: false,
     });
     return job;
   }
