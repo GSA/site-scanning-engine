@@ -16,6 +16,7 @@ storage
 .gitignore
 .nvmrc
 .prettierrc
+.cache
 
 cloudgov-deploy.sh
 cloudgov-run-ingest.sh
