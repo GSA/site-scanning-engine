@@ -1,7 +1,5 @@
 import { Page } from 'puppeteer';
-
 import { SearchScan } from 'entities/scan-data.entity';
-
 import { Logger } from 'pino';
 
 export async function buildSearchResult(
@@ -58,7 +56,8 @@ export async function buildSearchResult(
       const actionAttribute = el.getAttribute('action');
       return (
         actionAttribute &&
-        actionAttribute.toLowerCase() === 'https://search.usa.gov/search'
+        // confirm if action attribute's content aligns with "search.*.gov"
+        /search\.[^.]+\.gov/i.test(actionAttribute)
       );
     });
 
