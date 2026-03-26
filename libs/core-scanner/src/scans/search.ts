@@ -56,7 +56,7 @@ export async function buildSearchResult(
       const actionAttribute = el.getAttribute('action');
       return (
         actionAttribute &&
-        // confirm if action attribute aligns with "search.*.gov"
+        // confirm if action attribute's content aligns with "search.*.gov"
         /search\.[^.]+\.gov/i.test(actionAttribute)
       );
     });
