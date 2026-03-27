@@ -4,7 +4,6 @@
 [![Semgrep](https://github.com/GSA/site-scanning-engine/actions/workflows/semgrep.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/semgrep.yml)
 [![Snyk Scan](https://github.com/GSA/site-scanning-engine/actions/workflows/snyk.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/snyk.yml)
 [![MegaLinter](https://github.com/GSA/site-scanning-engine/actions/workflows/megalinter.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/megalinter.yml)
-[![woke](https://github.com/GSA/site-scanning-engine/actions/workflows/woke.yml/badge.svg)](https://github.com/GSA/site-scanning-engine/actions/workflows/woke.yml)
 
 ## Description
 
