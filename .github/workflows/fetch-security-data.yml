@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: run ingest cli job in chosen space
-        uses: cloud-gov/cg-cli-tools@main
+        uses: cloud-gov/cg-cli-tools@bafcd2b3d36984482c01b1dd2c3750b4f355b8a2 # main
         with:
           cf_api: https://api.fr.cloud.gov
           cf_username: ${{ secrets.CF_USERNAME }}
