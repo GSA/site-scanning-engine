@@ -230,15 +230,32 @@ export class CoreResultService {
 
       coreResult.dapDetected = null;
       coreResult.dapParameters = null;
+      coreResult.dapVersion = null;
+      coreResult.gaTagIds = null;
       coreResult.mainElementFinalUrl = null;
       coreResult.ogArticleModifiedFinalUrl = null;
       coreResult.ogArticlePublishedFinalUrl = null;
       coreResult.ogDescriptionFinalUrl = null;
       coreResult.ogTitleFinalUrl = null;
       coreResult.canonicalLink = null;
+      coreResult.pageTitle = null;
+      coreResult.metaDescriptionContent = null;
+      coreResult.metaKeywordsContent = null;
+      coreResult.ogImageContent = null;
+      coreResult.ogTypeContent = null;
+      coreResult.ogUrlContent = null;
+      coreResult.htmlLangContent = null;
+      coreResult.hrefLangContent = null;
+      coreResult.dcDateContent = null;
+      coreResult.dcDateCreatedContent = null;
+      coreResult.dctermsCreatedContent = null;
+      coreResult.revisedContent = null;
+      coreResult.lastModifiedContent = null;
+      coreResult.dateContent = null;
       coreResult.thirdPartyServiceCount = null;
       coreResult.thirdPartyServiceDomains = null;
       coreResult.thirdPartyServiceUrls = null;
+      coreResult.cookieDomains = null;
       coreResult.finalUrl = null;
       coreResult.finalUrlBaseDomain = null;
       coreResult.finalUrlWebsite = null;
@@ -269,12 +286,6 @@ export class CoreResultService {
       coreResult.searchDetected = null;
       coreResult.searchgov = null;
       coreResult.viewportMetaTag = null;
-      coreResult.metaKeywordsContent = null;
-      coreResult.ogImageContent = null;
-      coreResult.ogTypeContent = null;
-      coreResult.ogUrlContent = null;
-      coreResult.htmlLangContent = null;
-      coreResult.hrefLangContent = null;
       coreResult.tooling = null;
     }
   }
