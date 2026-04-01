@@ -62,16 +62,20 @@ const buildSitemapResult = async (
 ): Promise<SitemapXmlScan> => {
   const sitemapUrl = new URL(sitemapResponse.url());
   const sitemapLive = isLive(sitemapResponse);
+  const mimeType = getMIMEType(sitemapResponse);
 
-  const sitemapXmlDetected =
-    sitemapUrl.pathname.endsWith('/sitemap.xml') && sitemapLive;
+  const sitemapXmlDetected = sitemapXmlIsDetected(
+    sitemapUrl,
+    sitemapLive,
+    mimeType,
+  );
 
   return {
     sitemapXmlFinalUrl: sitemapUrl.toString(),
     sitemapXmlFinalUrlLive: sitemapLive,
     sitemapTargetUrlRedirects:
       sitemapResponse.request().redirectChain().length > 0,
-    sitemapXmlFinalUrlMimeType: getMIMEType(sitemapResponse),
+    sitemapXmlFinalUrlMimeType: mimeType,
     sitemapXmlStatusCode: sitemapResponse.status(),
 
     sitemapXmlDetected,
@@ -335,4 +339,26 @@ function parseFallbackDate(dateStr: string): Date | null {
   }
 
   return null;
+}
+
+function sitemapXmlIsDetected(
+  sitemapUrl: URL,
+  sitemapLive: boolean,
+  mimeType: string,
+): boolean {
+  const acceptableSitemapPaths = [
+    '/sitemap.xml',
+    '/sitemap_index.xml',
+    '/wp-sitemap.xml',
+    '/sitemap.xml/',
+    '/sitemaps.xml',
+  ];
+
+  return (
+    (acceptableSitemapPaths.some((path) =>
+      sitemapUrl.pathname.endsWith(path),
+    ) ||
+      mimeType.toLowerCase().includes('xml')) &&
+    sitemapLive
+  );
 }
