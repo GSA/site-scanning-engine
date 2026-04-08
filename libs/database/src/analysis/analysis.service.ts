@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Website } from 'entities/website.entity';
 import { Repository } from 'typeorm';
 import { FilterWebsiteDto } from 'apps/api/src/website/filter-website.dto';
+import { QueueService } from '@app/queue';
 import { AnalysisDto } from './analysis.dto';
 
 @Injectable()
 export class AnalysisService {
   constructor(
     @InjectRepository(Website) private website: Repository<Website>,
+    private queueService: QueueService,
   ) {}
 
   async getWebsiteAnalysis(dto: FilterWebsiteDto): Promise<AnalysisDto> {
@@ -74,7 +76,10 @@ export class AnalysisService {
       .map((website) => website.agency)
       .filter((agency, i, agencies) => agencies.indexOf(agency) === i).length;
 
+    const queueCounts = await this.queueService.getQueueCounts();
+
     return {
+      queueCounts,
       total: results.length,
       totalFinalUrlBaseDomains: uniqueBaseDomainCount,
       totalAgencies: uniqueAgenciesCount,

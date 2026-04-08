@@ -68,4 +68,24 @@ export class QueueService {
       //jobCounts,
     };
   }
+
+  /**
+   * `getQueueCounts` returns the count of jobs in different queue states.
+   *
+   * @returns an object with counts for waiting, active, delayed, and failed jobs.
+   */
+  async getQueueCounts() {
+    const [waiting, active, delayed, failed] = await Promise.all([
+      this.scannerQueue.getWaitingCount(),
+      this.scannerQueue.getActiveCount(),
+      this.scannerQueue.getDelayedCount(),
+      this.scannerQueue.getFailedCount(),
+    ]);
+    return {
+      waiting,
+      active,
+      delayed,
+      failed,
+    };
+  }
 }
