@@ -6,6 +6,7 @@ applications:
     services:
       - scanner-postgres-02
       - user-provided-api-key
+      - scanner-message-queue
     memory: ((api_memory))
     instances: ((api_instances))
     random-route: true
