@@ -213,6 +213,9 @@ export class CoreResultService {
       coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
       coreResult.requiredLinksText = result.requiredLinksScan.requiredLinksText;
 
+      // Feedback links scan
+      coreResult.feedbackLinksText = result.feedbackLinksScan.feedbackLinksText;
+
       // Search scan
       coreResult.searchDetected = result.searchScan.searchDetected;
       coreResult.searchgov = result.searchScan.searchgov;
@@ -283,6 +286,7 @@ export class CoreResultService {
       coreResult.cms = null;
       coreResult.requiredLinksUrl = null;
       coreResult.requiredLinksText = null;
+      coreResult.feedbackLinksText = null;
       coreResult.searchDetected = null;
       coreResult.searchgov = null;
       coreResult.viewportMetaTag = null;

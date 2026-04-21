@@ -15,6 +15,7 @@ import {
   createOutboundRequestsExtractor,
 } from './extractors';
 import { buildRequiredLinksResult } from '../scans/required-links';
+import { buildFeedbackLinksResult } from '../scans/feedback-links';
 import { buildCookieResult } from '../scans/cookies';
 import { buildSearchResult } from '../scans/search';
 import { buildMobileResult } from '../scans/mobile';
@@ -97,7 +98,14 @@ const primaryScan = async (
     input,
     pageLogger,
     buildRequiredLinksResult,
-    'Required LinksScan',
+    'RequiredLinksScan',
+    url,
+  );
+  const wrappedFeedbackLinksResult = runScan(
+    input,
+    pageLogger,
+    buildFeedbackLinksResult,
+    'FeedbackLinksScan',
     url,
   );
   const wrappedSearchResult = runScan(
@@ -132,6 +140,7 @@ const primaryScan = async (
     loginScan,
     cmsScan,
     requiredLinksScan,
+    feedbackLinksScan,
     searchScan,
     mobileScan,
     toolingScan,
@@ -145,6 +154,7 @@ const primaryScan = async (
     wrappedLoginResult(response),
     wrappedCmsResult(response),
     wrappedRequiredLinksResult(page),
+    wrappedFeedbackLinksResult(page),
     wrappedSearchResult(page),
     wrappedMobileResult(page),
     wrappedToolingResult(page),
@@ -160,6 +170,7 @@ const primaryScan = async (
     loginScan,
     cmsScan,
     requiredLinksScan,
+    feedbackLinksScan,
     searchScan,
     mobileScan,
     toolingScan,
@@ -233,5 +244,6 @@ const primaryScan = async (
     pageLogger.warn(
       `Scan '${scanName}' does not include scan filter '${input.scan}'; skipping scan.`,
     );
+    return false;
   }
 };

@@ -381,6 +381,18 @@ export class CoreResult {
   requiredLinksText?: string;
 
   @Column({ nullable: true })
+  @Expose({ name: 'feedback_links_text' })
+  @Exclude()
+  @Transform(({ value }: { value: string }) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  feedbackLinksText?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'login_provider' })
   loginProvider?: string;
 
