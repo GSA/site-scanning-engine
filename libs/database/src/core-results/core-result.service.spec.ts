@@ -166,6 +166,9 @@ describe('CoreResultService', () => {
             requiredLinksUrl: null,
             requiredLinksText: null,
           },
+          feedbackLinksScan: {
+            feedbackLinksText: null,
+          },
           searchScan: {
             searchDetected: null,
             searchgov: null,
@@ -373,6 +376,9 @@ describe('CoreResultService', () => {
           requiredLinksScan: {
             requiredLinksUrl: null,
             requiredLinksText: null,
+          },
+          feedbackLinksScan: {
+            feedbackLinksText: null,
           },
           searchScan: { searchDetected: null, searchgov: null },
           mobileScan: { viewportMetaTag: false },
