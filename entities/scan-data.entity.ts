@@ -121,6 +121,10 @@ export type RequiredLinksScan = {
   requiredLinksText: string;
 };
 
+export type FeedbackLinksScan = {
+  feedbackLinksText: string;
+};
+
 export type SearchScan = {
   searchDetected: boolean;
   searchgov: boolean;

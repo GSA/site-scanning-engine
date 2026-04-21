@@ -25,6 +25,7 @@ export type PrimaryScans = {
   loginScan: ScanData.LoginScan;
   cmsScan: ScanData.CmsScan;
   requiredLinksScan: ScanData.RequiredLinksScan;
+  feedbackLinksScan: ScanData.FeedbackLinksScan;
   searchScan: ScanData.SearchScan;
   mobileScan: ScanData.MobileScan;
   toolingScan: ScanData.ToolingScan;

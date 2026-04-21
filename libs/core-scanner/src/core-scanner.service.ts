@@ -120,6 +120,7 @@ export class CoreScannerService implements Scanner<
     pageLogger.warn(
       `Page '${page}' does not include page filter '${input.page}'; skipping page.`,
     );
+    return false;
   }
 
   private createSkippedResult(): PageScanFailure {
