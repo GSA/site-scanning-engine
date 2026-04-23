@@ -210,6 +210,7 @@ export class CoreResultService {
       coreResult.cms = result.cmsScan ? result.cmsScan.cms : null;
 
       // Required links scan
+      coreResult.hyperlinkDomains = result.requiredLinksScan.hyperlinkDomains;
       coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
       coreResult.requiredLinksText = result.requiredLinksScan.requiredLinksText;
 
@@ -284,6 +285,7 @@ export class CoreResultService {
       coreResult.loginDetected = null;
       coreResult.loginProvider = null;
       coreResult.cms = null;
+      coreResult.hyperlinkDomains;
       coreResult.requiredLinksUrl = null;
       coreResult.requiredLinksText = null;
       coreResult.feedbackLinksText = null;

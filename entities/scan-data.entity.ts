@@ -117,6 +117,7 @@ export type CmsScan = {
 };
 
 export type RequiredLinksScan = {
+  hyperlinkDomains: string;
   requiredLinksUrl: string;
   requiredLinksText: string;
 };

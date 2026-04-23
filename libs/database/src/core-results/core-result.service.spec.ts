@@ -163,6 +163,7 @@ describe('CoreResultService', () => {
             cms: null,
           },
           requiredLinksScan: {
+            hyperlinkDomains: null,
             requiredLinksUrl: null,
             requiredLinksText: null,
           },
@@ -374,6 +375,7 @@ describe('CoreResultService', () => {
           loginScan: { loginDetected: null, loginProvider: null },
           cmsScan: { cms: null },
           requiredLinksScan: {
+            hyperlinkDomains: null,
             requiredLinksUrl: null,
             requiredLinksText: null,
           },
