@@ -70,7 +70,16 @@ export async function buildRequiredLinksResult(
       })
       .join(',');
 
+    const hyperlinkDomains = [
+      ...new Set(
+        [...document.querySelectorAll('a')]
+          .map((a) => a.hostname)
+          .filter((h) => h.length > 0),
+      ),
+    ].join(',');
+
     return {
+      hyperlinkDomains,
       requiredLinksUrl,
       requiredLinksText,
     };

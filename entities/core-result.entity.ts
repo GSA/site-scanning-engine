@@ -561,6 +561,18 @@ export class CoreResult {
   @Exclude()
   dateContent?: string;
 
+  @Column({ nullable: true })
+  @Expose({ name: 'hyperlink_domains' })
+  @Exclude()
+  @Transform(({ value }: { value: string }) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  hyperlinkDomains?: string;
+
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
