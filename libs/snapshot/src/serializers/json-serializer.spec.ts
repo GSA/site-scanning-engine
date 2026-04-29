@@ -11,7 +11,7 @@ describe('JsonSerializer', () => {
 
     const result = await serializer.serialize([website]);
     const expectedResult =
-      '[{"source_list":null,"login":null,"third_party_service_domains":null,"third_party_service_urls":null,"cookie_domains":null,"tooling":null,"required_links_url":null,"required_links_text":null,"robots_txt_sitemap_locations":null,"uswds_usa_class_list":null}]';
+      '[{"source_list":null,"login":null,"third_party_service_domains":null,"third_party_service_urls":null,"cookie_domains":null,"hyperlink_domains":null,"tooling":null,"required_links_url":null,"required_links_text":null,"feedback_links_text":null,"robots_txt_sitemap_locations":null,"uswds_usa_class_list":null}]';
 
     expect(result).toEqual(expectedResult);
   });
