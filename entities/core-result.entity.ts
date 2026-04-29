@@ -382,7 +382,6 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'feedback_links_text' })
-  @Exclude()
   @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
@@ -563,7 +562,6 @@ export class CoreResult {
 
   @Column({ nullable: true })
   @Expose({ name: 'hyperlink_domains' })
-  @Exclude()
   @Transform(({ value }: { value: string }) => {
     if (value) {
       return value.split(',');
@@ -627,12 +625,14 @@ export class CoreResult {
     'third_party_service_urls',
     'third_party_service_count',
     'cookie_domains',
+    'hyperlink_domains',
     'tooling',
     'viewport_meta_tag',
     'cumulative_layout_shift',
     'largest_contentful_paint',
     'required_links_url',
     'required_links_text',
+    'feedback_links_text',
     'https_enforced',
     'hsts',
     'title',
