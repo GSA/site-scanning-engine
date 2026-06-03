@@ -55,150 +55,13 @@ TypeORM entities define the database schema:
 
 ## Development Setup
 
-### Prerequisites
-- Node.js 24.x (use `nvm use` to switch to correct version)
-- Docker and Docker Compose
-- Redis CLI (optional)
+For first-time setup instructions, use the `/setup` skill.
 
-### First-time Setup
+For data loading commands (ingest, enqueue, scan), use the `/load-data` skill.
 
-1. Install dependencies:
-```bash
-npm i
-```
+For common development workflows, use the `/dev-workflow` skill.
 
-2. Create `.env` file (copy from `.env.example`):
-```bash
-cp .env.example .env
-# Edit .env and set passwords for POSTGRES_PASSWORD, MINIO_ACCESS_KEY, MINIO_SECRET_KEY, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
-```
-
-3. Start infrastructure services:
-```bash
-docker-compose up --build -d
-```
-
-4. Build all applications:
-```bash
-npm run build:all
-```
-
-Or build individually:
-```bash
-npm run build:api
-npm run build:scan-engine
-npm run build:cli
-```
-
-5. Start applications:
-```bash
-npm run start:all
-```
-
-The API will start first and run database migrations, then the scan-engine worker will start. You can also start apps individually with `npm run start:api` or `npm run start:scan-engine`.
-
-### Working with Data
-
-Load federal domain list (required before scanning):
-```bash
-npm run ingest -- --limit 200
-```
-
-Enqueue all websites for scanning:
-```bash
-npx nest start cli -- enqueue-scans
-```
-
-Scan a single site (for testing, does not write to database):
-```bash
-npx nest start cli -- scan-site --url 18f.gov
-```
-
-Create snapshot and export to S3:
-```bash
-npm run snapshot
-```
-
-## Testing
-
-Run all unit tests (excludes e2e):
-```bash
-npm run test:unit
-```
-
-Run tests in watch mode (TDD):
-```bash
-npm run tdd
-```
-
-Run with coverage:
-```bash
-npm run test:cov
-```
-
-Run e2e tests only:
-```bash
-npm run test:e2e
-```
-
-## Common Tasks
-
-### Linting and Formatting
-```bash
-npm run lint        # ESLint with auto-fix
-npm run format      # Prettier formatting
-```
-
-### Development Workflow
-```bash
-npm run start:dev              # Start with watch mode
-npm run scan:dev               # Test scan with watch mode (defaults to supremecourt.gov)
-npm run scan:dap               # Test DAP scan specifically
-```
-
-### Adding New Components
-
-Add a new application:
-```bash
-nest g app <app_name>
-```
-
-Add a new library:
-```bash
-nest g library <library_name>
-```
-
-### Docker Management
-
-Rebuild containers (wipes data):
-```bash
-docker-compose up --build -d
-```
-
-Stop and remove containers:
-```bash
-docker-compose down
-```
-
-Build application Docker image:
-```bash
-docker build -f apps/scan-engine/Dockerfile .
-```
-
-## Deployment
-
-The application deploys to Cloud.gov using Cloud Foundry CLI:
-
-1. Log in to Cloud.gov:
-```bash
-cf login -a api.fr.cloud.gov --sso
-```
-
-2. Deploy using the provided script:
-```bash
-./cloudgov-deploy.sh                  # Uses default manifest.yml
-./cloudgov-deploy.sh manifest-dev.yml  # Uses alternate manifest
-```
+For deployment instructions, use the `/deploy` skill.
 
 ## Key Technical Details
 
@@ -240,46 +103,11 @@ The production system runs automated workflows via GitHub Actions:
 - Migrations are handled automatically in local dev via TypeORM entity decorators
 - Object Relational Mapper maintains separation between business logic and data storage
 
-## Adding New Scans
+## Extending the Scanner
 
-To implement a new scan in the core-scanner:
+To implement a new scan, use the `/add-scan` skill.
 
-1. Create a function in `libs/core-scanner/src/scans/` that takes a response or Puppeteer page object
-2. Evaluate the DOM to extract desired data (see `uswds.ts` for example)
-3. The `primary` scanner acts as parent - specific scans are children (sitemaps, USWDS checks, etc.)
-4. Each scan function returns data that gets merged into the final result
-
-## Adding New Fields/Columns
-
-When prototyping new fields for scan results:
-
-1. Add property to entity class (e.g., `entities/core-result.entity.ts`) with TypeORM decorators
-2. Add `@Exclude()` decorator to hide from API during development
-3. Test locally by generating a snapshot with the CLI - new column will appear in CSV
-4. When ready for production:
-   - Remove `@Exclude` decorator to expose in API
-   - Update `static snapshot column order` in core-result entity
-   - Update unit tests in snapshot library if needed
-
-## Cloud Foundry / Cloud.gov
-
-### Deployment
-- Deployments are **manual** (no automated pipeline)
-- Use `cf` CLI for all development tasks and service management
-- Web dashboard available for monitoring logs but CLI is preferred for actual work
-
-### Managing Services
-```bash
-cf login -a api.fr.cloud.gov --sso
-cf services                    # List bound services
-cf env <app-name>             # View environment variables
-cf logs <app-name> --recent   # View recent logs
-```
-
-### Important Configuration Files
-- `manifest.yml`: Main Cloud Foundry manifest
-- `vars.yml` -> `vars-prod.yml` (symlink): Production variables
-- `vars-dev.yml`: Development variables
+To add new fields/columns to scan results, use the `/add-field` skill.
 
 ## Federal Website Index Integration
 
