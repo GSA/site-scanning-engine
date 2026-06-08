@@ -1,0 +1,140 @@
+{
+  "resultsSummary": {
+    "other": 5
+  },
+  "resultsList": [
+    {
+      "id": "video-caption",
+      "tags": [
+        "cat.time-and-media",
+        "wcag2a",
+        "wcag122",
+        "section508",
+        "section508.22.a"
+      ],
+      "description": "Ensures <video> elements have captions",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/video-caption?application=axe-puppeteer",
+      "nodes": [
+        {
+          "any": [],
+          "all": [],
+          "none": [
+            {
+              "id": "caption",
+              "relatedNodes": [],
+              "message": "Check that captions are available for the element"
+            }
+          ],
+          "html": "<video src=\"example.mp4\"></video>"
+        }
+      ]
+    },
+    {
+      "id": "label",
+      "tags": [
+        "cat.forms",
+        "wcag2a",
+        "wcag412",
+        "section508",
+        "section508.22.n",
+        "ACT"
+      ],
+      "description": "Ensures every form element has a label",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/label?application=axe-puppeteer",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "implicit-label",
+              "relatedNodes": [],
+              "message": "Form element does not have an implicit (wrapped) <label>"
+            },
+            {
+              "id": "explicit-label",
+              "relatedNodes": [],
+              "message": "Form element does not have an explicit <label>"
+            }
+          ],
+          "all": [],
+          "none": [
+            {
+              "id": "help-same-as-label",
+              "relatedNodes": [],
+              "message": "Element has no title or aria-describedby"
+            }
+          ],
+          "html": "<input type=\"text\" id=\"unlabeled\" name=\"unlabeled\">"
+        },
+        {
+          "any": [
+            {
+              "id": "implicit-label",
+              "relatedNodes": [],
+              "message": "Form element does not have an implicit (wrapped) <label>"
+            },
+            {
+              "id": "explicit-label",
+              "relatedNodes": [],
+              "message": "Form element does not have an explicit <label>"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "html": "<input type=\"email\" id=\"email2\" name=\"email2\">"
+        }
+      ]
+    },
+    {
+      "id": "autocomplete-valid",
+      "tags": [
+        "cat.forms",
+        "wcag21aa",
+        "wcag135"
+      ],
+      "description": "Ensures the autocomplete attribute is correct and suitable for the form field",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/autocomplete-valid?application=axe-puppeteer",
+      "nodes": [
+        {
+          "any": [
+            {
+              "id": "autocomplete-valid",
+              "relatedNodes": [],
+              "message": "autocomplete attribute must be used correctly"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "html": "<input type=\"email\" id=\"email\" autocomplete=\"invalid-value\">"
+        }
+      ]
+    },
+    {
+      "id": "link-in-text-block",
+      "tags": [
+        "cat.color",
+        "wcag2a",
+        "wcag141"
+      ],
+      "description": "Ensures links are distinguished from surrounding text in a way that does not rely on color",
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/link-in-text-block?application=axe-puppeteer",
+      "nodes": [
+        {
+          "any": [],
+          "all": [
+            {
+              "id": "link-in-text-block",
+              "relatedNodes": [
+                {
+                  "html": "<p>This is a paragraph with <a href=\"#\">a link</a> that is only distinguished by color.</p>"
+                }
+              ],
+              "message": "Element's contrast ratio could not be determined. Check for a distinct hover/focus style"
+            }
+          ],
+          "none": [],
+          "html": "<a href=\"#\">a link</a>"
+        }
+      ]
+    }
+  ]
+}
