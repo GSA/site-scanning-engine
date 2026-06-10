@@ -81,6 +81,16 @@ export function aggregateResults(results: Result[]): AggregatedResults {
     language: ['html-lang-valid', 'valid-lang', 'html-has-lang'],
     'link-purpose': ['link-name'],
     lists: ['definition-list', 'dlitem', 'list', 'listitem'],
+    other: [
+      'audio-caption',
+      'autocomplete-valid',
+      'avoid-inline-spacing',
+      'form-field-multiple-labels',
+      'label',
+      'label-title-only',
+      'link-in-text-block',
+      'video-caption',
+    ],
     'page-titled': ['document-title'],
     tables: ['td-headers-attr', 'th-has-data-cells'],
     'user-control-name': [
@@ -93,13 +103,13 @@ export function aggregateResults(results: Result[]): AggregatedResults {
   };
 
   results.forEach((result) => {
-    for (const categorys in resultCategoryMapping) {
-      if (resultCategoryMapping[categorys].includes(result.id)) {
+    for (const category in resultCategoryMapping) {
+      if (resultCategoryMapping[category].includes(result.id)) {
         // Get the total number of NodeResult objects for each violation category
-        if (!resultsSummary[categorys]) {
-          resultsSummary[categorys] = result.nodes.length;
+        if (!resultsSummary[category]) {
+          resultsSummary[category] = result.nodes.length;
         } else {
-          resultsSummary[categorys] += result.nodes.length;
+          resultsSummary[category] += result.nodes.length;
         }
         rawResultsList.push(result);
         break;

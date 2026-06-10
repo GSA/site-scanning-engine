@@ -48,3 +48,6 @@ venv/
 
 # Puppeteer cache
 .cache/
+
+# developer-specific utility scripts for debugging
+utils/

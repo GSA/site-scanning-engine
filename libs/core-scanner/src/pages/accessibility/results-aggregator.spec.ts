@@ -41,4 +41,20 @@ describe('aggregateResults', () => {
 
     expect(result.resultsList.length).toEqual(2);
   });
+
+  it('should aggregate results from the "other" category of audits', async () => {
+    const results: Result[] = await readJsonFile(
+      join(__dirname, './test-fixtures/results3Raw.json'),
+    );
+
+    const result = aggregateResults(results);
+
+    expect(result.resultsSummary).toHaveProperty('other');
+    expect(result.resultsSummary['other']).toEqual(5);
+    expect(result.resultsList.length).toEqual(4);
+    expect(result.resultsList[0].id).toEqual('video-caption');
+    expect(result.resultsList[1].id).toEqual('label');
+    expect(result.resultsList[2].id).toEqual('autocomplete-valid');
+    expect(result.resultsList[3].id).toEqual('link-in-text-block');
+  });
 });

@@ -1,0 +1,177 @@
+[
+  {
+    "id": "video-caption",
+    "impact": "critical",
+    "tags": [
+      "cat.time-and-media",
+      "wcag2a",
+      "wcag122",
+      "section508",
+      "section508.22.a"
+    ],
+    "description": "Ensures <video> elements have captions",
+    "help": "<video> elements must have captions",
+    "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/video-caption?application=axe-puppeteer",
+    "nodes": [
+      {
+        "any": [],
+        "all": [],
+        "none": [
+          {
+            "id": "caption",
+            "data": null,
+            "relatedNodes": [],
+            "impact": "critical",
+            "message": "Check that captions are available for the element"
+          }
+        ],
+        "impact": "critical",
+        "html": "<video src=\"example.mp4\"></video>",
+        "target": ["video"],
+        "failureSummary": "Fix all of the following:\n  Check that captions are available for the element"
+      }
+    ]
+  },
+  {
+    "id": "label",
+    "impact": "critical",
+    "tags": [
+      "cat.forms",
+      "wcag2a",
+      "wcag412",
+      "section508",
+      "section508.22.n",
+      "ACT"
+    ],
+    "description": "Ensures every form element has a label",
+    "help": "Form elements must have labels",
+    "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/label?application=axe-puppeteer",
+    "nodes": [
+      {
+        "any": [
+          {
+            "id": "implicit-label",
+            "data": null,
+            "relatedNodes": [],
+            "impact": "critical",
+            "message": "Form element does not have an implicit (wrapped) <label>"
+          },
+          {
+            "id": "explicit-label",
+            "data": null,
+            "relatedNodes": [],
+            "impact": "critical",
+            "message": "Form element does not have an explicit <label>"
+          }
+        ],
+        "all": [],
+        "none": [
+          {
+            "id": "help-same-as-label",
+            "data": null,
+            "relatedNodes": [],
+            "impact": "minor",
+            "message": "Element has no title or aria-describedby"
+          }
+        ],
+        "impact": "critical",
+        "html": "<input type=\"text\" id=\"unlabeled\" name=\"unlabeled\">",
+        "target": ["#unlabeled"],
+        "failureSummary": "Fix any of the following:\n  Form element does not have an implicit (wrapped) <label>\n  Form element does not have an explicit <label>"
+      },
+      {
+        "any": [
+          {
+            "id": "implicit-label",
+            "data": null,
+            "relatedNodes": [],
+            "impact": "critical",
+            "message": "Form element does not have an implicit (wrapped) <label>"
+          },
+          {
+            "id": "explicit-label",
+            "data": null,
+            "relatedNodes": [],
+            "impact": "critical",
+            "message": "Form element does not have an explicit <label>"
+          }
+        ],
+        "all": [],
+        "none": [],
+        "impact": "critical",
+        "html": "<input type=\"email\" id=\"email2\" name=\"email2\">",
+        "target": ["#email2"],
+        "failureSummary": "Fix any of the following:\n  Form element does not have an implicit (wrapped) <label>\n  Form element does not have an explicit <label>"
+      }
+    ]
+  },
+  {
+    "id": "autocomplete-valid",
+    "impact": "serious",
+    "tags": [
+      "cat.forms",
+      "wcag21aa",
+      "wcag135"
+    ],
+    "description": "Ensures the autocomplete attribute is correct and suitable for the form field",
+    "help": "autocomplete attribute must be used correctly",
+    "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/autocomplete-valid?application=axe-puppeteer",
+    "nodes": [
+      {
+        "any": [
+          {
+            "id": "autocomplete-valid",
+            "data": null,
+            "relatedNodes": [],
+            "impact": "serious",
+            "message": "autocomplete attribute must be used correctly"
+          }
+        ],
+        "all": [],
+        "none": [],
+        "impact": "serious",
+        "html": "<input type=\"email\" id=\"email\" autocomplete=\"invalid-value\">",
+        "target": ["#email"],
+        "failureSummary": "Fix any of the following:\n  autocomplete attribute must be used correctly"
+      }
+    ]
+  },
+  {
+    "id": "link-in-text-block",
+    "impact": "serious",
+    "tags": [
+      "cat.color",
+      "wcag2a",
+      "wcag141"
+    ],
+    "description": "Ensures links are distinguished from surrounding text in a way that does not rely on color",
+    "help": "Links must be distinguishable without relying on color",
+    "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/link-in-text-block?application=axe-puppeteer",
+    "nodes": [
+      {
+        "any": [],
+        "all": [
+          {
+            "id": "link-in-text-block",
+            "data": {
+              "messageKey": "bgContrast"
+            },
+            "relatedNodes": [
+              {
+                "html": "<p>This is a paragraph with <a href=\"#\">a link</a> that is only distinguished by color.</p>",
+                "target": ["p"]
+              }
+            ],
+            "impact": "serious",
+            "message": "Element's contrast ratio could not be determined. Check for a distinct hover/focus style"
+          }
+        ],
+        "none": [],
+        "impact": "serious",
+        "html": "<a href=\"#\">a link</a>",
+        "target": ["a"],
+        "failureSummary": "Fix all of the following:\n  Element's contrast ratio could not be determined. Check for a distinct hover/focus style"
+      }
+    ]
+  }
+]

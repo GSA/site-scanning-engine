@@ -1,12 +1,12 @@
 # API Dockerfile
 #
-# Note: This Dockerfile is only used for local development. 
-# In theory, one should be able to adapt it to run in in the cloud. 
-# 
+# Note: This Dockerfile is only used for local development.
+# In theory, one should be able to adapt it to run in in the cloud.
+#
 # Another Note:
-# This file is using multi-stage builds for build performance. 
-# See: https://docs.docker.com/develop/develop-images/multistage-build/ 
-# 
+# This file is using multi-stage builds for build performance.
+# See: https://docs.docker.com/develop/develop-images/multistage-build/
+#
 # the `development` stage handles building the application
 FROM node:12.20.1 AS development
 
@@ -16,7 +16,7 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY . . 
+COPY . .
 
 RUN npm run build api
 
@@ -30,12 +30,10 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-# npm ci response the NODE_ENV=production flag so it should 
+# npm ci response the NODE_ENV=production flag so it should
 # not install devDependencies.
 RUN npm ci
 
 COPY --from=development /usr/src/app/dist ./dist
 
 RUN ["node", "dist/apps/api/main"]
-
-
