@@ -1,3 +1,8 @@
+---
+name: add-scan
+description: Guide for implementing a new scan in the core-scanner library, including page evaluation, entity integration, and testing.
+---
+
 # Add Scan Skill
 
 Guide for implementing a new scan in the core-scanner library.

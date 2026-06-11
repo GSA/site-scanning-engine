@@ -1,3 +1,8 @@
+---
+name: add-field
+description: Guide for adding new fields/columns to scan results, including entity decorators, snapshot integration, and API exposure.
+---
+
 # Add Field Skill
 
 Guide for adding new fields/columns to scan results.

@@ -1,3 +1,8 @@
+---
+name: dev-workflow
+description: Common development commands and workflows — linting, testing, building, Docker management, and troubleshooting.
+---
+
 # Dev Workflow Skill
 
 Common development commands and workflows for the Site Scanning Engine.

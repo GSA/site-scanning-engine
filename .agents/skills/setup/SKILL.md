@@ -1,3 +1,8 @@
+---
+name: setup
+description: Guide through initial development setup of the Site Scanning Engine (prerequisites, Docker, building, first data load).
+---
+
 # Setup Skill
 
 Guide user through initial development setup of the Site Scanning Engine.

@@ -1,3 +1,8 @@
+---
+name: deploy
+description: Guide for deploying the Site Scanning Engine to Cloud.gov using Cloud Foundry CLI.
+---
+
 # Deploy Skill
 
 Guide for deploying the Site Scanning Engine to Cloud.gov (Cloud Foundry).
