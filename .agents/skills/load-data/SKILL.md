@@ -1,3 +1,8 @@
+---
+name: load-data
+description: Commands for loading and managing scan data — ingesting federal domains, enqueueing scans, running single-site tests, and exporting snapshots.
+---
+
 # Load Data Skill
 
 Commands for working with scan data in the Site Scanning Engine.
