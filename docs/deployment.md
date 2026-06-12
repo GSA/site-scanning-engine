@@ -80,72 +80,65 @@ docker run \
 
 ## Deploy to Cloud.gov (development, production, etc.)
 
-Deploying to the development environment (and production) is different
-because development (and production) is (are) hosted remotely on
-cloud.gov infrastructure.
+Deployments to the `dev` and `prod` Cloud Foundry spaces are handled by
+GitHub Actions workflows -- there is no local deployment script.
 
-The first step is to login to the cloud.gov infrastructure with a
-valid session token:
+- [`dev.yml`](../.github/workflows/dev.yml) deploys to the `dev` space using
+  `manifest.yml` and `vars-dev.yml`. It runs automatically on every pull
+  request to `main`, and can also be triggered manually from the Actions tab.
+- [`deploy.yml`](../.github/workflows/deploy.yml) deploys to the `prod` space
+  using `manifest.yml` and `vars-prod.yml`. It is triggered manually only.
+
+To deploy to production, open the
+[Deploy workflow](https://github.com/GSA/site-scanning-engine/actions/workflows/deploy.yml)
+in the GitHub Actions tab and click **Run workflow** on the `main` branch.
+
+Each workflow checks out the repository, installs dependencies
+(`npm install`), builds all apps (`npm run build:all`), and then runs:
+
+```bash
+cf push -f manifest.yml --vars-file vars-<environment>.yml
+```
+
+against the corresponding org/space, authenticating with the `CF_USERNAME`
+and `CF_PASSWORD` GitHub secrets.
+
+### Configuration Files
+
+`manifest.yml` describes the `site-scanner-api` and `site-scanner-consumer`
+applications -- buildpacks, start commands, bound services, and resource
+settings. Resource values (memory, disk, instance counts, schedules) are
+templated with `((variable))` placeholders and supplied per-environment by
+`vars-dev.yml` and `vars-prod.yml`. To change a resource setting (e.g., the
+number of scan-engine workers), edit the relevant `vars-*.yml` file and let
+the corresponding workflow deploy it.
+
+### Inspecting a Deployed Environment
+
+Logging in to Cloud.gov with the CLI is useful for monitoring and
+troubleshooting, even though deploys themselves go through GitHub Actions:
 
 ```bash
 cf login --sso
 ```
 
-Be sure to target the correct organization and space (environment)
-so that updates are pushed to the correct service:
+Be sure to target the correct organization and space (environment):
 
 ```bash
-ORGANIZATION=the_organization \
-SPACE=the_space \
+ORGANIZATION=gsatts-sitescan \
+SPACE=dev \
 cf target -o "$ORGANIZATION" -s "$SPACE"
 ```
 
-Here, `$ORGANIZATION` and `$SPACE` are the orgnization and space,
-respectively. To list the organizations one may access, use:
+To list the organizations and spaces you can access:
 
 ```bash
 cf orgs
-```
-
-...and to list spaces, use:
-
-```bash
 cf spaces
 ```
 
 (note: you'll need to be authenticated in order for `cf orgs` or
 `cf spaces` to work)
-
-Then, use the `cloudgov-deploy.sh` script to push the changes to the
-desired space (environment):
-
-```bash
-( cd "$(git rev-parse --show-toplevel)" \
-  && ./cloudgov-deploy.sh
-)
-```
-
-The `cloudgov-deploy.sh` is a wrapper around running `cf push`
-that will push the code on the filesystem -- regardless of any
-git branches, Pull Requests (PRs), commits, etc. -- out to the
-cloud.gov infrastructure. Also, the script has functionality
-to verify that the required services are setup and running
-on the cloud.gov infrastructure, such as an S3 bucket,
-Redis queue, Postgres database, API key, etc..
-
-The file used to configure and deploy the application is an
-environment-specific YAML file, typically named of the form
-`manifest-(environment).yml` (replace '`(environment)`' with the name
-of the actual environment.
-
-When `cloudgov-deploy.sh` is run in a new environment, it
-will prompt the operator for an API key. This API key is stored on
-cloud.gov as an environment variable that can be used by applications.
-As a result, one doesn't need to retain the API key or store it
-anywhere.
-
-- **Note:** the process of standing up a new environment takes
-  about 20 minutes to complete. This is normal.
 
 ## Resources
 

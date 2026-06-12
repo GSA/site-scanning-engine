@@ -1,6 +1,6 @@
 ---
 name: deploy
-description: Guide for deploying the Site Scanning Engine to Cloud.gov using Cloud Foundry CLI.
+description: Guide for deploying the Site Scanning Engine to Cloud.gov via GitHub Actions, and using the Cloud Foundry CLI to monitor and troubleshoot deployed environments.
 ---
 
 # Deploy Skill
@@ -9,19 +9,34 @@ Guide for deploying the Site Scanning Engine to Cloud.gov (Cloud Foundry).
 
 ## Important Notes
 
-- Deployments are **manual** (no automated pipeline)
-- Use `cf` CLI for all deployment and management tasks
+- Deployments are handled by **GitHub Actions** workflows, not a local script or manual `cf push`
+- Use `cf` CLI for monitoring and troubleshooting a deployed environment. Information on the Cloudfoundry CLI can be found at https://docs.cloudfoundry.org/cf-cli/. General advice on deployment with Cloudfoundry is at https://docs.cloudfoundry.org/devguide/deploy-apps/deploy-app.html 
 - Web dashboard available for monitoring logs, but CLI is preferred for actual work
 
 ## Prerequisites
 
-- Cloud Foundry CLI (`cf`) installed
+- Cloud Foundry CLI (`cf`) installed (for monitoring/troubleshooting)
 - Cloud.gov account with appropriate permissions
 - Access to the correct Cloud.gov space
 
 ## Deployment Process
 
-### 1. Login to Cloud.gov
+Deployments are triggered via GitHub Actions:
+
+- [`deploy.yml`](../../../.github/workflows/deploy.yml) deploys to the
+  `prod` space using `manifest.yml` + `vars-prod.yml`. Triggered manually
+  only (`workflow_dispatch`).
+- [`dev.yml`](../../../.github/workflows/dev.yml) deploys to the `dev` space
+  using `manifest.yml` + `vars-dev.yml`. Runs automatically on pull requests
+  to `main`, and can also be triggered manually.
+
+To trigger a deployment, run the workflow from the GitHub Actions tab (or
+`gh workflow run deploy.yml` / `gh workflow run dev.yml`). Each workflow
+installs dependencies, builds all apps, then runs
+`cf push -f manifest.yml --vars-file <vars file>` using the `CF_USERNAME` /
+`CF_PASSWORD` GitHub secrets.
+
+### 1. Login to Cloud.gov (for monitoring/troubleshooting)
 
 ```bash
 cf login -a api.fr.cloud.gov --sso
@@ -40,18 +55,6 @@ cf target
 
 Ensure you're targeting the correct org and space.
 
-### 3. Deploy Application
-
-Use the provided deployment script:
-
-```bash
-# Deploy using default manifest
-./cloudgov-deploy.sh
-
-# Deploy using alternate manifest (e.g., dev environment)
-./cloudgov-deploy.sh manifest-dev.yml
-```
-
 ## Configuration Files
 
 ### manifest.yml
@@ -63,16 +66,26 @@ Main Cloud Foundry manifest - defines:
 - Buildpacks
 - Services to bind
 
+### vars-prod.yml / vars-dev.yml
+
+Environment-specific variables, passed to `cf push` via `--vars-file`:
+- Instance counts, memory, disk
+- Scan/snapshot schedules
+
+### vars.yml (symlink)
+
+Points to environment-specific variables:
+- `vars.yml` → `vars-prod.yml` (production)
+
+To change a resource setting (e.g., worker count or memory), edit the
+relevant `vars-*.yml` file and deploy via the workflow above -- manual
+`cf scale` changes will be reverted on the next deploy.
+
 ### vars.yml (symlink)
 
 Points to environment-specific variables:
 - `vars.yml` → `vars-prod.yml` (production)
 - `vars-dev.yml` (development)
-
-Contains:
-- API keys
-- Service credentials
-- Environment-specific configuration
 
 ## Post-Deployment Verification
 
@@ -82,9 +95,9 @@ Contains:
 cf apps
 ```
 
-Look for:
-- `api` - Should be running, 1 instance
-- `scan-engine` - Should be running, 7 instances (production)
+Look for (instance counts come from `vars-prod.yml` / `vars-dev.yml`):
+- `site-scanner-api`
+- `site-scanner-consumer` - 7 instances in production
 
 ### View Recent Logs
 
@@ -94,8 +107,8 @@ cf logs <app-name> --recent
 
 Example:
 ```bash
-cf logs site-scan-api --recent
-cf logs site-scan-engine --recent
+cf logs site-scanner-api --recent
+cf logs site-scanner-consumer --recent
 ```
 
 ### Stream Live Logs
@@ -156,7 +169,7 @@ cf scale <app-name> -i <count>
 
 Example:
 ```bash
-cf scale site-scan-engine -i 7
+cf scale site-scanner-consumer -i 7
 ```
 
 ### Scale Memory
@@ -167,7 +180,7 @@ cf scale <app-name> -m <memory>
 
 Example:
 ```bash
-cf scale site-scan-api -m 1G
+cf scale site-scanner-api -m 1G
 ```
 
 ## Troubleshooting
@@ -183,10 +196,11 @@ cf scale site-scan-api -m 1G
 
 - Verify PostgreSQL service is running
 - Check Redis service status
-- Ensure S3 credentials are correct in vars file
+- Verify the bound services have the expected credentials: `cf env <app-name>`
 
 ### Deployment Fails
 
+- Check the failed step in the GitHub Actions run for `deploy.yml` / `dev.yml`
 - Check Cloud.gov status page
 - Verify you have sufficient quota: `cf quotas`
 - Review buildpack compatibility
@@ -197,3 +211,6 @@ cf scale site-scan-api -m 1G
 - API must deploy successfully before scan-engine (database migrations)
 - Always verify services are bound after deployment
 - Keep vars.yml symlink pointing to correct environment file
+- Resource changes (memory, instance counts) belong in `vars-prod.yml` /
+  `vars-dev.yml`, not ad-hoc `cf scale` calls, since the next deploy will
+  reset them
