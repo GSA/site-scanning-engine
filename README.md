@@ -223,11 +223,15 @@ This runs all unit tests.
 
 ## Deploy
 
-First, log in to Cloud.gov using the CLI and choose the organization and space.
+Deployments to Cloud.gov are handled by GitHub Actions, not a local script.
 
-Then, you can use the `cloudgov-deploy.sh` script to build and deploy the apps.
+- The [`Deploy`](.github/workflows/deploy.yml) workflow pushes to the `prod`
+  space and is triggered manually from the Actions tab.
+- The [`Dev deployment`](.github/workflows/dev.yml) workflow pushes to the
+  `dev` space. It runs automatically on pull requests to `main`, and can also
+  be triggered manually.
 
-You can optionally pass a different manifest file with `cloudgov-deploy.sh manifest-dev.yml`.
+See [Deployment](docs/deployment.md) for details.
 
 ## Additional Documentation
 

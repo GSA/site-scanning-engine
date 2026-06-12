@@ -10,7 +10,7 @@ provision an environment include:
 1. Create vars file for the environment
 1. Target the space on Cloud Foundry
 1. Create an API key for use with the environment
-1. Run the deployment script
+1. Provision required services and deploy the application
 1. Test the new environment
 1. Verify that the service accounts can deploy to the environment
 
@@ -76,17 +76,24 @@ an authorized agent may query Cloud Foundry to retrieve the value.
 
 That is, it could literally be a face-plant on the keyboard.
 
-### 5. Run the deployment script
+### 5. Provision required services and deploy the application
 
-There is a deployment script that is used to provision the environment
-(space) called `cloudgov-deploy.sh`. This script will not only
-push code to Cloud Foundry, but it will also wire up the required
-services (e.g., RDS Postgres, Redis, the API key, etc.).
+There is no longer a single deployment script that provisions a new
+environment. Instead, the services listed under `services:` in
+[`manifest.yml`](../manifest.yml) (e.g., RDS Postgres, Redis, the API key,
+etc.) must be created in the space -- with `cf create-service` and
+`cf create-user-provided-service` -- before the application can be deployed.
 
-When the script is run, if there is no value for the `API_KEY`
-user-provided service, it will prompt the operator for a value.
-Provide the value previously discussed (or slap the keyboard a few
-times).
+For the API key service, if there is no value for the `API_KEY`
+user-provided service, supply one when creating it. Provide the value
+previously discussed (or slap the keyboard a few times).
+
+Once the required services exist, the application is deployed via the
+GitHub Actions workflows described in [Deployment](deployment.md) (e.g.,
+[`dev.yml`](../.github/workflows/dev.yml) or
+[`deploy.yml`](../.github/workflows/deploy.yml)) -- a new space will need its
+own workflow (or an update to an existing one) pointing at the new space and
+vars file.
 
 Note: the process of creating and binding all of the services to the
 (new) applications takes a while -- don't be surprised if it takes
