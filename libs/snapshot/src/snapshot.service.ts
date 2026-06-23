@@ -179,9 +179,9 @@ export class SnapshotService {
     this.logger.log('Backing up previous snapshot');
     const date = this.datetimeService.now();
     date.setDate(date.getDate() - 7);
-    const priorDate = date.toISOString();
+    const priorDate = date.toISOString().split('T')[0];
     const newFileName = `archive/json/${this.fileNameAccessibility}-${priorDate}.json`;
-    this.storageService.copy(`${this.fileNameAccessibility}.json`, newFileName);
+    await this.storageService.copy(`${this.fileNameAccessibility}.json`, newFileName);
 
     this.logger.log('Serializing new snapshot');
     const serializedWebsitesWithDetailsOnly = websites.map((website) => {

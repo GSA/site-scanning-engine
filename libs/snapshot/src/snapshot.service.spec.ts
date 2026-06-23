@@ -51,6 +51,9 @@ describe('SnapshotService', () => {
               if (key === 'fileNameDailyAll') {
                 return 'site-scanning-latest';
               }
+              if (key === 'fileNameAccessibility') {
+                return 'weekly-snapshot-accessibility-details';
+              }
             }),
           },
         },
@@ -194,5 +197,50 @@ describe('SnapshotService', () => {
     expect(mockStorageService.upload.mock.calls).toEqual(
       expect.arrayContaining(expectedUploadCalls),
     );
+  });
+
+  it('should archive the previous a11y snapshot with a date-only key and upload the new one', async () => {
+    const coreResult = new CoreResult();
+    coreResult.accessibilityResultsList = JSON.stringify([
+      { id: 'color-contrast', impact: 'serious' },
+    ]);
+
+    const website = new Website();
+    website.coreResult = coreResult;
+    website.url = 'supremecourt.gov';
+
+    mockWebsiteService.findAccessibilityResultsSnapshotResults.mockResolvedValue(
+      [website],
+    );
+
+    const fixedDate = new Date('2026-02-20T00:00:00.000Z');
+    mockDatetimeService.now.mockReturnValue(new Date(fixedDate));
+
+    // priorDate should be 7 days before fixedDate
+    const expectedPriorDate = '2026-02-13';
+
+    await service.accessibilityResultsSnapshot();
+
+    // archive copy must use date-only string (YYYY-MM-DD), not a full ISO timestamp
+    expect(mockStorageService.copy).toHaveBeenCalledWith(
+      'weekly-snapshot-accessibility-details.json',
+      `archive/json/weekly-snapshot-accessibility-details-${expectedPriorDate}.json`,
+    );
+
+    // new snapshot must be uploaded
+    expect(mockStorageService.upload).toHaveBeenCalledWith(
+      'weekly-snapshot-accessibility-details.json',
+      expect.any(String),
+    );
+
+    // uploaded content must be valid JSON with expected shape
+    const uploadedContent = mockStorageService.upload.mock.calls[0][1] as string;
+    const parsed = JSON.parse(uploadedContent);
+    expect(parsed).toEqual([
+      {
+        target_url: 'supremecourt.gov',
+        accessibility_details: [{ id: 'color-contrast', impact: 'serious' }],
+      },
+    ]);
   });
 });
