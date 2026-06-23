@@ -6,39 +6,98 @@ import { IngestService } from './ingest.service';
 import { Website } from 'entities/website.entity';
 
 // Full 38-column CSV header matching the current federal-website-index output.
-const CSV_HEADERS =
-  'target_url,base_domain,top_level_domain,branch,agency,bureau,' +
-  'source_list_federal_domains,source_list_dap,source_list_pulse,source_list_omb_idea,' +
-  'source_list_eotw,source_list_usagov,source_list_gov_man,source_list_uscourts,' +
-  'source_list_oira,source_list_other,source_list_mil_1,source_list_mil_2,' +
-  'source_list_dod_public,source_list_dotmil,source_list_final_url_websites,' +
-  'source_list_house_117th,source_list_senate_117th,source_list_gpo_fdlp,' +
-  'source_list_cisa,source_list_dod_2025,source_list_dap_2,source_list_usagov_clicks,' +
-  'source_list_usagov_clicks_mil,source_list_search_gov,source_list_search_gov_mil,' +
-  'source_list_public_inventory,source_list_non_gov_mil,source_list_govt_urls,' +
-  'source_list_hyperlink_domains,' +
-  'filtered,pageviews,visits';
+const CSV_HEADER_COLS = [
+  'target_url',
+  'base_domain',
+  'top_level_domain',
+  'branch',
+  'agency',
+  'bureau',
+  'source_list_federal_domains',
+  'source_list_dap',
+  'source_list_pulse',
+  'source_list_omb_idea',
+  'source_list_eotw',
+  'source_list_usagov',
+  'source_list_gov_man',
+  'source_list_uscourts',
+  'source_list_oira',
+  'source_list_other',
+  'source_list_mil_1',
+  'source_list_mil_2',
+  'source_list_dod_public',
+  'source_list_dotmil',
+  'source_list_final_url_websites',
+  'source_list_house_117th',
+  'source_list_senate_117th',
+  'source_list_gpo_fdlp',
+  'source_list_cisa',
+  'source_list_dod_2025',
+  'source_list_dap_2',
+  'source_list_usagov_clicks',
+  'source_list_usagov_clicks_mil',
+  'source_list_search_gov',
+  'source_list_search_gov_mil',
+  'source_list_public_inventory',
+  'source_list_non_gov_mil',
+  'source_list_govt_urls',
+  'source_list_hyperlink_domains',
+  'filtered',
+  'pageviews',
+  'visits',
+];
+const CSV_HEADERS = CSV_HEADER_COLS.join(',');
 
 // A base row with all source flags FALSE.
-const BASE_ROW =
-  '18f.gov,18f.gov,gov,Executive,General Services Administration,GSA TTS,' +
-  'FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,' +
-  'FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,' +
-  'FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,,';
+const BASE_ROW_COLS = [
+  '18f.gov',
+  '18f.gov',
+  'gov',
+  'Executive',
+  'General Services Administration',
+  'GSA TTS',
+  'FALSE', // source_list_federal_domains
+  'FALSE', // source_list_dap
+  'FALSE', // source_list_pulse
+  'FALSE', // source_list_omb_idea
+  'FALSE', // source_list_eotw
+  'FALSE', // source_list_usagov
+  'FALSE', // source_list_gov_man
+  'FALSE', // source_list_uscourts
+  'FALSE', // source_list_oira
+  'FALSE', // source_list_other
+  'FALSE', // source_list_mil_1
+  'FALSE', // source_list_mil_2
+  'FALSE', // source_list_dod_public
+  'FALSE', // source_list_dotmil
+  'FALSE', // source_list_final_url_websites
+  'FALSE', // source_list_house_117th
+  'FALSE', // source_list_senate_117th
+  'FALSE', // source_list_gpo_fdlp
+  'FALSE', // source_list_cisa
+  'FALSE', // source_list_dod_2025
+  'FALSE', // source_list_dap_2
+  'FALSE', // source_list_usagov_clicks
+  'FALSE', // source_list_usagov_clicks_mil
+  'FALSE', // source_list_search_gov
+  'FALSE', // source_list_search_gov_mil
+  'FALSE', // source_list_public_inventory
+  'FALSE', // source_list_non_gov_mil
+  'FALSE', // source_list_govt_urls
+  'FALSE', // source_list_hyperlink_domains
+  '',      // filtered
+  '',      // pageviews
+  '',      // visits
+];
 
-// Produces a row where source_list_federal_domains=TRUE. Used by the three
-// general ingest tests that need a parseable row but don't assert on sourceList.
-function rowWithFederalTrue() {
-  return BASE_ROW.replace(
-    /^(18f\.gov,18f\.gov,gov,Executive,General Services Administration,GSA TTS,)FALSE/,
-    '$1TRUE',
-  );
-}
-
-function rowWithHyperlinkTrue() {
-  // source_list_hyperlink_domains is the 35th column (0-indexed: 34).
-  // Replace the FALSE immediately before ',FALSE,,' (filtered,pageviews,visits)
-  return BASE_ROW.replace(/FALSE,FALSE,,$/, 'TRUE,FALSE,,');
+// Produces a row with one named column set to TRUE.
+// Used by the general ingest tests that need a parseable row.
+function rowWithColTrue(colName: string): string {
+  const idx = CSV_HEADER_COLS.indexOf(colName);
+  if (idx === -1) throw new Error(`Unknown column: ${colName}`);
+  const cols = [...BASE_ROW_COLS];
+  cols[idx] = 'TRUE';
+  return cols.join(',');
 }
 
 describe('IngestService', () => {
@@ -72,7 +131,7 @@ describe('IngestService', () => {
   });
 
   it('should get a list of URLs', async () => {
-    const csvString = `${CSV_HEADERS}\n${rowWithFederalTrue()}`;
+    const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_federal_domains')}`;
 
     jest
       .spyOn(mockUrlList, 'fetch')
@@ -84,7 +143,7 @@ describe('IngestService', () => {
   });
 
   it('write a list of URLs', async () => {
-    const csvString = `${CSV_HEADERS}\n${rowWithFederalTrue()}`;
+    const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_federal_domains')}`;
 
     jest
       .spyOn(mockUrlList, 'fetch')
@@ -103,7 +162,7 @@ describe('IngestService', () => {
   });
 
   it('write a list of URLs and removes invalid urls', async () => {
-    const csvString = `${CSV_HEADERS}\n${rowWithFederalTrue()}`;
+    const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_federal_domains')}`;
 
     jest
       .spyOn(mockUrlList, 'fetch')
@@ -140,7 +199,7 @@ describe('IngestService', () => {
   });
 
   it('sets sourceList to hyperlink_domains when source_list_hyperlink_domains is TRUE', async () => {
-    const csvString = `${CSV_HEADERS}\n${rowWithHyperlinkTrue()}`;
+    const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_hyperlink_domains')}`;
 
     jest
       .spyOn(mockUrlList, 'fetch')
