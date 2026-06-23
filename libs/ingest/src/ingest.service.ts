@@ -63,6 +63,7 @@ export class IngestService {
         'sourceListPublicInventory',
         'sourceListNonGovMil',
         'sourceListGovtUrls',
+        'sourceListHyperlinkDomains',
         // [SOURCE-ADD-POINT]
         // Add new source list here
         // e.g.
@@ -283,6 +284,10 @@ export class IngestService {
 
     if (row.sourceListGovtUrls.toLowerCase() === 'true') {
       sourceList.push('govt_urls');
+    }
+
+    if (row.sourceListHyperlinkDomains.toLowerCase() === 'true') {
+      sourceList.push('hyperlink_domains');
     }
 
     // [SOURCE-ADD-POINT]
