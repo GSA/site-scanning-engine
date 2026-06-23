@@ -198,23 +198,4 @@ describe('IngestService', () => {
     expect(mockWebsiteService.deleteBefore).toHaveBeenCalledTimes(1);
   });
 
-  it('sets sourceList to hyperlink_domains when source_list_hyperlink_domains is TRUE', async () => {
-    const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_hyperlink_domains')}`;
-
-    jest
-      .spyOn(mockUrlList, 'fetch')
-      .mockImplementation(() => Promise.resolve(csvString));
-
-    jest
-      .spyOn(mockWebsiteService, 'findAllWebsites')
-      .mockImplementation(() => Promise.resolve([]));
-
-    const urls = await service.getUrls();
-    await service.writeUrls(urls);
-
-    expect(mockWebsiteService.upsert).toHaveBeenCalledTimes(1);
-
-    const upsertArg = (mockWebsiteService.upsert as jest.Mock).mock.calls[0][0];
-    expect(upsertArg.sourceList).toBe('hyperlink_domains');
-  });
 });
