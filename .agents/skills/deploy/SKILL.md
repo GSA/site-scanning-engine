@@ -10,7 +10,7 @@ Guide for deploying the Site Scanning Engine to Cloud.gov (Cloud Foundry).
 ## Important Notes
 
 - Deployments are handled by **GitHub Actions** workflows, not a local script or manual `cf push`
-- Use `cf` CLI for monitoring and troubleshooting a deployed environment. Information on the Cloudfoundry CLI can be found at https://docs.cloudfoundry.org/cf-cli/. General advice on deployment with Cloudfoundry is at https://docs.cloudfoundry.org/devguide/deploy-apps/deploy-app.html 
+- Use `cf` CLI for monitoring and troubleshooting a deployed environment. Information on the Cloudfoundry CLI can be found at https://docs.cloudfoundry.org/cf-cli/. General advice on deployment with Cloudfoundry is at https://docs.cloudfoundry.org/devguide/deploy-apps/deploy-app.html
 - Web dashboard available for monitoring logs, but CLI is preferred for actual work
 
 ## Prerequisites
@@ -140,7 +140,7 @@ cf env <app-name>
 
 Example:
 ```bash
-cf env site-scan-api
+cf env site-scanner-api
 ```
 
 ### Restart Application
