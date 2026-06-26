@@ -14,6 +14,84 @@ Runbook for diagnosing and resolving production issues in the Site Scanning Engi
 - Targeting correct space: `cf target -o gsatts-sitescan -s prod`
 - Access to user's helper scripts (e.g., `~/bin/download-current-queue.sh`)
 
+## Understanding Scan Schedules and Data Freshness
+
+### Automated Schedule
+
+The production system runs three automated workflows:
+
+1. **Ingest** (`.github/workflows/ingest.yml`)
+   - **Schedule**: Daily at 22:15 UTC (6:15 PM ET)
+   - **What it does**: Downloads federal domain CSV, updates `website` table
+   - **Expected result**: ~29,000 websites in database
+   - **Database tables affected**: `website`
+
+2. **Enqueue Scans** (`.github/workflows/enqueue-scans.yml`)
+   - **Schedule**: Monday, Wednesday, Friday at 00:00 UTC (8:00 PM ET previous day)
+   - **What it does**: Adds all websites from database to Redis queue
+   - **Expected result**: ~29,000 jobs added to queue
+   - **Database tables affected**: None (only queue)
+
+3. **Scan Workers** (7 instances, always running)
+   - **Schedule**: Continuous (24/7)
+   - **What they do**: Consume jobs from Redis queue, scan websites, save results
+   - **Processing time**: 10-14 hours for ~29,000 sites
+   - **Database tables affected**: `core_result`, `scan_status`
+
+4. **Create Snapshots** (`.github/workflows/create-daily-snapshots.yml`)
+   - **Schedule**: Daily at 15:00 UTC (11:00 AM ET)
+   - **What it does**: Exports scan results to S3 as CSV/JSON
+   - **Expected result**: Public snapshots updated for downstream consumers
+
+### Why Scan Dates May Look Old
+
+**Q: The database shows 29k rows but scan_date is yesterday. Why?**
+
+**A:** The `website` table is updated nightly by ingest, but the `core_result` table (scan results) is only updated when scans run (Mon/Wed/Fri).
+
+**Example timeline:**
+```
+Tuesday 22:15 UTC: Ingest runs → 29k websites in database (updated timestamps)
+Wednesday 00:00 UTC: Enqueue runs → 29k jobs added to queue
+Wednesday 00:00-14:00 UTC: Workers process queue → core_result table updated
+Thursday: No new scans (only ingest runs)
+Friday 00:00 UTC: Enqueue runs again → new scan cycle
+```
+
+**Key insight:**
+- **Website table**: Updated daily (shows which sites should be scanned)
+- **Core_result table**: Updated Mon/Wed/Fri (shows actual scan results)
+
+If it's Thursday and scan dates show Wednesday, **that's normal** — the next scan cycle won't start until Friday midnight UTC.
+
+### How to Check Current Scan Status
+
+**Is a scan cycle in progress right now?**
+
+1. **Check if enqueue ran recently:**
+   ```bash
+   gh run list --workflow=enqueue-scans.yml --limit 1
+   ```
+   Look for a run from today at 00:00 UTC.
+
+2. **Check if workers are actively scanning:**
+   ```bash
+   cf logs site-scanner-consumer | grep "Scan completed"
+   ```
+   If you see regular messages, scans are in progress.
+
+3. **Check queue depth:**
+   ```bash
+   ~/bin/download-current-queue.sh
+   ```
+   - `wait > 0` → Scans still queued
+   - `wait = 0, active > 0` → Final scans finishing
+   - `wait = 0, active = 0` → Scan cycle complete
+
+**When will the next scan cycle start?**
+
+Check the schedule: Monday, Wednesday, Friday at 00:00 UTC. The enqueue workflow will automatically trigger at that time.
+
 ## Diagnostic Decision Tree
 
 Use this flowchart to diagnose common issues:
@@ -133,9 +211,19 @@ cf tasks site-scanner-consumer
 - STATE column: `SUCCEEDED`, `FAILED`, `RUNNING`
 
 **Interpreting task states:**
-- `SUCCEEDED` — Task completed (but may have internal errors — check logs!)
-- `FAILED` — Task crashed or was killed by Cloud Foundry
+- `SUCCEEDED` — Task process exited with status 0 (but may have internal errors — **always check logs!**)
+- `FAILED` — Task crashed or was killed by Cloud Foundry (OOM, timeout, or exit code != 0)
 - `RUNNING` — Task is currently executing
+
+**Critical:** `SUCCEEDED` status only means the task submission and execution completed. It does NOT verify:
+- Whether data was actually processed
+- Whether parsing errors occurred
+- Whether the expected number of records were written
+
+**Always verify success by:**
+1. Checking logs for success indicators (e.g., "total number of websites: 29000")
+2. Checking database counts
+3. Looking for error patterns in logs (even if task shows SUCCEEDED)
 
 ### View Recent Logs
 
@@ -165,6 +253,32 @@ cf logs site-scanner-consumer
 **Use case:** Monitor a task in real-time while it runs.
 
 **Stop streaming:** Press Ctrl+C
+
+### Monitor Active Scan Progress (Real-time)
+
+```bash
+cf logs site-scanner-consumer | grep "Scan completed"
+```
+
+**Use case:** Watch scans complete in real-time to verify workers are actively processing the queue.
+
+**What you'll see:**
+```
+2026-06-26T10:03:51.61-0400 [APP/PROC/WEB/4] OUT {"level":30,...,"msg":"Scan completed for site 'example.gov' in [3508ms]"}
+2026-06-26T10:03:52.34-0400 [APP/PROC/WEB/2] OUT {"level":30,...,"msg":"Scan completed for site 'another.gov' in [2891ms]"}
+```
+
+**Interpreting results:**
+- **Regular "Scan completed" messages** → Workers are actively processing the queue
+- **No messages for 5+ minutes** → Queue is likely empty; scans are done
+- **Many messages from same websiteId** → Possible scan retry/timeout issues
+
+**Alternative filter** (more specific):
+```bash
+cf logs site-scanner-consumer | grep '"msg":"Scan completed for site'
+```
+
+**Tip:** This is the best way to confirm workers are still actively scanning. Use this when you're unsure if the queue is empty or if scans are stuck.
 
 ### Check Services
 
@@ -291,16 +405,21 @@ Enter password when prompted.
 
 ### Key Health Queries
 
-**Website count (should be ~31,500)**
+**Website count (should be ~29,000-31,500)**
 ```sql
 SELECT COUNT(*) FROM website;
 ```
 
 **Outcomes:**
-- `~31,500` — Normal
+- `~29,000-31,500` — Normal (varies as federal domain list grows)
 - `0` — Complete ingest failure (see Recovery Procedure)
 - `< 100` — Partial ingest failure or silent failure
 - `> 50,000` — Possible duplicate ingestion (investigate)
+
+**Note:** The website table stores ALL ingested domains (including those marked as `filter=true`). The actual scan count may differ from the website count because:
+- Some websites have `filter=true` but are still scanned (filter is metadata, not a skip flag)
+- Some scans may fail (unreachable sites, timeouts)
+- Snapshots apply additional filters (live sites only, certain MIME types excluded)
 
 **Most recent ingest timestamp**
 ```sql
