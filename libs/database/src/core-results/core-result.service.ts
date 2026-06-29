@@ -285,7 +285,7 @@ export class CoreResultService {
       coreResult.loginDetected = null;
       coreResult.loginProvider = null;
       coreResult.cms = null;
-      coreResult.hyperlinkDomains;
+      coreResult.hyperlinkDomains = null;
       coreResult.requiredLinksUrl = null;
       coreResult.requiredLinksText = null;
       coreResult.feedbackLinksText = null;
