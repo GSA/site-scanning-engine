@@ -8,13 +8,16 @@ import {
   Process,
   Processor,
 } from '@nestjs/bull';
-import { Logger } from '@nestjs/common';
+// use as NestLogger to avoid confusion with `Logger` from Pino that is used
+// in `entities/scan-status`
+import { Logger as NestLogger } from '@nestjs/common';
 import { Job } from 'bull';
 
 import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { QueueService } from '@app/queue';
+import { parseBrowserError } from 'entities/scan-status';
 
 /**
  * ScanEngineConsumer is a consumer of the Scanner message queue.
@@ -35,7 +38,7 @@ import { QueueService } from '@app/queue';
  */
 @Processor(SCANNER_QUEUE_NAME)
 export class ScanEngineConsumer {
-  private logger = new Logger(ScanEngineConsumer.name);
+  private logger = new NestLogger(ScanEngineConsumer.name);
 
   constructor(
     private coreResultService: CoreResultService,
@@ -93,6 +96,33 @@ export class ScanEngineConsumer {
 
       if (isPermanent) {
         this.logger.warn(`Permanent failure for ${job.data.url}, not retrying`);
+
+        // Use parseBrowserError to get the correct failure status
+        // Note: parseBrowserError expects a pino Logger, but we have a NestJS Logger
+        // We'll use a simple inline mapping instead to avoid the logger type mismatch
+        const failureStatus = parseBrowserError(err, {
+          child: () => ({ warn: () => {}, info: () => {} }),
+          warn: () => {},
+          info: () => {},
+        } as any);
+
+        // Write failure record to database
+        await this.coreResultService.writeFailedResult(
+          job.data.websiteId,
+          failureStatus,
+          this.logger,
+          job.data.filter,
+          job.data.pageviews,
+          job.data.visits,
+          job.data.url,
+        );
+
+        this.logger.log({
+          msg: `wrote failure result for ${job.data.url}`,
+          status: failureStatus,
+          job,
+        });
+
         return;
       }
 
