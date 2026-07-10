@@ -17,7 +17,7 @@ import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { QueueService } from '@app/queue';
-import { parseBrowserError } from 'entities/scan-status';
+import { isPermanentFailure, parseBrowserError } from 'entities/scan-status';
 
 /**
  * ScanEngineConsumer is a consumer of the Scanner message queue.
@@ -84,29 +84,13 @@ export class ScanEngineConsumer {
       const err = e as Error;
       this.logger.error(err.message, err.stack);
 
-      // Don't retry errors that are permanent
-      const errorMsg = err.message || '';
-      const isPermanent =
-        errorMsg.includes('ERR_NAME_NOT_RESOLVED') ||
-        errorMsg.includes('ENOTFOUND') ||
-        errorMsg.includes('ERR_CERT_') ||
-        errorMsg.includes('ERR_SSL_UNRECOGNIZED_NAME_ALERT') ||
-        errorMsg.includes('unable to verify the first certificate') ||
-        errorMsg.includes('ERR_SSL_VERSION_OR_CIPHER_MISMATCH');
+      // Classify once — parseBrowserError is the single source of truth for
+      // error → ScanStatus mapping. isPermanentFailure determines retry policy.
+      const failureStatus = parseBrowserError(err);
 
-      if (isPermanent) {
+      if (isPermanentFailure(failureStatus)) {
         this.logger.warn(`Permanent failure for ${job.data.url}, not retrying`);
 
-        // Use parseBrowserError to get the correct failure status
-        // Note: parseBrowserError expects a pino Logger, but we have a NestJS Logger
-        // We'll use a simple inline mapping instead to avoid the logger type mismatch
-        const failureStatus = parseBrowserError(err, {
-          child: () => ({ warn: () => {}, info: () => {} }),
-          warn: () => {},
-          info: () => {},
-        } as any);
-
-        // Write failure record to database
         await this.coreResultService.writeFailedResult(
           job.data.websiteId,
           failureStatus,

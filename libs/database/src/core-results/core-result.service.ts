@@ -50,14 +50,6 @@ export class CoreResultService {
     this.updateSecurityScanResults(coreResult, pages, logger);
     this.updateWwwScanResults(coreResult, pages, logger);
 
-    const exists = await this.coreResultRepository.findOne({
-      where: {
-        website: {
-          id: coreResult.website.id,
-        },
-      },
-    });
-
     if (
       coreResult.finalUrlMIMEType &&
       CoreResult.filteredMediaTypes.includes(coreResult.finalUrlMIMEType)
@@ -66,11 +58,7 @@ export class CoreResultService {
       await this.websiteService.setFilter(websiteId, true);
     }
 
-    if (exists) {
-      await this.coreResultRepository.update(exists.id, coreResult);
-    } else {
-      await this.coreResultRepository.insert(coreResult);
-    }
+    await this.upsertCoreResult(coreResult);
   }
 
   async findOne(id: number): Promise<CoreResult> {
@@ -559,7 +547,7 @@ export class CoreResultService {
     coreResult.filter = filter;
     coreResult.pageviews = pageviews;
     coreResult.visits = visits;
-    coreResult.initialUrl = `https://${websiteUrl}`;
+    coreResult.initialUrl = getHttpsUrl(websiteUrl);
 
     // Set all scan status columns to the failure status
     coreResult.primaryScanStatus = status;
@@ -584,6 +572,10 @@ export class CoreResultService {
     this.clearWwwScanResults(coreResult);
 
     // Upsert: update if exists, insert otherwise
+    await this.upsertCoreResult(coreResult);
+  }
+
+  private async upsertCoreResult(coreResult: CoreResult) {
     const exists = await this.coreResultRepository.findOne({
       where: {
         website: {

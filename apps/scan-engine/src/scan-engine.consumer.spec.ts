@@ -13,7 +13,17 @@ import { ScanEngineConsumer } from './scan-engine.consumer';
 import { QueueService } from '@app/queue';
 import { ScanStatus } from 'entities/scan-status';
 
-// Note: The consumer now uses parseBrowserError from entities/scan-status for error classification
+// URLs in test inputs use the production format: bare domain without protocol
+// (e.g. '18f.gov', not 'https://18f.gov'). This mirrors how CoreInputDto.url
+// is populated by the ingest pipeline.
+const defaultInput: CoreInputDto = {
+  websiteId: 1,
+  url: '18f.gov',
+  filter: false,
+  pageviews: 1,
+  visits: 1,
+  scanId: '123',
+};
 
 describe('ScanEngineConsumer', () => {
   let consumer: ScanEngineConsumer;
@@ -54,15 +64,7 @@ describe('ScanEngineConsumer', () => {
   });
 
   it('should call the CoreResultService', async () => {
-    const input: CoreInputDto = {
-      websiteId: 1,
-      url: '18f.gov', // Production data format: domain without protocol
-      filter: false,
-      pageviews: 1,
-      visits: 1,
-      scanId: '123',
-    };
-
+    const input = defaultInput;
     mockCoreJob.data = input;
     const coreResultFromPages = { id: input.websiteId } as CoreResult;
     (mockCoreScanner.scan as any) = jest.fn().mockResolvedValue(coreResultFromPages);
@@ -82,15 +84,7 @@ describe('ScanEngineConsumer', () => {
   });
 
   it('should call writeFailedResult when coreScanner.scan throws a permanent DNS error', async () => {
-    const input: CoreInputDto = {
-      websiteId: 1,
-      url: '18f.gov', // Production data format: domain without protocol
-      filter: false,
-      pageviews: 1,
-      visits: 1,
-      scanId: '123',
-    };
-
+    const input = defaultInput;
     mockCoreJob.data = input;
     const dnsError = new Error('net::ERR_NAME_NOT_RESOLVED');
     (mockCoreScanner.scan as any) = jest.fn().mockRejectedValue(dnsError);
@@ -110,15 +104,7 @@ describe('ScanEngineConsumer', () => {
   });
 
   it('should call writeFailedResult when coreScanner.scan throws a permanent SSL error', async () => {
-    const input: CoreInputDto = {
-      websiteId: 1,
-      url: 'bad-ssl.example.gov', // Production data format: domain without protocol
-      filter: false,
-      pageviews: 1,
-      visits: 1,
-      scanId: '123',
-    };
-
+    const input: CoreInputDto = { ...defaultInput, url: 'bad-ssl.example.gov' };
     mockCoreJob.data = input;
     const sslError = new Error('net::ERR_CERT_COMMON_NAME_INVALID');
     (mockCoreScanner.scan as any) = jest.fn().mockRejectedValue(sslError);
@@ -139,14 +125,9 @@ describe('ScanEngineConsumer', () => {
 
   it('should rethrow non-permanent errors for Bull to retry', async () => {
     const input: CoreInputDto = {
-      websiteId: 1,
-      url: 'blackhole.webpagetest.org', // Production data format: domain without protocol
-      filter: false,
-      pageviews: 1,
-      visits: 1,
-      scanId: '123',
+      ...defaultInput,
+      url: 'blackhole.webpagetest.org',
     };
-
     mockCoreJob.data = input;
     const timeoutError = new Error('Timeout');
     (mockCoreScanner.scan as any) = jest.fn().mockRejectedValue(timeoutError);
