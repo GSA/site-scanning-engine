@@ -8,13 +8,16 @@ import {
   Process,
   Processor,
 } from '@nestjs/bull';
-import { Logger } from '@nestjs/common';
+// use as NestLogger to avoid confusion with `Logger` from Pino that is used
+// in `entities/scan-status`
+import { Logger as NestLogger } from '@nestjs/common';
 import { Job } from 'bull';
 
 import { CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreResultService } from '@app/database/core-results/core-result.service';
 import { QueueService } from '@app/queue';
+import { isPermanentFailure, parseBrowserError } from 'entities/scan-status';
 
 /**
  * ScanEngineConsumer is a consumer of the Scanner message queue.
@@ -35,7 +38,7 @@ import { QueueService } from '@app/queue';
  */
 @Processor(SCANNER_QUEUE_NAME)
 export class ScanEngineConsumer {
-  private logger = new Logger(ScanEngineConsumer.name);
+  private logger = new NestLogger(ScanEngineConsumer.name);
 
   constructor(
     private coreResultService: CoreResultService,
@@ -81,18 +84,29 @@ export class ScanEngineConsumer {
       const err = e as Error;
       this.logger.error(err.message, err.stack);
 
-      // Don't retry errors that are permanent
-      const errorMsg = err.message || '';
-      const isPermanent =
-        errorMsg.includes('ERR_NAME_NOT_RESOLVED') ||
-        errorMsg.includes('ENOTFOUND') ||
-        errorMsg.includes('ERR_CERT_') ||
-        errorMsg.includes('ERR_SSL_UNRECOGNIZED_NAME_ALERT') ||
-        errorMsg.includes('unable to verify the first certificate') ||
-        errorMsg.includes('ERR_SSL_VERSION_OR_CIPHER_MISMATCH');
+      // Classify once — parseBrowserError is the single source of truth for
+      // error → ScanStatus mapping. isPermanentFailure determines retry policy.
+      const failureStatus = parseBrowserError(err);
 
-      if (isPermanent) {
+      if (isPermanentFailure(failureStatus)) {
         this.logger.warn(`Permanent failure for ${job.data.url}, not retrying`);
+
+        await this.coreResultService.writeFailedResult(
+          job.data.websiteId,
+          failureStatus,
+          this.logger,
+          job.data.filter,
+          job.data.pageviews,
+          job.data.visits,
+          job.data.url,
+        );
+
+        this.logger.log({
+          msg: `wrote failure result for ${job.data.url}`,
+          status: failureStatus,
+          job,
+        });
+
         return;
       }
 

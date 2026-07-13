@@ -6,6 +6,7 @@ import { Website } from 'entities/website.entity';
 import { ScanStatus } from 'entities/scan-status';
 import { CoreResultPages } from 'entities/core-result.entity';
 import { WebsiteService } from '@app/database/websites/websites.service';
+import { getBaseDomain, getHttpsUrl } from '@app/core-scanner/util';
 
 @Injectable()
 export class CoreResultService {
@@ -49,14 +50,6 @@ export class CoreResultService {
     this.updateSecurityScanResults(coreResult, pages, logger);
     this.updateWwwScanResults(coreResult, pages, logger);
 
-    const exists = await this.coreResultRepository.findOne({
-      where: {
-        website: {
-          id: coreResult.website.id,
-        },
-      },
-    });
-
     if (
       coreResult.finalUrlMIMEType &&
       CoreResult.filteredMediaTypes.includes(coreResult.finalUrlMIMEType)
@@ -65,11 +58,7 @@ export class CoreResultService {
       await this.websiteService.setFilter(websiteId, true);
     }
 
-    if (exists) {
-      await this.coreResultRepository.update(exists.id, coreResult);
-    } else {
-      await this.coreResultRepository.insert(coreResult);
-    }
+    await this.upsertCoreResult(coreResult);
   }
 
   async findOne(id: number): Promise<CoreResult> {
@@ -232,68 +221,72 @@ export class CoreResultService {
         page: 'primary',
       });
 
-      coreResult.dapDetected = null;
-      coreResult.dapParameters = null;
-      coreResult.dapVersion = null;
-      coreResult.gaTagIds = null;
-      coreResult.mainElementFinalUrl = null;
-      coreResult.ogArticleModifiedFinalUrl = null;
-      coreResult.ogArticlePublishedFinalUrl = null;
-      coreResult.ogDescriptionFinalUrl = null;
-      coreResult.ogTitleFinalUrl = null;
-      coreResult.canonicalLink = null;
-      coreResult.pageTitle = null;
-      coreResult.metaDescriptionContent = null;
-      coreResult.metaKeywordsContent = null;
-      coreResult.ogImageContent = null;
-      coreResult.ogTypeContent = null;
-      coreResult.ogUrlContent = null;
-      coreResult.htmlLangContent = null;
-      coreResult.hrefLangContent = null;
-      coreResult.dcDateContent = null;
-      coreResult.dcDateCreatedContent = null;
-      coreResult.dctermsCreatedContent = null;
-      coreResult.revisedContent = null;
-      coreResult.lastModifiedContent = null;
-      coreResult.dateContent = null;
-      coreResult.thirdPartyServiceCount = null;
-      coreResult.thirdPartyServiceDomains = null;
-      coreResult.thirdPartyServiceUrls = null;
-      coreResult.cookieDomains = null;
-      coreResult.finalUrl = null;
-      coreResult.finalUrlBaseDomain = null;
-      coreResult.finalUrlWebsite = null;
-      coreResult.finalUrlTopLevelDomain = null;
-      coreResult.finalUrlIsLive = null;
-      coreResult.finalUrlMIMEType = null;
-      coreResult.finalUrlStatusCode = null;
-      coreResult.finalSiteName = null;
-      coreResult.finalUrlPageHash = null;
-      coreResult.targetUrlRedirects = null;
-      coreResult.usaClasses = null;
-      coreResult.usaClassesUsed = null;
-      coreResult.uswdsString = null;
-      coreResult.uswdsInlineCss = null;
-      coreResult.uswdsUsFlag = null;
-      coreResult.uswdsUsFlagInCss = null;
-      coreResult.uswdsStringInCss = null;
-      coreResult.uswdsPublicSansFont = null;
-      coreResult.uswdsSemanticVersion = null;
-      coreResult.uswdsVersion = null;
-      coreResult.uswdsCount = null;
-      coreResult.heresHowYouKnowBanner = null;
-      coreResult.loginDetected = null;
-      coreResult.loginProvider = null;
-      coreResult.cms = null;
-      coreResult.hyperlinkDomains;
-      coreResult.requiredLinksUrl = null;
-      coreResult.requiredLinksText = null;
-      coreResult.feedbackLinksText = null;
-      coreResult.searchDetected = null;
-      coreResult.searchgov = null;
-      coreResult.viewportMetaTag = null;
-      coreResult.tooling = null;
+      this.clearPrimaryScanResults(coreResult);
     }
+  }
+
+  private clearPrimaryScanResults(coreResult: CoreResult) {
+    coreResult.dapDetected = null;
+    coreResult.dapParameters = null;
+    coreResult.dapVersion = null;
+    coreResult.gaTagIds = null;
+    coreResult.mainElementFinalUrl = null;
+    coreResult.ogArticleModifiedFinalUrl = null;
+    coreResult.ogArticlePublishedFinalUrl = null;
+    coreResult.ogDescriptionFinalUrl = null;
+    coreResult.ogTitleFinalUrl = null;
+    coreResult.canonicalLink = null;
+    coreResult.pageTitle = null;
+    coreResult.metaDescriptionContent = null;
+    coreResult.metaKeywordsContent = null;
+    coreResult.ogImageContent = null;
+    coreResult.ogTypeContent = null;
+    coreResult.ogUrlContent = null;
+    coreResult.htmlLangContent = null;
+    coreResult.hrefLangContent = null;
+    coreResult.dcDateContent = null;
+    coreResult.dcDateCreatedContent = null;
+    coreResult.dctermsCreatedContent = null;
+    coreResult.revisedContent = null;
+    coreResult.lastModifiedContent = null;
+    coreResult.dateContent = null;
+    coreResult.thirdPartyServiceCount = null;
+    coreResult.thirdPartyServiceDomains = null;
+    coreResult.thirdPartyServiceUrls = null;
+    coreResult.cookieDomains = null;
+    coreResult.finalUrl = null;
+    coreResult.finalUrlBaseDomain = null;
+    coreResult.finalUrlWebsite = null;
+    coreResult.finalUrlTopLevelDomain = null;
+    coreResult.finalUrlIsLive = null;
+    coreResult.finalUrlMIMEType = null;
+    coreResult.finalUrlStatusCode = null;
+    coreResult.finalSiteName = null;
+    coreResult.finalUrlPageHash = null;
+    coreResult.targetUrlRedirects = null;
+    coreResult.usaClasses = null;
+    coreResult.usaClassesUsed = null;
+    coreResult.uswdsString = null;
+    coreResult.uswdsInlineCss = null;
+    coreResult.uswdsUsFlag = null;
+    coreResult.uswdsUsFlagInCss = null;
+    coreResult.uswdsStringInCss = null;
+    coreResult.uswdsPublicSansFont = null;
+    coreResult.uswdsSemanticVersion = null;
+    coreResult.uswdsVersion = null;
+    coreResult.uswdsCount = null;
+    coreResult.heresHowYouKnowBanner = null;
+    coreResult.loginDetected = null;
+    coreResult.loginProvider = null;
+    coreResult.cms = null;
+    coreResult.hyperlinkDomains = null;
+    coreResult.requiredLinksUrl = null;
+    coreResult.requiredLinksText = null;
+    coreResult.feedbackLinksText = null;
+    coreResult.searchDetected = null;
+    coreResult.searchgov = null;
+    coreResult.viewportMetaTag = null;
+    coreResult.tooling = null;
   }
 
   private updateNotFoundScanResults(
@@ -312,8 +305,12 @@ export class CoreResultService {
         page: 'notFound',
       });
 
-      coreResult.targetUrl404Test = null;
+      this.clearNotFoundScanResults(coreResult);
     }
+  }
+
+  private clearNotFoundScanResults(coreResult: CoreResult) {
+    coreResult.targetUrl404Test = null;
   }
 
   private updateRobotsTxtScanResults(
@@ -340,14 +337,18 @@ export class CoreResultService {
         page: 'robotsTxt',
       });
 
-      coreResult.robotsTxtFinalUrlSize = null;
-      coreResult.robotsTxtCrawlDelay = null;
-      coreResult.robotsTxtSitemapLocations = null;
-      coreResult.robotsTxtFinalUrl = null;
-      coreResult.robotsTxtFinalUrlMimeType = null;
-      coreResult.robotsTxtStatusCode = null;
-      coreResult.robotsTxtDetected = null;
+      this.clearRobotsTxtScanResults(coreResult);
     }
+  }
+
+  private clearRobotsTxtScanResults(coreResult: CoreResult) {
+    coreResult.robotsTxtFinalUrlSize = null;
+    coreResult.robotsTxtCrawlDelay = null;
+    coreResult.robotsTxtSitemapLocations = null;
+    coreResult.robotsTxtFinalUrl = null;
+    coreResult.robotsTxtFinalUrlMimeType = null;
+    coreResult.robotsTxtStatusCode = null;
+    coreResult.robotsTxtDetected = null;
   }
 
   private updateSitemapXmlScanResults(
@@ -376,16 +377,20 @@ export class CoreResultService {
         page: 'sitemap.xml',
       });
 
-      coreResult.sitemapXmlFinalUrlFilesize = null;
-      coreResult.sitemapXmlCount = null;
-      coreResult.sitemapXmlPdfCount = null;
-      coreResult.sitemapXmlFinalUrl = null;
-      coreResult.sitemapXmlFinalUrlMimeType = null;
-      coreResult.sitemapXmlStatusCode = null;
-      coreResult.sitemapXmlDetected = null;
-      coreResult.sitemapXmlLastMod = null;
-      coreResult.sitemapXmlPageHash = null;
+      this.clearSitemapXmlScanResults(coreResult);
     }
+  }
+
+  private clearSitemapXmlScanResults(coreResult: CoreResult) {
+    coreResult.sitemapXmlFinalUrlFilesize = null;
+    coreResult.sitemapXmlCount = null;
+    coreResult.sitemapXmlPdfCount = null;
+    coreResult.sitemapXmlFinalUrl = null;
+    coreResult.sitemapXmlFinalUrlMimeType = null;
+    coreResult.sitemapXmlStatusCode = null;
+    coreResult.sitemapXmlDetected = null;
+    coreResult.sitemapXmlLastMod = null;
+    coreResult.sitemapXmlPageHash = null;
   }
 
   private updateDnsScanResults(
@@ -404,9 +409,13 @@ export class CoreResultService {
         page: 'dns',
       });
 
-      coreResult.dnsIpv6 = null;
-      coreResult.dnsHostname = null;
+      this.clearDnsScanResults(coreResult);
     }
+  }
+
+  private clearDnsScanResults(coreResult: CoreResult) {
+    coreResult.dnsIpv6 = null;
+    coreResult.dnsHostname = null;
   }
 
   private updateAccessibilityScanResults(
@@ -427,9 +436,13 @@ export class CoreResultService {
         page: 'accessibility',
       });
 
-      coreResult.accessibilityResults = null;
-      coreResult.accessibilityResultsList = null;
+      this.clearAccessibilityScanResults(coreResult);
     }
+  }
+
+  private clearAccessibilityScanResults(coreResult: CoreResult) {
+    coreResult.accessibilityResults = null;
+    coreResult.accessibilityResultsList = null;
   }
 
   private updatePerformanceScanResults(
@@ -451,9 +464,13 @@ export class CoreResultService {
         page: 'performance',
       });
 
-      coreResult.largestContentfulPaint = null;
-      coreResult.cumulativeLayoutShift = null;
+      this.clearPerformanceScanResults(coreResult);
     }
+  }
+
+  private clearPerformanceScanResults(coreResult: CoreResult) {
+    coreResult.largestContentfulPaint = null;
+    coreResult.cumulativeLayoutShift = null;
   }
 
   private updateSecurityScanResults(
@@ -473,9 +490,13 @@ export class CoreResultService {
         page: 'security',
       });
 
-      coreResult.httpsEnforced = null;
-      coreResult.hsts = null;
+      this.clearSecurityScanResults(coreResult);
     }
+  }
+
+  private clearSecurityScanResults(coreResult: CoreResult) {
+    coreResult.httpsEnforced = null;
+    coreResult.hsts = null;
   }
 
   private updateWwwScanResults(
@@ -491,20 +512,82 @@ export class CoreResultService {
       coreResult.wwwTitle = pages.www.result.wwwScan.wwwTitle;
       coreResult.wwwSame = pages.www.result.wwwScan.wwwSame;
     } else if (pages.www.status === ScanStatus.NotApplicable) {
-      coreResult.wwwFinalUrl = null;
-      coreResult.wwwStatusCode = null;
-      coreResult.wwwTitle = null;
-      coreResult.wwwSame = null;
+      this.clearWwwScanResults(coreResult);
     } else {
       logger.error({
         msg: pages.www.error,
         page: 'www',
       });
 
-      coreResult.wwwFinalUrl = null;
-      coreResult.wwwStatusCode = null;
-      coreResult.wwwTitle = null;
-      coreResult.wwwSame = null;
+      this.clearWwwScanResults(coreResult);
+    }
+  }
+
+  private clearWwwScanResults(coreResult: CoreResult) {
+    coreResult.wwwFinalUrl = null;
+    coreResult.wwwStatusCode = null;
+    coreResult.wwwTitle = null;
+    coreResult.wwwSame = null;
+  }
+
+  async writeFailedResult(
+    websiteId: number,
+    status: ScanStatus,
+    logger: Logger,
+    filter: boolean,
+    pageviews: number,
+    visits: number,
+    websiteUrl: string,
+  ) {
+    const coreResult = new CoreResult();
+    const website = new Website();
+    website.id = websiteId;
+    coreResult.website = website;
+    coreResult.targetUrlBaseDomain = getBaseDomain(getHttpsUrl(websiteUrl));
+    coreResult.filter = filter;
+    coreResult.pageviews = pageviews;
+    coreResult.visits = visits;
+    coreResult.initialUrl = getHttpsUrl(websiteUrl);
+
+    // Set all scan status columns to the failure status
+    coreResult.primaryScanStatus = status;
+    coreResult.notFoundScanStatus = status;
+    coreResult.robotsTxtScanStatus = status;
+    coreResult.sitemapXmlScanStatus = status;
+    coreResult.dnsScanStatus = status;
+    coreResult.accessibilityScanStatus = status;
+    coreResult.performanceScanStatus = status;
+    coreResult.securityScanStatus = status;
+    coreResult.wwwScanStatus = status;
+
+    // Clear all data columns
+    this.clearPrimaryScanResults(coreResult);
+    this.clearNotFoundScanResults(coreResult);
+    this.clearRobotsTxtScanResults(coreResult);
+    this.clearSitemapXmlScanResults(coreResult);
+    this.clearDnsScanResults(coreResult);
+    this.clearAccessibilityScanResults(coreResult);
+    this.clearPerformanceScanResults(coreResult);
+    this.clearSecurityScanResults(coreResult);
+    this.clearWwwScanResults(coreResult);
+
+    // Upsert: update if exists, insert otherwise
+    await this.upsertCoreResult(coreResult);
+  }
+
+  private async upsertCoreResult(coreResult: CoreResult) {
+    const exists = await this.coreResultRepository.findOne({
+      where: {
+        website: {
+          id: coreResult.website.id,
+        },
+      },
+    });
+
+    if (exists) {
+      await this.coreResultRepository.update(exists.id, coreResult);
+    } else {
+      await this.coreResultRepository.insert(coreResult);
     }
   }
 }
