@@ -139,8 +139,7 @@ describe('ScanEngineConsumer', () => {
 
   describe('onFailed', () => {
     // Helper to build a minimal mock Job for the onFailed handler.
-    // Bull's `attemptsMade` reflects how many attempts have been made so far
-    // (1-indexed: after first attempt it is 1, after third it is 3).
+    // `attemptsMade` reflects how many attempts have been made so far.
     function makeFailedJob(
       input: CoreInputDto,
       attemptsMade: number,

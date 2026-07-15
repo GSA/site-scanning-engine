@@ -553,7 +553,6 @@ describe('CoreResultService', () => {
       websiteUrl,
     );
 
-    // update() is used (not save()) to avoid an extra internal SELECT.
     // `updated` is set explicitly so @UpdateDateColumn is refreshed even
     // though repository.update() bypasses TypeORM's lifecycle hooks.
     expect(mockRepository.update).toHaveBeenCalledWith(

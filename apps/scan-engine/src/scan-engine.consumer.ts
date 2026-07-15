@@ -154,21 +154,19 @@ export class ScanEngineConsumer {
   }
 
   /**
-   * onFailed handles the Bull `failed` event, which fires after every failed
+   * onFailed handles the `failed` event, which fires after every failed
    * attempt (including intermediate retries).
    *
    * We only write a failure result once retries are exhausted
    * (attemptsMade >= opts.attempts). On intermediate attempts we log and
-   * return so Bull can schedule the next retry normally.
+   * return so we can requeue and try again.
    *
-   * This covers failure mode 2 from GSA/site-scanning#1898: non-permanent
-   * errors (e.g. Timeout, ConnectionReset) exhaust their 3 retry attempts
-   * without any DB write, leaving the row stale. After the final attempt we
-   * classify the error via parseBrowserError and persist a failure result so
-   * the scan_date is updated and downstream consumers see an accurate status.
+   * This covers non-permanent errors (e.g. Timeout, ConnectionReset).
+   * After the final attempt we classify the error via parseBrowserError and
+   * persist a failure result so the scan_date is updated.
    *
-   * Failure mode 1 (permanent errors) is handled inside processCore and
-   * returns without throwing, so those jobs never reach the failed set and
+   * Permanent errors are handled inside processCore and
+   * return without throwing, so those jobs never reach the failed set, and
    * this handler is not invoked for them.
    */
   @OnQueueFailed()
