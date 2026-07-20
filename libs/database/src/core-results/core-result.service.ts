@@ -585,7 +585,15 @@ export class CoreResultService {
     });
 
     if (exists) {
-      await this.coreResultRepository.update(exists.id, coreResult);
+      // Explicitly set `updated` so TypeORM's @UpdateDateColumn is refreshed.
+      // repository.update() issues a raw SQL UPDATE that bypasses TypeORM's
+      // entity lifecycle hooks, leaving `updated` (= scan_date) stale for sites
+      // that already have a core_result row. Setting it here avoids the extra
+      // SELECT that repository.save() would otherwise perform internally.
+      await this.coreResultRepository.update(exists.id, {
+        ...coreResult,
+        updated: new Date().toISOString(),
+      });
     } else {
       await this.coreResultRepository.insert(coreResult);
     }

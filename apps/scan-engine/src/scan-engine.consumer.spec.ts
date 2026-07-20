@@ -136,4 +136,79 @@ describe('ScanEngineConsumer', () => {
     expect(mockCoreResultService.writeFailedResult).not.toHaveBeenCalled();
     expect(mockCoreResultService.createFromCoreResultPages).not.toHaveBeenCalled();
   });
+
+  describe('onFailed', () => {
+    // Helper to build a minimal mock Job for the onFailed handler.
+    // `attemptsMade` reflects how many attempts have been made so far.
+    function makeFailedJob(
+      input: CoreInputDto,
+      attemptsMade: number,
+      attempts: number,
+    ): Job<CoreInputDto> {
+      return {
+        id: 'test-job-id',
+        data: input,
+        attemptsMade,
+        opts: { attempts },
+      } as unknown as Job<CoreInputDto>;
+    }
+
+    it('should write a failure result when retries are exhausted (final attempt)', async () => {
+      const input = defaultInput;
+      const job = makeFailedJob(input, 3, 3);
+      const timeoutError = new Error('net::ERR_TIMED_OUT');
+
+      await consumer.onFailed(job, timeoutError);
+
+      expect(mockCoreResultService.writeFailedResult).toHaveBeenCalledWith(
+        input.websiteId,
+        ScanStatus.Timeout,
+        expect.anything(),
+        input.filter,
+        input.pageviews,
+        input.visits,
+        input.url,
+      );
+    });
+
+    it('should write an UnknownError result when the error does not match a known pattern', async () => {
+      const input = defaultInput;
+      const job = makeFailedJob(input, 3, 3);
+      const unknownError = new Error('some unexpected error message');
+
+      await consumer.onFailed(job, unknownError);
+
+      expect(mockCoreResultService.writeFailedResult).toHaveBeenCalledWith(
+        input.websiteId,
+        ScanStatus.UnknownError,
+        expect.anything(),
+        input.filter,
+        input.pageviews,
+        input.visits,
+        input.url,
+      );
+    });
+
+    it('should NOT write a failure result on an intermediate (non-final) attempt', async () => {
+      const input = defaultInput;
+      // attemptsMade=1, attempts=3 → two retries remain
+      const job = makeFailedJob(input, 1, 3);
+      const timeoutError = new Error('net::ERR_TIMED_OUT');
+
+      await consumer.onFailed(job, timeoutError);
+
+      expect(mockCoreResultService.writeFailedResult).not.toHaveBeenCalled();
+    });
+
+    it('should NOT write a failure result on a second intermediate attempt', async () => {
+      const input = defaultInput;
+      // attemptsMade=2, attempts=3 → one retry remains
+      const job = makeFailedJob(input, 2, 3);
+      const connectionResetError = new Error('net::ERR_CONNECTION_RESET');
+
+      await consumer.onFailed(job, connectionResetError);
+
+      expect(mockCoreResultService.writeFailedResult).not.toHaveBeenCalled();
+    });
+  });
 });

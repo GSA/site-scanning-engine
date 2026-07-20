@@ -4,6 +4,7 @@ import {
   OnQueueCompleted,
   OnQueueDrained,
   OnQueueError,
+  OnQueueFailed,
   OnQueueStalled,
   Process,
   Processor,
@@ -148,6 +149,62 @@ export class ScanEngineConsumer {
   onCompleted(job: Job<CoreInputDto>) {
     this.logger.log({
       msg: 'Processed job',
+      job,
+    });
+  }
+
+  /**
+   * onFailed handles the `failed` event, which fires after every failed
+   * attempt (including intermediate retries).
+   *
+   * We only write a failure result once retries are exhausted
+   * (attemptsMade >= opts.attempts). On intermediate attempts we log and
+   * return so we can requeue and try again.
+   *
+   * This covers non-permanent errors (e.g. Timeout, ConnectionReset).
+   * After the final attempt we classify the error via parseBrowserError and
+   * persist a failure result so the scan_date is updated.
+   *
+   * Permanent errors are handled inside processCore and
+   * return without throwing, so those jobs never reach the failed set, and
+   * this handler is not invoked for them.
+   */
+  @OnQueueFailed()
+  async onFailed(job: Job<CoreInputDto>, err: Error) {
+    const attempts = job.opts.attempts ?? 1;
+
+    if (job.attemptsMade < attempts) {
+      // Intermediate attempt — Bull will retry; nothing to persist yet.
+      this.logger.warn({
+        msg: `Job ${job.id} failed (attempt ${job.attemptsMade}/${attempts}), will retry`,
+        url: job.data.url,
+        error: err.message,
+      });
+      return;
+    }
+
+    // Final attempt exhausted — write a failure result so the row is updated.
+    this.logger.warn({
+      msg: `Job ${job.id} failed after all ${attempts} attempts, writing failure result`,
+      url: job.data.url,
+      error: err.message,
+    });
+
+    const failureStatus = parseBrowserError(err);
+
+    await this.coreResultService.writeFailedResult(
+      job.data.websiteId,
+      failureStatus,
+      this.logger,
+      job.data.filter,
+      job.data.pageviews,
+      job.data.visits,
+      job.data.url,
+    );
+
+    this.logger.log({
+      msg: `wrote failure result for ${job.data.url} after exhausted retries`,
+      status: failureStatus,
       job,
     });
   }
