@@ -32,6 +32,9 @@ export class QueueService {
         type: 'exponential',
         delay: 30000,
       },
+      // Keep failed jobs for debugging/forensics (job payload + stacktrace) even
+      // though we now persist a failure status/result to the DB on final retry
+      // exhaustion (see ScanEngineConsumer @OnQueueFailed handler).
       removeOnFail: false,
     });
     return job;

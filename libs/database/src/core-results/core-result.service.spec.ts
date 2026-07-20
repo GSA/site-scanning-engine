@@ -553,6 +553,8 @@ describe('CoreResultService', () => {
       websiteUrl,
     );
 
+    // `updated` is set explicitly so @UpdateDateColumn is refreshed even
+    // though repository.update() bypasses TypeORM's lifecycle hooks.
     expect(mockRepository.update).toHaveBeenCalledWith(
       123,
       expect.objectContaining({
@@ -560,6 +562,7 @@ describe('CoreResultService', () => {
         notFoundScanStatus: failureStatus,
         finalUrl: null,
         pageTitle: null,
+        updated: expect.any(String),
       }),
     );
     expect(mockRepository.insert).not.toHaveBeenCalled();
