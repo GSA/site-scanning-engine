@@ -487,4 +487,84 @@ describe('CoreResultService', () => {
       expect.objectContaining({ filter: true }),
     );
   });
+
+  it('should write a failure result with all statuses set and all data nulled', async () => {
+    const websiteId = 1;
+    const failureStatus = ScanStatus.InvalidSSLCert;
+    const websiteUrl = '18f.gov';
+    const logger = mock<Logger>();
+
+    mockRepository.findOne.calledWith().mockResolvedValue(null);
+
+    await service.writeFailedResult(
+      websiteId,
+      failureStatus,
+      logger,
+      false,
+      100,
+      50,
+      websiteUrl,
+    );
+
+    expect(mockRepository.insert).toHaveBeenCalled();
+    expect(mockRepository.insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        primaryScanStatus: failureStatus,
+        notFoundScanStatus: failureStatus,
+        robotsTxtScanStatus: failureStatus,
+        sitemapXmlScanStatus: failureStatus,
+        dnsScanStatus: failureStatus,
+        accessibilityScanStatus: failureStatus,
+        performanceScanStatus: failureStatus,
+        securityScanStatus: failureStatus,
+        wwwScanStatus: failureStatus,
+        finalUrl: null,
+        pageTitle: null,
+        accessibilityResults: null,
+        wwwFinalUrl: null,
+        targetUrl404Test: null,
+        dnsHostname: null,
+        filter: false,
+        pageviews: 100,
+        visits: 50,
+        initialUrl: 'https://18f.gov',
+      }),
+    );
+    expect(mockWebsiteService.setFilter).not.toHaveBeenCalled();
+  });
+
+  it('should update existing result when writeFailedResult is called for existing website', async () => {
+    const websiteId = 1;
+    const failureStatus = ScanStatus.DNSResolutionError;
+    const websiteUrl = '18f.gov';
+    const logger = mock<Logger>();
+
+    const existingResult = new CoreResult();
+    existingResult.id = 123;
+    mockRepository.findOne.calledWith().mockResolvedValue(existingResult);
+
+    await service.writeFailedResult(
+      websiteId,
+      failureStatus,
+      logger,
+      false,
+      100,
+      50,
+      websiteUrl,
+    );
+
+    // `updated` is set explicitly so @UpdateDateColumn is refreshed even
+    // though repository.update() bypasses TypeORM's lifecycle hooks.
+    expect(mockRepository.update).toHaveBeenCalledWith(
+      123,
+      expect.objectContaining({
+        primaryScanStatus: failureStatus,
+        notFoundScanStatus: failureStatus,
+        finalUrl: null,
+        pageTitle: null,
+        updated: expect.any(String),
+      }),
+    );
+    expect(mockRepository.insert).not.toHaveBeenCalled();
+  });
 });

@@ -28,16 +28,48 @@ export enum ScanStatus {
 export type AnySuccessfulStatus = ScanStatus.Completed;
 export type AnyFailureStatus = Exclude<ScanStatus, ScanStatus.Completed>;
 
+/**
+ * The set of failure statuses that represent permanent, non-retryable errors
+ * (e.g. DNS resolution failures, invalid SSL certificates). Bull should not
+ * retry jobs that result in one of these statuses.
+ */
+export const PERMANENT_FAILURE_STATUSES = new Set<AnyFailureStatus>([
+  ScanStatus.DNSResolutionError,
+  ScanStatus.InvalidSSLCert,
+  ScanStatus.SslVersionCipherMismatch,
+]);
+
+/**
+ * Returns true when the given failure status represents a permanent error that
+ * should not be retried by the job queue.
+ */
+export const isPermanentFailure = (status: AnyFailureStatus): boolean =>
+  PERMANENT_FAILURE_STATUSES.has(status);
+
+/**
+ * Classifies a browser (Puppeteer/Chrome) error into a ScanStatus.
+ *
+ * @param err - The error thrown during scanning.
+ * @param logger - Optional pino logger. When omitted, classification still
+ *   works but no log entries are produced. This allows callers that hold a
+ *   non-pino logger (e.g. NestJS Logger) to classify errors without needing
+ *   to construct a fake pino-compatible object.
+ */
 export const parseBrowserError = (
   err: Error,
-  logger: Logger,
+  logger?: Logger,
 ): AnyFailureStatus => {
-  const childLogger = logger.child({
-    function: 'parseBrowserError',
-    errorName: err.name,
-    errorStack: err.stack,
-    errorMessage: err.message,
-  });
+  const childLogger = logger
+    ? logger.child({
+        function: 'parseBrowserError',
+        errorName: err.name,
+        errorStack: err.stack,
+        errorMessage: err.message,
+      })
+    : null;
+
+  const warn = (meta: object, msg: string) => childLogger?.warn(meta, msg);
+
   if (
     (err.name && err.name === 'TimeoutError') ||
     (err.message &&
@@ -45,7 +77,7 @@ export const parseBrowserError = (
         err.message.startsWith('connect ETIMEDOUT') ||
         err.message.startsWith('net::ERR_TIMED_OUT')))
   ) {
-    childLogger.warn(
+    warn(
       { timeoutError: true, errorReturn: ScanStatus.Timeout },
       `Timeout: ${err.message}`,
     );
@@ -57,7 +89,7 @@ export const parseBrowserError = (
       err.message.startsWith('net::ERR_NAME_NOT_RESOLVED') ||
       err.message.startsWith('getaddrinfo ENOTFOUND')
     ) {
-      childLogger.warn(
+      warn(
         {
           dnsResolutionError: true,
           errorReturn: ScanStatus.DNSResolutionError,
@@ -74,7 +106,7 @@ export const parseBrowserError = (
       err.message.startsWith('net::ERR_SSL_UNRECOGNIZED_NAME_ALERT') ||
       err.message.startsWith('unable to verify the first certificate')
     ) {
-      childLogger.warn(
+      warn(
         { invalidSSLCertError: true, errorReturn: ScanStatus.InvalidSSLCert },
         `Invalid SSL cert: ${err.message}`,
       );
@@ -85,7 +117,7 @@ export const parseBrowserError = (
       err.message.startsWith('net::ERR_CONNECTION_REFUSED') ||
       err.message.startsWith('connect ECONNREFUSED')
     ) {
-      childLogger.warn(
+      warn(
         {
           connectionRefusedError: true,
           errorReturn: ScanStatus.ConnectionRefused,
@@ -99,15 +131,18 @@ export const parseBrowserError = (
       err.message.startsWith('net::ERR_CONNECTION_RESET') ||
       err.message.startsWith('read ECONNRESET')
     ) {
-      childLogger.warn(
-        { connectionResetError: true, errorReturn: ScanStatus.ConnectionReset },
+      warn(
+        {
+          connectionResetError: true,
+          errorReturn: ScanStatus.ConnectionReset,
+        },
         `Connection reset: ${err.message}`,
       );
       return ScanStatus.ConnectionReset;
     }
 
     if (err.message.startsWith('net::ERR_CONNECTION_CLOSED')) {
-      childLogger.warn(
+      warn(
         {
           connectionClosedError: true,
           errorReturn: ScanStatus.ConnectionClosed,
@@ -118,7 +153,7 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('net::ERR_ADDRESS_UNREACHABLE')) {
-      childLogger.warn(
+      warn(
         {
           addressUnreachableError: true,
           errorReturn: ScanStatus.AddressUnreachable,
@@ -129,7 +164,7 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH')) {
-      childLogger.warn(
+      warn(
         {
           sslVersionCipherMismatchError: true,
           errorReturn: ScanStatus.SslVersionCipherMismatch,
@@ -140,7 +175,7 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('net::ERR_EMPTY_RESPONSE')) {
-      childLogger.warn(
+      warn(
         { emptyResponseError: true, errorReturn: ScanStatus.EmptyResponse },
         `Empty response: ${err.message}`,
       );
@@ -148,7 +183,7 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('net::ERR_HTTP2_PROTOCOL_ERROR')) {
-      childLogger.warn(
+      warn(
         { http2ErrorError: true, errorReturn: ScanStatus.Http2Error },
         `HTTP2 error: ${err.message}`,
       );
@@ -156,7 +191,7 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('net::ERR_TOO_MANY_REDIRECTS')) {
-      childLogger.warn(
+      warn(
         {
           tooManyRedirectsError: true,
           errorReturn: ScanStatus.TooManyRedirects,
@@ -167,7 +202,7 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('Execution context was destroyed')) {
-      childLogger.warn(
+      warn(
         {
           executionContextDestroyedError: true,
           errorReturn: ScanStatus.ExecutionContextDestroyed,
@@ -178,15 +213,18 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('Page/Frame is not ready')) {
-      childLogger.warn(
-        { pageFrameNotReady: true, errorReturn: ScanStatus.PageFrameNotReady },
+      warn(
+        {
+          pageFrameNotReady: true,
+          errorReturn: ScanStatus.PageFrameNotReady,
+        },
         `Page/Frame is not ready: ${err.message}`,
       );
       return ScanStatus.PageFrameNotReady;
     }
 
     if (err.message.startsWith('Evaluation failed')) {
-      childLogger.warn(
+      warn(
         {
           evaluationFailedError: true,
           errorReturn: ScanStatus.EvaluationFailed,
@@ -197,15 +235,18 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('net::ERR_INVALID_RESPONSE')) {
-      childLogger.warn(
-        { invalidResponseError: true, errorReturn: ScanStatus.InvalidResponse },
+      warn(
+        {
+          invalidResponseError: true,
+          errorReturn: ScanStatus.InvalidResponse,
+        },
         `Invalid response: ${err.message}`,
       );
       return ScanStatus.InvalidResponse;
     }
 
     if (err.message.startsWith('net::ERR_INVALID_AUTH_CREDENTIALS')) {
-      childLogger.warn(
+      warn(
         {
           invalidAuthCredentialsError: true,
           errorReturn: ScanStatus.InvalidAuthCredentials,
@@ -216,7 +257,7 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('net::ERR_SSL_PROTOCOL_ERROR')) {
-      childLogger.warn(
+      warn(
         {
           sslProtocolErrorError: true,
           errorReturn: ScanStatus.SslProtocolError,
@@ -227,7 +268,7 @@ export const parseBrowserError = (
     }
 
     if (err.message.startsWith('net::ERR_ABORTED')) {
-      childLogger.warn(
+      warn(
         { abortedError: true, errorReturn: ScanStatus.Aborted },
         `Aborted: ${err.message}`,
       );
@@ -235,14 +276,15 @@ export const parseBrowserError = (
     }
 
     if (err.toString() === 'Processing timed out') {
-      childLogger.warn(
+      warn(
         { timeoutError: true, errorReturn: ScanStatus.Timeout },
         `Timeout: ${err.message}`,
       );
       return ScanStatus.Timeout;
     }
   }
-  childLogger.warn(
+
+  warn(
     { unknownError: true, errorReturn: ScanStatus.UnknownError },
     `Unknown error: ${err.message}`,
   );
