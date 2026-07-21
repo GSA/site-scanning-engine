@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Agent } from 'https';
-import { v4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 import { lastValueFrom } from 'rxjs';
 import { Logger } from 'pino';
 
@@ -15,7 +15,7 @@ export const createNotFoundScanner = async (
   const childLogger = logger.child({ function: 'createNotFoundScanner' });
   const httpsUrl = getHttpsUrl(url);
   const randomUrl = new URL(httpsUrl);
-  randomUrl.pathname = `not-found-test${v4()}`;
+  randomUrl.pathname = `not-found-test${randomUUID()}`;
   childLogger.info(`Testing URL: ${randomUrl.toString()}`);
 
   try {
