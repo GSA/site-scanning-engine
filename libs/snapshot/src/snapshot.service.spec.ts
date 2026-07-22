@@ -216,8 +216,8 @@ describe('SnapshotService', () => {
     const fixedDate = new Date('2026-02-20T00:00:00.000Z');
     mockDatetimeService.now.mockReturnValue(new Date(fixedDate));
 
-    // priorDate should be 7 days before fixedDate
-    const expectedPriorDate = '2026-02-13';
+    // priorDate should be 1 day before fixedDate (GSA/site-scanning#1914)
+    const expectedPriorDate = '2026-02-19';
 
     await service.accessibilityResultsSnapshot();
 

@@ -177,8 +177,12 @@ export class SnapshotService {
       await this.websiteService.findAccessibilityResultsSnapshotResults();
 
     this.logger.log('Backing up previous snapshot');
+    // Align the archive date offset with dailySnapshot (today - 1).
+    // The `weekly-` filename prefix is kept intentionally per the decision in
+    // https://github.com/GSA/site-scanning/issues/1914#issuecomment-5037895590.
+    // Prior to this change, the archive date offset was today - 7.
     const date = this.datetimeService.now();
-    date.setDate(date.getDate() - 7);
+    date.setDate(date.getDate() - 1);
     const priorDate = date.toISOString().split('T')[0];
     const newFileName = `archive/json/${this.fileNameAccessibility}-${priorDate}.json`;
     await this.storageService.copy(`${this.fileNameAccessibility}.json`, newFileName);
