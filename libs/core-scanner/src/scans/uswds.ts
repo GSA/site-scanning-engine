@@ -55,14 +55,10 @@ export async function buildUswdsResult(
     // Allow-list of USWDS custom HTML element tag names to detect.
     // Add future usa-* tag names here as needed.
     const usaElementsAllowList = new Set(['usa-banner']);
-    const foundElements = new Set<string>();
-    document.querySelectorAll('*').forEach((el) => {
-      const tag = el.tagName.toLowerCase();
-      if (usaElementsAllowList.has(tag)) {
-        foundElements.add(tag);
-      }
-    });
-    const usaElementsUsed = [...foundElements].sort().join(',');
+    const foundElements = [
+      ...document.querySelectorAll([...usaElementsAllowList].join(',')),
+    ].map((el) => el.tagName.toLowerCase());
+    const usaElementsUsed = [...new Set(foundElements)].sort().join(',');
 
     const selectorResults = [
       ...document.querySelectorAll(
