@@ -68,7 +68,7 @@ export async function buildUswdsResult(
       ...document.querySelectorAll(
         '.usa-banner__button-text, .usa-banner-button-text',
       ),
-    ].map((el) => el.textContent.replace(/'/g, "'"));
+    ].map((el) => el.textContent.replace(/’/g, "'"));
 
     const hasHeresHowYouKnowBannerEnglish = selectorResults.some((text) =>
       text.includes("Here's how you know"),
