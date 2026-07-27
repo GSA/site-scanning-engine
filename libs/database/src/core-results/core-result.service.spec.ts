@@ -143,6 +143,7 @@ describe('CoreResultService', () => {
           },
           uswdsScan: {
             usaClasses: null,
+            usaElementsUsed: null,
             usaClassesUsed: null,
             uswdsString: null,
             uswdsInlineCss: null,
@@ -360,6 +361,7 @@ describe('CoreResultService', () => {
           cookieScan: { domains: '' },
           uswdsScan: {
             usaClasses: null,
+            usaElementsUsed: null,
             usaClassesUsed: null,
             uswdsString: null,
             uswdsInlineCss: null,

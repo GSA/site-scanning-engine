@@ -59,6 +59,7 @@ export type CookieScan = {
 
 export type UswdsScan = {
   usaClasses: number;
+  usaElementsUsed: string;
   usaClassesUsed: string;
   uswdsString: number;
   uswdsInlineCss: number;

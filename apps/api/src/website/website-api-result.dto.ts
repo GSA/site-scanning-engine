@@ -103,6 +103,14 @@ export class WebsiteApiResultDto {
   uswds_usa_classes: number;
 
   /**
+   * `uswds_usa_elements_list` is the list of USWDS custom HTML element tags detected on the page
+   * (e.g. `usa-banner`). Only elements from a known allow-list are reported.
+   *
+   * @example ["usa-banner"]
+   */
+  uswds_usa_elements_list: string[];
+
+  /**
    * `uswds_string` is the number of times the string "uswds" occurs in the HTML source.
    *
    * @example 1

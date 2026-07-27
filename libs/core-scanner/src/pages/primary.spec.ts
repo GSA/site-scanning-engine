@@ -79,6 +79,7 @@ describe.skip('primary scanner', () => {
         cookieScan: { domains: '.gsa.gov' },
         uswdsScan: {
           usaClasses: 50,
+          usaElementsUsed: '',
           usaClassesUsed:
             'usa-accordion,usa-banner,usa-button,usa-card,usa-card-group,usa-header,usa-identifier,usa-link,usa-list,usa-logo,usa-logo-img,usa-menu-btn,usa-nav,usa-nav-container,usa-navbar,usa-overlay,usa-section,usa-skipnav',
           uswdsString: 7,
