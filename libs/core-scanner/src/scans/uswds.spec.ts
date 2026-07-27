@@ -59,7 +59,7 @@ describe('Scan: USWDS', () => {
     });
 
     it('should not include non-allow-listed usa-* custom elements', async () => {
-      const body = `<usa-accordion></usa-accordion>`;
+      const body = `<usa-noop></usa-noop>`;
 
       await newUswdsScanResult((result) => {
         expect(result.usaElementsUsed).toEqual('');
