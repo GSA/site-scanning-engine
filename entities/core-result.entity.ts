@@ -684,7 +684,6 @@ export class CoreResult {
     'uswds_usa_class_list',
     'uswds_banner_heres_how',
     'uswds_usa_classes',
-    'uswds_usa_elements_list',
     'uswds_string',
     'uswds_string_in_css',
     'uswds_semantic_version',
