@@ -71,7 +71,7 @@
     "puppeteer": "^24.41.0",
     "rxjs": "^7.8.2",
     "swagger-ui-express": "^5.0.1",
-    "typeorm": "^0.3.30"
+    "typeorm": "^0.3.31"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
