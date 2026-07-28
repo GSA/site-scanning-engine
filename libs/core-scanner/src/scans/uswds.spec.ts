@@ -23,6 +23,7 @@ describe('Scan: USWDS', () => {
         const result = await scanUswds(pino(), response);
         expect(result).toEqual({
           usaClasses: 55,
+          usaElementsUsed: '',
           usaClassesUsed:
             'usa-accordion,usa-banner,usa-button,usa-card,usa-card-group,usa-footer,usa-header,usa-hero,usa-identifier,usa-input,usa-link,usa-logo,usa-logo-img,usa-media-block,usa-menu-btn,usa-nav,usa-nav-container,usa-navbar,usa-overlay,usa-search,usa-section,usa-skipnav,usa-social-link,usa-sr-only',
           uswdsString: 103,
@@ -37,6 +38,32 @@ describe('Scan: USWDS', () => {
           heresHowYouKnowBanner: true,
         });
       });
+    });
+  });
+
+  describe('.usaElementsUsed', () => {
+    it('should detect usa-banner when the page contains a <usa-banner> custom element', async () => {
+      const body = `<usa-banner></usa-banner>`;
+
+      await newUswdsScanResult((result) => {
+        expect(result.usaElementsUsed).toEqual('usa-banner');
+      }, body);
+    });
+
+    it('should return an empty string when no allowed custom elements are present', async () => {
+      const body = `<div class="usa-banner">Not a custom element</div>`;
+
+      await newUswdsScanResult((result) => {
+        expect(result.usaElementsUsed).toEqual('');
+      }, body);
+    });
+
+    it('should not include non-allow-listed usa-* custom elements', async () => {
+      const body = `<usa-noop></usa-noop>`;
+
+      await newUswdsScanResult((result) => {
+        expect(result.usaElementsUsed).toEqual('');
+      }, body);
     });
   });
 

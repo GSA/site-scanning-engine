@@ -129,6 +129,18 @@ export class CoreResult {
   usaClasses?: number;
 
   @Column({ nullable: true })
+  @Expose({ name: 'uswds_usa_elements_list' })
+  @Exclude()
+  @Transform(({ value }: { value: string }) => {
+    if (value) {
+      return value.split(',');
+    } else {
+      return null;
+    }
+  })
+  usaElementsUsed?: string;
+
+  @Column({ nullable: true })
   @Expose({ name: 'uswds_string' })
   uswdsString?: number;
 

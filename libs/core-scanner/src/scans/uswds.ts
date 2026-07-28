@@ -52,6 +52,14 @@ export async function buildUswdsResult(
 
     const uniqueClasses = Object.keys(uniqueClassesObj).sort().join(',');
 
+    // Allow-list of USWDS custom HTML element tag names to detect.
+    // Add future usa-* tag names here as needed.
+    const usaElementsAllowList = new Set(['usa-banner']);
+    const foundElements = [
+      ...document.querySelectorAll([...usaElementsAllowList].join(',')),
+    ].map((el) => el.tagName.toLowerCase());
+    const usaElementsUsed = [...new Set(foundElements)].sort().join(',');
+
     const selectorResults = [
       ...document.querySelectorAll(
         '.usa-banner__button-text, .usa-banner-button-text',
@@ -69,6 +77,7 @@ export async function buildUswdsResult(
 
     return {
       usaClassesCount,
+      usaElementsUsed,
       uniqueClasses,
       hasHeresHowYouKnowBannerEnglish,
       hasHeresHowYouKnowBannerSpanish,
@@ -105,6 +114,7 @@ export async function buildUswdsResult(
   const uswdsVersionScoreAdjustment = 100;
   const result = {
     usaClasses: pageResults.usaClassesCount,
+    usaElementsUsed: pageResults.usaElementsUsed,
     usaClassesUsed: pageResults.uniqueClasses,
     uswdsString: uswdsInHtml(logger, htmlText),
     uswdsInlineCss: inlineUsaCssCount(htmlText),

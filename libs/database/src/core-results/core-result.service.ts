@@ -159,6 +159,7 @@ export class CoreResultService {
       // USWDS scan
       if (result.uswdsScan) {
         coreResult.usaClasses = result.uswdsScan.usaClasses;
+        coreResult.usaElementsUsed = result.uswdsScan.usaElementsUsed;
         coreResult.usaClassesUsed = result.uswdsScan.usaClassesUsed;
         coreResult.uswdsString = result.uswdsScan.uswdsString;
         coreResult.uswdsInlineCss = result.uswdsScan.uswdsInlineCss;
@@ -173,6 +174,7 @@ export class CoreResultService {
           result.uswdsScan.heresHowYouKnowBanner;
       } else {
         coreResult.usaClasses = null;
+        coreResult.usaElementsUsed = null;
         coreResult.usaClassesUsed = null;
         coreResult.uswdsString = null;
         coreResult.uswdsInlineCss = null;
@@ -265,6 +267,7 @@ export class CoreResultService {
     coreResult.finalUrlPageHash = null;
     coreResult.targetUrlRedirects = null;
     coreResult.usaClasses = null;
+    coreResult.usaElementsUsed = null;
     coreResult.usaClassesUsed = null;
     coreResult.uswdsString = null;
     coreResult.uswdsInlineCss = null;
