@@ -3,7 +3,7 @@ import { HTTPResponse, Page } from 'puppeteer';
 import { Logger } from 'pino';
 import { exec } from 'child_process';
 import { logCount } from 'libs/logging/src/metric-utils';
-import * as crypto from 'crypto';
+import { createHash } from 'node:crypto';
 
 type UnwrapPromiseArray<T> = {
   [K in keyof T]: T[K] extends Promise<infer O> ? O : T[K];
@@ -184,7 +184,7 @@ export function printMemoryUsage(logger: Logger, metadata: any) {
 export async function getPageMd5Hash(page: Page): Promise<string> {
   const pageSource = await page.content();
 
-  const hash = crypto.createHash('md5');
+  const hash = createHash('md5');
   if (!pageSource) {
     return null;
   }
