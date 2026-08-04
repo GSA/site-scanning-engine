@@ -1,7 +1,7 @@
 import { Serializer } from './serializer';
 import { Website } from 'entities/website.entity';
 import { writeToBuffer } from '@fast-csv/format';
-import { truncateArray } from './csv-helpers';
+import { formatValue } from './csv-helpers';
 
 export class CsvSerializer implements Serializer {
   columnOrder: string[];
@@ -49,36 +49,13 @@ export class CsvSerializer implements Serializer {
   }
 
   private formatWebsites(websites) {
-    const result = websites.map((result) => {
+    return websites.map((result) => {
       const formattedResult = {};
-      const characterLimit = 2000;
-
       for (const key in result) {
-        if (typeof result[key] === 'string') {
-          formattedResult[key] = result[key].replace(/\r?\n|\r/g, '');
-          if (formattedResult[key].length > characterLimit) {
-            const truncatedString = formattedResult[key].substring(
-              0,
-              characterLimit,
-            );
-            formattedResult[key] = truncatedString;
-          }
-        } else if (Array.isArray(result[key])) {
-          const truncatedArray = truncateArray(result[key], characterLimit);
-          formattedResult[key] = JSON.stringify(truncatedArray);
-        } else if (result[key] instanceof Date) {
-          formattedResult[key] = result[key].toISOString();
-        } else if (typeof result[key] === 'object' && result[key] !== null) {
-          formattedResult[key] = JSON.stringify(result[key]);
-        } else {
-          formattedResult[key] = result[key];
-        }
+        formattedResult[key] = formatValue(result[key]);
       }
-
       return formattedResult;
     });
-
-    return result;
   }
 
   private sortOrder(fieldOrder: string[], flattenedFields: string[]) {
