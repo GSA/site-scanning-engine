@@ -41,4 +41,16 @@ describe('CoreResult', () => {
     const classedCoreResult = plainToClass(CoreResult, plainCoreResult);
     expect(classedCoreResult.requiredLinksText).toEqual(['foo', 'bar']);
   });
+
+  it('should return an array for uswds_usa_elements_list', () => {
+    const plainCoreResult = {
+      uswds_usa_elements_list: 'usa-banner,usa-footer',
+    };
+
+    const classedCoreResult = plainToClass(CoreResult, plainCoreResult);
+    expect(classedCoreResult.usaElementsUsed).toEqual([
+      'usa-banner',
+      'usa-footer',
+    ]);
+  });
 });

@@ -103,6 +103,28 @@ export class WebsiteApiResultDto {
   uswds_usa_classes: number;
 
   /**
+   * `uswds_usa_class_list` is the list of USWDS CSS classes detected on the page (sorted).
+   *
+   * @example ["usa-accordion", "usa-banner", "usa-button"]
+   */
+  uswds_usa_class_list: string[];
+
+  /**
+   * `uswds_usa_elements_list` is the list of USWDS custom HTML element tags detected on the page
+   * (e.g. `usa-banner`). Only elements from a known allow-list are reported.
+   *
+   * @example ["usa-banner"]
+   */
+  uswds_usa_elements_list: string[];
+
+  /**
+   * `uswds_banner_heres_how` is a boolean indicating whether the "Here's how you know" banner was detected.
+   *
+   * @example true
+   */
+  uswds_banner_heres_how: boolean;
+
+  /**
    * `uswds_string` is the number of times the string "uswds" occurs in the HTML source.
    *
    * @example 1
@@ -367,6 +389,13 @@ export class WebsiteApiResultDto {
    * @example 3
    */
   third_party_service_count: number;
+
+  /**
+   * `hyperlink_domains` is the list of distinct domains found in hyperlinks (`<a href>`) on the page.
+   *
+   * @example ["gsa.gov", "usa.gov", "data.gov"]
+   */
+  hyperlink_domains: string[];
 
   /**
    * `dns_hostname` is the domain of underlying system, which often suggests use of a cloud or CDN provider.

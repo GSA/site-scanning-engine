@@ -2,7 +2,6 @@
 
 /**
  * Standalone script to export snapshot CSV directly from PostgreSQL database.
- * Includes the uswds_usa_elements_list field which is excluded from the public API/snapshot.
  *
  * Usage:
  *   npx ts-node scripts/export-snapshot.ts [--output path/to/file.csv]
@@ -23,18 +22,26 @@ import * as fs from 'fs';
 import * as process from 'process';
 import { CoreResult } from '../entities/core-result.entity';
 import { Website } from '../entities/website.entity';
-import { formatValue } from '../libs/snapshot/src/serializers/csv-helpers';
+import { formatValue } from '@app/snapshot/serializers/csv-helpers';
 
-// Derive column order from the canonical CoreResult.snapshotColumnOrder with
-// uswds_usa_elements_list added after uswds_usa_classes (this field is @Exclude()-ed
-// from the public API/snapshot, which is why this script exists).
-const base = CoreResult.snapshotColumnOrder;
-const insertAt = base.indexOf('uswds_usa_classes');
-const CSV_COLUMNS = [
-  ...base.slice(0, insertAt + 1),
-  'uswds_usa_elements_list',
-  ...base.slice(insertAt + 1),
-];
+// CSV_COLUMNS mirrors the public snapshot exactly.
+//
+// To preview a column that is still @Exclude()-ed from the public API/snapshot, splice its
+// @Expose name into CSV_COLUMNS and populate it by hand from the raw entity value. E.g. for a
+// comma-joined field exposed as `my_field_list`:
+//
+//   const base = CoreResult.snapshotColumnOrder;
+//   const at = base.indexOf('some_neighbor_column');
+//   const CSV_COLUMNS = [...base.slice(0, at + 1), 'my_field_list', ...base.slice(at + 1)];
+//
+// then inside the row loop (line ~120), before formatValue() runs:
+//
+//   const raw = website.coreResult.myField;
+//   serialized.my_field_list = raw ? raw.split(',') : raw;
+//
+// Remove both once the field's @Exclude() is dropped — otherwise the column is emitted twice
+// and the value is split on top of the entity's @Transform.
+const CSV_COLUMNS = CoreResult.snapshotColumnOrder;
 
 /**
  * Parses command line arguments.
@@ -121,12 +128,6 @@ async function main() {
 
     for (const website of websites) {
       const serialized = website.serialized();
-
-      // Manually add the uswds_usa_elements_list field which is excluded from public serialization.
-      // We split it here so that formatValue() can handle it as an array (JSON-stringifying it).
-      const rawElements = website.coreResult.usaElementsUsed;
-      serialized.uswds_usa_elements_list =
-        rawElements && rawElements !== '' ? rawElements.split(',') : rawElements;
 
       const formatted = {};
       for (const key of CSV_COLUMNS) {
