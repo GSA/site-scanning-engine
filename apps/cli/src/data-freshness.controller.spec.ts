@@ -30,6 +30,10 @@ describe('DataFreshnessController', () => {
     controller = module.get<DataFreshnessController>(DataFreshnessController);
   });
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
