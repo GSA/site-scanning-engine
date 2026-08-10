@@ -41,6 +41,16 @@ export class CoreResult {
   @Expose({ name: 'scan_date' })
   updated: string;
 
+  @Column({ type: 'date', nullable: true })
+  @Expose({ name: 'dap_data_date' })
+  @Exclude()
+  dapDataDate?: string;
+
+  @Column({ type: 'date', nullable: true })
+  @Expose({ name: 'https_data_date' })
+  @Exclude()
+  httpsDataDate?: string;
+
   @OneToOne(() => Website, (website) => website.coreResult, {
     onDelete: 'CASCADE',
   })
@@ -608,6 +618,8 @@ export class CoreResult {
     '404_test',
     'source_list',
     'scan_date',
+    'dap_data_date',
+    'https_data_date',
     'primary_scan_status',
     'accessibility_scan_status',
     'dns_scan_status',

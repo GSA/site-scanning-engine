@@ -569,4 +569,27 @@ describe('CoreResultService', () => {
     );
     expect(mockRepository.insert).not.toHaveBeenCalled();
   });
+
+  describe('updateDataFreshnessDates', () => {
+    it('bulk-updates dapDataDate and httpsDataDate on all rows', async () => {
+      const mockExecute = jest.fn().mockResolvedValue({ affected: 42 });
+      const mockWhere = jest.fn().mockReturnValue({ execute: mockExecute });
+      const mockSet = jest.fn().mockReturnValue({ where: mockWhere });
+      const mockUpdate = jest.fn().mockReturnValue({ set: mockSet });
+      mockRepository.createQueryBuilder.mockReturnValue({
+        update: mockUpdate,
+      });
+
+      await service.updateDataFreshnessDates('2026-05-16', '2026-05-21');
+
+      expect(mockRepository.createQueryBuilder).toHaveBeenCalled();
+      expect(mockUpdate).toHaveBeenCalledWith(CoreResult);
+      expect(mockSet).toHaveBeenCalledWith({
+        dapDataDate: '2026-05-16',
+        httpsDataDate: '2026-05-21',
+      });
+      expect(mockWhere).toHaveBeenCalledWith('1 = 1');
+      expect(mockExecute).toHaveBeenCalled();
+    });
+  });
 });

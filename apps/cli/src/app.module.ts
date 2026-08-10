@@ -12,6 +12,7 @@ import { QueueController } from './queue.controller';
 import { ScanController } from './scan.controller';
 import { SnapshotController } from './snapshot.controller';
 import { SecurityDataController } from './security-data.controller';
+import { DataFreshnessController } from './data-freshness.controller';
 import { injectLoggerModule } from '../../../libs/logging/src';
 
 @Module({
@@ -30,6 +31,7 @@ import { injectLoggerModule } from '../../../libs/logging/src';
     ScanController,
     SnapshotController,
     SecurityDataController,
+    DataFreshnessController,
   ],
 })
 export class AppModule {}

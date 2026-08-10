@@ -1,0 +1,27 @@
+---
+name: Update data freshness dates
+
+# yamllint disable-line rule:truthy
+on:
+  schedule:
+    - cron: '30 22 * * 1,3,5'
+
+  workflow_dispatch:
+
+jobs:
+  data-freshness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: run data-freshness cli job in chosen space
+        uses: cloud-gov/cg-cli-tools@bafcd2b3d36984482c01b1dd2c3750b4f355b8a2 # main
+        with:
+          cf_api: https://api.fr.cloud.gov
+          cf_username: ${{ secrets.CF_USERNAME }}
+          cf_password: ${{ secrets.CF_PASSWORD }}
+          cf_org: gsatts-sitescan
+          cf_space: prod
+          cf_command: |
+            run-task site-scanner-consumer
+            --command "node dist/apps/cli/main.js data-freshness"
+            -k 2G -m 2G
+            --name github-action-data-freshness-${{ github.run_id }}

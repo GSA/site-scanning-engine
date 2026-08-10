@@ -9,6 +9,24 @@ export class WebsiteApiResultDto {
   scan_date: string;
 
   /**
+   * `dap_data_date` is the date the DAP analytics source file was last updated
+   * in the federal-website-index repository. Reflects the freshness of the
+   * `pageviews` and `visits` fields.
+   *
+   * @example 2026-05-16
+   */
+  dap_data_date: string;
+
+  /**
+   * `https_data_date` is the date the CISA HTTPS source file was last updated
+   * in the federal-website-index repository. Reflects the freshness of the
+   * `https_enforced` and `hsts` fields.
+   *
+   * @example 2026-05-21
+   */
+  https_data_date: string;
+
+  /**
    * `target_url_domain` is the base domain (domain name + top-level domain) of the target url.
    *
    * @example 18f.gov
