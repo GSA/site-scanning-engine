@@ -601,4 +601,24 @@ export class CoreResultService {
       await this.coreResultRepository.insert(coreResult);
     }
   }
+
+  /**
+   * Bulk-updates dapDataDate and httpsDataDate on every row in core_result.
+   *
+   * These two columns reflect the freshness of the external source files that
+   * supply DAP analytics and HTTPS/HSTS data. Because a single date applies
+   * to the entire dataset (not per-scan), one bulk UPDATE is correct and
+   * intentionally leaves scan_date (updated) untouched.
+   */
+  async updateDataFreshnessDates(
+    dapDataDate: string,
+    httpsDataDate: string,
+  ): Promise<void> {
+    await this.coreResultRepository
+      .createQueryBuilder()
+      .update(CoreResult)
+      .set({ dapDataDate, httpsDataDate })
+      .where('1 = 1')
+      .execute();
+  }
 }
