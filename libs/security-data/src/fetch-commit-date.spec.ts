@@ -67,4 +67,26 @@ describe('fetchCommitDate', () => {
       fetchCommitDate('data/source-lists/cisa_https.csv', mockLogger),
     ).rejects.toThrow('no commits');
   });
+
+  it('throws when the GitHub API returns malformed JSON', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockRejectedValue(new SyntaxError('Unexpected token')),
+    });
+
+    await expect(
+      fetchCommitDate('data/source-lists/cisa_https.csv', mockLogger),
+    ).rejects.toThrow('malformed JSON');
+  });
+
+  it('throws when the latest commit is missing commit.committer.date', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue([{ commit: { committer: {} } }]),
+    });
+
+    await expect(
+      fetchCommitDate('data/source-lists/cisa_https.csv', mockLogger),
+    ).rejects.toThrow('commit.committer.date');
+  });
 });
