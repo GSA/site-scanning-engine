@@ -618,8 +618,6 @@ export class CoreResult {
     '404_test',
     'source_list',
     'scan_date',
-    'dap_data_date',
-    'https_data_date',
     'primary_scan_status',
     'accessibility_scan_status',
     'dns_scan_status',
