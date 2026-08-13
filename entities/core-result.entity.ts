@@ -41,6 +41,16 @@ export class CoreResult {
   @Expose({ name: 'scan_date' })
   updated: string;
 
+  @Column({ type: 'date', nullable: true })
+  @Expose({ name: 'dap_data_date' })
+  @Exclude()
+  dapDataDate?: string;
+
+  @Column({ type: 'date', nullable: true })
+  @Expose({ name: 'https_data_date' })
+  @Exclude()
+  httpsDataDate?: string;
+
   @OneToOne(() => Website, (website) => website.coreResult, {
     onDelete: 'CASCADE',
   })
