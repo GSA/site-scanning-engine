@@ -11,6 +11,29 @@ Guide for adding new fields/columns to scan results.
 
 When prototyping new fields for scan results, follow this workflow to test locally before exposing in production API.
 
+## CRITICAL: Two-Phase Release Sequencing
+
+**Do NOT define a field and expose it publicly in the same change.** Fields must
+be published to the public API/snapshots only *after* a real production scan has
+collected data for them and that data has been verified. Publishing early ships
+empty columns to public consumers.
+
+The correct sequence spans **two separate PRs / deployments**:
+
+| Phase | What you do | What ships | Gate before next phase |
+|-------|-------------|------------|------------------------|
+| **Phase 1 — Define & Collect** | Add entity property + `@Column` + `@Expose`, keep bare `@Exclude()`. Wire through scan pipeline. Update DB schema. | Column exists in DB and is populated by scans, but is **hidden** from API and snapshots. | A production scan cycle runs and populates the column. **Verify the data is non-empty and correct** in the deployed environment. |
+| **Phase 2 — Publish** | Remove `@Exclude()`, add to `snapshotColumnOrder`, add Swagger DTO entry. | Column becomes visible in API + CSV/JSON snapshots. | — |
+
+**Never merge Phase 2 until Phase 1 data is verified in the deployed
+environment.** Removing `@Exclude()` or adding the column to `snapshotColumnOrder`
+before a scan has populated it publishes empty columns to public data
+consumers — the exact failure this skill exists to prevent.
+
+> This maps to the project pattern: **define fields + update DB schema → let
+> scan run to collect information → verify before making them public → publish
+> fields.**
+
 ## Core Concepts
 
 ### Two-Gate Model
@@ -44,7 +67,14 @@ For the API path, only gate (a) applies (via `apps/api/src/website/website-seria
 
 ## Steps
 
-### 1. Add Property to Entity
+> **Phase 1 (Define & Collect) = Steps 1–2, 4–5.** Keep `@Exclude()` on the
+> field, do NOT add it to `snapshotColumnOrder`, and do NOT add the Swagger DTO
+> entry yet. Deploy, let a scan run, and verify the data.
+>
+> **Phase 2 (Publish) = Steps 3, 6, 7 — only after Phase 1 data is verified in
+> the deployed environment.**
+
+### 1. Add Property to Entity *(Phase 1)*
 
 Edit the appropriate entity (typically `entities/core-result.entity.ts`):
 
@@ -77,7 +107,7 @@ For **comma-joined list fields** that should emit as arrays:
 myFieldList?: string;
 ```
 
-### 2. Wire Through Scan Data (if scan-sourced)
+### 2. Wire Through Scan Data (if scan-sourced) *(Phase 1)*
 
 If the field comes from a scan (not just metadata), wire it through the scan pipeline:
 
@@ -103,7 +133,11 @@ If the field comes from a scan (not just metadata), wire it through the scan pip
    ```
    Include `null` fallback branches (search for existing field assignments to find all three locations).
 
-### 3. Add to Snapshot Column Order
+### 3. Add to Snapshot Column Order *(Phase 2 — publish only)*
+
+> **Do this only in Phase 2**, after a production scan has populated the column
+> and you have verified the data. Adding a field to `snapshotColumnOrder` while
+> it is still empty publishes an empty column to public snapshots.
 
 Edit `static snapshotColumnOrder` in `entities/core-result.entity.ts` (line ~591):
 
@@ -116,7 +150,7 @@ static snapshotColumnOrder = [
 
 **Important:** Use the **snake_case `@Expose` name**, not the TS property name.
 
-### 4. Preview Locally
+### 4. Preview Locally *(Phase 1)*
 
 Generate a preview CSV to verify the column and data:
 
@@ -134,7 +168,7 @@ Check:
 
 **Preview a still-`@Exclude()`-ed field:** See `scripts/export-snapshot.ts:27-41` for the recipe to manually insert a column without exposing it publicly.
 
-### 5. Update Tests
+### 5. Update Tests *(Phase 1)*
 
 #### a. Entity transform test (for comma-joined/array fields)
 
@@ -164,7 +198,24 @@ Run all tests:
 npm run test:unit
 ```
 
-### 6. Document in Swagger DTO
+---
+
+### GATE: Deploy Phase 1, Collect, and Verify
+
+**Stop here for Phase 1.** Before doing any of the remaining steps:
+
+1. Merge and deploy the Phase 1 change (field defined + wired, still `@Exclude()`-ed).
+2. Let a production scan cycle run so the new column is populated.
+3. **Verify the collected data** in the deployed environment — confirm the column
+   is non-empty and the values are correct (query the DB directly, or preview a
+   snapshot). Do **not** rely on local mocks.
+
+Only once the data is verified do you proceed to Phase 2 (Steps 3, 6, 7) in a
+**separate PR**. Skipping this gate publishes empty columns to public consumers.
+
+---
+
+### 6. Document in Swagger DTO *(Phase 2 — publish only)*
 
 When the field is ready for production, add it to `apps/api/src/website/website-api-result.dto.ts`:
 
@@ -186,14 +237,15 @@ my_field_list: string[];
 
 Place it near related fields for logical grouping.
 
-### 7. Expose in API (When Ready)
+### 7. Expose in API (When Ready) *(Phase 2 — publish only)*
 
-When the field is ready for production:
+Only after Phase 1 data is verified in the deployed environment:
 
 1. **Remove** the `@Exclude()` decorator from the entity property
-2. Field will now appear in API responses at `/api/websites/*` endpoints
-3. Swagger docs will show the field at `/api-json` (from the DTO JSDoc)
-4. CSV/JSON snapshots will include the column (from `snapshotColumnOrder`)
+2. Ensure the field is in `snapshotColumnOrder` (Step 3)
+3. Field will now appear in API responses at `/api/websites/*` endpoints
+4. Swagger docs will show the field at `/api-json` (from the DTO JSDoc)
+5. CSV/JSON snapshots will include the column (from `snapshotColumnOrder`)
 
 ## Migration Notes
 
@@ -202,13 +254,18 @@ When the field is ready for production:
 
 ## Testing Checklist
 
+**Phase 1 — Define & Collect (keep `@Exclude()`, not in `snapshotColumnOrder`, no DTO entry):**
 - [ ] Column appears in database (check via `psql` or API startup logs)
-- [ ] Data populates correctly from scan (inspect via API endpoint)
-- [ ] Preview CSV exports with new column (`scripts/export-snapshot.ts`)
-- [ ] Column order is correct in CSV
 - [ ] Entity transform test added (if array field)
 - [ ] JSON serializer golden string updated
 - [ ] Unit tests pass (`npm run test:unit`)
+- [ ] Deployed; a production scan has run
+- [ ] **Data verified non-empty and correct in deployed environment**
+
+**Phase 2 — Publish (separate PR, only after Phase 1 data verified):**
+- [ ] `@Exclude()` removed from entity property
+- [ ] Field added to `snapshotColumnOrder` in correct position
+- [ ] Preview CSV exports with new column and correct order (`scripts/export-snapshot.ts`)
 - [ ] Swagger DTO entry added with JSDoc
 - [ ] API endpoint returns field (after removing `@Exclude()`)
 - [ ] Swagger docs show new field at `/api-json`
@@ -259,6 +316,9 @@ myComplexData: Record<string, any>;
 
 ## Important Notes
 
+- **Never publish a field in the same change that defines it.** Define + collect
+  (Phase 1) and publish (Phase 2) are separate PRs, with a verified production
+  scan in between. Publishing early ships empty columns to public consumers.
 - Never commit fields with sensitive data (secrets, PII)
 - Keep `nullable: true` during development to avoid breaking existing data
 - Document what the field represents in code comments
