@@ -72,13 +72,20 @@ export class CoreResultService {
   ) {
     coreResult.primaryScanStatus = pages.primary.status;
 
-    if (pages.primary.status === ScanStatus.Completed) {
+      if (pages.primary.status === ScanStatus.Completed) {
       const result = pages.primary.result;
       // DAP scan
-      coreResult.dapDetected = result.dapScan.dapDetected;
-      coreResult.dapParameters = result.dapScan.dapParameters;
-      coreResult.dapVersion = result.dapScan.dapVersion;
-      coreResult.gaTagIds = result.dapScan.gaTagIds;
+      if (result.dapScan) {
+        coreResult.dapDetected = result.dapScan.dapDetected;
+        coreResult.dapParameters = result.dapScan.dapParameters;
+        coreResult.dapVersion = result.dapScan.dapVersion;
+        coreResult.gaTagIds = result.dapScan.gaTagIds;
+      } else {
+        coreResult.dapDetected = null;
+        coreResult.dapParameters = null;
+        coreResult.dapVersion = null;
+        coreResult.gaTagIds = null;
+      }
 
       // SEO scan
       if (result.seoScan) {
@@ -130,31 +137,54 @@ export class CoreResultService {
       }
 
       // Third-party scan
-      coreResult.thirdPartyServiceCount =
-        result.thirdPartyScan.thirdPartyServiceCount;
-      coreResult.thirdPartyServiceDomains =
-        result.thirdPartyScan.thirdPartyServiceDomains;
-      coreResult.thirdPartyServiceUrls =
-        result.thirdPartyScan.thirdPartyServiceUrls;
+      if (result.thirdPartyScan) {
+        coreResult.thirdPartyServiceCount =
+          result.thirdPartyScan.thirdPartyServiceCount;
+        coreResult.thirdPartyServiceDomains =
+          result.thirdPartyScan.thirdPartyServiceDomains;
+        coreResult.thirdPartyServiceUrls =
+          result.thirdPartyScan.thirdPartyServiceUrls;
+      } else {
+        coreResult.thirdPartyServiceCount = null;
+        coreResult.thirdPartyServiceDomains = null;
+        coreResult.thirdPartyServiceUrls = null;
+      }
 
       // Cookie scan
-      coreResult.cookieDomains = result.cookieScan.domains;
+      if (result.cookieScan) {
+        coreResult.cookieDomains = result.cookieScan.domains;
+      } else {
+        coreResult.cookieDomains = null;
+      }
 
       // Url scan
-      coreResult.finalUrl = result.urlScan.finalUrl;
-      coreResult.finalUrlBaseDomain = result.urlScan.finalUrlBaseDomain;
-      coreResult.finalUrlWebsite = result.urlScan.finalUrlWebsite;
-      coreResult.finalUrlTopLevelDomain = result.urlScan.finalUrlTopLevelDomain;
-      coreResult.finalUrlIsLive = result.urlScan.finalUrlIsLive;
-      coreResult.finalUrlMIMEType = result.urlScan.finalUrlMIMEType;
-      coreResult.finalUrlStatusCode = result.urlScan.finalUrlStatusCode;
-      coreResult.targetUrlRedirects = result.urlScan.targetUrlRedirects;
-      coreResult.finalUrlPageHash = result.urlScan.finalUrlPageHash;
+      if (result.urlScan) {
+        coreResult.finalUrl = result.urlScan.finalUrl;
+        coreResult.finalUrlBaseDomain = result.urlScan.finalUrlBaseDomain;
+        coreResult.finalUrlWebsite = result.urlScan.finalUrlWebsite;
+        coreResult.finalUrlTopLevelDomain = result.urlScan.finalUrlTopLevelDomain;
+        coreResult.finalUrlIsLive = result.urlScan.finalUrlIsLive;
+        coreResult.finalUrlMIMEType = result.urlScan.finalUrlMIMEType;
+        coreResult.finalUrlStatusCode = result.urlScan.finalUrlStatusCode;
+        coreResult.targetUrlRedirects = result.urlScan.targetUrlRedirects;
+        coreResult.finalUrlPageHash = result.urlScan.finalUrlPageHash;
 
-      // Site name - finalUrlBaseDomain with www. stripped
-      coreResult.finalSiteName = coreResult.finalUrlWebsite
-        ? coreResult.finalUrlWebsite.replace(/^www\./, '')
-        : '';
+        // Site name - finalUrlBaseDomain with www. stripped
+        coreResult.finalSiteName = coreResult.finalUrlWebsite
+          ? coreResult.finalUrlWebsite.replace(/^www\./, '')
+          : '';
+      } else {
+        coreResult.finalUrl = null;
+        coreResult.finalUrlBaseDomain = null;
+        coreResult.finalUrlWebsite = null;
+        coreResult.finalUrlTopLevelDomain = null;
+        coreResult.finalUrlIsLive = null;
+        coreResult.finalUrlMIMEType = null;
+        coreResult.finalUrlStatusCode = null;
+        coreResult.targetUrlRedirects = null;
+        coreResult.finalUrlPageHash = null;
+        coreResult.finalSiteName = null;
+      }
 
       // USWDS scan
       if (result.uswdsScan) {
@@ -201,22 +231,45 @@ export class CoreResultService {
       coreResult.cms = result.cmsScan ? result.cmsScan.cms : null;
 
       // Required links scan
-      coreResult.hyperlinkDomains = result.requiredLinksScan.hyperlinkDomains;
-      coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
-      coreResult.requiredLinksText = result.requiredLinksScan.requiredLinksText;
+      if (result.requiredLinksScan) {
+        coreResult.hyperlinkDomains = result.requiredLinksScan.hyperlinkDomains;
+        coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
+        coreResult.requiredLinksText = result.requiredLinksScan.requiredLinksText;
+      } else {
+        coreResult.hyperlinkDomains = null;
+        coreResult.requiredLinksUrl = null;
+        coreResult.requiredLinksText = null;
+      }
 
       // Feedback links scan
-      coreResult.feedbackLinksText = result.feedbackLinksScan.feedbackLinksText;
+      if (result.feedbackLinksScan) {
+        coreResult.feedbackLinksText = result.feedbackLinksScan.feedbackLinksText;
+      } else {
+        coreResult.feedbackLinksText = null;
+      }
 
       // Search scan
-      coreResult.searchDetected = result.searchScan.searchDetected;
-      coreResult.searchgov = result.searchScan.searchgov;
+      if (result.searchScan) {
+        coreResult.searchDetected = result.searchScan.searchDetected;
+        coreResult.searchgov = result.searchScan.searchgov;
+      } else {
+        coreResult.searchDetected = null;
+        coreResult.searchgov = null;
+      }
 
       // Mobile scan
-      coreResult.viewportMetaTag = result.mobileScan.viewportMetaTag;
+      if (result.mobileScan) {
+        coreResult.viewportMetaTag = result.mobileScan.viewportMetaTag;
+      } else {
+        coreResult.viewportMetaTag = null;
+      }
 
       // Tooling scan
-      coreResult.tooling = result.toolingScan.tooling;
+      if (result.toolingScan) {
+        coreResult.tooling = result.toolingScan.tooling;
+      } else {
+        coreResult.tooling = null;
+      }
     } else {
       logger.error({
         msg: pages.primary.error,
