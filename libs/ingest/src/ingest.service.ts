@@ -6,18 +6,7 @@ import { WebsiteService } from '@app/database/websites/websites.service';
 
 import { SubdomainRow } from './subdomain-row.interface';
 
-/**
- * Maps every SubdomainRow source-list field name to its canonical label string.
- *
- * This is the single edit point for source-list additions.  To add a new source:
- *   1. Add a field to SubdomainRow (subdomain-row.interface.ts)
- *   2. Add an entry here: sourceListFieldName → 'label'
- *
- * The headers[] array fed to fast-csv is derived automatically from the keys of
- * this map (preserving insertion order), so no second edit is needed there.
- *
- * [SOURCE-ADD-POINT]
- */
+// [SOURCE-ADD-POINT]
 export const SOURCE_LISTS: Partial<Record<keyof SubdomainRow, string>> = {
   sourceListFederalDomains: 'gov',
   sourceListDap:            'dap',
@@ -50,7 +39,6 @@ export const SOURCE_LISTS: Partial<Record<keyof SubdomainRow, string>> = {
   sourceListHyperlinkDomains:   'hyperlink_domains',
 } as const;
 
-/** The source-list field names in their canonical CSV column order. */
 const SOURCE_LIST_FIELDS = Object.keys(SOURCE_LISTS) as Array<
   keyof typeof SOURCE_LISTS
 >;
@@ -84,8 +72,6 @@ export class IngestService {
         'branch',
         'agency',
         'bureau',
-        // Source-list fields are derived from SOURCE_LISTS key order so that
-        // adding a new entry to SOURCE_LISTS is the only required edit.
         ...SOURCE_LIST_FIELDS,
         'filtered',
         'pageviews',
@@ -136,8 +122,6 @@ export class IngestService {
     const end = new Promise<void>((resolve, reject) => {
       stream.end(async () => {
         if (hasParsingError) {
-          // Parsing failed — no rows were safely transformed; resolve without
-          // attempting DB writes so the caller doesn't hang.
           resolve();
           return;
         }

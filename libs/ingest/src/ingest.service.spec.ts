@@ -209,12 +209,6 @@ describe('IngestService', () => {
     expect(mockWebsiteService.deleteBefore).toHaveBeenCalledTimes(1);
   });
 
-  // ─── getSourceList label correctness ────────────────────────────────────────
-  // Each test locks in the exact non-uniform label string that the source-list
-  // field maps to.  These tests protect against accidental label changes during
-  // refactoring (e.g. renaming 'gov' to 'federal_domains', or 'mil-sites1' to
-  // 'mil_sites1').
-
   describe('getSourceList label mapping', () => {
     const cases: Array<[string, string]> = [
       ['source_list_federal_domains', 'gov'],
@@ -300,7 +294,7 @@ describe('IngestService', () => {
     it('treats TRUE case-insensitively (lowercase "true")', async () => {
       const cols = [...BASE_ROW_COLS];
       const idx = CSV_HEADER_COLS.indexOf('source_list_federal_domains');
-      cols[idx] = 'true'; // lowercase
+      cols[idx] = 'true';
       const csvString = `${CSV_HEADERS}\n${cols.join(',')}`;
 
       jest
@@ -314,11 +308,6 @@ describe('IngestService', () => {
       );
     });
   });
-
-  // ─── Promise settlement (hang bug) ──────────────────────────────────────────
-  // Before the fix, writeUrls returned a Promise that never settled when a CSV
-  // parse error occurred or when a downstream async call threw.  These tests
-  // assert that the Promise always resolves (or rejects) so callers don't hang.
 
   describe('writeUrls Promise settlement', () => {
     it('resolves even when the CSV contains a parse error', async () => {
