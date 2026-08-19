@@ -16,19 +16,19 @@ export type PageScanFailure = {
 export type PageScan<T> = PageScanSuccess<T> | PageScanFailure;
 
 export type PrimaryScans = {
-  urlScan: ScanData.UrlScan;
-  dapScan: ScanData.DapScan;
-  seoScan: ScanData.SeoScan;
-  thirdPartyScan: ScanData.ThirdPartyScan;
-  cookieScan: ScanData.CookieScan;
-  uswdsScan: ScanData.UswdsScan;
-  loginScan: ScanData.LoginScan;
-  cmsScan: ScanData.CmsScan;
-  requiredLinksScan: ScanData.RequiredLinksScan;
-  feedbackLinksScan: ScanData.FeedbackLinksScan;
-  searchScan: ScanData.SearchScan;
-  mobileScan: ScanData.MobileScan;
-  toolingScan: ScanData.ToolingScan;
+  urlScan: ScanData.UrlScan | null;
+  dapScan: ScanData.DapScan | null;
+  seoScan: ScanData.SeoScan | null;
+  thirdPartyScan: ScanData.ThirdPartyScan | null;
+  cookieScan: ScanData.CookieScan | null;
+  uswdsScan: ScanData.UswdsScan | null;
+  loginScan: ScanData.LoginScan | null;
+  cmsScan: ScanData.CmsScan | null;
+  requiredLinksScan: ScanData.RequiredLinksScan | null;
+  feedbackLinksScan: ScanData.FeedbackLinksScan | null;
+  searchScan: ScanData.SearchScan | null;
+  mobileScan: ScanData.MobileScan | null;
+  toolingScan: ScanData.ToolingScan | null;
 };
 export type PrimaryScan = PageScan<PrimaryScans>;
 
