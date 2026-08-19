@@ -185,7 +185,10 @@ export class SnapshotService {
     date.setDate(date.getDate() - 1);
     const priorDate = date.toISOString().split('T')[0];
     const newFileName = `archive/json/${this.fileNameAccessibility}-${priorDate}.json`;
-    await this.storageService.copy(`${this.fileNameAccessibility}.json`, newFileName);
+    await this.storageService.copy(
+      `${this.fileNameAccessibility}.json`,
+      newFileName,
+    );
 
     this.logger.log('Serializing new snapshot');
     const serializedWebsitesWithDetailsOnly = websites.map((website) => {

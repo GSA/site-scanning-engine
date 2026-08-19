@@ -72,7 +72,7 @@ export class CoreResultService {
   ) {
     coreResult.primaryScanStatus = pages.primary.status;
 
-      if (pages.primary.status === ScanStatus.Completed) {
+    if (pages.primary.status === ScanStatus.Completed) {
       const result = pages.primary.result;
       // DAP scan
       if (result.dapScan) {
@@ -162,7 +162,8 @@ export class CoreResultService {
         coreResult.finalUrl = result.urlScan.finalUrl;
         coreResult.finalUrlBaseDomain = result.urlScan.finalUrlBaseDomain;
         coreResult.finalUrlWebsite = result.urlScan.finalUrlWebsite;
-        coreResult.finalUrlTopLevelDomain = result.urlScan.finalUrlTopLevelDomain;
+        coreResult.finalUrlTopLevelDomain =
+          result.urlScan.finalUrlTopLevelDomain;
         coreResult.finalUrlIsLive = result.urlScan.finalUrlIsLive;
         coreResult.finalUrlMIMEType = result.urlScan.finalUrlMIMEType;
         coreResult.finalUrlStatusCode = result.urlScan.finalUrlStatusCode;
@@ -234,7 +235,8 @@ export class CoreResultService {
       if (result.requiredLinksScan) {
         coreResult.hyperlinkDomains = result.requiredLinksScan.hyperlinkDomains;
         coreResult.requiredLinksUrl = result.requiredLinksScan.requiredLinksUrl;
-        coreResult.requiredLinksText = result.requiredLinksScan.requiredLinksText;
+        coreResult.requiredLinksText =
+          result.requiredLinksScan.requiredLinksText;
       } else {
         coreResult.hyperlinkDomains = null;
         coreResult.requiredLinksUrl = null;
@@ -243,7 +245,8 @@ export class CoreResultService {
 
       // Feedback links scan
       if (result.feedbackLinksScan) {
-        coreResult.feedbackLinksText = result.feedbackLinksScan.feedbackLinksText;
+        coreResult.feedbackLinksText =
+          result.feedbackLinksScan.feedbackLinksText;
       } else {
         coreResult.feedbackLinksText = null;
       }

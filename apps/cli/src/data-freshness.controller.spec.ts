@@ -56,10 +56,9 @@ describe('DataFreshnessController', () => {
         expect.anything(),
       );
 
-      expect(mockCoreResultService.updateDataFreshnessDates).toHaveBeenCalledWith(
-        '2024-01-01',
-        '2024-01-02',
-      );
+      expect(
+        mockCoreResultService.updateDataFreshnessDates,
+      ).toHaveBeenCalledWith('2024-01-01', '2024-01-02');
     });
 
     it('should throw an error if fetchCommitDate fails', async () => {

@@ -85,9 +85,9 @@ const BASE_ROW_COLS = [
   'FALSE', // source_list_non_gov_mil
   'FALSE', // source_list_govt_urls
   'FALSE', // source_list_hyperlink_domains
-  '',      // filtered
-  '',      // pageviews
-  '',      // visits
+  '', // filtered
+  '', // pageviews
+  '', // visits
 ];
 
 // Produces a row with one named column set to TRUE.
@@ -212,34 +212,34 @@ describe('IngestService', () => {
   describe('getSourceList label mapping', () => {
     const cases: Array<[string, string]> = [
       ['source_list_federal_domains', 'gov'],
-      ['source_list_dap',            'dap'],
-      ['source_list_pulse',          'pulse'],
-      ['source_list_omb_idea',       'omb_idea'],
-      ['source_list_eotw',           '2020_eot'],
-      ['source_list_usagov',         'usagov'],
-      ['source_list_gov_man',        'gov_man'],
-      ['source_list_uscourts',       'uscourts'],
-      ['source_list_oira',           'oira'],
-      ['source_list_other',          'other'],
-      ['source_list_mil_1',          'mil-sites1'],
-      ['source_list_mil_2',          'mil-sites2'],
-      ['source_list_dod_public',     'dod_public'],
-      ['source_list_dotmil',         'dotmil'],
+      ['source_list_dap', 'dap'],
+      ['source_list_pulse', 'pulse'],
+      ['source_list_omb_idea', 'omb_idea'],
+      ['source_list_eotw', '2020_eot'],
+      ['source_list_usagov', 'usagov'],
+      ['source_list_gov_man', 'gov_man'],
+      ['source_list_uscourts', 'uscourts'],
+      ['source_list_oira', 'oira'],
+      ['source_list_other', 'other'],
+      ['source_list_mil_1', 'mil-sites1'],
+      ['source_list_mil_2', 'mil-sites2'],
+      ['source_list_dod_public', 'dod_public'],
+      ['source_list_dotmil', 'dotmil'],
       ['source_list_final_url_websites', 'final_url_websites'],
-      ['source_list_house_117th',    'house_117th'],
-      ['source_list_senate_117th',   'senate_117th'],
-      ['source_list_gpo_fdlp',       'gpo_fdlp'],
-      ['source_list_cisa',           'cisa'],
-      ['source_list_dod_2025',       'dod_2025'],
-      ['source_list_dap_2',          'dap2'],
-      ['source_list_usagov_clicks',      'usagov_clicks'],
-      ['source_list_usagov_clicks_mil',  'usagov_clicks_mil'],
-      ['source_list_search_gov',         'searchgov'],
-      ['source_list_search_gov_mil',     'searchgov_mil'],
-      ['source_list_public_inventory',   'public_inventory'],
-      ['source_list_non_gov_mil',        'non_govmil'],
-      ['source_list_govt_urls',          'govt_urls'],
-      ['source_list_hyperlink_domains',  'hyperlink_domains'],
+      ['source_list_house_117th', 'house_117th'],
+      ['source_list_senate_117th', 'senate_117th'],
+      ['source_list_gpo_fdlp', 'gpo_fdlp'],
+      ['source_list_cisa', 'cisa'],
+      ['source_list_dod_2025', 'dod_2025'],
+      ['source_list_dap_2', 'dap2'],
+      ['source_list_usagov_clicks', 'usagov_clicks'],
+      ['source_list_usagov_clicks_mil', 'usagov_clicks_mil'],
+      ['source_list_search_gov', 'searchgov'],
+      ['source_list_search_gov_mil', 'searchgov_mil'],
+      ['source_list_public_inventory', 'public_inventory'],
+      ['source_list_non_gov_mil', 'non_govmil'],
+      ['source_list_govt_urls', 'govt_urls'],
+      ['source_list_hyperlink_domains', 'hyperlink_domains'],
     ];
 
     it.each(cases)(
