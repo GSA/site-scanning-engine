@@ -816,7 +816,7 @@ function _initAutoTracker() {
               };
               _sendEvent('email_click', _enforeLower(l));
             } else {
-            /*else if("t"===i){
+              /*else if("t"===i){
               l = {link_id: a.id, link_url: a.href.split("tel:")[1], link_text: a.text.replace(/(?:[\r\n]+)+/g, "").trim(), link_classes: a.className, interaction_type: t};
               _sendEvent("telephone_click", l);
             }*/

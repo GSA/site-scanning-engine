@@ -583,7 +583,9 @@ describe('CoreResultService', () => {
   describe('updatePrimaryScanResults — null sub-scan guards', () => {
     // Build a minimal completed-primary pages object where every sub-scan is
     // present and valid.  Individual tests override specific sub-scans to null.
-    function buildCompletedPages(primaryResultOverrides: Record<string, any> = {}) {
+    function buildCompletedPages(
+      primaryResultOverrides: Record<string, any> = {},
+    ) {
       const completed = ScanStatus.Completed as const;
       return {
         base: { targetUrlBaseDomain: 'example.gov' },
@@ -758,7 +760,15 @@ describe('CoreResultService', () => {
       const pages = buildCompletedPages({ [subScanKey]: null });
       const logger = mock<Logger>();
       // Should not throw — previously these crashed with TypeError
-      await service.createFromCoreResultPages(1, pages, logger, false, 0, 0, 'example.gov');
+      await service.createFromCoreResultPages(
+        1,
+        pages,
+        logger,
+        false,
+        0,
+        0,
+        'example.gov',
+      );
       expect(mockRepository.insert).toHaveBeenCalled();
     }
 

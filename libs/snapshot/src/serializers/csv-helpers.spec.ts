@@ -3,44 +3,44 @@ import { truncateArray, formatValue } from './csv-helpers';
 describe('csv-helpers', () => {
   describe('truncateArray', () => {
     it('truncates an array that would be greater than the character limit when serialized', () => {
-    const longArray = [];
-    const characterLimit = 5000;
-    const characters = 'abcdefghijklmnopqrstuvwxyz';
-    for (let i = 0; i < 500; i++) {
-      let randomWord = '';
-      for (let i = 0; i < 12; i++) {
-        randomWord += characters.charAt(
-          Math.floor(Math.random() * characters.length),
-        );
+      const longArray = [];
+      const characterLimit = 5000;
+      const characters = 'abcdefghijklmnopqrstuvwxyz';
+      for (let i = 0; i < 500; i++) {
+        let randomWord = '';
+        for (let i = 0; i < 12; i++) {
+          randomWord += characters.charAt(
+            Math.floor(Math.random() * characters.length),
+          );
+        }
+
+        longArray.push(randomWord);
       }
 
-      longArray.push(randomWord);
-    }
+      const result = truncateArray(longArray, characterLimit);
 
-    const result = truncateArray(longArray, characterLimit);
-
-    expect(JSON.stringify(result).length).toBeLessThanOrEqual(characterLimit);
-  });
+      expect(JSON.stringify(result).length).toBeLessThanOrEqual(characterLimit);
+    });
 
     it('does not truncate an array that would be less than the character limit when serialized', () => {
-    const shortArray = [];
-    const characterLimit = 5000;
-    const characters = 'abcdefghijklmnopqrstuvwxyz';
-    for (let i = 0; i < 10; i++) {
-      let randomWord = '';
-      for (let i = 0; i < 12; i++) {
-        randomWord += characters.charAt(
-          Math.floor(Math.random() * characters.length),
-        );
+      const shortArray = [];
+      const characterLimit = 5000;
+      const characters = 'abcdefghijklmnopqrstuvwxyz';
+      for (let i = 0; i < 10; i++) {
+        let randomWord = '';
+        for (let i = 0; i < 12; i++) {
+          randomWord += characters.charAt(
+            Math.floor(Math.random() * characters.length),
+          );
+        }
+
+        shortArray.push(randomWord);
       }
 
-      shortArray.push(randomWord);
-    }
+      const result = truncateArray(shortArray, characterLimit);
 
-    const result = truncateArray(shortArray, characterLimit);
-
-    expect(result.length).toBe(shortArray.length);
-    expect(JSON.stringify(result).length).toBeLessThanOrEqual(characterLimit);
+      expect(result.length).toBe(shortArray.length);
+      expect(JSON.stringify(result).length).toBeLessThanOrEqual(characterLimit);
     });
   });
 
@@ -146,9 +146,9 @@ describe('csv-helpers', () => {
       const nested = {
         level1: {
           level2: {
-            value: 'deep'
-          }
-        }
+            value: 'deep',
+          },
+        },
       };
 
       expect(formatValue(nested)).toBe(JSON.stringify(nested));
