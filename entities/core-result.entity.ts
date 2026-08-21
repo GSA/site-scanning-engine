@@ -1,4 +1,10 @@
-import { classToPlain, Exclude, Expose, Transform } from 'class-transformer';
+import {
+  classToPlain,
+  Exclude,
+  Expose,
+  Transform,
+} from 'class-transformer';
+import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
 import {
   Column,
   CreateDateColumn,
@@ -605,6 +611,62 @@ export class CoreResult {
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
+  }
+
+  /**
+   * Derives the set of public (non-excluded) @Expose names from a
+   * class-transformer-decorated class.
+   *
+   * A field is "public" when it carries @Expose AND is NOT also @Exclude()-ed.
+   * Phase-1 fields carry both decorators, so they are excluded from this set
+   * even after @Expose is present — preserving the add-field two-phase workflow.
+   */
+  static getPublicExposeNames(cls: new (...args: unknown[]) => unknown): Set<string> {
+    const exposed = defaultMetadataStorage.getExposedMetadatas(cls);
+    const excluded = new Set(
+      defaultMetadataStorage.getExcludedMetadatas(cls).map((e) => e.propertyName),
+    );
+    return new Set(
+      exposed
+        .filter((e) => !excluded.has(e.propertyName))
+        .map((e) => e.options?.name ?? e.propertyName),
+    );
+  }
+
+  /**
+   * Validates that every entry in `columns` (defaults to `snapshotColumnOrder`)
+   * corresponds to a public @Expose name on CoreResult or Website.
+   *
+   * The check is intentionally one-directional:
+   *   columns ⊆ publicExposeNames(CoreResult) ∪ publicExposeNames(Website)
+   *
+   * This preserves the add-field two-phase workflow:
+   * - Phase 1 fields carry @Expose + @Exclude() → absent from publicExposeNames
+   *   → absent from snapshotColumnOrder → guard never fires.
+   * - Phase 2 publishes by removing @Exclude() AND adding to snapshotColumnOrder.
+   *   If only snapshotColumnOrder is updated but @Exclude() is forgotten, the
+   *   entry won't resolve → guard fires → silent-empty-column bug is caught.
+   *
+   * Throws an Error listing all orphan column names when any are found.
+   */
+  static assertSnapshotColumnsExposed(
+    columns: string[] = CoreResult.snapshotColumnOrder,
+  ): void {
+    const publicNames = new Set([
+      ...CoreResult.getPublicExposeNames(CoreResult),
+      ...CoreResult.getPublicExposeNames(Website),
+    ]);
+
+    const orphans = columns.filter((col) => !publicNames.has(col));
+
+    if (orphans.length > 0) {
+      throw new Error(
+        `snapshotColumnOrder contains column(s) with no matching public @Expose name. ` +
+          `Either the name is misspelled, the @Expose decorator is missing, or @Exclude() ` +
+          `was not removed before adding to snapshotColumnOrder. ` +
+          `Orphan column(s): ${orphans.map((c) => `"${c}"`).join(', ')}`,
+      );
+    }
   }
 
   static snapshotColumnOrder = [
