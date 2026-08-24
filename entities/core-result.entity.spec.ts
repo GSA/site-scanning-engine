@@ -1,6 +1,9 @@
 import { CoreResult } from './core-result.entity';
 import { Website } from './website.entity';
 import { plainToClass, classToPlain } from 'class-transformer';
+// defaultMetadataStorage is not re-exported from the class-transformer package
+// root — the /cjs/storage deep import is the only path to it. Stable across
+// the 0.5.x line; a breaking change would be visible at build time.
 import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
 
 // ---------------------------------------------------------------------------

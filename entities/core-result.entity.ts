@@ -4,6 +4,11 @@ import {
   Expose,
   Transform,
 } from 'class-transformer';
+// defaultMetadataStorage is not re-exported from the class-transformer package
+// root — the /cjs/storage deep import is the only path to it. This has been
+// stable across the entire 0.5.x line and is the same pattern used by NestJS
+// internals. A version bump that breaks this path would be immediately visible
+// at build time.
 import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
 import {
   Column,
@@ -618,8 +623,6 @@ export class CoreResult {
    * class-transformer-decorated class.
    *
    * A field is "public" when it carries @Expose AND is NOT also @Exclude()-ed.
-   * Phase-1 fields carry both decorators, so they are excluded from this set
-   * even after @Expose is present — preserving the add-field two-phase workflow.
    */
   static getPublicExposeNames(cls: new (...args: unknown[]) => unknown): Set<string> {
     const exposed = defaultMetadataStorage.getExposedMetadatas(cls);
@@ -639,13 +642,6 @@ export class CoreResult {
    *
    * The check is intentionally one-directional:
    *   columns ⊆ publicExposeNames(CoreResult) ∪ publicExposeNames(Website)
-   *
-   * This preserves the add-field two-phase workflow:
-   * - Phase 1 fields carry @Expose + @Exclude() → absent from publicExposeNames
-   *   → absent from snapshotColumnOrder → guard never fires.
-   * - Phase 2 publishes by removing @Exclude() AND adding to snapshotColumnOrder.
-   *   If only snapshotColumnOrder is updated but @Exclude() is forgotten, the
-   *   entry won't resolve → guard fires → silent-empty-column bug is caught.
    *
    * Throws an Error listing all orphan column names when any are found.
    */

@@ -8,6 +8,26 @@ import { DatetimeService } from 'libs/datetime/src';
 import { SnapshotService } from './snapshot.service';
 import { ConfigService } from '@nestjs/config';
 
+const mockConfigServiceValue = {
+  get: jest.fn((key: string) => {
+    if (key === 'fileNameDailyLive') {
+      return 'site-scanning-live-latest';
+    }
+    if (key === 'fileNameDailyLiveFiltered') {
+      return 'site-scanning-live-filtered-latest';
+    }
+    if (key === 'fileNameDailyLiveFilteredUnique') {
+      return 'site-scanning-live-filtered-unique-latest';
+    }
+    if (key === 'fileNameDailyAll') {
+      return 'site-scanning-latest';
+    }
+    if (key === 'fileNameAccessibility') {
+      return 'weekly-snapshot-accessibility-details';
+    }
+  }),
+};
+
 describe('SnapshotService', () => {
   let service: SnapshotService;
   let module: TestingModule;
@@ -37,25 +57,7 @@ describe('SnapshotService', () => {
         },
         {
           provide: ConfigService,
-          useValue: {
-            get: jest.fn((key: string) => {
-              if (key === 'fileNameDailyLive') {
-                return 'site-scanning-live-latest';
-              }
-              if (key === 'fileNameDailyLiveFiltered') {
-                return 'site-scanning-live-filtered-latest';
-              }
-              if (key === 'fileNameDailyLiveFilteredUnique') {
-                return 'site-scanning-live-filtered-unique-latest';
-              }
-              if (key === 'fileNameDailyAll') {
-                return 'site-scanning-latest';
-              }
-              if (key === 'fileNameAccessibility') {
-                return 'weekly-snapshot-accessibility-details';
-              }
-            }),
-          },
+          useValue: mockConfigServiceValue,
         },
       ],
     }).compile();
@@ -69,6 +71,42 @@ describe('SnapshotService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  it('calls assertSnapshotColumnsExposed() on construction — guard is wired', () => {
+    // If the guard is ever unwired from the constructor this test fails,
+    // because the spy will not have been called when the service is instantiated.
+    const guardSpy = jest
+      .spyOn(CoreResult, 'assertSnapshotColumnsExposed')
+      .mockImplementation(() => undefined);
+
+    new SnapshotService(
+      mockStorageService,
+      mockWebsiteService,
+      mockDatetimeService,
+      { get: mockConfigServiceValue.get } as unknown as ConfigService,
+    );
+
+    expect(guardSpy).toHaveBeenCalledTimes(1);
+    guardSpy.mockRestore();
+  });
+
+  it('throws on construction if assertSnapshotColumnsExposed detects an orphan column', () => {
+    jest
+      .spyOn(CoreResult, 'assertSnapshotColumnsExposed')
+      .mockImplementationOnce(() => {
+        throw new Error('orphan column(s): "bad_column"');
+      });
+
+    expect(
+      () =>
+        new SnapshotService(
+          mockStorageService,
+          mockWebsiteService,
+          mockDatetimeService,
+          { get: mockConfigServiceValue.get } as unknown as ConfigService,
+        ),
+    ).toThrow(/orphan/);
   });
 
   it('should serialize the database results and save in Storage', async () => {

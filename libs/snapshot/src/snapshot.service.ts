@@ -17,7 +17,12 @@ export class SnapshotService {
     private websiteService: WebsiteService,
     private datetimeService: DatetimeService,
     private configService: ConfigService,
-  ) {}
+  ) {
+    // Fail fast if snapshotColumnOrder contains a name with no matching public
+    // @Expose on CoreResult or Website — catches typos and forgotten @Exclude()
+    // removals before any snapshot job can run.
+    CoreResult.assertSnapshotColumnsExposed();
+  }
 
   private fileNameDailyLive =
     this.configService.get<string>('fileNameDailyLive');
