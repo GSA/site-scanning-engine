@@ -80,12 +80,6 @@ describe('CoreResult', () => {
     ]);
   });
 
-  // ─── snapshotColumnOrder characterization tests ──────────────────────────
-  //
-  // These lock in the current invariants so any accidental drift is caught
-  // immediately.  They run against the unmodified entity and must stay green
-  // before and after the refactor.
-
   describe('snapshotColumnOrder', () => {
     it('contains no duplicate entries', () => {
       const order = CoreResult.snapshotColumnOrder;
@@ -99,7 +93,6 @@ describe('CoreResult', () => {
     });
 
     it('every entry resolves to a public @Expose name on CoreResult or Website', () => {
-      // This is the core invariant: snapshotColumnOrder ⊆ publicExposeNames.
       // A violation means the snapshot would silently emit an empty column.
       const allPublic = new Set([
         ...getPublicExposeNames(CoreResult),
@@ -139,10 +132,8 @@ describe('CoreResult', () => {
   describe('getColumnNames', () => {
     it('returns the class-transformer public key set for a bare CoreResult', () => {
       // getColumnNames() uses classToPlain(new CoreResult()) to derive names.
-      // Characterise the count so column additions/removals are immediately visible.
       const names = CoreResult.getColumnNames();
       expect(Array.isArray(names)).toBe(true);
-      // Current count: 99 public exposed names (excludes @Exclude()-ed fields).
       expect(names.length).toBe(99);
     });
 
@@ -168,19 +159,14 @@ describe('CoreResult', () => {
     });
   });
 
-  // ─── Phase 1 "collect before publish" asymmetry ───────────────────────────
-  //
-  // A Phase 1 field carries @Exclude() and is absent from snapshotColumnOrder.
-  // The guard must NOT trip on it — the two-phase add-field workflow depends on
-  // this asymmetry. See .agents/skills/add-field/SKILL.md.
-
-  describe('snapshotColumnOrder asymmetry (add-field Phase 1 compatibility)', () => {
+  // Phase 1 "collect before publish" workflow. We add a field, let it collect data,
+  // announce it on the mailing list, and then publish it once people have been made aware
+  // of the upcoming change. The pulishing of the field counts as Phase 2.
+  describe('snapshotColumnOrder workflow (add-field Phase 1 compatibility)', () => {
     it('an @Exclude()-ed field absent from snapshotColumnOrder is not flagged', () => {
       // Simulate the Phase 1 state: a new field has @Expose but also @Exclude().
       // Its @Expose name will NOT appear in getPublicExposeNames() because
-      // the excluded-property filter removes it.  assertSnapshotColumnsExposed()
-      // checks snapshotColumnOrder ⊆ publicExposeNames only — it never demands
-      // that every exposed-but-excluded name appear in the order list.
+      // the excluded-property filter removes it.
       //
       // Proof: derive the public names; confirm the Phase 1 field is absent;
       // confirm snapshotColumnOrder still validates cleanly.
@@ -203,7 +189,7 @@ describe('CoreResult', () => {
 
     it('removing @Exclude() without adding to snapshotColumnOrder does not break the guard', () => {
       // Once @Exclude() is removed the field becomes public, but snapshotColumnOrder
-      // still does not contain it — that is a valid (API-only) state.
+      // still does not contain it, that is a valid (API-only) state.
       // The guard checks snapshotColumnOrder ⊆ publicNames, NOT the reverse.
       // This test verifies www_same (currently exposed-but-omitted) satisfies that.
       const publicNames = new Set([
@@ -214,18 +200,12 @@ describe('CoreResult', () => {
       expect(publicNames.has('www_same')).toBe(true);
       expect(CoreResult.snapshotColumnOrder).not.toContain('www_same');
 
-      // The order list still validates cleanly.
       const orphans = CoreResult.snapshotColumnOrder.filter(
         (col) => !publicNames.has(col),
       );
       expect(orphans).toEqual([]);
     });
   });
-
-  // ─── Drift-detection tests (red until assertSnapshotColumnsExposed is added)
-  //
-  // These verify that the guard DOES catch mismatches — a typo'd column name,
-  // a renamed @Expose name, or a forgotten @Exclude() removal.
 
   describe('assertSnapshotColumnsExposed (drift guard)', () => {
     it('is defined as a static method on CoreResult', () => {
