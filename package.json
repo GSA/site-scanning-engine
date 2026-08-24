@@ -41,7 +41,10 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest e2e-spec",
     "test:unit": "jest --testPathIgnorePatterns e2e-spec",
-    "test:watch": "jest --watch --testPathIgnorePatterns e2e-spec"
+    "test:watch": "jest --watch --testPathIgnorePatterns e2e-spec",
+    "preview:e2e": "jest preview-snapshot.e2e-spec --testTimeout=120000",
+    "preview:csv": "ts-node -r tsconfig-paths/register scripts/export-snapshot.ts --live",
+    "preview:csv:hidden": "ts-node -r tsconfig-paths/register scripts/export-snapshot.ts --live --include-hidden"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1030.0",

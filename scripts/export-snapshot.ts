@@ -1,18 +1,48 @@
 #!/usr/bin/env ts-node
 
 /**
- * Standalone script to export snapshot CSV directly from PostgreSQL database.
+ * Export snapshot CSV — two modes:
  *
- * Usage:
- *   npx ts-node scripts/export-snapshot.ts [--output path/to/file.csv]
+ *   --live      Live-scan a list of domains (no Postgres required). Results are
+ *               produced entirely in-memory via the real CoreScannerService →
+ *               CoreResult mapping → website.serialized() pipeline, then written
+ *               to CSV. This is the fast "preview before publishing" path.
  *
- * Environment variables:
- *   DATABASE_HOST (default: localhost)
- *   DATABASE_PORT (default: 5432)
- *   POSTGRES_USER (required)
- *   POSTGRES_PASSWORD (required)
- *   DATABASE_NAME (default: postgres)
- *   DATABASE_SSL (default: true)
+ *               Default domains (edit LIVE_DOMAINS below to customize):
+ *                 18f.gov, gsa.gov, poolsafety.gov
+ *
+ *               Override: --domains "example.gov,other.gov"
+ *
+ *   (no flag)   DB-backed path — connect to Postgres, join website ⨝ coreResult,
+ *               export the full table. Mirrors production exactly. Requires
+ *               POSTGRES_USER and POSTGRES_PASSWORD env vars.
+ *
+ *   --include-hidden   Append @Exclude()-ed columns after the public snapshot
+ *                      columns so you can review a field before removing its
+ *                      @Exclude() and publishing it. Works in both --live and
+ *                      DB-backed modes. This replaces the old manual column-
+ *                      splice recipe that was documented in a comment block.
+ *
+ *   --output path/to/file.csv   Write to file instead of stdout.
+ *
+ * DB-backed environment variables:
+ *   DATABASE_HOST     (default: localhost)
+ *   DATABASE_PORT     (default: 5432)
+ *   POSTGRES_USER     (required in DB mode)
+ *   POSTGRES_PASSWORD (required in DB mode)
+ *   DATABASE_NAME     (default: postgres)
+ *   DATABASE_SSL      (default: true)
+ *
+ * Examples:
+ *   # Preview new field for 18f.gov + defaults before publishing (no DB needed):
+ *   npx ts-node scripts/export-snapshot.ts --live --include-hidden
+ *
+ *   # Custom domains:
+ *   npx ts-node scripts/export-snapshot.ts --live --domains "18f.gov,nasa.gov"
+ *
+ *   # Full DB export with hidden columns:
+ *   POSTGRES_USER=u POSTGRES_PASSWORD=p \
+ *   npx ts-node scripts/export-snapshot.ts --include-hidden --output out.csv
  */
 
 import 'reflect-metadata';
@@ -20,67 +50,161 @@ import { DataSource } from 'typeorm';
 import { format } from '@fast-csv/format';
 import * as fs from 'fs';
 import * as process from 'process';
+import { NestFactory } from '@nestjs/core';
+import { Module } from '@nestjs/common';
+import { LoggerModule } from 'nestjs-pino';
 import { CoreResult } from '../entities/core-result.entity';
 import { Website } from '../entities/website.entity';
 import { formatValue } from '@app/snapshot/serializers/csv-helpers';
+import { BrowserModule } from '@app/browser';
+import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
+import { CoreInputDto } from '@app/core-scanner/core.input.dto';
+import {
+  buildCoreResult,
+  buildWebsite,
+  buildColumnList,
+  serializeRow,
+} from '../libs/snapshot/test/scan-to-csv.helper';
 
-// CSV_COLUMNS mirrors the public snapshot exactly.
-//
-// To preview a column that is still @Exclude()-ed from the public API/snapshot, splice its
-// @Expose name into CSV_COLUMNS and populate it by hand from the raw entity value. E.g. for a
-// comma-joined field exposed as `my_field_list`:
-//
-//   const base = CoreResult.snapshotColumnOrder;
-//   const at = base.indexOf('some_neighbor_column');
-//   const CSV_COLUMNS = [...base.slice(0, at + 1), 'my_field_list', ...base.slice(at + 1)];
-//
-// then inside the row loop (line ~120), before formatValue() runs:
-//
-//   const raw = website.coreResult.myField;
-//   serialized.my_field_list = raw ? raw.split(',') : raw;
-//
-// Remove both once the field's @Exclude() is dropped — otherwise the column is emitted twice
-// and the value is split on top of the entity's @Transform.
-const CSV_COLUMNS = CoreResult.snapshotColumnOrder;
+// ---------------------------------------------------------------------------
+// Default domain list for --live mode. Edit this to customize.
+// ---------------------------------------------------------------------------
+const LIVE_DOMAINS = ['18f.gov', 'gsa.gov', 'poolsafety.gov'];
 
-/**
- * Parses command line arguments.
- */
-function parseArgs(): { outputPath?: string } {
+// ---------------------------------------------------------------------------
+// Argument parsing
+// ---------------------------------------------------------------------------
+function parseArgs(): {
+  outputPath?: string;
+  live: boolean;
+  includeHidden: boolean;
+  domains: string[];
+} {
   const args = process.argv.slice(2);
   let outputPath: string | undefined;
+  let live = false;
+  let includeHidden = false;
+  let domains: string[] = LIVE_DOMAINS;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--output' && i + 1 < args.length) {
-      outputPath = args[i + 1];
-      i++;
+      outputPath = args[++i];
+    } else if (args[i] === '--live') {
+      live = true;
+    } else if (args[i] === '--include-hidden') {
+      includeHidden = true;
+    } else if (args[i] === '--domains' && i + 1 < args.length) {
+      domains = args[++i].split(',').map((d) => d.trim()).filter(Boolean);
     }
   }
 
-  return { outputPath };
+  return { outputPath, live, includeHidden, domains };
 }
 
-async function main() {
-  const { outputPath } = parseArgs();
+// ---------------------------------------------------------------------------
+// CSV writing helpers
+// ---------------------------------------------------------------------------
+function openCsvStream(columns: string[], outputPath?: string) {
+  const outputStream = outputPath
+    ? fs.createWriteStream(outputPath)
+    : process.stdout;
 
-  // Validate required env vars
+  const csvStream = format({ headers: columns, rowDelimiter: '\r\n' });
+  csvStream.pipe(outputStream);
+  return csvStream;
+}
+
+async function finishCsvStream(
+  csvStream: ReturnType<typeof format>,
+  outputPath?: string,
+) {
+  csvStream.end();
+  await new Promise((resolve) => csvStream.on('finish', resolve));
+  if (outputPath) {
+    console.error(`CSV written to ${outputPath}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Live mode (no DB)
+// ---------------------------------------------------------------------------
+
+/** Minimal NestJS module that wires up CoreScannerService without Postgres. */
+@Module({
+  imports: [BrowserModule, CoreScannerModule, LoggerModule.forRoot()],
+})
+class LiveScanModule {}
+
+async function runLiveMode(
+  domains: string[],
+  columns: string[],
+  includeHidden: boolean,
+  outputPath?: string,
+) {
+  const app = await NestFactory.createApplicationContext(LiveScanModule, {
+    logger: false,
+  });
+  const scanner = app.get(CoreScannerService);
+
+  const csvStream = openCsvStream(columns, outputPath);
+
+  for (let i = 0; i < domains.length; i++) {
+    const domain = domains[i];
+    console.error(`[${i + 1}/${domains.length}] Scanning ${domain}...`);
+
+    const input: CoreInputDto = {
+      websiteId: i + 1,
+      url: domain,
+      filter: false,
+      pageviews: 0,
+      visits: 0,
+      scanId: `preview-${Date.now()}-${i}`,
+    };
+
+    let coreResult: CoreResult;
+    try {
+      const pages = await scanner.scan(input);
+      coreResult = buildCoreResult(i + 1, domain, pages);
+    } catch (err) {
+      console.error(`  Error scanning ${domain}: ${err.message}`);
+      continue;
+    }
+
+    const website = buildWebsite(i + 1, domain, coreResult);
+    const row = serializeRow(website, columns, includeHidden);
+    csvStream.write(row);
+  }
+
+  await finishCsvStream(csvStream, outputPath);
+  await app.close();
+}
+
+// ---------------------------------------------------------------------------
+// DB mode (production-faithful)
+// ---------------------------------------------------------------------------
+async function runDbMode(
+  columns: string[],
+  includeHidden: boolean,
+  outputPath?: string,
+) {
   const user = process.env.POSTGRES_USER;
   const password = process.env.POSTGRES_PASSWORD;
 
   if (!user || !password) {
     console.error(
-      'Error: POSTGRES_USER and POSTGRES_PASSWORD environment variables are required.',
+      'Error: POSTGRES_USER and POSTGRES_PASSWORD are required in DB mode.',
     );
     console.error('');
     console.error('Usage:');
     console.error('  DATABASE_HOST=localhost DATABASE_PORT=5432 \\');
     console.error('  POSTGRES_USER=user POSTGRES_PASSWORD=pass \\');
     console.error('  DATABASE_NAME=postgres \\');
-    console.error('  npx ts-node scripts/export-snapshot.ts [--output file.csv]');
+    console.error(
+      '  npx ts-node scripts/export-snapshot.ts [--include-hidden] [--output file.csv]',
+    );
     process.exit(1);
   }
 
-  // Build connection config
   const host = process.env.DATABASE_HOST || 'localhost';
   const port = parseInt(process.env.DATABASE_PORT || '5432', 10);
   const database = process.env.DATABASE_NAME || 'postgres';
@@ -115,39 +239,38 @@ async function main() {
 
     console.error(`Fetched ${websites.length} websites. Generating CSV...`);
 
-    const outputStream = outputPath
-      ? fs.createWriteStream(outputPath)
-      : process.stdout;
-
-    const csvStream = format({
-      headers: CSV_COLUMNS,
-      rowDelimiter: '\r\n',
-    });
-
-    csvStream.pipe(outputStream);
+    const csvStream = openCsvStream(columns, outputPath);
 
     for (const website of websites) {
-      const serialized = website.serialized();
-
-      const formatted = {};
-      for (const key of CSV_COLUMNS) {
-        formatted[key] = formatValue(serialized[key]);
-      }
-      csvStream.write(formatted);
+      const row = serializeRow(website, columns, includeHidden);
+      csvStream.write(row);
     }
 
-    csvStream.end();
-
-    await new Promise((resolve) => csvStream.on('finish', resolve));
-
-    if (outputPath) {
-      console.error(`CSV written to ${outputPath}`);
-    }
-
+    await finishCsvStream(csvStream, outputPath);
     await dataSource.destroy();
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Entry point
+// ---------------------------------------------------------------------------
+async function main() {
+  const { outputPath, live, includeHidden, domains } = parseArgs();
+  const columns = buildColumnList(includeHidden);
+
+  if (live) {
+    console.error(
+      `Live scan mode — domains: ${domains.join(', ')}${includeHidden ? ' [+hidden columns]' : ''}`,
+    );
+    await runLiveMode(domains, columns, includeHidden, outputPath);
+  } else {
+    console.error(
+      `DB export mode${includeHidden ? ' [+hidden columns]' : ''}`,
+    );
+    await runDbMode(columns, includeHidden, outputPath);
   }
 }
 
