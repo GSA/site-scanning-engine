@@ -55,7 +55,6 @@ import { Module } from '@nestjs/common';
 import { LoggerModule } from 'nestjs-pino';
 import { CoreResult } from '../entities/core-result.entity';
 import { Website } from '../entities/website.entity';
-import { formatValue } from '@app/snapshot/serializers/csv-helpers';
 import { BrowserModule } from '@app/browser';
 import { CoreScannerModule, CoreScannerService } from '@app/core-scanner';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
@@ -74,12 +73,14 @@ const LIVE_DOMAINS = ['18f.gov', 'gsa.gov', 'poolsafety.gov'];
 // ---------------------------------------------------------------------------
 // Argument parsing
 // ---------------------------------------------------------------------------
-function parseArgs(): {
+interface Args {
   outputPath?: string;
   live: boolean;
   includeHidden: boolean;
   domains: string[];
-} {
+}
+
+function parseArgs(): Args {
   const args = process.argv.slice(2);
   let outputPath: string | undefined;
   let live = false;
@@ -108,7 +109,6 @@ function openCsvStream(columns: string[], outputPath?: string) {
   const outputStream = outputPath
     ? fs.createWriteStream(outputPath)
     : process.stdout;
-
   const csvStream = format({ headers: columns, rowDelimiter: '\r\n' });
   csvStream.pipe(outputStream);
   return csvStream;
@@ -120,9 +120,7 @@ async function finishCsvStream(
 ) {
   csvStream.end();
   await new Promise((resolve) => csvStream.on('finish', resolve));
-  if (outputPath) {
-    console.error(`CSV written to ${outputPath}`);
-  }
+  if (outputPath) console.error(`CSV written to ${outputPath}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -145,7 +143,6 @@ async function runLiveMode(
     logger: false,
   });
   const scanner = app.get(CoreScannerService);
-
   const csvStream = openCsvStream(columns, outputPath);
 
   for (let i = 0; i < domains.length; i++) {
@@ -161,18 +158,14 @@ async function runLiveMode(
       scanId: `preview-${Date.now()}-${i}`,
     };
 
-    let coreResult: CoreResult;
     try {
       const pages = await scanner.scan(input);
-      coreResult = buildCoreResult(i + 1, domain, pages);
+      const coreResult = buildCoreResult(i + 1, domain, pages);
+      const website = buildWebsite(i + 1, domain, coreResult);
+      csvStream.write(serializeRow(website, columns, includeHidden));
     } catch (err) {
       console.error(`  Error scanning ${domain}: ${err.message}`);
-      continue;
     }
-
-    const website = buildWebsite(i + 1, domain, coreResult);
-    const row = serializeRow(website, columns, includeHidden);
-    csvStream.write(row);
   }
 
   await finishCsvStream(csvStream, outputPath);
@@ -191,17 +184,13 @@ async function runDbMode(
   const password = process.env.POSTGRES_PASSWORD;
 
   if (!user || !password) {
-    console.error(
-      'Error: POSTGRES_USER and POSTGRES_PASSWORD are required in DB mode.',
-    );
+    console.error('Error: POSTGRES_USER and POSTGRES_PASSWORD are required in DB mode.');
     console.error('');
     console.error('Usage:');
     console.error('  DATABASE_HOST=localhost DATABASE_PORT=5432 \\');
     console.error('  POSTGRES_USER=user POSTGRES_PASSWORD=pass \\');
     console.error('  DATABASE_NAME=postgres \\');
-    console.error(
-      '  npx ts-node scripts/export-snapshot.ts [--include-hidden] [--output file.csv]',
-    );
+    console.error('  npx ts-node scripts/export-snapshot.ts [--include-hidden] [--output file.csv]');
     process.exit(1);
   }
 
@@ -231,21 +220,15 @@ async function runDbMode(
       .getRepository(Website)
       .createQueryBuilder('website')
       .innerJoinAndSelect('website.coreResult', 'coreResult')
-      .orderBy({
-        'coreResult.targetUrlBaseDomain': 'ASC',
-        'website.url': 'ASC',
-      })
+      .orderBy({ 'coreResult.targetUrlBaseDomain': 'ASC', 'website.url': 'ASC' })
       .getMany();
 
     console.error(`Fetched ${websites.length} websites. Generating CSV...`);
 
     const csvStream = openCsvStream(columns, outputPath);
-
     for (const website of websites) {
-      const row = serializeRow(website, columns, includeHidden);
-      csvStream.write(row);
+      csvStream.write(serializeRow(website, columns, includeHidden));
     }
-
     await finishCsvStream(csvStream, outputPath);
     await dataSource.destroy();
   } catch (error) {
