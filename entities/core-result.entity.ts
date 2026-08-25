@@ -1,4 +1,10 @@
 import { classToPlain, Exclude, Expose, Transform } from 'class-transformer';
+// defaultMetadataStorage is not re-exported from the class-transformer package
+// root — the /cjs/storage deep import is the only path to it. This has been
+// stable across the entire 0.5.x line and is the same pattern used by NestJS
+// internals. A version bump that breaks this path would be immediately visible
+// at build time.
+import { defaultMetadataStorage } from 'class-transformer/cjs/storage';
 import {
   Column,
   CreateDateColumn,
@@ -605,6 +611,57 @@ export class CoreResult {
   static getColumnNames(): string[] {
     // return class-transformer version of column names
     return Object.keys(classToPlain(new CoreResult()));
+  }
+
+  /**
+   * Derives the set of public (non-excluded) @Expose names from a
+   * class-transformer-decorated class.
+   *
+   * A field is "public" when it carries @Expose AND is NOT also @Exclude()-ed.
+   */
+  static getPublicExposeNames(
+    cls: new (...args: unknown[]) => unknown,
+  ): Set<string> {
+    const exposed = defaultMetadataStorage.getExposedMetadatas(cls);
+    const excluded = new Set(
+      defaultMetadataStorage
+        .getExcludedMetadatas(cls)
+        .map((e) => e.propertyName),
+    );
+    return new Set(
+      exposed
+        .filter((e) => !excluded.has(e.propertyName))
+        .map((e) => e.options?.name ?? e.propertyName),
+    );
+  }
+
+  /**
+   * Validates that every entry in `columns` (defaults to `snapshotColumnOrder`)
+   * corresponds to a public @Expose name on CoreResult or Website.
+   *
+   * The check is intentionally one-directional:
+   *   columns ⊆ publicExposeNames(CoreResult) ∪ publicExposeNames(Website)
+   *
+   * Throws an Error listing all orphan column names when any are found.
+   */
+  static assertSnapshotColumnsExposed(
+    columns: string[] = CoreResult.snapshotColumnOrder,
+  ): void {
+    const publicNames = new Set([
+      ...CoreResult.getPublicExposeNames(CoreResult),
+      ...CoreResult.getPublicExposeNames(Website),
+    ]);
+
+    const orphans = columns.filter((col) => !publicNames.has(col));
+
+    if (orphans.length > 0) {
+      throw new Error(
+        `snapshotColumnOrder contains column(s) with no matching public @Expose name. ` +
+          `Either the name is misspelled, the @Expose decorator is missing, or @Exclude() ` +
+          `was not removed before adding to snapshotColumnOrder. ` +
+          `Orphan column(s): ${orphans.map((c) => `"${c}"`).join(', ')}`,
+      );
+    }
   }
 
   static snapshotColumnOrder = [
