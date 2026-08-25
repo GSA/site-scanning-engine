@@ -1,9 +1,4 @@
-import {
-  classToPlain,
-  Exclude,
-  Expose,
-  Transform,
-} from 'class-transformer';
+import { classToPlain, Exclude, Expose, Transform } from 'class-transformer';
 // defaultMetadataStorage is not re-exported from the class-transformer package
 // root — the /cjs/storage deep import is the only path to it. This has been
 // stable across the entire 0.5.x line and is the same pattern used by NestJS
@@ -624,10 +619,14 @@ export class CoreResult {
    *
    * A field is "public" when it carries @Expose AND is NOT also @Exclude()-ed.
    */
-  static getPublicExposeNames(cls: new (...args: unknown[]) => unknown): Set<string> {
+  static getPublicExposeNames(
+    cls: new (...args: unknown[]) => unknown,
+  ): Set<string> {
     const exposed = defaultMetadataStorage.getExposedMetadatas(cls);
     const excluded = new Set(
-      defaultMetadataStorage.getExcludedMetadatas(cls).map((e) => e.propertyName),
+      defaultMetadataStorage
+        .getExcludedMetadatas(cls)
+        .map((e) => e.propertyName),
     );
     return new Set(
       exposed
