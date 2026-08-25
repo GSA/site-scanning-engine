@@ -9,6 +9,15 @@ export class WebsiteApiResultDto {
   scan_date: string;
 
   /**
+   * `secondary_data_dates` is a minified JSON object with data freshness dates
+   * for DAP (Digital Analytics Program) and HTTPS certificate data.
+   * Both keys are always present; null indicates missing data.
+   *
+   * @example {"dap":"2026-05-16","https":"2026-05-21"}
+   */
+  secondary_data_dates: string;
+
+  /**
    * `target_url_domain` is the base domain (domain name + top-level domain) of the target url.
    *
    * @example 18f.gov

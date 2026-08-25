@@ -47,12 +47,10 @@ export class CoreResult {
   @Expose({ name: 'scan_date' })
   updated: string;
 
-  // Phase 1: @Exclude() keeps this hidden from API/snapshots.
-  // Phase 2 (publish, separate PR): remove @Exclude(), add 'secondary_data_dates' to
-  // snapshotColumnOrder immediately after 'scan_date', and add a Swagger DTO entry.
+  // Published field combining dap_data_date + https_data_date into minified JSON.
+  // Format: {"dap":"yyyy-mm-dd","https":"yyyy-mm-dd"} with null for missing dates.
   @Column({ type: 'date', nullable: true })
   @Expose({ name: 'secondary_data_dates' })
-  @Exclude()
   @Transform(
     ({ obj }: { obj: CoreResult }) =>
       JSON.stringify({
@@ -685,6 +683,7 @@ export class CoreResult {
     '404_test',
     'source_list',
     'scan_date',
+    'secondary_data_dates',
     'primary_scan_status',
     'accessibility_scan_status',
     'dns_scan_status',
