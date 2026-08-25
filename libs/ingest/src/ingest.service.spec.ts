@@ -85,9 +85,9 @@ const BASE_ROW_COLS = [
   'FALSE', // source_list_non_gov_mil
   'FALSE', // source_list_govt_urls
   'FALSE', // source_list_hyperlink_domains
-  '',      // filtered
-  '',      // pageviews
-  '',      // visits
+  '', // filtered
+  '', // pageviews
+  '', // visits
 ];
 
 // Produces a row with one named column set to TRUE.
@@ -97,6 +97,17 @@ function rowWithColTrue(colName: string): string {
   if (idx === -1) throw new Error(`Unknown column: ${colName}`);
   const cols = [...BASE_ROW_COLS];
   cols[idx] = 'TRUE';
+  return cols.join(',');
+}
+
+// Produces a row with multiple named columns set to TRUE.
+function rowWithColsTrue(colNames: string[]): string {
+  const cols = [...BASE_ROW_COLS];
+  for (const colName of colNames) {
+    const idx = CSV_HEADER_COLS.indexOf(colName);
+    if (idx === -1) throw new Error(`Unknown column: ${colName}`);
+    cols[idx] = 'TRUE';
+  }
   return cols.join(',');
 }
 
@@ -198,4 +209,128 @@ describe('IngestService', () => {
     expect(mockWebsiteService.deleteBefore).toHaveBeenCalledTimes(1);
   });
 
+  describe('getSourceList label mapping', () => {
+    const cases: Array<[string, string]> = [
+      ['source_list_federal_domains', 'gov'],
+      ['source_list_dap', 'dap'],
+      ['source_list_pulse', 'pulse'],
+      ['source_list_omb_idea', 'omb_idea'],
+      ['source_list_eotw', '2020_eot'],
+      ['source_list_usagov', 'usagov'],
+      ['source_list_gov_man', 'gov_man'],
+      ['source_list_uscourts', 'uscourts'],
+      ['source_list_oira', 'oira'],
+      ['source_list_other', 'other'],
+      ['source_list_mil_1', 'mil-sites1'],
+      ['source_list_mil_2', 'mil-sites2'],
+      ['source_list_dod_public', 'dod_public'],
+      ['source_list_dotmil', 'dotmil'],
+      ['source_list_final_url_websites', 'final_url_websites'],
+      ['source_list_house_117th', 'house_117th'],
+      ['source_list_senate_117th', 'senate_117th'],
+      ['source_list_gpo_fdlp', 'gpo_fdlp'],
+      ['source_list_cisa', 'cisa'],
+      ['source_list_dod_2025', 'dod_2025'],
+      ['source_list_dap_2', 'dap2'],
+      ['source_list_usagov_clicks', 'usagov_clicks'],
+      ['source_list_usagov_clicks_mil', 'usagov_clicks_mil'],
+      ['source_list_search_gov', 'searchgov'],
+      ['source_list_search_gov_mil', 'searchgov_mil'],
+      ['source_list_public_inventory', 'public_inventory'],
+      ['source_list_non_gov_mil', 'non_govmil'],
+      ['source_list_govt_urls', 'govt_urls'],
+      ['source_list_hyperlink_domains', 'hyperlink_domains'],
+    ];
+
+    it.each(cases)(
+      'column %s produces label "%s"',
+      async (csvCol, expectedLabel) => {
+        const csvString = `${CSV_HEADERS}\n${rowWithColTrue(csvCol)}`;
+
+        jest
+          .spyOn(mockWebsiteService, 'findAllWebsites')
+          .mockImplementation(() => Promise.resolve([]));
+
+        await service.writeUrls(csvString);
+
+        expect(mockWebsiteService.upsert).toHaveBeenCalledWith(
+          expect.objectContaining({ sourceList: expectedLabel }),
+        );
+      },
+    );
+
+    it('produces a comma-separated list when multiple source flags are TRUE', async () => {
+      const csvString = `${CSV_HEADERS}\n${rowWithColsTrue([
+        'source_list_federal_domains',
+        'source_list_dap',
+        'source_list_cisa',
+      ])}`;
+
+      jest
+        .spyOn(mockWebsiteService, 'findAllWebsites')
+        .mockImplementation(() => Promise.resolve([]));
+
+      await service.writeUrls(csvString);
+
+      expect(mockWebsiteService.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({ sourceList: 'gov,dap,cisa' }),
+      );
+    });
+
+    it('produces an empty string when no source flags are TRUE', async () => {
+      const csvString = `${CSV_HEADERS}\n${BASE_ROW_COLS.join(',')}`;
+
+      jest
+        .spyOn(mockWebsiteService, 'findAllWebsites')
+        .mockImplementation(() => Promise.resolve([]));
+
+      await service.writeUrls(csvString);
+
+      expect(mockWebsiteService.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({ sourceList: '' }),
+      );
+    });
+
+    it('treats TRUE case-insensitively (lowercase "true")', async () => {
+      const cols = [...BASE_ROW_COLS];
+      const idx = CSV_HEADER_COLS.indexOf('source_list_federal_domains');
+      cols[idx] = 'true';
+      const csvString = `${CSV_HEADERS}\n${cols.join(',')}`;
+
+      jest
+        .spyOn(mockWebsiteService, 'findAllWebsites')
+        .mockImplementation(() => Promise.resolve([]));
+
+      await service.writeUrls(csvString);
+
+      expect(mockWebsiteService.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({ sourceList: 'gov' }),
+      );
+    });
+  });
+
+  describe('writeUrls Promise settlement', () => {
+    it('resolves even when the CSV contains a parse error', async () => {
+      // A row with fewer columns than expected triggers a fast-csv parse error.
+      const malformedCsv = `${CSV_HEADERS}\nbad,row`;
+
+      jest
+        .spyOn(mockWebsiteService, 'findAllWebsites')
+        .mockImplementation(() => Promise.resolve([]));
+
+      // If the bug is present this will never resolve and Jest will timeout.
+      await expect(service.writeUrls(malformedCsv)).resolves.not.toThrow();
+    });
+
+    it('rejects when findAllWebsites throws, instead of hanging', async () => {
+      const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_federal_domains')}`;
+
+      jest
+        .spyOn(mockWebsiteService, 'findAllWebsites')
+        .mockImplementation(() => Promise.reject(new Error('DB down')));
+
+      // Should reject promptly — never hang indefinitely.
+      await expect(service.writeUrls(csvString)).rejects.toThrow('DB down');
+    });
+  });
 });

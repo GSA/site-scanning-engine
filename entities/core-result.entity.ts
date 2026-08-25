@@ -41,6 +41,26 @@ export class CoreResult {
   @Expose({ name: 'scan_date' })
   updated: string;
 
+  // Phase 1: @Exclude() keeps this hidden from API/snapshots.
+  // Phase 2 (publish, separate PR): remove @Exclude(), add 'secondary_data_dates' to
+  // snapshotColumnOrder immediately after 'scan_date', and add a Swagger DTO entry.
+  @Column({ type: 'date', nullable: true })
+  @Expose({ name: 'secondary_data_dates' })
+  @Exclude()
+  @Transform(
+    ({ obj }: { obj: CoreResult }) =>
+      JSON.stringify({
+        dap: obj.dapDataDate ?? null,
+        https: obj.httpsDataDate ?? null,
+      }),
+    { toPlainOnly: true },
+  )
+  dapDataDate?: string;
+
+  @Column({ type: 'date', nullable: true })
+  @Exclude()
+  httpsDataDate?: string;
+
   @OneToOne(() => Website, (website) => website.coreResult, {
     onDelete: 'CASCADE',
   })

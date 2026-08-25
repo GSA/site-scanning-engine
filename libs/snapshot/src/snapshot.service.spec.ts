@@ -234,7 +234,8 @@ describe('SnapshotService', () => {
     );
 
     // uploaded content must be valid JSON with expected shape
-    const uploadedContent = mockStorageService.upload.mock.calls[0][1] as string;
+    const uploadedContent = mockStorageService.upload.mock
+      .calls[0][1] as string;
     const parsed = JSON.parse(uploadedContent);
     expect(parsed).toEqual([
       {

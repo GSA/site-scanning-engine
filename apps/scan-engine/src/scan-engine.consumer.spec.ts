@@ -67,7 +67,9 @@ describe('ScanEngineConsumer', () => {
     const input = defaultInput;
     mockCoreJob.data = input;
     const coreResultFromPages = { id: input.websiteId } as CoreResult;
-    (mockCoreScanner.scan as any) = jest.fn().mockResolvedValue(coreResultFromPages);
+    (mockCoreScanner.scan as any) = jest
+      .fn()
+      .mockResolvedValue(coreResultFromPages);
 
     await consumer.processCore(mockCoreJob);
     expect(
@@ -100,7 +102,9 @@ describe('ScanEngineConsumer', () => {
       input.visits,
       input.url,
     );
-    expect(mockCoreResultService.createFromCoreResultPages).not.toHaveBeenCalled();
+    expect(
+      mockCoreResultService.createFromCoreResultPages,
+    ).not.toHaveBeenCalled();
   });
 
   it('should call writeFailedResult when coreScanner.scan throws a permanent SSL error', async () => {
@@ -120,7 +124,9 @@ describe('ScanEngineConsumer', () => {
       input.visits,
       input.url,
     );
-    expect(mockCoreResultService.createFromCoreResultPages).not.toHaveBeenCalled();
+    expect(
+      mockCoreResultService.createFromCoreResultPages,
+    ).not.toHaveBeenCalled();
   });
 
   it('should rethrow non-permanent errors for Bull to retry', async () => {
@@ -134,7 +140,9 @@ describe('ScanEngineConsumer', () => {
 
     await expect(consumer.processCore(mockCoreJob)).rejects.toThrow('Timeout');
     expect(mockCoreResultService.writeFailedResult).not.toHaveBeenCalled();
-    expect(mockCoreResultService.createFromCoreResultPages).not.toHaveBeenCalled();
+    expect(
+      mockCoreResultService.createFromCoreResultPages,
+    ).not.toHaveBeenCalled();
   });
 
   describe('onFailed', () => {

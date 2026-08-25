@@ -6,6 +6,43 @@ import { WebsiteService } from '@app/database/websites/websites.service';
 
 import { SubdomainRow } from './subdomain-row.interface';
 
+// [SOURCE-ADD-POINT]
+export const SOURCE_LISTS: Partial<Record<keyof SubdomainRow, string>> = {
+  sourceListFederalDomains: 'gov',
+  sourceListDap: 'dap',
+  sourceListPulse: 'pulse',
+  sourceListOmbIdea: 'omb_idea',
+  sourceListEotw: '2020_eot',
+  sourceListUsagov: 'usagov',
+  sourceListGovMan: 'gov_man',
+  sourceListUscourts: 'uscourts',
+  sourceListOira: 'oira',
+  sourceListOther: 'other',
+  sourceListMil1: 'mil-sites1',
+  sourceListMil2: 'mil-sites2',
+  sourceListDodPublic: 'dod_public',
+  sourceListDotmil: 'dotmil',
+  sourceListFinalUrlWebsites: 'final_url_websites',
+  sourceListHouse117th: 'house_117th',
+  sourceListSenate117th: 'senate_117th',
+  sourceListGpoFdlp: 'gpo_fdlp',
+  sourceListCisa: 'cisa',
+  sourceListDod2025: 'dod_2025',
+  sourceListDap2: 'dap2',
+  sourceListUsagovClicks: 'usagov_clicks',
+  sourceListUsagovClicksMil: 'usagov_clicks_mil',
+  sourceListSearchGov: 'searchgov',
+  sourceListSearchGovMil: 'searchgov_mil',
+  sourceListPublicInventory: 'public_inventory',
+  sourceListNonGovMil: 'non_govmil',
+  sourceListGovtUrls: 'govt_urls',
+  sourceListHyperlinkDomains: 'hyperlink_domains',
+} as const;
+
+const SOURCE_LIST_FIELDS = Object.keys(SOURCE_LISTS) as Array<
+  keyof typeof SOURCE_LISTS
+>;
+
 @Injectable()
 export class IngestService {
   private logger = new Logger(IngestService.name);
@@ -35,39 +72,7 @@ export class IngestService {
         'branch',
         'agency',
         'bureau',
-        'sourceListFederalDomains',
-        'sourceListDap',
-        'sourceListPulse',
-        'sourceListOmbIdea',
-        'sourceListEotw',
-        'sourceListUsagov',
-        'sourceListGovMan',
-        'sourceListUscourts',
-        'sourceListOira',
-        'sourceListOther',
-        'sourceListMil1',
-        'sourceListMil2',
-        'sourceListDodPublic',
-        'sourceListDotmil',
-        'sourceListFinalUrlWebsites',
-        'sourceListHouse117th',
-        'sourceListSenate117th',
-        'sourceListGpoFdlp',
-        'sourceListCisa',
-        'sourceListDod2025',
-        'sourceListDap2',
-        'sourceListUsagovClicks',
-        'sourceListUsagovClicksMil',
-        'sourceListSearchGov',
-        'sourceListSearchGovMil',
-        'sourceListPublicInventory',
-        'sourceListNonGovMil',
-        'sourceListGovtUrls',
-        'sourceListHyperlinkDomains',
-        // [SOURCE-ADD-POINT]
-        // Add new source list here
-        // e.g.
-        // 'sourceListNewList',
+        ...SOURCE_LIST_FIELDS,
         'filtered',
         'pageviews',
         'visits',
@@ -114,40 +119,44 @@ export class IngestService {
 
     stream.write(urls);
 
-    const end = new Promise((resolve) => {
+    const end = new Promise<void>((resolve, reject) => {
       stream.end(async () => {
-        if (!hasParsingError) {
-          try {
-            await Promise.all(writes);
-            const allWebsites = await this.websiteService.findAllWebsites();
+        if (hasParsingError) {
+          resolve();
+          return;
+        }
+
+        try {
+          await Promise.all(writes);
+          const allWebsites = await this.websiteService.findAllWebsites();
+          this.logger.log(
+            `total number of websites following ingest: ${allWebsites.length}`,
+          );
+
+          if (newestWebsiteRecord) {
+            this.logger.log(`invalid url(s) detected`);
+            const deleted = await this.websiteService.deleteBefore(
+              new Date(newestWebsiteRecord.updated),
+            );
             this.logger.log(
-              `total number of websites following ingest: ${allWebsites.length}`,
+              `finished removing ${deleted.affected} invalid url(s)`,
             );
 
-            if (newestWebsiteRecord) {
-              this.logger.log(`invalid url(s) detected`);
-              const deleted = await this.websiteService.deleteBefore(
-                new Date(newestWebsiteRecord.updated),
-              );
-              this.logger.log(
-                `finished removing ${deleted.affected} invalid url(s)`,
-              );
-
-              const allWebsitesFollowingDeletion =
-                await this.websiteService.findAllWebsites();
-              this.logger.log(
-                `total number of websites following delection of invalid url(s): ${allWebsitesFollowingDeletion.length}`,
-              );
-            }
-
-            resolve('');
-          } catch (error) {
-            const err = error as Error;
-            this.logger.error(
-              `encountered error during ingest process: ${err.message}`,
-              err.stack,
+            const allWebsitesFollowingDeletion =
+              await this.websiteService.findAllWebsites();
+            this.logger.log(
+              `total number of websites following delection of invalid url(s): ${allWebsitesFollowingDeletion.length}`,
             );
           }
+
+          resolve();
+        } catch (error) {
+          const err = error as Error;
+          this.logger.error(
+            `encountered error during ingest process: ${err.message}`,
+            err.stack,
+          );
+          reject(err);
         }
       });
     });
@@ -172,131 +181,10 @@ export class IngestService {
   }
 
   private getSourceList(row: SubdomainRow): string {
-    const sourceList = [];
-
-    if (row.sourceListFederalDomains.toLowerCase() === 'true') {
-      sourceList.push('gov');
-    }
-
-    if (row.sourceListDap.toLowerCase() === 'true') {
-      sourceList.push('dap');
-    }
-
-    if (row.sourceListPulse.toLowerCase() === 'true') {
-      sourceList.push('pulse');
-    }
-
-    if (row.sourceListOmbIdea.toLowerCase() === 'true') {
-      sourceList.push('omb_idea');
-    }
-
-    if (row.sourceListEotw.toLowerCase() === 'true') {
-      sourceList.push('2020_eot');
-    }
-
-    if (row.sourceListUsagov.toLowerCase() === 'true') {
-      sourceList.push('usagov');
-    }
-
-    if (row.sourceListGovMan.toLowerCase() === 'true') {
-      sourceList.push('gov_man');
-    }
-
-    if (row.sourceListUscourts.toLowerCase() === 'true') {
-      sourceList.push('uscourts');
-    }
-
-    if (row.sourceListOira.toLowerCase() === 'true') {
-      sourceList.push('oira');
-    }
-
-    if (row.sourceListOther.toLowerCase() === 'true') {
-      sourceList.push('other');
-    }
-
-    if (row.sourceListMil1.toLowerCase() === 'true') {
-      sourceList.push('mil-sites1');
-    }
-
-    if (row.sourceListMil2.toLowerCase() === 'true') {
-      sourceList.push('mil-sites2');
-    }
-
-    if (row.sourceListDodPublic.toLowerCase() === 'true') {
-      sourceList.push('dod_public');
-    }
-
-    if (row.sourceListDotmil.toLowerCase() === 'true') {
-      sourceList.push('dotmil');
-    }
-
-    if (row.sourceListFinalUrlWebsites.toLowerCase() === 'true') {
-      sourceList.push('final_url_websites');
-    }
-
-    if (row.sourceListHouse117th.toLowerCase() === 'true') {
-      sourceList.push('house_117th');
-    }
-
-    if (row.sourceListSenate117th.toLowerCase() === 'true') {
-      sourceList.push('senate_117th');
-    }
-
-    if (row.sourceListGpoFdlp.toLowerCase() === 'true') {
-      sourceList.push('gpo_fdlp');
-    }
-
-    if (row.sourceListCisa.toLowerCase() === 'true') {
-      sourceList.push('cisa');
-    }
-
-    if (row.sourceListDod2025.toLowerCase() === 'true') {
-      sourceList.push('dod_2025');
-    }
-
-    if (row.sourceListDap2.toLowerCase() === 'true') {
-      sourceList.push('dap2');
-    }
-
-    if (row.sourceListUsagovClicks.toLowerCase() === 'true') {
-      sourceList.push('usagov_clicks');
-    }
-
-    if (row.sourceListUsagovClicksMil.toLowerCase() === 'true') {
-      sourceList.push('usagov_clicks_mil');
-    }
-
-    if (row.sourceListSearchGov.toLowerCase() === 'true') {
-      sourceList.push('searchgov');
-    }
-
-    if (row.sourceListSearchGovMil.toLowerCase() === 'true') {
-      sourceList.push('searchgov_mil');
-    }
-
-    if (row.sourceListPublicInventory.toLowerCase() === 'true') {
-      sourceList.push('public_inventory');
-    }
-
-    if (row.sourceListNonGovMil.toLowerCase() === 'true') {
-      sourceList.push('non_govmil');
-    }
-
-    if (row.sourceListGovtUrls.toLowerCase() === 'true') {
-      sourceList.push('govt_urls');
-    }
-
-    if (row.sourceListHyperlinkDomains.toLowerCase() === 'true') {
-      sourceList.push('hyperlink_domains');
-    }
-
-    // [SOURCE-ADD-POINT]
-    // Add new source list here
-    // e.g.
-    // if (row.sourceListNewSource.toLowerCase() === 'true') {
-    //   sourceList.push('new_source');
-    // }
-
-    return sourceList.join(',');
+    return SOURCE_LIST_FIELDS.filter(
+      (field) => String(row[field] ?? '').toLowerCase() === 'true',
+    )
+      .map((field) => SOURCE_LISTS[field])
+      .join(',');
   }
 }

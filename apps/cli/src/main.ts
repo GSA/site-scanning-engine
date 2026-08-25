@@ -9,6 +9,7 @@ import { QueueController } from './queue.controller';
 import { ScanController } from './scan.controller';
 import { SnapshotController } from './snapshot.controller';
 import { SecurityDataController } from './security-data.controller';
+import { DataFreshnessController } from './data-freshness.controller';
 
 import pino from 'pino';
 import { getRootLogger } from '../../../libs/logging/src';
@@ -181,6 +182,17 @@ async function securityData() {
   await nestApp.close();
 }
 
+async function dataFreshness() {
+  const nestApp = await bootstrap();
+  const logger = createCommandLogger('data-freshness');
+  const controller = nestApp.get(DataFreshnessController);
+  logger.info('updating data freshness dates for DAP and HTTPS source files');
+
+  await controller.updateDataFreshnessDates();
+  printMemoryUsage(logger);
+  await nestApp.close();
+}
+
 async function requeueStaleScans() {
   const nestApp = await bootstrap();
   const logger = createCommandLogger('requeue-stale-scans');
@@ -303,6 +315,14 @@ async function main() {
       'security-data fetches security data from a CSV and saves it to disk',
     )
     .action(securityData);
+
+  // data-freshness
+  program
+    .command('data-freshness')
+    .description(
+      'data-freshness fetches the last-commit dates for the DAP and HTTPS source files from GitHub and bulk-updates dap_data_date and https_data_date on all core_result rows',
+    )
+    .action(dataFreshness);
 
   // requeue stale scans
   program
