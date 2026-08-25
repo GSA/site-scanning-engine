@@ -47,8 +47,17 @@ For the API path, only gate (a) applies (via `apps/api/src/website/website-seria
 
 **Failure modes:**
 - Missing from (b) → column absent from snapshots entirely
-- In (b) but excluded by (a) → column present in snapshots but always empty
+- In (b) but excluded by (a) → column present in snapshots but always empty (**caught by `CoreResult.assertSnapshotColumnsExposed()` — see below**)
 - In (a) but missing from (b) → appears in API but not snapshots
+
+**Drift guard — `CoreResult.assertSnapshotColumnsExposed()`:**
+Added in refactor/snapshot-column-order-guard. Validates that every entry in
+`snapshotColumnOrder` resolves to a non-excluded `@Expose` name on `CoreResult`
+or `Website` — catching both typos and forgotten `@Exclude()` removals. The
+check is deliberately **one-directional** (`snapshotColumnOrder ⊆ publicNames`),
+so Phase 1 fields (carrying both `@Expose` and `@Exclude()`) are never flagged
+while they are absent from `snapshotColumnOrder`. Tests live in
+`entities/core-result.entity.spec.ts` under `assertSnapshotColumnsExposed`.
 
 ### Decorator Reference
 
