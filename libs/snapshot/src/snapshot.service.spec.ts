@@ -7,24 +7,23 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { DatetimeService } from 'libs/datetime/src';
 import { SnapshotService } from './snapshot.service';
 import { ConfigService } from '@nestjs/config';
+import snapshotConfig from './config/snapshot.config';
+
+// Derive the mock from the real config factory so the two can never drift.
+// Force the production branch so the expected filenames below stay stable
+// regardless of the NODE_ENV the test suite happens to run under.
+const originalNodeEnv = process.env.NODE_ENV;
+process.env.NODE_ENV = 'production';
+const snapshotFileNames = snapshotConfig();
+process.env.NODE_ENV = originalNodeEnv;
 
 const mockConfigServiceValue = {
   get: jest.fn((key: string) => {
-    if (key === 'fileNameDailyLive') {
-      return 'site-scanning-live-latest';
+    if (!(key in snapshotFileNames)) {
+      // Fail loudly on an unknown/typo'd key instead of returning undefined.
+      throw new Error(`Unexpected config key requested in test: "${key}"`);
     }
-    if (key === 'fileNameDailyLiveFiltered') {
-      return 'site-scanning-live-filtered-latest';
-    }
-    if (key === 'fileNameDailyLiveFilteredUnique') {
-      return 'site-scanning-live-filtered-unique-latest';
-    }
-    if (key === 'fileNameDailyAll') {
-      return 'site-scanning-latest';
-    }
-    if (key === 'fileNameAccessibility') {
-      return 'weekly-snapshot-accessibility-details';
-    }
+    return snapshotFileNames[key as keyof typeof snapshotFileNames];
   }),
 };
 
