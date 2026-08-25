@@ -84,7 +84,7 @@ describe('SnapshotService', () => {
       mockStorageService,
       mockWebsiteService,
       mockDatetimeService,
-      { get: mockConfigServiceValue.get } as unknown as ConfigService,
+      mockConfigServiceValue as unknown as ConfigService,
     );
 
     expect(guardSpy).toHaveBeenCalledTimes(1);
@@ -104,7 +104,7 @@ describe('SnapshotService', () => {
           mockStorageService,
           mockWebsiteService,
           mockDatetimeService,
-          { get: mockConfigServiceValue.get } as unknown as ConfigService,
+          mockConfigServiceValue as unknown as ConfigService,
         ),
     ).toThrow(/orphan/);
   });
