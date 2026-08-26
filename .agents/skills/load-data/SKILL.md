@@ -53,7 +53,7 @@ npx nest start cli -- scan-site --url 18f.gov
 - Debugging specific site issues
 - Validating scan configuration
 
-**Note:** Results are printed to console but not persisted to database.
+**Note:** Results ARE persisted to the database. The URL must already exist in the `website` table (run ingest first).
 
 ### Create and Export Snapshot
 
@@ -82,3 +82,62 @@ npm run snapshot
 - Database stores only **most recent scan** per website (no historical data)
 - Old scan results are overwritten with new ones
 - Historical data is preserved via snapshots in S3
+
+## Previewing a New Field Before Publishing
+
+When a new scan field is added with `@Exclude()` (Phase 1 / hidden), use the
+preview tools below to review how it will look in the snapshot before dropping
+the `@Exclude()` in Phase 2.
+
+### Quick preview — no Postgres required
+
+Live-scan the default domains (18f.gov, gsa.gov, poolsafety.gov) and write a
+CSV you can open locally:
+
+```bash
+# Public columns only (matches production snapshot)
+npm run preview:csv -- --output tmp/preview.csv
+
+# Include hidden/@Exclude()-ed columns (e.g. secondary_data_dates)
+npm run preview:csv:hidden -- --output tmp/preview-hidden.csv
+
+# Custom domain list
+npm run preview:csv:hidden -- --domains "18f.gov,nasa.gov" --output tmp/preview.csv
+```
+
+Output goes to stdout if `--output` is omitted. The `tmp/` directory is
+gitignored.
+
+### CI gating — live e2e spec
+
+Runs the full scan→map→serialize chain against the default domains and asserts
+structural correctness (headers, key columns populated, hidden column
+visibility):
+
+```bash
+npm run preview:e2e
+```
+
+This is also run via `npm run test:e2e` as part of the normal e2e suite.
+
+### DB-backed export (production-faithful)
+
+After running `ingest` + `scan-site` against local Postgres:
+
+```bash
+DATABASE_SSL=false POSTGRES_USER=postgres POSTGRES_PASSWORD=replace_me \
+  npx ts-node -r tsconfig-paths/register scripts/export-snapshot.ts \
+  --include-hidden --output tmp/preview-db.csv
+```
+
+### What `--include-hidden` does
+
+Appends all `@Exclude()`-ed `@Expose()`-named columns after the public
+`snapshotColumnOrder` so the public column order is never disturbed.
+Hidden column names are maintained in `HIDDEN_EXPOSE_NAMES` in
+`libs/snapshot/test/scan-to-csv.helper.ts`.
+
+When a field is published (its `@Exclude()` is removed and it is added to
+`snapshotColumnOrder`), remove it from `HIDDEN_EXPOSE_NAMES` — the unit test
+`scan-to-csv.helper.spec.ts` will fail if a published column remains in that
+list.

@@ -73,6 +73,7 @@ export class BrowserService implements OnModuleDestroy {
 
   async onModuleDestroy() {
     this.logger.log('Draining and clearing Puppeteer pool...');
-    this.puppeteerPool.drain().then(() => this.puppeteerPool.clear());
+    await this.puppeteerPool.drain();
+    await this.puppeteerPool.clear();
   }
 }
