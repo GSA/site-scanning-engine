@@ -241,8 +241,8 @@ describe('CoreResult', () => {
 
       const plain = classToPlain(result, { excludeExtraneousValues: true });
 
-      // Field is @Exclude()-ed in Phase 1 — must NOT appear in output
-      expect(plain).not.toHaveProperty('secondary_data_dates');
+      expect(plain).toHaveProperty('secondary_data_dates');
+      expect(plain.secondary_data_dates).toEqual('{"dap":"2026-05-16","https":"2026-05-21"}');
     });
 
     it('serializes with null dap date when dapDataDate is absent', () => {
@@ -251,8 +251,8 @@ describe('CoreResult', () => {
 
       const plain = classToPlain(result, { excludeExtraneousValues: true });
 
-      // Field is @Exclude()-ed in Phase 1 — must NOT appear in output
-      expect(plain).not.toHaveProperty('secondary_data_dates');
+      expect(plain).toHaveProperty('secondary_data_dates');
+      expect(plain.secondary_data_dates).toEqual('{"dap":null,"https":"2026-05-21"}');
     });
 
     it('serializes with both dates null when neither is set', () => {
@@ -260,60 +260,18 @@ describe('CoreResult', () => {
 
       const plain = classToPlain(result, { excludeExtraneousValues: true });
 
-      // Field is @Exclude()-ed in Phase 1 — must NOT appear in output
-      expect(plain).not.toHaveProperty('secondary_data_dates');
+      expect(plain).toHaveProperty('secondary_data_dates');
+      expect(plain.secondary_data_dates).toEqual('{"dap":null,"https":null}');
     });
 
-    it('transform emits correct JSON when both dates are present (Phase 2 readiness)', () => {
-      // The @Transform body cannot be invoked via classToPlain while @Exclude() is present
-      // (Phase 1). Call the transform function directly so the implementation is exercised
-      // independently of the exclusion flag — this test will auto-validate once @Exclude()
-      // is removed in Phase 2.
-      const result = new CoreResult();
-      result.dapDataDate = '2026-05-16';
-      result.httpsDataDate = '2026-05-21';
-
-      const value = JSON.stringify({
-        dap: result.dapDataDate ?? null,
-        https: result.httpsDataDate ?? null,
-      });
-
-      expect(value).toEqual('{"dap":"2026-05-16","https":"2026-05-21"}');
-    });
-
-    it('transform emits null dap when dapDataDate is absent (Phase 2 readiness)', () => {
-      const result = new CoreResult();
-      result.httpsDataDate = '2026-05-21';
-
-      const value = JSON.stringify({
-        dap: result.dapDataDate ?? null,
-        https: result.httpsDataDate ?? null,
-      });
-
-      expect(value).toEqual('{"dap":null,"https":"2026-05-21"}');
-    });
-
-    it('transform emits null https when only dapDataDate is set (Phase 2 readiness)', () => {
+    it('serializes with null https date when httpsDataDate is absent', () => {
       const result = new CoreResult();
       result.dapDataDate = '2026-05-16';
 
-      const value = JSON.stringify({
-        dap: result.dapDataDate ?? null,
-        https: result.httpsDataDate ?? null,
-      });
+      const plain = classToPlain(result, { excludeExtraneousValues: true });
 
-      expect(value).toEqual('{"dap":"2026-05-16","https":null}');
-    });
-
-    it('transform emits both null when neither date is set (Phase 2 readiness)', () => {
-      const result = new CoreResult();
-
-      const value = JSON.stringify({
-        dap: result.dapDataDate ?? null,
-        https: result.httpsDataDate ?? null,
-      });
-
-      expect(value).toEqual('{"dap":null,"https":null}');
+      expect(plain).toHaveProperty('secondary_data_dates');
+      expect(plain.secondary_data_dates).toEqual('{"dap":"2026-05-16","https":null}');
     });
   });
 });

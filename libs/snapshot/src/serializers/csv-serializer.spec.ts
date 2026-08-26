@@ -57,17 +57,17 @@ describe('CsvSerializer', () => {
     const lines = result.split(/\r?\n/);
     const dataLine = lines[1];
 
-    // It will be the only CSV field with data in it, so
-    // we can delete all other fields by removing excess commas
-    // and the opening and closing " quotes for our target field.
-    const parsedData = dataLine
-      .replace(/(^,*\"|\",*$)/g, '')
+    // Split the CSV line correctly respecting double-quoted fields
+    const fields = dataLine.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+    const dapParametersIndex = CoreResult.snapshotColumnOrder.indexOf('dap_parameters');
+    const dapField = fields[dapParametersIndex];
 
-      // Unescape double-double-quotes ;) ("") so that the
-      // result is valid JSON.
-      .replace(/\"\"/g, '"');
+    // Remove wrapping quotes and unescape double-double-quotes
+    const parsedData = dapField
+      .replace(/^"(.*)"$/, '$1')
+      .replace(/""/g, '"');
 
-    // Now deserialize the JSON back to and object
+    // Now deserialize the JSON back to an object
     const deserializedData = JSON.parse(parsedData);
 
     // .. and ensure the value we passed it exists.
