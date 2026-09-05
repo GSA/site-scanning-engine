@@ -47,6 +47,13 @@ export const isPermanentFailure = (status: AnyFailureStatus): boolean =>
   PERMANENT_FAILURE_STATUSES.has(status);
 
 /**
+ * The message the browser service rejects with when a page exceeds the
+ * per-page processing budget. Shared with BrowserService so the producer and
+ * the classifier cannot drift apart.
+ */
+export const PROCESSING_TIMEOUT_MESSAGE = 'Processing timed out';
+
+/**
  * Classifies a browser (Puppeteer/Chrome) error into a ScanStatus.
  *
  * @param err - The error thrown during scanning.
@@ -72,6 +79,8 @@ export const parseBrowserError = (
 
   if (
     (err.name && err.name === 'TimeoutError') ||
+    err.message === PROCESSING_TIMEOUT_MESSAGE ||
+    String(err) === PROCESSING_TIMEOUT_MESSAGE ||
     (err.message &&
       (err.message.startsWith('net::ERR_CONNECTION_TIMED_OUT') ||
         err.message.startsWith('connect ETIMEDOUT') ||
@@ -273,14 +282,6 @@ export const parseBrowserError = (
         `Aborted: ${err.message}`,
       );
       return ScanStatus.Aborted;
-    }
-
-    if (err.toString() === 'Processing timed out') {
-      warn(
-        { timeoutError: true, errorReturn: ScanStatus.Timeout },
-        `Timeout: ${err.message}`,
-      );
-      return ScanStatus.Timeout;
     }
   }
 
