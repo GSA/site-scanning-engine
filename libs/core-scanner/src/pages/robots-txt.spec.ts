@@ -61,4 +61,31 @@ describe('robots-txt scanner', () => {
       },
     });
   });
+
+  it('should record a not-live page when the navigation response is null', async () => {
+    const input: CoreInputDto = {
+      websiteId: 1,
+      url: '18f.gov',
+      filter: false,
+      pageviews: 1,
+      visits: 1,
+      scanId: '123',
+    };
+
+    mockPage.goto.mockResolvedValue(null);
+
+    const scanner = createRobotsTxtScanner(mockLogger, input);
+    const result = await scanner(mockPage);
+
+    expect(result).toEqual({
+      robotsTxtScan: {
+        robotsTxtFinalUrl: finalUrl,
+        robotsTxtFinalUrlLive: false,
+        robotsTxtTargetUrlRedirects: false,
+        robotsTxtFinalUrlMimeType: 'none-specified',
+        robotsTxtStatusCode: null,
+        robotsTxtDetected: false,
+      },
+    });
+  });
 });
