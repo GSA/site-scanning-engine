@@ -1,7 +1,12 @@
 import { Logger } from 'pino';
 import { HTTPResponse, Page } from 'puppeteer';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
-import { getHttpsUrl, createRequestHandlers } from '../util';
+import {
+  getHttpsUrl,
+  createRequestHandlers,
+  getFinalUrl,
+  getStatusCode,
+} from '../util';
 import { WwwScan } from 'entities/scan-data.entity';
 
 export const createWwwScanner = (logger: Logger, input: CoreInputDto) => {
@@ -24,9 +29,9 @@ const buildWwwResult = async (
   response: HTTPResponse,
   logger: Logger,
 ): Promise<WwwScan> => {
-  let wwwFinalUrl = response.url();
+  let wwwFinalUrl = getFinalUrl(response, page.url());
 
-  const wwwStatusCode = response.status();
+  const wwwStatusCode = getStatusCode(response);
   const wwwTitle = await findPageTitleText(page);
 
   logger.info(`Final URL for www is ${wwwFinalUrl}`);
