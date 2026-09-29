@@ -84,6 +84,24 @@ environment. Instead, the services listed under `services:` in
 etc.) must be created in the space -- with `cf create-service` and
 `cf create-user-provided-service` -- before the application can be deployed.
 
+The message queue must be created with an explicit engine and version.
+Without them, the broker defaults to Redis 7.1 rather than Valkey 8.2, the
+engine this project targets:
+
+```sh
+cf create-service aws-elasticache-redis redis-3node scanner-message-queue \
+  -c '{"engine": "valkey", "engine_version": "8.2"}'
+```
+
+The version must be a quoted string. Note the parameter key is
+`engine_version` (snake_case) -- the [cloud.gov ElastiCache
+docs](https://docs.cloud.gov/platform/services/aws-elasticache/#examples-of-optional-parameters)
+show `engineVersion` (camelCase), but the deployed
+[`aws-broker`](https://github.com/cloud-gov/aws-broker/blob/main/services/redis/broker.go)
+only recognizes `engine_version`; the camelCase key is silently ignored and
+the plan's default version (7.1) is used instead, which fails outright for
+the `valkey` engine since it has no 7.1 release.
+
 For the API key service, if there is no value for the `API_KEY`
 user-provided service, supply one when creating it. Provide the value
 previously discussed (or slap the keyboard a few times).
