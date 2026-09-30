@@ -41,7 +41,7 @@ Development Requirements:
 
 - `git`
 - `nodejs`
-- `nvm` (see [.nvmrc](./.nvmrc) for current `node` version.
+- `nvm` (see [.nvmrc](./.nvmrc) for current `node` version).
 - `docker`
 - `docker-compose`
 - Cloud Foundry CLI (aka `cf`)
@@ -76,7 +76,7 @@ Note that this file is not version-controlled and should only be used for
 local development.
 
 Before starting Docker, create a `.env` file in the project root and add
-the following values replacing `<add_a_key_here>` with a local passwords
+the following values replacing `<add_a_key_here>` with local passwords
 that are at least 8 characters long.
 
 **Note: this is only for local development and has no impact on the Cloud.gov configuration**
@@ -152,7 +152,7 @@ to Javascript, doing any minification and optimization in the
 process. All of the app artifacts end up in the `/dist` directory.
 This is ultimately what gets pushed to Cloud Foundry.
 
-Note that you can also build apps seperately:
+Note that you can also build apps separately:
 
 ```bash
 npm run build:api

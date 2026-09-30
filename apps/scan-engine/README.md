@@ -4,7 +4,7 @@ This directory contains the source and documentation for the
 `Scanner` component of the Site-Scanning application.
 
 Also see the `Core Scanner` component:
-[Core-Scaner](../../libs/core-scanner)
+[Core-Scanner](../../libs/core-scanner)
 .
 
 ## Scan Engine

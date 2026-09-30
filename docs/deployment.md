@@ -43,7 +43,7 @@ After -- and only after -- a `.env` file is provided, the
 services:
 
 ```bash
-( cd "$(git rev-parse --show-toplevel" \
+( cd "$(git rev-parse --show-toplevel)" \
   && docker-compose up \
     --build \
     --detach
@@ -70,7 +70,7 @@ that we can reference the image when running it:
 docker run \
   --rm \
   --interactive \
-  --tty
+  --tty \
   scan-engine
 ```
 
