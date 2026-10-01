@@ -20,9 +20,7 @@ import { ScanStatus } from 'entities/scan-status';
  * @param primaryResultOverrides Replaces whole sub-scans in primary.result,
  *   e.g. `{ dapScan: null }` to simulate a sub-scan that threw.
  */
-function buildCompletedPages(
-  primaryResultOverrides: Record<string, any> = {},
-) {
+function buildCompletedPages(primaryResultOverrides: Record<string, any> = {}) {
   const completed = ScanStatus.Completed as const;
   return {
     base: { targetUrlBaseDomain: 'example.gov' },
@@ -256,8 +254,8 @@ describe('CoreResultService', () => {
     const websiteUrl = 'https://18f.gsa.gov';
 
     const pages = buildCompletedPages();
-    // Carried over from this test's original all-null fixture; it is the only
-    // input that reaches the empty finalSiteName fallback.
+    // Null finalUrlWebsite exercises the empty finalSiteName fallback
+    // (core-result.service.ts:174).
     pages.primary.result.urlScan.finalUrlWebsite = null;
     const logger = mock<Logger>();
 
@@ -273,7 +271,7 @@ describe('CoreResultService', () => {
     expect(mockRepository.insert).toHaveBeenCalled();
     expect(mockWebsiteService.setFilter).not.toHaveBeenCalled();
     expect(mockRepository.insert).toHaveBeenCalledWith(
-      expect.objectContaining({ filter: false }),
+      expect.objectContaining({ filter: false, finalSiteName: '' }),
     );
   });
 
@@ -393,7 +391,6 @@ describe('CoreResultService', () => {
   // the entire consumer job.
 
   describe('updatePrimaryScanResults — null sub-scan guards', () => {
-
     async function runWithNullSubScan(subScanKey: string) {
       const pages = buildCompletedPages({ [subScanKey]: null });
       const logger = mock<Logger>();
