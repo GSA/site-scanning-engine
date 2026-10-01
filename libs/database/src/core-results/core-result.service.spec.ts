@@ -9,6 +9,190 @@ import { WebsiteService } from '@app/database/websites/websites.service';
 import { Logger } from '@nestjs/common';
 import { ScanStatus } from 'entities/scan-status';
 
+/**
+ * Builds a completed CoreResultPages fixture where every sub-scan is present
+ * and valid. Returns a fresh object per call, so tests may mutate it.
+ *
+ * The fixture mirrors the full CoreResultPages shape, so any change to a
+ * scan's result type must be reflected here (brittleness first flagged by
+ * LC 08/19/2024). Keeping one builder means that update happens once.
+ *
+ * @param primaryResultOverrides Replaces whole sub-scans in primary.result,
+ *   e.g. `{ dapScan: null }` to simulate a sub-scan that threw.
+ */
+function buildCompletedPages(
+  primaryResultOverrides: Record<string, any> = {},
+) {
+  const completed = ScanStatus.Completed as const;
+  return {
+    base: { targetUrlBaseDomain: 'example.gov' },
+    notFound: {
+      status: completed,
+      result: { notFoundScan: { targetUrl404Test: false } },
+    },
+    primary: {
+      status: completed,
+      result: {
+        urlScan: {
+          targetUrlRedirects: false,
+          finalUrl: 'https://example.gov/',
+          finalUrlIsLive: true,
+          finalUrlBaseDomain: 'example.gov',
+          finalUrlWebsite: 'example.gov',
+          finalUrlTopLevelDomain: 'gov',
+          finalUrlMIMEType: 'text/html',
+          finalUrlSameDomain: true,
+          finalUrlStatusCode: 200,
+          finalUrlSameWebsite: true,
+          finalUrlPageHash: 'abc123',
+        },
+        dapScan: {
+          dapDetected: false,
+          dapParameters: null,
+          dapVersion: '',
+          gaTagIds: '',
+        },
+        seoScan: {
+          ogTitleFinalUrl: null,
+          ogDescriptionFinalUrl: null,
+          ogArticlePublishedFinalUrl: null,
+          ogArticleModifiedFinalUrl: null,
+          mainElementFinalUrl: null,
+          canonicalLink: null,
+          pageTitle: null,
+          metaDescriptionContent: null,
+          metaKeywordsContent: null,
+          ogImageContent: null,
+          ogTypeContent: null,
+          ogUrlContent: null,
+          htmlLangContent: null,
+          hrefLangContent: null,
+          dcDateContent: null,
+          dcDateCreatedContent: null,
+          dctermsCreatedContent: null,
+          revisedContent: null,
+          lastModifiedContent: null,
+          dateContent: null,
+        },
+        thirdPartyScan: {
+          thirdPartyServiceDomains: null,
+          thirdPartyServiceCount: 0,
+          thirdPartyServiceUrls: null,
+        },
+        cookieScan: { domains: '' },
+        uswdsScan: {
+          usaClasses: 0,
+          usaElementsUsed: '',
+          usaClassesUsed: '',
+          uswdsString: 0,
+          uswdsInlineCss: 0,
+          uswdsUsFlag: 0,
+          uswdsStringInCss: 0,
+          uswdsUsFlagInCss: 0,
+          uswdsPublicSansFont: 0,
+          uswdsSemanticVersion: null,
+          uswdsVersion: 0,
+          uswdsCount: 0,
+          heresHowYouKnowBanner: false,
+        },
+        loginScan: { loginDetected: null, loginProvider: null },
+        cmsScan: { cms: null },
+        requiredLinksScan: {
+          hyperlinkDomains: null,
+          requiredLinksUrl: null,
+          requiredLinksText: null,
+        },
+        feedbackLinksScan: { feedbackLinksText: null },
+        searchScan: { searchDetected: false, searchgov: false },
+        mobileScan: { viewportMetaTag: true },
+        toolingScan: { tooling: null },
+        ...primaryResultOverrides,
+      },
+    },
+    robotsTxt: {
+      status: completed,
+      result: {
+        robotsTxtScan: {
+          robotsTxtFinalUrl: null,
+          robotsTxtStatusCode: null,
+          robotsTxtFinalUrlLive: null,
+          robotsTxtDetected: null,
+          robotsTxtFinalUrlMimeType: null,
+          robotsTxtTargetUrlRedirects: null,
+          robotsTxtFinalUrlSize: null,
+          robotsTxtCrawlDelay: null,
+          robotsTxtSitemapLocations: null,
+        },
+      },
+    },
+    sitemapXml: {
+      status: completed,
+      result: {
+        sitemapXmlScan: {
+          sitemapXmlDetected: null,
+          sitemapXmlStatusCode: null,
+          sitemapXmlFinalUrl: null,
+          sitemapXmlFinalUrlLive: null,
+          sitemapTargetUrlRedirects: null,
+          sitemapXmlFinalUrlFilesize: null,
+          sitemapXmlFinalUrlMimeType: null,
+          sitemapXmlLastMod: null,
+          sitemapXmlPageHash: null,
+          sitemapXmlCount: null,
+          sitemapXmlPdfCount: null,
+        },
+      },
+    },
+    dns: {
+      status: completed,
+      result: { dnsScan: { ipv6: false, dnsHostname: null } },
+    },
+    accessibility: {
+      status: completed,
+      result: {
+        accessibilityScan: {
+          accessibilityResults: '',
+          accessibilityResultsList: '',
+        },
+      },
+    },
+    performance: {
+      status: completed,
+      result: {
+        performanceScan: {
+          largestContentfulPaint: null,
+          cumulativeLayoutShift: null,
+        },
+      },
+    },
+    security: {
+      status: completed,
+      result: { securityScan: { httpsEnforced: null, hsts: null } },
+    },
+    clientRedirect: {
+      status: completed,
+      result: {
+        clientRedirectScan: {
+          hasClientRedirect: null,
+          usesJsRedirect: null,
+          usesMetaRefresh: null,
+        },
+      },
+    },
+    www: {
+      status: completed,
+      result: {
+        wwwScan: {
+          wwwFinalUrl: null,
+          wwwStatusCode: null,
+          wwwTitle: null,
+          wwwSame: null,
+        },
+      },
+    },
+  };
+}
+
 describe('CoreResultService', () => {
   let service: CoreResultService;
   let mockRepository: any;
@@ -69,212 +253,12 @@ describe('CoreResultService', () => {
 
   it('should create a CoreResult from CoreResultPages', async () => {
     const websiteId = 1;
-    const scanStatus: ScanStatus = ScanStatus['Completed'];
     const websiteUrl = 'https://18f.gsa.gov';
 
-    // Fixme: This test is very brittle. Any changes to any scan will basically
-    //        cause this mock object to type mismatch. If our test is only looking
-    //        for a single `.insert()` call, then why does the mock object need to
-    //        be so precise? - LC 08/19/2024
-    const pages = {
-      base: {
-        targetUrlBaseDomain: 'df.gov',
-      },
-      notFound: {
-        status: scanStatus,
-        result: {
-          notFoundScan: {
-            targetUrl404Test: false,
-          },
-        },
-      },
-      primary: {
-        status: scanStatus,
-        result: {
-          urlScan: {
-            targetUrlRedirects: null,
-            finalUrl: null,
-            finalUrlIsLive: null,
-            finalUrlBaseDomain: null,
-            finalUrlWebsite: null,
-            finalUrlTopLevelDomain: null,
-            finalUrlMIMEType: null,
-            finalUrlSameDomain: null,
-            finalUrlStatusCode: null,
-            finalUrlSameWebsite: null,
-            finalUrlPageHash: null,
-          },
-          dapScan: {
-            dapDetected: null,
-            dapParameters: null,
-            dapVersion: '',
-            gaTagIds: '',
-          },
-          seoScan: {
-            ogTitleFinalUrl: null,
-            ogDescriptionFinalUrl: null,
-            ogArticlePublishedFinalUrl: null,
-            ogArticleModifiedFinalUrl: null,
-            mainElementFinalUrl: null,
-            canonicalLink: null,
-            pageTitle: null,
-            metaDescriptionContent: null,
-            metaKeywordsContent: null,
-            ogImageContent: null,
-            ogTypeContent: null,
-            ogUrlContent: null,
-            htmlLangContent: null,
-            hrefLangContent: null,
-            dcDateContent: null,
-            dcDateCreatedContent: null,
-            dctermsCreatedContent: null,
-            revisedContent: null,
-            lastModifiedContent: null,
-            dateContent: null,
-          },
-          thirdPartyScan: {
-            thirdPartyServiceDomains: null,
-            thirdPartyServiceCount: null,
-            cookieDomains: null,
-            thirdPartyServiceUrls: null,
-          },
-          cookieScan: {
-            domains: '',
-          },
-          uswdsScan: {
-            usaClasses: null,
-            usaElementsUsed: null,
-            usaClassesUsed: null,
-            uswdsString: null,
-            uswdsInlineCss: null,
-            uswdsUsFlag: null,
-            uswdsStringInCss: null,
-            uswdsUsFlagInCss: null,
-            uswdsPublicSansFont: null,
-            uswdsSemanticVersion: null,
-            uswdsVersion: null,
-            uswdsCount: null,
-            heresHowYouKnowBanner: null,
-          },
-          loginScan: {
-            loginDetected: null,
-            loginProvider: null,
-          },
-          cmsScan: {
-            cms: null,
-          },
-          requiredLinksScan: {
-            hyperlinkDomains: null,
-            requiredLinksUrl: null,
-            requiredLinksText: null,
-          },
-          feedbackLinksScan: {
-            feedbackLinksText: null,
-          },
-          searchScan: {
-            searchDetected: null,
-            searchgov: null,
-          },
-          mobileScan: {
-            viewportMetaTag: false,
-          },
-          toolingScan: {
-            tooling: null,
-          },
-        },
-      },
-      robotsTxt: {
-        status: scanStatus,
-        result: {
-          robotsTxtScan: {
-            robotsTxtFinalUrl: null,
-            robotsTxtStatusCode: null,
-            robotsTxtFinalUrlLive: null,
-            robotsTxtDetected: null,
-            robotsTxtFinalUrlMimeType: null,
-            robotsTxtTargetUrlRedirects: null,
-            robotsTxtFinalUrlSize: null,
-            robotsTxtCrawlDelay: null,
-            robotsTxtSitemapLocations: null,
-          },
-        },
-      },
-      sitemapXml: {
-        status: scanStatus,
-        result: {
-          sitemapXmlScan: {
-            sitemapXmlDetected: null,
-            sitemapXmlStatusCode: null,
-            sitemapXmlFinalUrl: null,
-            sitemapXmlFinalUrlLive: null,
-            sitemapTargetUrlRedirects: null,
-            sitemapXmlFinalUrlFilesize: null,
-            sitemapXmlFinalUrlMimeType: null,
-            sitemapXmlLastMod: null,
-            sitemapXmlPageHash: null,
-            sitemapXmlCount: null,
-            sitemapXmlPdfCount: null,
-          },
-        },
-      },
-      dns: {
-        status: scanStatus,
-        result: {
-          dnsScan: {
-            ipv6: true,
-            dnsHostname: null,
-          },
-        },
-      },
-      accessibility: {
-        status: scanStatus,
-        result: {
-          accessibilityScan: {
-            accessibilityResults: '',
-            accessibilityResultsList: '',
-          },
-        },
-      },
-      performance: {
-        status: scanStatus,
-        result: {
-          performanceScan: {
-            largestContentfulPaint: null,
-            cumulativeLayoutShift: null,
-          },
-        },
-      },
-      security: {
-        status: scanStatus,
-        result: {
-          securityScan: {
-            httpsEnforced: null,
-            hsts: null,
-          },
-        },
-      },
-      clientRedirect: {
-        status: scanStatus,
-        result: {
-          clientRedirectScan: {
-            hasClientRedirect: null,
-            usesJsRedirect: null,
-            usesMetaRefresh: null,
-          },
-        },
-      },
-      www: {
-        status: scanStatus,
-        result: {
-          wwwScan: {
-            wwwFinalUrl: null,
-            wwwStatusCode: null,
-            wwwTitle: null,
-            wwwSame: null,
-          },
-        },
-      },
-    };
+    const pages = buildCompletedPages();
+    // Carried over from this test's original all-null fixture; it is the only
+    // input that reaches the empty finalSiteName fallback.
+    pages.primary.result.urlScan.finalUrlWebsite = null;
     const logger = mock<Logger>();
 
     await service.createFromCoreResultPages(
@@ -295,182 +279,10 @@ describe('CoreResultService', () => {
 
   it('should call setFilter when finalUrlMIMEType is a filtered type', async () => {
     const websiteId = 1;
-    const scanStatus: ScanStatus = ScanStatus['Completed'];
     const websiteUrl = 'https://example.gov';
 
-    const pages = {
-      base: {
-        targetUrlBaseDomain: 'example.gov',
-      },
-      notFound: {
-        status: scanStatus,
-        result: {
-          notFoundScan: { targetUrl404Test: false },
-        },
-      },
-      primary: {
-        status: scanStatus,
-        result: {
-          urlScan: {
-            targetUrlRedirects: null,
-            finalUrl: null,
-            finalUrlIsLive: null,
-            finalUrlBaseDomain: null,
-            finalUrlWebsite: null,
-            finalUrlTopLevelDomain: null,
-            finalUrlMIMEType: 'application/json',
-            finalUrlSameDomain: null,
-            finalUrlStatusCode: null,
-            finalUrlSameWebsite: null,
-            finalUrlPageHash: null,
-          },
-          dapScan: {
-            dapDetected: null,
-            dapParameters: null,
-            dapVersion: '',
-            gaTagIds: '',
-          },
-          seoScan: {
-            ogTitleFinalUrl: null,
-            ogDescriptionFinalUrl: null,
-            ogArticlePublishedFinalUrl: null,
-            ogArticleModifiedFinalUrl: null,
-            mainElementFinalUrl: null,
-            canonicalLink: null,
-            pageTitle: null,
-            metaDescriptionContent: null,
-            metaKeywordsContent: null,
-            ogImageContent: null,
-            ogTypeContent: null,
-            ogUrlContent: null,
-            htmlLangContent: null,
-            hrefLangContent: null,
-            dcDateContent: null,
-            dcDateCreatedContent: null,
-            dctermsCreatedContent: null,
-            revisedContent: null,
-            lastModifiedContent: null,
-            dateContent: null,
-          },
-          thirdPartyScan: {
-            thirdPartyServiceDomains: null,
-            thirdPartyServiceCount: null,
-            cookieDomains: null,
-            thirdPartyServiceUrls: null,
-          },
-          cookieScan: { domains: '' },
-          uswdsScan: {
-            usaClasses: null,
-            usaElementsUsed: null,
-            usaClassesUsed: null,
-            uswdsString: null,
-            uswdsInlineCss: null,
-            uswdsUsFlag: null,
-            uswdsStringInCss: null,
-            uswdsUsFlagInCss: null,
-            uswdsPublicSansFont: null,
-            uswdsSemanticVersion: null,
-            uswdsVersion: null,
-            uswdsCount: null,
-            heresHowYouKnowBanner: null,
-          },
-          loginScan: { loginDetected: null, loginProvider: null },
-          cmsScan: { cms: null },
-          requiredLinksScan: {
-            hyperlinkDomains: null,
-            requiredLinksUrl: null,
-            requiredLinksText: null,
-          },
-          feedbackLinksScan: {
-            feedbackLinksText: null,
-          },
-          searchScan: { searchDetected: null, searchgov: null },
-          mobileScan: { viewportMetaTag: false },
-          toolingScan: { tooling: null },
-        },
-      },
-      robotsTxt: {
-        status: scanStatus,
-        result: {
-          robotsTxtScan: {
-            robotsTxtFinalUrl: null,
-            robotsTxtStatusCode: null,
-            robotsTxtFinalUrlLive: null,
-            robotsTxtDetected: null,
-            robotsTxtFinalUrlMimeType: null,
-            robotsTxtTargetUrlRedirects: null,
-            robotsTxtFinalUrlSize: null,
-            robotsTxtCrawlDelay: null,
-            robotsTxtSitemapLocations: null,
-          },
-        },
-      },
-      sitemapXml: {
-        status: scanStatus,
-        result: {
-          sitemapXmlScan: {
-            sitemapXmlDetected: null,
-            sitemapXmlStatusCode: null,
-            sitemapXmlFinalUrl: null,
-            sitemapXmlFinalUrlLive: null,
-            sitemapTargetUrlRedirects: null,
-            sitemapXmlFinalUrlFilesize: null,
-            sitemapXmlFinalUrlMimeType: null,
-            sitemapXmlLastMod: null,
-            sitemapXmlPageHash: null,
-            sitemapXmlCount: null,
-            sitemapXmlPdfCount: null,
-          },
-        },
-      },
-      dns: {
-        status: scanStatus,
-        result: { dnsScan: { ipv6: true, dnsHostname: null } },
-      },
-      accessibility: {
-        status: scanStatus,
-        result: {
-          accessibilityScan: {
-            accessibilityResults: '',
-            accessibilityResultsList: '',
-          },
-        },
-      },
-      performance: {
-        status: scanStatus,
-        result: {
-          performanceScan: {
-            largestContentfulPaint: null,
-            cumulativeLayoutShift: null,
-          },
-        },
-      },
-      security: {
-        status: scanStatus,
-        result: { securityScan: { httpsEnforced: null, hsts: null } },
-      },
-      clientRedirect: {
-        status: scanStatus,
-        result: {
-          clientRedirectScan: {
-            hasClientRedirect: null,
-            usesJsRedirect: null,
-            usesMetaRefresh: null,
-          },
-        },
-      },
-      www: {
-        status: scanStatus,
-        result: {
-          wwwScan: {
-            wwwFinalUrl: null,
-            wwwStatusCode: null,
-            wwwTitle: null,
-            wwwSame: null,
-          },
-        },
-      },
-    };
+    const pages = buildCompletedPages();
+    pages.primary.result.urlScan.finalUrlMIMEType = 'application/json';
     const logger = mock<Logger>();
 
     await service.createFromCoreResultPages(
@@ -581,180 +393,6 @@ describe('CoreResultService', () => {
   // the entire consumer job.
 
   describe('updatePrimaryScanResults — null sub-scan guards', () => {
-    // Build a minimal completed-primary pages object where every sub-scan is
-    // present and valid.  Individual tests override specific sub-scans to null.
-    function buildCompletedPages(
-      primaryResultOverrides: Record<string, any> = {},
-    ) {
-      const completed = ScanStatus.Completed as const;
-      return {
-        base: { targetUrlBaseDomain: 'example.gov' },
-        notFound: {
-          status: completed,
-          result: { notFoundScan: { targetUrl404Test: false } },
-        },
-        primary: {
-          status: completed,
-          result: {
-            urlScan: {
-              targetUrlRedirects: false,
-              finalUrl: 'https://example.gov/',
-              finalUrlIsLive: true,
-              finalUrlBaseDomain: 'example.gov',
-              finalUrlWebsite: 'example.gov',
-              finalUrlTopLevelDomain: 'gov',
-              finalUrlMIMEType: 'text/html',
-              finalUrlSameDomain: true,
-              finalUrlStatusCode: 200,
-              finalUrlSameWebsite: true,
-              finalUrlPageHash: 'abc123',
-            },
-            dapScan: {
-              dapDetected: false,
-              dapParameters: null,
-              dapVersion: '',
-              gaTagIds: '',
-            },
-            seoScan: {
-              ogTitleFinalUrl: null,
-              ogDescriptionFinalUrl: null,
-              ogArticlePublishedFinalUrl: null,
-              ogArticleModifiedFinalUrl: null,
-              mainElementFinalUrl: null,
-              canonicalLink: null,
-              pageTitle: null,
-              metaDescriptionContent: null,
-              metaKeywordsContent: null,
-              ogImageContent: null,
-              ogTypeContent: null,
-              ogUrlContent: null,
-              htmlLangContent: null,
-              hrefLangContent: null,
-              dcDateContent: null,
-              dcDateCreatedContent: null,
-              dctermsCreatedContent: null,
-              revisedContent: null,
-              lastModifiedContent: null,
-              dateContent: null,
-            },
-            thirdPartyScan: {
-              thirdPartyServiceDomains: null,
-              thirdPartyServiceCount: 0,
-              thirdPartyServiceUrls: null,
-            },
-            cookieScan: { domains: '' },
-            uswdsScan: {
-              usaClasses: 0,
-              usaElementsUsed: '',
-              usaClassesUsed: '',
-              uswdsString: 0,
-              uswdsInlineCss: 0,
-              uswdsUsFlag: 0,
-              uswdsStringInCss: 0,
-              uswdsUsFlagInCss: 0,
-              uswdsPublicSansFont: 0,
-              uswdsSemanticVersion: null,
-              uswdsVersion: 0,
-              uswdsCount: 0,
-              heresHowYouKnowBanner: false,
-            },
-            loginScan: { loginDetected: null, loginProvider: null },
-            cmsScan: { cms: null },
-            requiredLinksScan: {
-              hyperlinkDomains: null,
-              requiredLinksUrl: null,
-              requiredLinksText: null,
-            },
-            feedbackLinksScan: { feedbackLinksText: null },
-            searchScan: { searchDetected: false, searchgov: false },
-            mobileScan: { viewportMetaTag: true },
-            toolingScan: { tooling: null },
-            ...primaryResultOverrides,
-          },
-        },
-        robotsTxt: {
-          status: completed,
-          result: {
-            robotsTxtScan: {
-              robotsTxtFinalUrl: null,
-              robotsTxtStatusCode: null,
-              robotsTxtFinalUrlLive: null,
-              robotsTxtDetected: null,
-              robotsTxtFinalUrlMimeType: null,
-              robotsTxtTargetUrlRedirects: null,
-              robotsTxtFinalUrlSize: null,
-              robotsTxtCrawlDelay: null,
-              robotsTxtSitemapLocations: null,
-            },
-          },
-        },
-        sitemapXml: {
-          status: completed,
-          result: {
-            sitemapXmlScan: {
-              sitemapXmlDetected: null,
-              sitemapXmlStatusCode: null,
-              sitemapXmlFinalUrl: null,
-              sitemapXmlFinalUrlLive: null,
-              sitemapTargetUrlRedirects: null,
-              sitemapXmlFinalUrlFilesize: null,
-              sitemapXmlFinalUrlMimeType: null,
-              sitemapXmlLastMod: null,
-              sitemapXmlPageHash: null,
-              sitemapXmlCount: null,
-              sitemapXmlPdfCount: null,
-            },
-          },
-        },
-        dns: {
-          status: completed,
-          result: { dnsScan: { ipv6: false, dnsHostname: null } },
-        },
-        accessibility: {
-          status: completed,
-          result: {
-            accessibilityScan: {
-              accessibilityResults: '',
-              accessibilityResultsList: '',
-            },
-          },
-        },
-        performance: {
-          status: completed,
-          result: {
-            performanceScan: {
-              largestContentfulPaint: null,
-              cumulativeLayoutShift: null,
-            },
-          },
-        },
-        security: {
-          status: completed,
-          result: { securityScan: { httpsEnforced: null, hsts: null } },
-        },
-        clientRedirect: {
-          status: completed,
-          result: {
-            clientRedirectScan: {
-              hasClientRedirect: null,
-              usesJsRedirect: null,
-              usesMetaRefresh: null,
-            },
-          },
-        },
-        www: {
-          status: completed,
-          result: {
-            wwwScan: {
-              wwwFinalUrl: null,
-              wwwStatusCode: null,
-              wwwTitle: null,
-              wwwSame: null,
-            },
-          },
-        },
-      };
-    }
 
     async function runWithNullSubScan(subScanKey: string) {
       const pages = buildCompletedPages({ [subScanKey]: null });
