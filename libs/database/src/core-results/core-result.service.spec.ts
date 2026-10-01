@@ -253,10 +253,14 @@ describe('CoreResultService', () => {
     const websiteId = 1;
     const websiteUrl = 'https://18f.gsa.gov';
 
-    const pages = buildCompletedPages();
-    // Null finalUrlWebsite exercises the empty finalSiteName fallback
-    // (core-result.service.ts:174).
-    pages.primary.result.urlScan.finalUrlWebsite = null;
+    const pages = buildCompletedPages({
+      urlScan: {
+        ...buildCompletedPages().primary.result.urlScan,
+        // Null finalUrlWebsite exercises the empty finalSiteName fallback
+        // (core-result.service.ts:174).
+        finalUrlWebsite: null,
+      },
+    });
     const logger = mock<Logger>();
 
     await service.createFromCoreResultPages(
@@ -279,8 +283,12 @@ describe('CoreResultService', () => {
     const websiteId = 1;
     const websiteUrl = 'https://example.gov';
 
-    const pages = buildCompletedPages();
-    pages.primary.result.urlScan.finalUrlMIMEType = 'application/json';
+    const pages = buildCompletedPages({
+      urlScan: {
+        ...buildCompletedPages().primary.result.urlScan,
+        finalUrlMIMEType: 'application/json',
+      },
+    });
     const logger = mock<Logger>();
 
     await service.createFromCoreResultPages(
