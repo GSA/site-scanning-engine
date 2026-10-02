@@ -13,6 +13,9 @@ import {
   isLive,
   createRequestHandlers,
   getPageMd5Hash,
+  getFinalUrl,
+  getStatusCode,
+  hasRedirects,
 } from '../util';
 
 export const createSitemapXmlScanner = (
@@ -32,12 +35,18 @@ export const createSitemapXmlScanner = (
       waitUntil: 'networkidle2',
     });
     logger.info('Got sitemap.xml!');
+    const sitemapFinalUrl = getFinalUrl(sitemapResponse, sitemapPage.url());
+    if (!sitemapResponse) {
+      logger.warn(
+        `No navigation response for ${sitemapUrl.toString()}; recording the page as not live`,
+      );
+    }
     // extract the html page source
     //const sitemapText = await sitemapResponse.text();
-    logger.info(`Got sitemap.xml text from: ${sitemapResponse.url()}`);
+    logger.info(`Got sitemap.xml text from: ${sitemapFinalUrl}`);
 
     const sitemapContents = await getSitemapUsingAxios(
-      sitemapResponse.url(),
+      sitemapFinalUrl,
       httpService,
       logger,
     );
@@ -49,6 +58,7 @@ export const createSitemapXmlScanner = (
         sitemapText,
         sitemapPage,
         logger,
+        sitemapFinalUrl,
       ),
     };
   };
@@ -59,8 +69,9 @@ const buildSitemapResult = async (
   sitemapText: string,
   sitemapPage: Page,
   logger: Logger,
+  sitemapFinalUrl: string,
 ): Promise<SitemapXmlScan> => {
-  const sitemapUrl = new URL(sitemapResponse.url());
+  const sitemapUrl = new URL(sitemapFinalUrl);
   const sitemapLive = isLive(sitemapResponse);
   const mimeType = getMIMEType(sitemapResponse);
 
@@ -73,10 +84,9 @@ const buildSitemapResult = async (
   return {
     sitemapXmlFinalUrl: sitemapUrl.toString(),
     sitemapXmlFinalUrlLive: sitemapLive,
-    sitemapTargetUrlRedirects:
-      sitemapResponse.request().redirectChain().length > 0,
+    sitemapTargetUrlRedirects: hasRedirects(sitemapResponse),
     sitemapXmlFinalUrlMimeType: mimeType,
-    sitemapXmlStatusCode: sitemapResponse.status(),
+    sitemapXmlStatusCode: getStatusCode(sitemapResponse),
 
     sitemapXmlDetected,
     ...(sitemapXmlDetected

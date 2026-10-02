@@ -10,6 +10,9 @@ import {
   getMIMEType,
   isLive,
   createRequestHandlers,
+  getFinalUrl,
+  getStatusCode,
+  hasRedirects,
 } from '../util';
 
 export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
@@ -25,11 +28,17 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
     });
     // extract the html page source
     let robotsText = null;
-    try {
-      robotsText = await robotsResponse.text();
-    } catch (e) {
-      logger.error(`Error getting robots.txt response: ${e.message}`);
-      robotsText = null;
+    if (robotsResponse) {
+      try {
+        robotsText = await robotsResponse.text();
+      } catch (e) {
+        logger.error(`Error getting robots.txt response: ${e.message}`);
+        robotsText = null;
+      }
+    } else {
+      logger.warn(
+        `No navigation response for ${robotsUrl.toString()}; recording the page as not live`,
+      );
     }
 
     return {
@@ -38,6 +47,7 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
         robotsPage,
         robotsResponse,
         robotsText,
+        getFinalUrl(robotsResponse, robotsPage.url()),
       ),
     };
   };
@@ -48,18 +58,18 @@ const buildRobotTxtResult = (
   logData: any,
   robotsResponse: HTTPResponse,
   robotsText: string,
+  robotsFinalUrl: string,
 ): RobotsTxtScan => {
-  const robotsUrl = new URL(robotsResponse.url());
+  const robotsUrl = new URL(robotsFinalUrl);
   const robotsLive = isLive(robotsResponse);
   const robotsTxtDetected = robotsUrl.pathname === '/robots.txt' && robotsLive;
 
   return {
-    robotsTxtFinalUrl: robotsResponse.url(),
+    robotsTxtFinalUrl: robotsFinalUrl,
     robotsTxtFinalUrlLive: robotsLive,
-    robotsTxtTargetUrlRedirects:
-      robotsResponse.request().redirectChain().length > 0,
+    robotsTxtTargetUrlRedirects: hasRedirects(robotsResponse),
     robotsTxtFinalUrlMimeType: getMIMEType(robotsResponse),
-    robotsTxtStatusCode: robotsResponse.status(),
+    robotsTxtStatusCode: getStatusCode(robotsResponse),
 
     robotsTxtDetected,
     ...(robotsTxtDetected

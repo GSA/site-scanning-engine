@@ -67,6 +67,21 @@ export const getTopLevelDomain = (url: string): string | null => {
   return tldPattern.test('.' + tld) ? tld : null;
 };
 
+// page.goto() is typed Promise<HTTPResponse | null>, and null is a documented
+// return value: Puppeteer reports it when the navigation's request failed at
+// the transport layer, which can happen after the document has already
+// rendered. isLive and getMIMEType already account for that; these cover the
+// rest of what the page scanners read off a response, so a null one degrades
+// instead of throwing a TypeError that costs the whole page's row.
+export const getFinalUrl = (res: HTTPResponse, fallbackUrl: string): string =>
+  res ? res.url() : fallbackUrl;
+
+export const getStatusCode = (res: HTTPResponse): number =>
+  res ? res.status() : null;
+
+export const hasRedirects = (res: HTTPResponse): boolean =>
+  res ? res.request().redirectChain().length > 0 : false;
+
 export const isLive = (res: HTTPResponse): boolean => {
   if (!res) return false;
   const http200FamilyCodes = [200, 201, 202, 203, 204, 205, 206];

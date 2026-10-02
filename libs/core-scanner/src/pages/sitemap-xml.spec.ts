@@ -82,4 +82,37 @@ describe('sitemap-xml scanner', () => {
       },
     });
   });
+
+  it('should record a not-live page when the navigation response is null', async () => {
+    const input: CoreInputDto = {
+      websiteId: 1,
+      url: '18f.gov',
+      filter: false,
+      pageviews: 1,
+      visits: 1,
+      scanId: '123',
+    };
+
+    mockPage.goto.mockResolvedValue(null);
+    const mockHttpService = mock<HttpService>();
+    jest.spyOn(mockHttpService, 'get').mockImplementationOnce(() => {
+      throw new Error('should not be reached');
+    });
+
+    const scanner = createSitemapXmlScanner(mockLogger, input, mockHttpService);
+    const result = await scanner(mockPage);
+
+    expect(result).toEqual({
+      sitemapXmlScan: {
+        // buildSitemapResult round-trips through URL, which normalizes the
+        // origin-only fallback to a trailing slash.
+        sitemapXmlFinalUrl: `${finalUrl}/`,
+        sitemapXmlFinalUrlLive: false,
+        sitemapTargetUrlRedirects: false,
+        sitemapXmlFinalUrlMimeType: 'none-specified',
+        sitemapXmlStatusCode: null,
+        sitemapXmlDetected: false,
+      },
+    });
+  });
 });
