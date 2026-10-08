@@ -8,7 +8,7 @@
 # See: https://docs.docker.com/develop/develop-images/multistage-build/
 #
 # the `development` stage handles building the application
-FROM node:12.20.1 AS development
+FROM node:24.13.0-bookworm-slim AS development
 
 WORKDIR /usr/src/app
 
@@ -21,7 +21,7 @@ COPY . .
 RUN npm run build api
 
 # the production stage handles running the application
-FROM node:12.20.1 AS production
+FROM node:24.13.0-bookworm-slim AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -36,4 +36,4 @@ RUN npm ci
 
 COPY --from=development /usr/src/app/dist ./dist
 
-RUN ["node", "dist/apps/api/main"]
+CMD ["node", "dist/apps/api/main"]

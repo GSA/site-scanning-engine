@@ -288,7 +288,7 @@ cf services
 
 **Expected services:**
 - `scanner-postgres-02` (PostgreSQL database)
-- `scanner-message-queue` (Redis)
+- `scanner-message-queue` (Valkey 8.2 via aws-elasticache-redis)
 - S3 bucket service
 
 **Service status:**
