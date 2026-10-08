@@ -15,7 +15,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:5
+    image: valkey/valkey:8.1
     ports:
       - '6379:6379'
     networks:
