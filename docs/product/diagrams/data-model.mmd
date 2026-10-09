@@ -1,0 +1,30 @@
+erDiagram
+  WEBSITE ||--o| CORE_RESULT : has_latest
+  WEBSITE {
+    int id PK
+    timestamp created
+    timestamp updated
+    string url
+    string topLevelDomain
+    string branch
+    string agency
+    string bureau
+    string sourceList
+    boolean filter
+    number pageviews
+    number visits
+  }
+  CORE_RESULT {
+    int id PK
+    timestamp created
+    timestamp updated
+    int websiteId FK
+    string primaryScanStatus
+    string targetUrlBaseDomain
+    string finalUrl
+    boolean finalUrlIsLive
+    string accessibilityScanStatus
+    string performanceScanStatus
+    string securityScanStatus
+    string other_public_scan_fields
+  }

@@ -1,0 +1,31 @@
+sequenceDiagram
+  autonumber
+  participant GH as GitHub Actions
+  participant CLI as CLI task
+  participant FWI as Federal Website Index
+  participant DB as PostgreSQL
+  participant Q as Bull/Redis queue
+  participant W as Scan worker
+  participant B as Browser pool
+  participant Site as Federal website
+  participant S3 as S3 snapshots
+
+  GH->>CLI: Run ingest task
+  CLI->>FWI: Fetch target URL CSV
+  CLI->>DB: Upsert website inventory
+  GH->>CLI: Run enqueue-scans task
+  CLI->>DB: Read websites
+  loop Each website
+    CLI->>Q: Add core scan job
+  end
+  Q->>W: Deliver core job
+  W->>B: Borrow browser
+  loop Each page group, sequentially
+    B->>Site: Navigate or request resource
+    Note over W,B: Primary-page checks fan out concurrently
+  end
+  W->>DB: Insert or update latest core_result
+  W-->>Q: Complete, retry, or retain failed job
+  GH->>CLI: Run daily snapshot task
+  CLI->>DB: Query snapshot variants
+  CLI->>S3: Archive prior and upload CSV/JSON

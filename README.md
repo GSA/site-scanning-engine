@@ -35,6 +35,12 @@ The project's issue tracker and other relevant repositories and links [can be fo
   - [Project Layout](./docs/layout.md)
   - [Detailed Development](./docs/development.md)
   - [Architecture](./docs/architecture/README.md)
+  - [Product and System Guide](./docs/product/README.md)
+    - [Current Architecture Description](./docs/product/ARCHITECTURE.md)
+    - [Data Guide](./docs/product/DATA_GUIDE.md)
+    - [Data Use and Growth Ideas](./docs/product/DATA_USE_IDEAS.md)
+    - [Product Management](./docs/product/PRODUCT_MANAGEMENT.md)
+    - [Risks and Maintenance](./docs/product/RISKS_AND_MAINTENANCE.md)
 
 ## Quickstart
 

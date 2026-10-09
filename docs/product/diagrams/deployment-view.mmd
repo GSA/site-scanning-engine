@@ -1,0 +1,33 @@
+flowchart TB
+  subgraph GitHub[GitHub]
+    Workflows[Scheduled and manual Actions]
+  end
+
+  subgraph CloudGov[cloud.gov production space]
+    Router[Cloud Foundry router]
+    API[site-scanner-api\n1 instance, 2 GB]
+    Tasks[Ephemeral CLI tasks\nrun on consumer droplet]
+    subgraph Workers[site-scanner-consumer]
+      W1[7 worker instances]
+      Capacity[Concurrency 2 each\napprox. 14 jobs]
+    end
+    Redis[(Managed Valkey/Redis)]
+    Postgres[(Managed PostgreSQL)]
+    S3[(Managed S3)]
+  end
+
+  Consumers[API consumers]
+  Websites[Public federal websites]
+  Sources[GitHub-hosted source data]
+
+  Consumers --> Router --> API
+  API --> Postgres
+  API --> Redis
+  Workflows -->|cf run-task| Tasks
+  Tasks --> Sources
+  Tasks --> Redis
+  Tasks --> Postgres
+  Tasks --> S3
+  Redis --> W1 --> Capacity
+  W1 --> Websites
+  W1 --> Postgres
