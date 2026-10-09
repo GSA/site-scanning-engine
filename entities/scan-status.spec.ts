@@ -1,4 +1,8 @@
-import { ScanStatus, parseBrowserError } from './scan-status';
+import {
+  PROCESSING_TIMEOUT_MESSAGE,
+  ScanStatus,
+  parseBrowserError,
+} from './scan-status';
 import pino from 'pino';
 
 const mockLogger = pino();
@@ -13,6 +17,16 @@ describe('scan-status', () => {
 
     it('should parse timeout error', () => {
       const err = new Error('net::ERR_TIMED_OUT');
+      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.Timeout);
+    });
+
+    it('should parse the processing timeout as a timeout', () => {
+      const err = new Error(PROCESSING_TIMEOUT_MESSAGE);
+      expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.Timeout);
+    });
+
+    it('should parse a processing timeout rejected as a bare string', () => {
+      const err = PROCESSING_TIMEOUT_MESSAGE as unknown as Error;
       expect(parseBrowserError(err, mockLogger)).toBe(ScanStatus.Timeout);
     });
 
