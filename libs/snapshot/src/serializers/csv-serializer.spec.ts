@@ -9,9 +9,22 @@ const MockWebsite2 = new Website();
 MockWebsite2.url = 'https://some.other.url/';
 
 describe('CsvSerializer', () => {
-  it('should return a header when no data is passed', async () => {
-    const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
+  const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
 
+  /**
+   * Serializes `websites`, asserts the output is a multi-line string, and
+   * returns it split on `\n`.
+   */
+  async function serializeToLines(websites: Website[]): Promise<string[]> {
+    const result = await serializer.serialize(websites);
+
+    expect(typeof result).toBe('string');
+    expect(result).toContain('\n');
+
+    return result.split('\n');
+  }
+
+  it('should return a header when no data is passed', async () => {
     const result = await serializer.serialize([]);
 
     expect(typeof result).toBe('string');
@@ -21,31 +34,16 @@ describe('CsvSerializer', () => {
   });
 
   it('should return a header AND data when data is passed', async () => {
-    const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
-    const result = await serializer.serialize([MockWebsite1]);
-
-    // Confidence Checks
-    expect(typeof result).toBe('string');
-    expect(result).toContain('\n');
-
-    const lines = result.split('\n');
+    const lines = await serializeToLines([MockWebsite1]);
     expect(lines.length).toBe(2);
   });
 
   it('should return CSV representing every entity passed in as data', async () => {
-    const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
-    const result = await serializer.serialize([MockWebsite1, MockWebsite2]);
-
-    // Confidence Checks
-    expect(typeof result).toBe('string');
-    expect(result).toContain('\n');
-
-    const lines = result.split('\n');
+    const lines = await serializeToLines([MockWebsite1, MockWebsite2]);
     expect(lines.length).toBe(3);
   });
 
   it('should serialize websites with DAP parameters as expected', async () => {
-    const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
     const website = new Website();
     const coreResult = new CoreResult();
     coreResult.dapParameters = 'one=test';
@@ -75,32 +73,18 @@ describe('CsvSerializer', () => {
   });
 
   it('it should remove newlines from the data', async () => {
-    const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
     const website = new Website();
     website.url = 'more\nthan\none\nline';
 
-    const result = await serializer.serialize([website]);
-
-    // Confidence Checks
-    expect(typeof result).toBe('string');
-    expect(result).toContain('\n');
-
-    const lines = result.split('\n');
+    const lines = await serializeToLines([website]);
     expect(lines.length).toBe(2);
   });
 
   it('should truncate really long data strings', async () => {
-    const serializer = new CsvSerializer(CoreResult.snapshotColumnOrder);
     const website = new Website();
     website.url = generateLongString(6000);
 
-    const result = await serializer.serialize([website]);
-
-    // Confidence Checks
-    expect(typeof result).toBe('string');
-    expect(result).toContain('\n');
-
-    const lines = result.split('\n');
+    const lines = await serializeToLines([website]);
     const dataLine = lines[1];
 
     expect(dataLine.length).toBeGreaterThan(1000);

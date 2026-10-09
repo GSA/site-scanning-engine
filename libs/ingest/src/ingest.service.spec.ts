@@ -90,6 +90,11 @@ const BASE_ROW_COLS = [
   '', // visits
 ];
 
+// Prepends the header line to a single data row.
+function csvWithRow(row: string): string {
+  return `${CSV_HEADERS}\n${row}`;
+}
+
 // Produces a row with one named column set to TRUE.
 // Used by the general ingest tests that need a parseable row.
 function rowWithColTrue(colName: string): string {
@@ -135,6 +140,7 @@ describe('IngestService', () => {
     }).compile();
 
     service = module.get<IngestService>(IngestService);
+    mockWebsiteService.findAllWebsites.mockResolvedValue([]);
   });
 
   it('should be defined', () => {
@@ -142,7 +148,7 @@ describe('IngestService', () => {
   });
 
   it('should get a list of URLs', async () => {
-    const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_federal_domains')}`;
+    const csvString = csvWithRow(rowWithColTrue('source_list_federal_domains'));
 
     jest
       .spyOn(mockUrlList, 'fetch')
@@ -154,15 +160,11 @@ describe('IngestService', () => {
   });
 
   it('write a list of URLs', async () => {
-    const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_federal_domains')}`;
+    const csvString = csvWithRow(rowWithColTrue('source_list_federal_domains'));
 
     jest
       .spyOn(mockUrlList, 'fetch')
       .mockImplementation(() => Promise.resolve(csvString));
-
-    jest
-      .spyOn(mockWebsiteService, 'findAllWebsites')
-      .mockImplementation(() => Promise.resolve([]));
 
     const urls = await service.getUrls();
     await service.writeUrls(urls);
@@ -173,7 +175,7 @@ describe('IngestService', () => {
   });
 
   it('write a list of URLs and removes invalid urls', async () => {
-    const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_federal_domains')}`;
+    const csvString = csvWithRow(rowWithColTrue('source_list_federal_domains'));
 
     jest
       .spyOn(mockUrlList, 'fetch')
@@ -188,10 +190,6 @@ describe('IngestService', () => {
     website.agency = 'General Services Administration';
     website.bureau = 'GSA, TTS';
     website.sourceList = 'gov';
-
-    jest
-      .spyOn(mockWebsiteService, 'findAllWebsites')
-      .mockImplementation(() => Promise.resolve([]));
 
     jest
       .spyOn(mockWebsiteService, 'findNewestWebsite')
@@ -245,11 +243,7 @@ describe('IngestService', () => {
     it.each(cases)(
       'column %s produces label "%s"',
       async (csvCol, expectedLabel) => {
-        const csvString = `${CSV_HEADERS}\n${rowWithColTrue(csvCol)}`;
-
-        jest
-          .spyOn(mockWebsiteService, 'findAllWebsites')
-          .mockImplementation(() => Promise.resolve([]));
+        const csvString = csvWithRow(rowWithColTrue(csvCol));
 
         await service.writeUrls(csvString);
 
@@ -260,15 +254,13 @@ describe('IngestService', () => {
     );
 
     it('produces a comma-separated list when multiple source flags are TRUE', async () => {
-      const csvString = `${CSV_HEADERS}\n${rowWithColsTrue([
-        'source_list_federal_domains',
-        'source_list_dap',
-        'source_list_cisa',
-      ])}`;
-
-      jest
-        .spyOn(mockWebsiteService, 'findAllWebsites')
-        .mockImplementation(() => Promise.resolve([]));
+      const csvString = csvWithRow(
+        rowWithColsTrue([
+          'source_list_federal_domains',
+          'source_list_dap',
+          'source_list_cisa',
+        ]),
+      );
 
       await service.writeUrls(csvString);
 
@@ -278,11 +270,7 @@ describe('IngestService', () => {
     });
 
     it('produces an empty string when no source flags are TRUE', async () => {
-      const csvString = `${CSV_HEADERS}\n${BASE_ROW_COLS.join(',')}`;
-
-      jest
-        .spyOn(mockWebsiteService, 'findAllWebsites')
-        .mockImplementation(() => Promise.resolve([]));
+      const csvString = csvWithRow(BASE_ROW_COLS.join(','));
 
       await service.writeUrls(csvString);
 
@@ -295,11 +283,7 @@ describe('IngestService', () => {
       const cols = [...BASE_ROW_COLS];
       const idx = CSV_HEADER_COLS.indexOf('source_list_federal_domains');
       cols[idx] = 'true';
-      const csvString = `${CSV_HEADERS}\n${cols.join(',')}`;
-
-      jest
-        .spyOn(mockWebsiteService, 'findAllWebsites')
-        .mockImplementation(() => Promise.resolve([]));
+      const csvString = csvWithRow(cols.join(','));
 
       await service.writeUrls(csvString);
 
@@ -312,18 +296,16 @@ describe('IngestService', () => {
   describe('writeUrls Promise settlement', () => {
     it('resolves even when the CSV contains a parse error', async () => {
       // A row with fewer columns than expected triggers a fast-csv parse error.
-      const malformedCsv = `${CSV_HEADERS}\nbad,row`;
-
-      jest
-        .spyOn(mockWebsiteService, 'findAllWebsites')
-        .mockImplementation(() => Promise.resolve([]));
+      const malformedCsv = csvWithRow('bad,row');
 
       // If the bug is present this will never resolve and Jest will timeout.
       await expect(service.writeUrls(malformedCsv)).resolves.not.toThrow();
     });
 
     it('rejects when findAllWebsites throws, instead of hanging', async () => {
-      const csvString = `${CSV_HEADERS}\n${rowWithColTrue('source_list_federal_domains')}`;
+      const csvString = csvWithRow(
+        rowWithColTrue('source_list_federal_domains'),
+      );
 
       jest
         .spyOn(mockWebsiteService, 'findAllWebsites')
