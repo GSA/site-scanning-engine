@@ -61,4 +61,42 @@ describe('robots-txt scanner', () => {
       },
     });
   });
+
+  it('reads directives whatever whitespace follows the colon', async () => {
+    const input: CoreInputDto = {
+      websiteId: 1,
+      url: '18f.gov',
+      filter: false,
+      pageviews: 1,
+      visits: 1,
+      scanId: '123',
+    };
+
+    const robotsTxt = [
+      'User-agent: *',
+      'Crawl-delay:10',
+      'Sitemap:https://18f.gsa.gov/sitemap-no-space.xml',
+      'Sitemap:\thttps://18f.gsa.gov/sitemap-tab.xml',
+      'Sitemap:  https://18f.gsa.gov/sitemap-two-spaces.xml',
+    ].join('\n');
+
+    mockResponse.text.mockResolvedValue(robotsTxt);
+    mockResponse.url.mockReturnValue('https://18f.gsa.gov/robots.txt');
+    mockPage.goto.mockResolvedValue(mockResponse);
+    redirectRequest.redirectChain.mockReturnValue([]);
+
+    const scanner = createRobotsTxtScanner(mockLogger, input);
+    const result = await scanner(mockPage);
+
+    expect(result.robotsTxtScan.robotsTxtCrawlDelay).toEqual(10);
+    // The scanner sorts the raw directive lines, so the order follows the whitespace
+    // that comes after the colon: tab, then space, then the URL itself.
+    expect(result.robotsTxtScan.robotsTxtSitemapLocations).toEqual(
+      [
+        'https://18f.gsa.gov/sitemap-tab.xml',
+        'https://18f.gsa.gov/sitemap-two-spaces.xml',
+        'https://18f.gsa.gov/sitemap-no-space.xml',
+      ].join(','),
+    );
+  });
 });
