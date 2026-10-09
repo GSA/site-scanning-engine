@@ -1,6 +1,8 @@
 import { mock } from 'jest-mock-extended';
-import { HTTPResponse } from 'puppeteer';
+import { HTTPResponse, Page } from 'puppeteer';
+import pino from 'pino';
 import {
+  createRequestHandlers,
   getBaseDomain,
   getFullDomain,
   getHttpsUrl,
@@ -141,5 +143,31 @@ describe('core-scanner util', () => {
       const result = getTruncatedUrl(url);
       expect(result).toBe('https://gsa.gov');
     });
+  });
+});
+
+describe('createRequestHandlers', () => {
+  it('registers the page listeners once per page', () => {
+    const logger = pino();
+    const page = mock<Page>();
+
+    createRequestHandlers(page, logger);
+    const afterFirstCall = page.on.mock.calls.length;
+    // primary.ts wires the page, then url-scan.ts is handed the same page
+    createRequestHandlers(page, logger);
+
+    expect(afterFirstCall).toBeGreaterThan(0);
+    expect(page.on).toHaveBeenCalledTimes(afterFirstCall);
+  });
+
+  it('still registers listeners for a different page', () => {
+    const logger = pino();
+    const firstPage = mock<Page>();
+    const secondPage = mock<Page>();
+
+    createRequestHandlers(firstPage, logger);
+    createRequestHandlers(secondPage, logger);
+
+    expect(secondPage.on).toHaveBeenCalledTimes(firstPage.on.mock.calls.length);
   });
 });
