@@ -1,0 +1,11 @@
+{
+  "path": ["apps", "libs", "entities", "scripts", "test"],
+  "format": ["typescript"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/report/**"
+  ],
+  "reporters": ["console"]
+}
