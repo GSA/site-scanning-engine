@@ -64,7 +64,6 @@ describe('sitemap-xml scanner', () => {
     mockPage.goto.mockResolvedValue(null);
     mockPage.url.mockReturnValue('https://18f.gov/sitemap.xml');
     const mockHttpService = mock<HttpService>();
-    stubHttpGet(mockHttpService, 404, 'Not Found');
 
     const scanner = createSitemapXmlScanner(
       mockLogger,
@@ -73,6 +72,9 @@ describe('sitemap-xml scanner', () => {
     );
     const result = await scanner(mockPage);
 
+    // Without a response the sitemap can't be detected, so its body is never used.
+    expect(mockHttpService.get).not.toHaveBeenCalled();
+    expect(mockLogger.info).not.toHaveBeenCalledWith('Got sitemap.xml!');
     expect(result).toEqual({
       sitemapXmlScan: {
         sitemapXmlFinalUrl: 'https://18f.gov/sitemap.xml',

@@ -31,19 +31,21 @@ export const createSitemapXmlScanner = (
     const sitemapResponse = await sitemapPage.goto(sitemapUrl.toString(), {
       waitUntil: 'networkidle2',
     });
-    logger.info('Got sitemap.xml!');
     if (!sitemapResponse) {
       logger.warn(`No navigation response received for ${sitemapUrl}`);
+      // A null response is never detected as a sitemap, so its body would go
+      // unused; skip the Axios fetch, which has no timeout configured.
+      return {
+        sitemapXmlScan: await buildSitemapResult(null, '', sitemapPage, logger),
+      };
     }
-    const sitemapFinalUrl = sitemapResponse
-      ? sitemapResponse.url()
-      : sitemapPage.url();
+    logger.info('Got sitemap.xml!');
     // extract the html page source
     //const sitemapText = await sitemapResponse.text();
-    logger.info(`Got sitemap.xml text from: ${sitemapFinalUrl}`);
+    logger.info(`Got sitemap.xml text from: ${sitemapResponse.url()}`);
 
     const sitemapContents = await getSitemapUsingAxios(
-      sitemapFinalUrl,
+      sitemapResponse.url(),
       httpService,
       logger,
     );
