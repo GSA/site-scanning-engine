@@ -18,15 +18,29 @@ export const createWwwScanner = (logger: Logger, input: CoreInputDto) => {
   };
 };
 
+/**
+ * Builds the www scan result from the navigation outcome.
+ *
+ * @param page The page after navigating to the www URL.
+ * @param wwwUrl The www URL that was requested.
+ * @param response The navigation response. Puppeteer resolves `goto()` to null
+ * when the request fails at the transport layer even though a document may
+ * have rendered, so the final URL falls back to `page.url()` and the status
+ * code is null, matching the primary page's url-scan.
+ * @param logger Logger for the scan.
+ */
 const buildWwwResult = async (
   page: Page,
   wwwUrl: string,
-  response: HTTPResponse,
+  response: HTTPResponse | null,
   logger: Logger,
 ): Promise<WwwScan> => {
-  let wwwFinalUrl = response.url();
+  if (!response) {
+    logger.warn(`No navigation response received for ${wwwUrl}`);
+  }
+  let wwwFinalUrl = response ? response.url() : page.url();
 
-  const wwwStatusCode = response.status();
+  const wwwStatusCode = response ? response.status() : null;
   const wwwTitle = await findPageTitleText(page);
 
   logger.info(`Final URL for www is ${wwwFinalUrl}`);
