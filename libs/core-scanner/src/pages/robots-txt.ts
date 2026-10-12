@@ -80,6 +80,13 @@ const buildRobotTxtResult = (
   };
 };
 
+// A robots.txt directive is `name:value`, and RFC 9309 allows any amount of
+// whitespace, or none at all, around the value. Splitting on a single space misses a
+// directive written with no space or with a tab, and turns two spaces into an empty
+// string.
+const directiveValue = (directive: string): string =>
+  directive.slice(directive.indexOf(':') + 1).trim();
+
 const findRobotsCrawlDelay = (
   logger: Logger,
   logData: any,
@@ -91,7 +98,7 @@ const findRobotsCrawlDelay = (
   for (const directive of directives) {
     if (directive.toLowerCase().startsWith('crawl-delay:')) {
       try {
-        crawlDelay = parseInt(directive.split(' ')[1]);
+        crawlDelay = parseInt(directiveValue(directive), 10);
         if (isNaN(crawlDelay)) {
           crawlDelay = null;
         }
@@ -119,8 +126,10 @@ const findRobotsSitemapLocations = (
   for (const directive of Array.from(directives).sort()) {
     if (directive.toLowerCase().startsWith('sitemap:')) {
       try {
-        const sitemapLocation = directive.split(' ')[1];
-        sitemapLocations.push(sitemapLocation);
+        const sitemapLocation = directiveValue(directive);
+        if (sitemapLocation) {
+          sitemapLocations.push(sitemapLocation);
+        }
       } catch (e) {
         const err = e as Error;
         logger.warn({

@@ -77,7 +77,18 @@ export function getTruncatedUrl(url: string): string {
   return url.split('?')[0]; // Split the URL and take the part before the `?`
 }
 
+// The primary page pipeline wires a page up in primary.ts and then again in
+// url-scan.ts, which runs against the same page, so every console, error,
+// response and requestfailed event fired two identical listeners. Registration
+// is per page and happens once.
+const pagesWithRequestHandlers = new WeakSet<Page>();
+
 export function createRequestHandlers(page: Page, logger: Logger) {
+  if (pagesWithRequestHandlers.has(page)) {
+    return;
+  }
+  pagesWithRequestHandlers.add(page);
+
   page.on('console', (message) =>
     logger.debug({ sseMessage: message }, `Page Log: ${message.text()}`),
   );
