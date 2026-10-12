@@ -2,6 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Logger } from 'pino';
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
+import { CoreInputDto } from '../core.input.dto';
 import { createRobotsTxtScanner } from './robots-txt';
 import { source } from './test-page-source';
 import { stubRedirectedNavigation, testInput } from './test-helpers';
