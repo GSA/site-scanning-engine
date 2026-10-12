@@ -2,6 +2,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { Logger } from 'pino';
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 
+import { CoreInputDto } from '../core.input.dto';
 import { createRobotsTxtScanner } from './robots-txt';
 import { source } from './test-page-source';
 import { stubRedirectedNavigation, testInput } from './test-helpers';
@@ -39,6 +40,25 @@ describe('robots-txt scanner', () => {
         robotsTxtTargetUrlRedirects: true,
         robotsTxtFinalUrlMimeType: 'text/html',
         robotsTxtStatusCode: 200,
+        robotsTxtDetected: false,
+      },
+    });
+  });
+
+  it('degrades gracefully when navigation resolves to a null response', async () => {
+    mockPage.goto.mockResolvedValue(null);
+    mockPage.url.mockReturnValue('https://18f.gov/robots.txt');
+
+    const scanner = createRobotsTxtScanner(mockLogger, testInput);
+    const result = await scanner(mockPage);
+
+    expect(result).toEqual({
+      robotsTxtScan: {
+        robotsTxtFinalUrl: 'https://18f.gov/robots.txt',
+        robotsTxtFinalUrlLive: false,
+        robotsTxtTargetUrlRedirects: null,
+        robotsTxtFinalUrlMimeType: 'none-specified',
+        robotsTxtStatusCode: null,
         robotsTxtDetected: false,
       },
     });
