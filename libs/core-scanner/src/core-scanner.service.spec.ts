@@ -1,5 +1,5 @@
 import { mock, MockProxy, mockDeep, DeepMockProxy } from 'jest-mock-extended';
-import { Page, HTTPResponse, HTTPRequest, Browser } from 'puppeteer';
+import { Page, Browser } from 'puppeteer';
 import { getLoggerToken, PinoLogger } from 'nestjs-pino';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,6 +9,7 @@ import { BrowserService } from '@app/browser';
 import { SecurityDataService } from '@app/security-data';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { CoreScannerService } from './core-scanner.service';
+import { stubRedirectedNavigation } from './pages/test-helpers';
 import { ScanStatus } from 'entities/scan-status';
 
 jest.mock('libs/core-scanner/src/pages/client-redirect', () => ({
@@ -23,9 +24,6 @@ describe('CoreScannerService', () => {
   let service: CoreScannerService;
   let mockBrowser: MockProxy<Browser>;
   let mockPage: DeepMockProxy<Page>;
-  let mockResponse: MockProxy<HTTPResponse>;
-  let mockRequest: MockProxy<HTTPRequest>;
-  let redirectRequest: MockProxy<HTTPRequest>;
   let mockHttpService: MockProxy<HttpService>;
   let mockLogger: Logger;
   let mockChildLogger: Logger;
@@ -35,9 +33,6 @@ describe('CoreScannerService', () => {
   beforeEach(async () => {
     mockBrowser = mock<Browser>();
     mockPage = mockDeep<Page>();
-    mockResponse = mock<HTTPResponse>();
-    mockRequest = mock<HTTPRequest>();
-    redirectRequest = mock<HTTPRequest>();
     mockHttpService = mock<HttpService>();
     mockChildLogger = pino();
     mockLogger = {
@@ -48,15 +43,7 @@ describe('CoreScannerService', () => {
     };
     mockSecurityDataService = mock<SecurityDataService>();
 
-    redirectRequest.url.calledWith().mockReturnValue('https://18f.gov');
-    mockRequest.redirectChain.calledWith().mockReturnValue([redirectRequest]);
-    mockResponse.request.calledWith().mockReturnValue(mockRequest);
-    mockResponse.status.calledWith().mockReturnValue(200);
-    mockResponse.headers.calledWith().mockReturnValue({
-      'Content-Type': 'text/html; charset=utf-8',
-    });
-    mockPage.goto.calledWith('https://18f.gov').mockResolvedValue(mockResponse);
-    mockPage.url.calledWith().mockReturnValue(finalUrl);
+    stubRedirectedNavigation(mockPage, 'text/html; charset=utf-8', finalUrl);
     mockBrowser.newPage.calledWith().mockResolvedValue(mockPage);
     mockSecurityDataService.getSecurityResults
       .calledWith(finalUrl)
