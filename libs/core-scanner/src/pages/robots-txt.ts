@@ -23,10 +23,13 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
     const robotsResponse = await robotsPage.goto(robotsUrl.toString(), {
       waitUntil: 'networkidle2',
     });
+    if (!robotsResponse) {
+      logger.warn(`No navigation response received for ${robotsUrl}`);
+    }
     // extract the html page source
     let robotsText = null;
     try {
-      robotsText = await robotsResponse.text();
+      robotsText = robotsResponse ? await robotsResponse.text() : null;
     } catch (e) {
       logger.error(`Error getting robots.txt response: ${e.message}`);
       robotsText = null;
@@ -43,36 +46,45 @@ export const createRobotsTxtScanner = (logger: Logger, input: CoreInputDto) => {
   };
 };
 
+/**
+ * Builds the robots.txt scan result from the navigation outcome.
+ *
+ * @param logger Logger for the scan.
+ * @param page The page after navigating to robots.txt.
+ * @param robotsResponse The navigation response. Puppeteer resolves `goto()`
+ * to null when the request fails at the transport layer, so the final URL
+ * falls back to `page.url()`, status and redirects are null, and the file is
+ * not counted as detected, matching the primary page's url-scan.
+ * @param robotsText The response body, or null if it could not be read.
+ */
 const buildRobotTxtResult = (
   logger: Logger,
-  logData: any,
-  robotsResponse: HTTPResponse,
+  page: Page,
+  robotsResponse: HTTPResponse | null,
   robotsText: string,
 ): RobotsTxtScan => {
-  const robotsUrl = new URL(robotsResponse.url());
+  const robotsFinalUrl = robotsResponse ? robotsResponse.url() : page.url();
+  const robotsUrl = new URL(robotsFinalUrl);
   const robotsLive = isLive(robotsResponse);
   const robotsTxtDetected = robotsUrl.pathname === '/robots.txt' && robotsLive;
 
   return {
-    robotsTxtFinalUrl: robotsResponse.url(),
+    robotsTxtFinalUrl: robotsFinalUrl,
     robotsTxtFinalUrlLive: robotsLive,
-    robotsTxtTargetUrlRedirects:
-      robotsResponse.request().redirectChain().length > 0,
+    robotsTxtTargetUrlRedirects: robotsResponse
+      ? robotsResponse.request().redirectChain().length > 0
+      : null,
     robotsTxtFinalUrlMimeType: getMIMEType(robotsResponse),
-    robotsTxtStatusCode: robotsResponse.status(),
+    robotsTxtStatusCode: robotsResponse ? robotsResponse.status() : null,
 
     robotsTxtDetected,
     ...(robotsTxtDetected
       ? {
           robotsTxtFinalUrlSize: Buffer.byteLength(robotsText, 'utf-8'),
-          robotsTxtCrawlDelay: findRobotsCrawlDelay(
-            logger,
-            logData,
-            robotsText,
-          ),
+          robotsTxtCrawlDelay: findRobotsCrawlDelay(logger, page, robotsText),
           robotsTxtSitemapLocations: findRobotsSitemapLocations(
             logger,
-            logData,
+            page,
             robotsText,
           ),
         }
