@@ -32,12 +32,18 @@ export const createSitemapXmlScanner = (
       waitUntil: 'networkidle2',
     });
     logger.info('Got sitemap.xml!');
+    if (!sitemapResponse) {
+      logger.warn(`No navigation response received for ${sitemapUrl}`);
+    }
+    const sitemapFinalUrl = sitemapResponse
+      ? sitemapResponse.url()
+      : sitemapPage.url();
     // extract the html page source
     //const sitemapText = await sitemapResponse.text();
-    logger.info(`Got sitemap.xml text from: ${sitemapResponse.url()}`);
+    logger.info(`Got sitemap.xml text from: ${sitemapFinalUrl}`);
 
     const sitemapContents = await getSitemapUsingAxios(
-      sitemapResponse.url(),
+      sitemapFinalUrl,
       httpService,
       logger,
     );
@@ -54,13 +60,26 @@ export const createSitemapXmlScanner = (
   };
 };
 
+/**
+ * Builds the sitemap.xml scan result from the navigation outcome.
+ *
+ * @param sitemapResponse The navigation response. Puppeteer resolves `goto()`
+ * to null when the request fails at the transport layer, so the final URL
+ * falls back to `page.url()`, status and redirects are null, and the sitemap
+ * is not counted as detected, matching the primary page's url-scan.
+ * @param sitemapText The sitemap body fetched separately via Axios.
+ * @param sitemapPage The page after navigating to sitemap.xml.
+ * @param logger Logger for the scan.
+ */
 const buildSitemapResult = async (
-  sitemapResponse: HTTPResponse,
+  sitemapResponse: HTTPResponse | null,
   sitemapText: string,
   sitemapPage: Page,
   logger: Logger,
 ): Promise<SitemapXmlScan> => {
-  const sitemapUrl = new URL(sitemapResponse.url());
+  const sitemapUrl = new URL(
+    sitemapResponse ? sitemapResponse.url() : sitemapPage.url(),
+  );
   const sitemapLive = isLive(sitemapResponse);
   const mimeType = getMIMEType(sitemapResponse);
 
@@ -73,10 +92,11 @@ const buildSitemapResult = async (
   return {
     sitemapXmlFinalUrl: sitemapUrl.toString(),
     sitemapXmlFinalUrlLive: sitemapLive,
-    sitemapTargetUrlRedirects:
-      sitemapResponse.request().redirectChain().length > 0,
+    sitemapTargetUrlRedirects: sitemapResponse
+      ? sitemapResponse.request().redirectChain().length > 0
+      : null,
     sitemapXmlFinalUrlMimeType: mimeType,
-    sitemapXmlStatusCode: sitemapResponse.status(),
+    sitemapXmlStatusCode: sitemapResponse ? sitemapResponse.status() : null,
 
     sitemapXmlDetected,
     ...(sitemapXmlDetected

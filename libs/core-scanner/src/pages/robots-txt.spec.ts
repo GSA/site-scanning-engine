@@ -45,6 +45,25 @@ describe('robots-txt scanner', () => {
     });
   });
 
+  it('degrades gracefully when navigation resolves to a null response', async () => {
+    mockPage.goto.mockResolvedValue(null);
+    mockPage.url.mockReturnValue('https://18f.gov/robots.txt');
+
+    const scanner = createRobotsTxtScanner(mockLogger, testInput);
+    const result = await scanner(mockPage);
+
+    expect(result).toEqual({
+      robotsTxtScan: {
+        robotsTxtFinalUrl: 'https://18f.gov/robots.txt',
+        robotsTxtFinalUrlLive: false,
+        robotsTxtTargetUrlRedirects: null,
+        robotsTxtFinalUrlMimeType: 'none-specified',
+        robotsTxtStatusCode: null,
+        robotsTxtDetected: false,
+      },
+    });
+  });
+
   it('reads directives whatever whitespace follows the colon', async () => {
     const input: CoreInputDto = {
       websiteId: 1,

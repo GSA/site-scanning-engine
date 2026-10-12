@@ -59,4 +59,29 @@ describe('sitemap-xml scanner', () => {
       },
     });
   });
+
+  it('degrades gracefully when navigation resolves to a null response', async () => {
+    mockPage.goto.mockResolvedValue(null);
+    mockPage.url.mockReturnValue('https://18f.gov/sitemap.xml');
+    const mockHttpService = mock<HttpService>();
+    stubHttpGet(mockHttpService, 404, 'Not Found');
+
+    const scanner = createSitemapXmlScanner(
+      mockLogger,
+      testInput,
+      mockHttpService,
+    );
+    const result = await scanner(mockPage);
+
+    expect(result).toEqual({
+      sitemapXmlScan: {
+        sitemapXmlFinalUrl: 'https://18f.gov/sitemap.xml',
+        sitemapXmlFinalUrlLive: false,
+        sitemapTargetUrlRedirects: null,
+        sitemapXmlFinalUrlMimeType: 'none-specified',
+        sitemapXmlStatusCode: null,
+        sitemapXmlDetected: false,
+      },
+    });
+  });
 });
