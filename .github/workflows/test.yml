@@ -34,6 +34,11 @@ jobs:
       - name: install
         run: npm install
 
+      # Report-only: no threshold is set in .jscpd.json, so this never fails
+      # the build. See the "Duplicate code" section of the README.
+      - name: detect duplicate code
+        run: npm run lint:dupes
+
       - name: build
         run: npm run build:all
 

@@ -1,0 +1,47 @@
+flowchart TB
+  subgraph Apps[Applications]
+    API[apps/api]
+    Worker[apps/scan-engine]
+    CLI[apps/cli]
+  end
+
+  subgraph Libraries[Shared libraries]
+    Database[database]
+    Queue[queue]
+    MQ[message-queue]
+    Core[core-scanner]
+    Browser[browser]
+    Ingest[ingest]
+    Snapshot[snapshot]
+    Storage[storage]
+    Security[security-data]
+    Logging[logging]
+    Datetime[datetime]
+  end
+
+  subgraph Model[Shared model]
+    Entities[entities]
+  end
+
+  API --> Database
+  API --> Queue
+  API --> Logging
+  Worker --> Core
+  Worker --> Database
+  Worker --> Queue
+  Worker --> MQ
+  Worker --> Logging
+  CLI --> Ingest
+  CLI --> Queue
+  CLI --> Core
+  CLI --> Snapshot
+  CLI --> Security
+  CLI --> Database
+  Core --> Browser
+  Core --> Security
+  Core --> Entities
+  Database --> Entities
+  Queue --> MQ
+  Snapshot --> Database
+  Snapshot --> Storage
+  Snapshot --> Datetime

@@ -69,4 +69,7 @@ npm run test:watch
 
 # lint
 npm run lint
+
+# report duplicated code (report-only; see README)
+npm run lint:dupes
 ```

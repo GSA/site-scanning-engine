@@ -11,30 +11,36 @@
 # See: https://docs.docker.com/develop/develop-images/multistage-build/
 #
 # the development stage handles building the application and is designed for local development.
-FROM node:12.20.1 AS development
+FROM node:24.13.0-bookworm-slim AS development
 
 WORKDIR /usr/src/app
 
-# install puppeteer dependencies
+# install headless Chrome dependencies, per https://pptr.dev/troubleshooting
 RUN apt-get update && \
   apt-get -y --no-install-recommends install \
-  xvfb=2:1.19.2-1+deb9u9 \
-  gconf-service=3.2.6-4+b1 \
-  libasound2=1.1.3-5 \
-  libcups2=2.2.1-8+deb9u7 \
-  libexpat1=2.2.0-2+deb9u4 \
-  libgbm1=13.0.6-1+b2 \
-  libgconf-2-4=3.2.6-4+b1 \
-  libglib2.0-0=2.50.3-2+deb9u2 \
-  libgtk-3-0=3.22.11-1 \
-  libnspr4=2:4.12-6 \
-  libx11-6=2:1.6.4-3+deb9u4 \
-  ca-certificates=20200601~deb9u2 \
-  fonts-liberation=1:1.07.4-2 \
-  libappindicator1=0.4.92-4 \
-  libnss3=2:3.26.2-1.1+deb9u5 \
-  lsb-release=9.20161125 \
-  xdg-utils=1.1.1-1+deb9u2 \
+  ca-certificates \
+  fonts-liberation \
+  libasound2 \
+  libatk-bridge2.0-0 \
+  libatk1.0-0 \
+  libcups2 \
+  libdbus-1-3 \
+  libdrm2 \
+  libexpat1 \
+  libgbm1 \
+  libglib2.0-0 \
+  libgtk-3-0 \
+  libnspr4 \
+  libnss3 \
+  libx11-6 \
+  libxcomposite1 \
+  libxdamage1 \
+  libxfixes3 \
+  libxkbcommon0 \
+  libxrandr2 \
+  lsb-release \
+  wget \
+  xdg-utils \
   && rm -rf /var/lib/apt/lists/*
 
 
@@ -43,9 +49,14 @@ RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
   && mkdir -p /home/pptruser/Downloads \
   && chown -R pptruser:pptruser /home/pptruser
 
+# Puppeteer's postinstall downloads Chrome under the installing user's home
+# (root, at this point in the build). Point it at pptruser's home instead so
+# the binary is where the pptruser runtime user will actually look for it.
+ENV PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer
+
 COPY package*.json ./
 
-RUN npm install
+RUN npm install && chown -R pptruser:pptruser /home/pptruser/.cache
 
 COPY . .
 
@@ -55,36 +66,47 @@ RUN npm run build:all
 USER pptruser
 
 # the production stage handles running the application
-FROM node:12.20.1 AS production
+FROM node:24.13.0-bookworm-slim AS production
 
 WORKDIR /usr/src/app
 
-# install puppeteer dependencies
+# install headless Chrome dependencies, per https://pptr.dev/troubleshooting
 RUN apt-get update && \
   apt-get -y --no-install-recommends install \
-  xvfb=2:1.19.2-1+deb9u9 \
-  gconf-service=3.2.6-4+b1 \
-  libasound2=1.1.3-5 \
-  libcups2=2.2.1-8+deb9u7 \
-  libexpat1=2.2.0-2+deb9u4 \
-  libgbm1=13.0.6-1+b2 \
-  libgconf-2-4=3.2.6-4+b1 \
-  libglib2.0-0=2.50.3-2+deb9u2 \
-  libgtk-3-0=3.22.11-1 \
-  libnspr4=2:4.12-6 \
-  libx11-6=2:1.6.4-3+deb9u4 \
-  ca-certificates=20200601~deb9u2 \
-  fonts-liberation=1:1.07.4-2 \
-  libappindicator1=0.4.92-4 \
-  libnss3=2:3.26.2-1.1+deb9u5 \
-  lsb-release=9.20161125 \
-  xdg-utils=1.1.1-1+deb9u2 \
+  ca-certificates \
+  fonts-liberation \
+  libasound2 \
+  libatk-bridge2.0-0 \
+  libatk1.0-0 \
+  libcups2 \
+  libdbus-1-3 \
+  libdrm2 \
+  libexpat1 \
+  libgbm1 \
+  libglib2.0-0 \
+  libgtk-3-0 \
+  libnspr4 \
+  libnss3 \
+  libx11-6 \
+  libxcomposite1 \
+  libxdamage1 \
+  libxfixes3 \
+  libxkbcommon0 \
+  libxrandr2 \
+  lsb-release \
+  wget \
+  xdg-utils \
   && rm -rf /var/lib/apt/lists/*
 
 # Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
   && mkdir -p /home/pptruser/Downloads \
   && chown -R pptruser:pptruser /home/pptruser
+
+# Puppeteer's postinstall downloads Chrome under the installing user's home
+# (root, at this point in the build). Point it at pptruser's home instead so
+# the binary is where the pptruser runtime user will actually look for it.
+ENV PUPPETEER_CACHE_DIR=/home/pptruser/.cache/puppeteer
 
 COPY package*.json ./
 
@@ -93,7 +115,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 # when the NODE_ENV argument is set to production
 # this should skip installing the devDependencies.
-RUN npm ci
+RUN npm ci && chown -R pptruser:pptruser /home/pptruser/.cache
 
 COPY --from=development /usr/src/app/dist ./dist
 

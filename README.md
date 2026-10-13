@@ -28,12 +28,13 @@ The project's issue tracker and other relevant repositories and links [can be fo
     - [Enqueue scans](#enqueue-scans)
     - [Run individual Scans](#run-individual-scans)
   - [Test](#test)
+    - [Duplicate code](#duplicate-code)
   - [Deploy](#deploy)
 
 - [Development Documentation](./docs)
   - [Project Layout](./docs/layout.md)
   - [Detailed Development](./docs/development.md)
-  - [Architecture](./docs/architecture/README.md)
+  - [Architecture](./docs/product/ARCHITECTURE.md)
 
 ## Quickstart
 
@@ -221,6 +222,22 @@ npm run test:unit
 
 This runs all unit tests.
 
+### Duplicate code
+
+[jscpd](https://github.com/kucherenko/jscpd) reports copy/pasted TypeScript
+across `apps/`, `libs/`, `entities/`, `scripts/`, and `test/`, including spec
+files. Settings live in [`.jscpd.json`](.jscpd.json).
+
+```bash
+npm run lint:dupes
+```
+
+CI runs the same command. It is **report-only** for now: no `threshold` is
+set, so duplication never fails the build. The baseline when this was added
+was 3.80% duplicated lines (34 clones). To start enforcing, add a `threshold`
+(maximum duplicated-lines percentage) to `.jscpd.json` at or just above the
+current level, then lower it as duplication is consolidated.
+
 ## Deploy
 
 Deployments to Cloud.gov are handled by GitHub Actions, not a local script.
@@ -243,4 +260,4 @@ See [Deployment](docs/deployment.md) for details.
 - [Development](docs/development.md)
 - [Environment Provisioning](docs/environment_provisioning.md)
 - [Layout](docs/layout.md)
-- [Architectural Diagram](docs/architecture/diagrams/images/architecture-cloud-gov.png)
+- [Architecture](docs/product/ARCHITECTURE.md)
