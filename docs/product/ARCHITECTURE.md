@@ -366,10 +366,6 @@ reconciled using these correspondence rules.
 | `libs/snapshot` and `libs/storage`     | Publication process                               | Managed S3 service                      |
 | `libs/browser` and `libs/core-scanner` | Browser scan execution                            | Consumer instance and remote websites   |
 
-The older diagram under [`../architecture`](../architecture/README.md) mixes
-runtime and deployment concerns and depicts a persistent producer that is not
-present in the current manifest. Use this document for the current model.
-
 ## 10. Significant Decisions, Assumptions, And Limitations
 
 These are reconstructed decisions, not formal historical ADRs. Alternatives

@@ -147,4 +147,4 @@ Additional documentation is also available:
 - [Environment Provisioning](environment_provisioning.md)
 - [Development](development.md)
 - [Project Layout](layout.md)
-- [Architectural Diagrams](architecture/diagrams/images/architecture-cloud-gov.png)
+- [Architecture](product/ARCHITECTURE.md)
