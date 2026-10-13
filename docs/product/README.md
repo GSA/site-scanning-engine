@@ -17,27 +17,16 @@ repository and the public
 
 - [Architecture](ARCHITECTURE.md): system boundaries, components, runtime
   behavior, deployment, data model, and significant decisions.
-- [Data guide](DATA_GUIDE.md): where public fields come from, how they are
-  published, and how consumers should interpret them.
-- [Data use and growth ideas](DATA_USE_IDEAS.md): current and potential uses,
-  outreach opportunities, and capability hypotheses.
-- [Product management](PRODUCT_MANAGEMENT.md): stakeholders, outcomes,
-  measurement, prioritization, and an operating cadence.
-- [Risks and maintenance](RISKS_AND_MAINTENANCE.md): technical, operational,
-  product, and program risks with recommended controls.
 
 ## Suggested Reading Paths
 
-**New product or program owner:** Product management, data use ideas, data
-guide, architecture, then risks and maintenance.
-
-**Engineer or operator:** Architecture, risks and maintenance, data guide, then
-the existing [development](../development.md),
-[deployment](../deployment.md), and
+**Engineer or operator:** Read the [Architecture](ARCHITECTURE.md) guide alongside the
+existing [development](../development.md), [deployment](../deployment.md), and
 [environment provisioning](../environment_provisioning.md) guides.
 
-**Data consumer or outreach partner:** Data guide, data use ideas, then product
-management.
+**Data consumer or analyst:** Refer to the public
+[Site Scanning program documentation](https://github.com/GSA/site-scanning-documentation)
+and its [Data Dictionary](https://github.com/GSA/site-scanning-documentation/blob/main/data/Site_Scanning_Data_Dictionary.csv).
 
 ## Scope And Evidence
 

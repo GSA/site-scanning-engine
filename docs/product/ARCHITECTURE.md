@@ -399,5 +399,3 @@ when the code was written.
   snapshots, the API, and downstream consumers.
 - Limited staffing increases the cost of operating parallel publication paths
   and maintaining undocumented behavior.
-
-See [Risks and maintenance](RISKS_AND_MAINTENANCE.md) for prioritized follow-up.
