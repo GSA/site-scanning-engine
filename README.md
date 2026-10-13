@@ -34,7 +34,7 @@ The project's issue tracker and other relevant repositories and links [can be fo
 - [Development Documentation](./docs)
   - [Project Layout](./docs/layout.md)
   - [Detailed Development](./docs/development.md)
-  - [Architecture](./docs/architecture/README.md)
+  - [Architecture](./docs/product/ARCHITECTURE.md)
 
 ## Quickstart
 
@@ -260,4 +260,4 @@ See [Deployment](docs/deployment.md) for details.
 - [Development](docs/development.md)
 - [Environment Provisioning](docs/environment_provisioning.md)
 - [Layout](docs/layout.md)
-- [Architectural Diagram](docs/architecture/diagrams/images/architecture-cloud-gov.png)
+- [Architecture](docs/product/ARCHITECTURE.md)
