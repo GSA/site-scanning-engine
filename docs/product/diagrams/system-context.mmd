@@ -1,0 +1,24 @@
+flowchart LR
+  Agency[Agency teams and federal programs]
+  Public[Researchers and public data consumers]
+  Operator[Site Scanning operators]
+  Index[Federal Website Index]
+  CISA[CISA HTTPS data]
+  Actions[GitHub Actions schedules]
+  System[Site Scanning Engine]
+  API[Protected REST API]
+  Snapshots[Public CSV and JSON snapshots]
+  Reports[Analysis reports and agency slices]
+
+  Index -->|Target URLs, ownership, traffic metadata| System
+  CISA -->|HTTPS and HSTS observations| System
+  Actions -->|Ingest, enqueue, snapshot, maintenance tasks| System
+  Operator -->|Manual workflows and Cloud Foundry operations| System
+  System --> API
+  System --> Snapshots
+  API --> Agency
+  API --> Public
+  Snapshots --> Agency
+  Snapshots --> Public
+  Snapshots --> Reports
+  Reports --> Agency

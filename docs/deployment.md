@@ -43,7 +43,7 @@ After -- and only after -- a `.env` file is provided, the
 services:
 
 ```bash
-( cd "$(git rev-parse --show-toplevel" \
+( cd "$(git rev-parse --show-toplevel)" \
   && docker-compose up \
     --build \
     --detach
@@ -70,7 +70,7 @@ that we can reference the image when running it:
 docker run \
   --rm \
   --interactive \
-  --tty
+  --tty \
   scan-engine
 ```
 
@@ -147,4 +147,4 @@ Additional documentation is also available:
 - [Environment Provisioning](environment_provisioning.md)
 - [Development](development.md)
 - [Project Layout](layout.md)
-- [Architectural Diagrams](architecture/diagrams/images/architecture-cloud-gov.png)
+- [Architecture](product/ARCHITECTURE.md)
