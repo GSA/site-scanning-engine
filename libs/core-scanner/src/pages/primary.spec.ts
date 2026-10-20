@@ -2,6 +2,7 @@ import pino from 'pino';
 
 import { CoreInputDto } from '../core.input.dto';
 import { browserInstance, newTestPage } from '../test-helper';
+import * as util from '../util';
 import { createPrimaryScanner } from './primary';
 
 const input: CoreInputDto = {
@@ -68,6 +69,22 @@ describe('primary scanner', () => {
           }),
         }),
       );
+    });
+  });
+
+  it('continues the primary scan when URL scan construction fails', async () => {
+    await newTestPage(async ({ page, response }) => {
+      jest.spyOn(page, 'goto').mockResolvedValue(response);
+      jest
+        .spyOn(util, 'getPageMd5Hash')
+        .mockRejectedValueOnce(new Error('unable to hash page'));
+      const scanner = createPrimaryScanner(pino(), input);
+
+      const result = await scanner(page);
+
+      expect(result.urlScan).toBeNull();
+      expect(result.dapScan).not.toBeNull();
+      expect(result.seoScan).not.toBeNull();
     });
   });
 
