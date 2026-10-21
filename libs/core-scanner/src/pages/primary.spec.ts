@@ -1,112 +1,90 @@
-import { mock, MockProxy } from 'jest-mock-extended';
-import { Logger } from 'pino';
+import pino from 'pino';
 
 import { CoreInputDto } from '../core.input.dto';
-import { createPrimaryScanner } from './primary';
 import { browserInstance, newTestPage } from '../test-helper';
+import * as util from '../util';
+import { createPrimaryScanner } from './primary';
 
-/**
- * Disabled because this suite is brittle and based on external factors.
- * todo: Consider how we can get the coverage this test provides without
- *       the drawbacks apparent in this approach.
- */
-describe.skip('primary scanner', () => {
-  let mockLogger: MockProxy<Logger>;
+const input: CoreInputDto = {
+  websiteId: 1,
+  url: '18f.gov',
+  filter: false,
+  pageviews: 1,
+  visits: 1,
+  scanId: '123',
+};
 
-  beforeEach(async () => {
-    mockLogger = mock<Logger>();
+describe('primary scanner', () => {
+  it('runs the complete primary scan pipeline against the checked-in fixture', async () => {
+    await newTestPage(async ({ page, response, sourceUrl }) => {
+      const goto = jest.spyOn(page, 'goto').mockResolvedValue(response);
+      const scanner = createPrimaryScanner(pino(), input);
+
+      const result = await scanner(page);
+
+      expect(goto).toHaveBeenCalledWith('https://18f.gov', {
+        waitUntil: 'networkidle2',
+      });
+      expect(result).toEqual(
+        expect.objectContaining({
+          urlScan: expect.objectContaining({
+            finalUrl: sourceUrl,
+            finalUrlMIMEType: 'multipart/related',
+            finalUrlIsLive: true,
+            finalUrlStatusCode: 200,
+          }),
+        }),
+      );
+      expect(Object.keys(result).sort()).toEqual([
+        'cmsScan',
+        'cookieScan',
+        'dapScan',
+        'feedbackLinksScan',
+        'loginScan',
+        'mobileScan',
+        'requiredLinksScan',
+        'searchScan',
+        'seoScan',
+        'thirdPartyScan',
+        'toolingScan',
+        'urlScan',
+        'uswdsScan',
+      ]);
+    });
   });
 
-  it('should return the correct response', async () => {
+  it('handles a null navigation response without rejecting', async () => {
     await newTestPage(async ({ page }) => {
-      // We make an actual network request to 18f.gov in this test case,
-      // so this is more so an integration test than a unit test per se.
-      const input: CoreInputDto = {
-        websiteId: 1,
-        url: '18f.gov',
-        filter: false,
-        pageviews: 1,
-        visits: 1,
-        scanId: '123',
-      };
-      const scanner = await createPrimaryScanner(mockLogger, input);
+      jest.spyOn(page, 'goto').mockResolvedValue(null);
+      const scanner = createPrimaryScanner(pino(), input);
+
       const result = await scanner(page);
-      expect(result).toMatchObject({
-        urlScan: {
-          targetUrlRedirects: true,
-          finalUrl: 'https://18f.gsa.gov/',
-          finalUrlWebsite: '18f.gsa.gov',
-          finalUrlTopLevelDomain: 'gov',
-          finalUrlMIMEType: 'text/html',
-          finalUrlIsLive: true,
-          finalUrlBaseDomain: 'gsa.gov',
-          finalUrlSameDomain: false,
-          finalUrlSameWebsite: false,
-          finalUrlStatusCode: 200,
-        },
-        dapScan: {
-          dapDetected: true,
-          dapParameters: 'agency=GSA&subagency=TTS%2C18F',
-        },
-        seoScan: {
-          ogTitleFinalUrl: '18F: Digital service delivery | Home',
-          ogDescriptionFinalUrl:
-            '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
-          mainElementFinalUrl: true,
-          canonicalLink: 'https://18f.gsa.gov/',
-          pageTitle: '18F: Digital service delivery | Home',
-          metaDescriptionContent:
-            '18F builds effective, user-centric digital services focused on the interaction between government and the people and businesses it serves.',
-          hrefLangContent: '',
-          htmlLangContent: 'en-US',
-          metaKeywordsContent: null,
-          ogImageContent: 'https://18f.gsa.gov/assets/img/logos/18F-Logo-M.png',
-          ogTypeContent: null,
-          ogUrlContent: null,
-          // Experimental Fields #1368 Feb 2025
-          dcDateContent: null,
-          dcDateCreatedContent: null,
-          dctermsCreatedContent: null,
-          revisedContent: null,
-          lastModifiedContent: null,
-          dateContent: null,
-        },
-        thirdPartyScan: {
-          thirdPartyServiceDomains:
-            'dap.digitalgov.gov,search.usa.gov,www.google-analytics.com,www.googletagmanager.com',
-          thirdPartyServiceCount: 4,
-        },
-        cookieScan: { domains: '.gsa.gov' },
-        uswdsScan: {
-          usaClasses: 50,
-          usaElementsUsed: '',
-          usaClassesUsed:
-            'usa-accordion,usa-banner,usa-button,usa-card,usa-card-group,usa-header,usa-identifier,usa-link,usa-list,usa-logo,usa-logo-img,usa-menu-btn,usa-nav,usa-nav-container,usa-navbar,usa-overlay,usa-section,usa-skipnav',
-          uswdsString: 7,
-          uswdsInlineCss: 0,
-          uswdsUsFlag: 20,
-          uswdsUsFlagInCss: 0,
-          uswdsStringInCss: 20,
-          uswdsPublicSansFont: 0,
-          uswdsSemanticVersion: 'v3.8.0',
-          uswdsVersion: 100,
-          uswdsCount: 197,
-        },
-        loginScan: { loginDetected: null, loginProvider: null },
-        cmsScan: { cms: 'cloud.gov Pages' },
-        requiredLinksScan: {
-          requiredLinksUrl: 'about,foia,privacy,usa.gov',
-          requiredLinksText:
-            'accessibility,no fear act,foia,inspector general,privacy policy,vulnerability disclosure,usa.gov',
-        },
-        searchScan: {
-          searchDetected: false,
-          searchgov: null,
-        },
-        mobileScan: {
-          viewportMetaTag: true,
-        },
-      });
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          urlScan: expect.objectContaining({
+            finalUrlStatusCode: null,
+            finalUrlMIMEType: 'none-specified',
+            finalUrlIsLive: false,
+          }),
+        }),
+      );
+    });
+  });
+
+  it('continues the primary scan when URL scan construction fails', async () => {
+    await newTestPage(async ({ page, response }) => {
+      jest.spyOn(page, 'goto').mockResolvedValue(response);
+      jest
+        .spyOn(util, 'getPageMd5Hash')
+        .mockRejectedValueOnce(new Error('unable to hash page'));
+      const scanner = createPrimaryScanner(pino(), input);
+
+      const result = await scanner(page);
+
+      expect(result.urlScan).toBeNull();
+      expect(result.dapScan).not.toBeNull();
+      expect(result.seoScan).not.toBeNull();
     });
   });
 
