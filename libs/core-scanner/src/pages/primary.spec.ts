@@ -52,6 +52,25 @@ describe('primary scanner', () => {
     });
   });
 
+  it('handles a null navigation response without rejecting', async () => {
+    await newTestPage(async ({ page }) => {
+      jest.spyOn(page, 'goto').mockResolvedValue(null);
+      const scanner = createPrimaryScanner(pino(), input);
+
+      const result = await scanner(page);
+
+      expect(result).toEqual(
+        expect.objectContaining({
+          urlScan: expect.objectContaining({
+            finalUrlStatusCode: null,
+            finalUrlMIMEType: 'none-specified',
+            finalUrlIsLive: false,
+          }),
+        }),
+      );
+    });
+  });
+
   afterAll(async () => {
     if (browserInstance) {
       await browserInstance.close();
