@@ -1,7 +1,9 @@
+import { AxiosResponse } from 'axios';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { Logger } from 'pino';
 import { Page, HTTPRequest, HTTPResponse } from 'puppeteer';
 import { HttpService } from '@nestjs/axios';
+import { of } from 'rxjs';
 
 import { createSitemapXmlScanner, getSitemapUsingAxios } from './sitemap-xml';
 import { source } from './test-page-source';
@@ -85,5 +87,32 @@ describe('sitemap-xml scanner', () => {
         sitemapXmlDetected: false,
       },
     });
+  });
+
+  it('reads a day-first lastmod date rather than failing the sitemap scan', async () => {
+    mockResponse.url.mockReturnValue('https://18f.gsa.gov/sitemap.xml');
+    mockPage.goto.mockResolvedValue(mockResponse);
+    redirectRequest.redirectChain.mockReturnValue([]);
+    const mockHttpService = mock<HttpService>();
+    jest.spyOn(mockHttpService, 'get').mockImplementationOnce(() =>
+      of({
+        data: '<urlset><url><lastmod>20/02/2025</lastmod></url></urlset>',
+        status: 200,
+        statusText: 'OK',
+        headers: {},
+        config: { headers: null },
+      } as AxiosResponse<any>),
+    );
+
+    const scanner = createSitemapXmlScanner(
+      mockLogger,
+      testInput,
+      mockHttpService,
+    );
+    const result = await scanner(mockPage);
+
+    expect(result.sitemapXmlScan.sitemapXmlLastMod).toBe(
+      '2025-02-20T00:00:00.000Z',
+    );
   });
 });
