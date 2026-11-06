@@ -90,7 +90,7 @@ describe('sitemap-xml scanner', () => {
   });
 
   it.each([
-    ['month-first', '02/20/2025', new Date('02/20/2025').toISOString()],
+    ['month-first', '02/20/2025', '2025-02-20T00:00:00.000Z'],
     ['day-first', '20/02/2025', '2025-02-20T00:00:00.000Z'],
   ])(
     'reads a %s lastmod date rather than failing the sitemap scan',

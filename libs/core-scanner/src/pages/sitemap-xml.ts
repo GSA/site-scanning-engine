@@ -326,14 +326,14 @@ async function getModDatesByTDTag(
  * @returns The parsed Date object or a fallback date if parsing fails
  */
 function parseDate(dateStr: string, logger: Logger): Date {
-  const isoDate = new Date(dateStr);
-  if (!isNaN(isoDate.getTime())) {
-    return isoDate;
-  }
-
   const fallbackDate = parseFallbackDate(dateStr);
   if (fallbackDate) {
     return fallbackDate;
+  }
+
+  const isoDate = new Date(dateStr);
+  if (!isNaN(isoDate.getTime())) {
+    return isoDate;
   }
 
   return new Date(0);
