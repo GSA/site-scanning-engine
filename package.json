@@ -158,6 +158,7 @@
       "@app/security-data/(.*)": "<rootDir>/libs/security-data/src/$1",
       "@app/security-data": "<rootDir>/libs/security-data/src"
     },
+    "globalSetup": "<rootDir>/test/jest.global-setup.ts",
     "setupFilesAfterEnv": [
       "<rootDir>/test/jest.setup.ts"
     ]
