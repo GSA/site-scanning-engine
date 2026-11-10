@@ -124,7 +124,8 @@
     "rootDir": ".",
     "testRegex": ".spec.ts$",
     "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
+      "^.+\\.ts$": "ts-jest",
+      "^.+\\.js$": "<rootDir>/test/esm-to-cjs-transformer.js"
     },
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
@@ -160,6 +161,9 @@
     },
     "setupFilesAfterEnv": [
       "<rootDir>/test/jest.setup.ts"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(puppeteer|puppeteer-core|@puppeteer)/)"
     ]
   }
 }

@@ -91,7 +91,7 @@ export const newTestPageFromBody = async (
       </html>
       `;
 
-    await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
+    await page.setContent(htmlContent);
 
     await handler({ page });
   });
