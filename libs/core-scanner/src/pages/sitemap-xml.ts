@@ -271,14 +271,7 @@ function getMostRecentDate(dates: Date[], logger: Logger): Date | null {
  * @returns True if the string is a valid date format, false otherwise
  */
 function isDate(dateStr: string, logger: Logger): boolean {
-  for (const { regex, parser } of dateFormats) {
-    const match = dateStr.match(regex);
-    if (match) {
-      const date = parser(match);
-      return !isNaN(date.getTime());
-    }
-  }
-  return false;
+  return parseFallbackDate(dateStr) !== null;
 }
 
 /**
@@ -349,6 +342,10 @@ function parseDate(dateStr: string, logger: Logger): Date {
 /**
  * Parses a date string using fallback formats.
  *
+ * The month-first and day-first patterns share one regex, so the first match
+ * is not always the one that parses. Keep trying the remaining formats instead
+ * of returning a parser result without checking it.
+ *
  * @param dateStr The date string to parse
  * @returns The parsed Date object or null if parsing fails
  */
@@ -356,7 +353,10 @@ function parseFallbackDate(dateStr: string): Date | null {
   for (const { regex, parser } of dateFormats) {
     const match = dateStr.match(regex);
     if (match) {
-      return parser(match);
+      const date = parser(match);
+      if (!isNaN(date.getTime())) {
+        return date;
+      }
     }
   }
 

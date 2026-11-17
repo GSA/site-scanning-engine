@@ -91,7 +91,10 @@ export const newTestPageFromBody = async (
       </html>
       `;
 
-    await page.setContent(htmlContent, { waitUntil: 'networkidle2' });
+    // setContent only accepts 'load' | 'domcontentloaded' as of puppeteer 25,
+    // so wait for network idle separately to keep the old networkidle2 behavior.
+    await page.setContent(htmlContent);
+    await page.waitForNetworkIdle({ idleTime: 500, concurrency: 2 });
 
     await handler({ page });
   });

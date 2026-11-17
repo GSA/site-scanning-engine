@@ -5,6 +5,7 @@ import { Logger } from 'pino';
 import { CoreInputDto } from '@app/core-scanner/core.input.dto';
 import { UrlScan } from 'entities/scan-data.entity';
 import { isLive, createRequestHandlers, getPageMd5Hash } from '../util';
+import { logCount } from '../../../logging/src/metric-utils';
 
 import {
   getBaseDomain,
@@ -47,6 +48,7 @@ export const buildUrlScanResult = async (
   const url = getHttpsUrl(input.url);
   const redirectChain = response ? response.request().redirectChain() : '';
   const finalUrl = getFinalUrl(page);
+  logUrlResponseDivergence(logger, finalUrl, response?.url());
   const finalUrlPageHash = await getPageMd5Hash(page);
   return {
     targetUrlRedirects: isRedirect(url, getWithSubdomain(finalUrl), logger),
@@ -62,6 +64,43 @@ export const buildUrlScanResult = async (
     finalUrlPageHash: finalUrlPageHash,
   };
 };
+
+export const URL_RESPONSE_DIVERGENCE_METRIC_ID =
+  'scanner.url_scan.page_response_url_divergence.count';
+
+export const URL_RESPONSE_DIVERGENCE_MESSAGE =
+  'Scanned page URL differs from the navigation response URL; URL and response metadata may describe different documents.';
+
+/**
+ * Emits a count metric when the rendered page URL differs from the
+ * navigation response URL. The URL fields of a scan come from the current page,
+ * but status code, media type, and liveness come from the response, so a
+ * divergence means one result row may describe two documents (e.g. after a
+ * client-side redirect).
+ *
+ * @param logger
+ * @param pageUrl The current page URL from `page.url()`.
+ * @param responseUrl The navigation response URL, if there was a response.
+ */
+export function logUrlResponseDivergence(
+  logger: Logger,
+  pageUrl: string,
+  responseUrl?: string,
+): void {
+  if (!pageUrl || !responseUrl) {
+    return;
+  }
+  if (pageUrl === responseUrl) {
+    return;
+  }
+
+  logCount(
+    logger,
+    { pageUrl, responseUrl },
+    URL_RESPONSE_DIVERGENCE_METRIC_ID,
+    URL_RESPONSE_DIVERGENCE_MESSAGE,
+  );
+}
 
 const redirects = (requests: HTTPRequest[]): boolean => {
   return requests.length > 0;
