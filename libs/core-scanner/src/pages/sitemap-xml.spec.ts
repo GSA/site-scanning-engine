@@ -89,30 +89,36 @@ describe('sitemap-xml scanner', () => {
     });
   });
 
-  it('reads a day-first lastmod date rather than failing the sitemap scan', async () => {
-    mockResponse.url.mockReturnValue('https://18f.gsa.gov/sitemap.xml');
-    mockPage.goto.mockResolvedValue(mockResponse);
-    redirectRequest.redirectChain.mockReturnValue([]);
-    const mockHttpService = mock<HttpService>();
-    jest.spyOn(mockHttpService, 'get').mockImplementationOnce(() =>
-      of({
-        data: '<urlset><url><lastmod>20/02/2025</lastmod></url></urlset>',
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: { headers: null },
-      } as AxiosResponse<any>),
-    );
+  // The month-first case only catches local-midnight parsing because
+  // test/jest.global-setup.ts pins a non-UTC timezone.
+  it.each([
+    ['month-first', '02/20/2025', '2025-02-20T00:00:00.000Z'],
+    ['day-first', '20/02/2025', '2025-02-20T00:00:00.000Z'],
+  ])(
+    'reads a %s lastmod date rather than failing the sitemap scan',
+    async (_dateFormat, lastmodDate, expectedLastmodDate) => {
+      mockResponse.url.mockReturnValue('https://18f.gsa.gov/sitemap.xml');
+      mockPage.goto.mockResolvedValue(mockResponse);
+      redirectRequest.redirectChain.mockReturnValue([]);
+      const mockHttpService = mock<HttpService>();
+      jest.spyOn(mockHttpService, 'get').mockImplementationOnce(() =>
+        of({
+          data: `<urlset><url><lastmod>${lastmodDate}</lastmod></url></urlset>`,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: { headers: null },
+        } as AxiosResponse<any>),
+      );
 
-    const scanner = createSitemapXmlScanner(
-      mockLogger,
-      testInput,
-      mockHttpService,
-    );
-    const result = await scanner(mockPage);
+      const scanner = createSitemapXmlScanner(
+        mockLogger,
+        testInput,
+        mockHttpService,
+      );
+      const result = await scanner(mockPage);
 
-    expect(result.sitemapXmlScan.sitemapXmlLastMod).toBe(
-      '2025-02-20T00:00:00.000Z',
-    );
-  });
+      expect(result.sitemapXmlScan.sitemapXmlLastMod).toBe(expectedLastmodDate);
+    },
+  );
 });

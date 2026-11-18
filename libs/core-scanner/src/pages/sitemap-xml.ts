@@ -271,7 +271,7 @@ function getMostRecentDate(dates: Date[], logger: Logger): Date | null {
  * @returns True if the string is a valid date format, false otherwise
  */
 function isDate(dateStr: string, logger: Logger): boolean {
-  return parseFallbackDate(dateStr) !== null;
+  return parseKnownDateFormat(dateStr) !== null;
 }
 
 /**
@@ -321,26 +321,30 @@ async function getModDatesByTDTag(
 /**
  * Parses a date string into a Date object.
  *
+ * Known formats are tried before the native Date parser because native
+ * parsing reads slash-delimited dates like "02/20/2025" as local midnight,
+ * which makes the result depend on the host timezone.
+ *
  * @param dateStr The date string to parse
  * @param logger A logger instance for logging
- * @returns The parsed Date object or a fallback date if parsing fails
+ * @returns The parsed Date object, or the Unix epoch if no parser accepts it
  */
 function parseDate(dateStr: string, logger: Logger): Date {
+  const knownFormatDate = parseKnownDateFormat(dateStr);
+  if (knownFormatDate) {
+    return knownFormatDate;
+  }
+
   const isoDate = new Date(dateStr);
   if (!isNaN(isoDate.getTime())) {
     return isoDate;
-  }
-
-  const fallbackDate = parseFallbackDate(dateStr);
-  if (fallbackDate) {
-    return fallbackDate;
   }
 
   return new Date(0);
 }
 
 /**
- * Parses a date string using fallback formats.
+ * Parses a date string using the known formats in `dateFormats`.
  *
  * The month-first and day-first patterns share one regex, so the first match
  * is not always the one that parses. Keep trying the remaining formats instead
@@ -349,7 +353,7 @@ function parseDate(dateStr: string, logger: Logger): Date {
  * @param dateStr The date string to parse
  * @returns The parsed Date object or null if parsing fails
  */
-function parseFallbackDate(dateStr: string): Date | null {
+function parseKnownDateFormat(dateStr: string): Date | null {
   for (const { regex, parser } of dateFormats) {
     const match = dateStr.match(regex);
     if (match) {
