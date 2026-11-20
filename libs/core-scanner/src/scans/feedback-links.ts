@@ -25,7 +25,7 @@ export async function buildFeedbackLinksResult(
         let stringDetected = false;
 
         document.querySelectorAll('a').forEach((el) => {
-          if (el.textContent.toLowerCase() === string) {
+          if (el.textContent.trim().toLowerCase() === string) {
             stringDetected = true;
           }
         });
